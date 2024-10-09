@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-  <Document name="dc-sample.ZPM">
+  <Document name="pxw-dev.ZPM">
     <Module>
-      <Name>dc-sample</Name>
-      <Version>2.0.4</Version>
-      <Description>Basic InterSystems IRIS Development Template</Description>
+      <Name>pxw-dev</Name>
+      <Version>1.0.0</Version>
+      <Description>PXW Development tools</Description>
       <Packaging>module</Packaging>
       <SourcesRoot>src</SourcesRoot>
-      <Resource Name="dc.sample.PKG"/>
-      <UnitTest Name="/tests" Package="dc.sample.unittests" Phase="test"/>
-
+      <Resource Name="PXW.DEV.PKG"/>
+      <Resource Name="PXW.Xref.PKG"/>
+      <Resource Name="PXW.Tools.PKG"/>
+      <UnitTest Name="/tests" Package="PXW.DEV.UnitTests" Phase="test"/>
     </Module>
   </Document>
 </Export>

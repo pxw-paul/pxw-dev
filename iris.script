@@ -3,8 +3,8 @@
     // Unexpire passwords and set up passwordless mode to simplify dev use.
     // ** Comment out these two line for Production use **
     do ##class(Security.Users).UnExpireUserPasswords("*")
-    zpm "install passwordless"
-
+    zpm "install passwordless" 
+    
     // Enable callin for Embedded Python
     do ##class(Security.Services).Get("%Service_CallIn",.prop)
     set prop("Enabled")=1
@@ -19,6 +19,7 @@
 
     // Create /_vscode web app to support intersystems-community.testingmanager VS Code extension
     zpm "install vscode-per-namespace-settings"
+    zpm "install pxw-debug"
 
     // Configure %UnitTest in IRISAPP to suit the VS Code extension
     set ^UnitTestRoot="/usr/irissys/.vscode/IRISAPP/UnitTestRoot"

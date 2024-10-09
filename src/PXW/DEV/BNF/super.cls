@@ -1,0 +1,697 @@
+Include (PXW.Debuggers.Macros, PXW.DEV.BNF.macros)
+
+Class PXW.DEV.BNF.super Extends %RegisteredObject
+{
+
+Property stream As PXW.DEV.InputStream;
+
+/// object containing any whitespace leading up to whatever object we are going to return
+Property whitespace As PXW.DEV.Atom;
+
+/// object containing any comment leading up to whatever object we are going to return
+Property comment As PXW.DEV.Atom;
+
+Property element As PXW.DEV.Element;
+
+/// This gets set when the comment or whitespace check needs to be done
+Property needsWScheck As %Boolean [ InitialExpression = 1 ];
+
+/// Set to CDEF, COS
+Property commentMode As %String [ InitialExpression = "COS" ];
+
+/// last element added to
+Property lastElement As PXW.DEV.Element;
+
+Property streamlen As %Integer;
+
+/// Set to 1 if you want to stop skipping whitespace at the end of line (eg #dim command)
+Property stopAtEOL As %Boolean [ InitialExpression = 0 ];
+
+/*
+method stopAtEOLSet(val) as %Status
+{
+    $$$DEBUG("Setting stopAtEOL="_val_", "_$g(%path))
+    s i%stopAtEOL=val
+    q $$$OK 
+}
+*/
+/// Set to 1 if you never want to skip whitespace (eg on postconditional)
+Property stopAtWhitespace As %Boolean [ InitialExpression = 0 ];
+
+/// temporary storge of the last keyword read
+Property keyword As %String;
+
+Parameter keywordAtomType = "Keyword";
+
+/// temporary storage of last peek
+Property peeked As %String;
+
+Property peekedlen As %Integer;
+
+/// copy of the stream
+Property streaminput As %Integer;
+
+/// a place to store things during the parsing, eg as a store of last result from recursion
+Property memo As %String [ MultiDimensional ];
+
+Parameter KeywordPattern = "1.A";
+
+Method streamSet(val As PXW.DEV.InputStream) As %Status
+{
+    If $ISOBJECT(val) {
+        Set i%stream=val
+        Set ..streamlen=$LENGTH(val.input)
+        Set ..streaminput=val.input
+    }
+    Quit $$$OK
+}
+
+ClassMethod test1(text As %String, method As %String, ByRef element As PXW.DEV.Element, debugToFile As %Boolean = 0)
+{
+    New %path Set %path=""
+    Set debugger="PXW.Debuggers.Basic"
+    If debugToFile {
+        Set debugger="PXW.Debuggers.BasicToFile"
+    }
+    $$$DEBUGNew(debugger)
+
+    $$$DEBUG("Testing="_text)
+    $$$DEBUG("method="_method)
+    Set element=##class(PXW.DEV.Element).%New()
+    Set %section=element
+    Set x=..%New()
+    ;s x.element=element
+    Set x.stream=##class(PXW.DEV.InputStream).NewString(text)
+    Set ok=$METHOD(x,method,element)
+    $$$DEBUG("ok="_ok)
+    $$$DEBUG("x.element.ToString()="_element.ToString())
+    $$$DEBUG("Testing complete")
+    $$$DEBUG("")
+    If debugToFile {
+        set debug=$$$debugObject
+        Write !,"Debug file "_debug.file
+    }
+}
+
+Method getBookmark(ByRef bookmark As %String)
+{
+    ;$$$DEBUGMethodBegin
+    
+    Set bookmark=$LISTBUILD(..stream.pos,..stream.col,..stream.line,..stream.startOfLinePos,..needsWScheck,..stopAtEOL,..stopAtWhitespace) 
+    Set bookmark("ws")=..whitespace
+    Set bookmark("c")=..comment
+
+    ;$$$DEBUGMethodEnd
+}
+
+Method gotoBookmark(ByRef bookmark As %String)
+{
+    ;quit
+    ;$$$DEBUGMethodBegin
+    Set forward=(..stream.pos<$LISTGET(bookmark,1))
+    $$$DEBUG("Going "_$SELECT(forward:"forward",1:"back")_" from:"_$zconvert(..peek(20),"O","JSON"))
+    
+    Set $LISTBUILD(pos,col,line,startOfLinePos,needsWScheck,stopeol,stopws)=bookmark
+    Set ..stream.pos=pos,..stream.col=col,..stream.line=line,..stream.startOfLinePos=startOfLinePos
+    ;s $lb(sm,needsWScheck,stopeol,stopws)=bookmark
+    ;d ..stream.GotoBookmark(sm)
+    Set ..whitespace=bookmark("ws")
+    Set ..comment=bookmark("c") 
+    Set ..needsWScheck=needsWScheck
+    ;s ..comment=""
+    ;s ..whitespace=""
+    ;s ..needsWScheck=1
+
+    Set ..keyword="",..peekedlen=0
+    Set ..stopAtEOL=stopeol
+    Set ..stopAtWhitespace=stopws
+    $$$DEBUG("Going "_$SELECT(forward:"forward",1:"back")_"   to:"_$zconvert(..peek(20),"O","JSON"))
+    ;$$$DEBUGMethodEnd
+}
+
+Method peek(number As %Integer) As %String
+{
+    Set p=..stream.pos
+    Quit $EXTRACT(..streaminput,p,p+number-1)
+    Quit ..peeked
+}
+
+Method peekKeyword() As %String [ CodeMode = objectgenerator ]
+{
+    #define CODE(%l) do %code.WriteLine(%l)
+    $$$CODE($CHAR(9)_"i ..keyword'="""" q ..keyword")
+    $$$CODE($CHAR(9)_"$$$DEBUGMethodBegin")
+    $$$CODE($CHAR(9)_"s i=0,testword=""""")
+    $$$CODE($CHAR(9)_"do {")
+    $$$CODE($CHAR(9)_$CHAR(9)_"s word=testword")
+    $$$CODE($CHAR(9)_$CHAR(9)_"s ch=..stream.Peek(i)")
+    $$$CODE($CHAR(9)_$CHAR(9)_"s testword=word_ch")
+    $$$CODE($CHAR(9)_$CHAR(9)_"s i=i+1 ;$$$DEBUG(""word=""_testword)" )
+    $$$CODE($CHAR(9)_"} while ch'="""",testword?"_%parameter("KeywordPattern"))
+    $$$CODE($CHAR(9)_"s ..keyword=word")
+    $$$CODE($CHAR(9)_"$$$DEBUGMethodEnd")
+    $$$CODE($CHAR(9)_"q word")
+    Quit $$$OK
+}
+
+Method next(number As %Integer = 1) As %String
+{
+    ;$$$DEBUGMethodBegin
+    Set value=..stream.NextMany(number)
+    Set ..keyword="",..peekedlen=0
+    ;$$$DEBUGMethodEnd
+    Quit value
+}
+
+Method nextNotEOL(number As %Integer) As %String
+{
+    ;$$$DEBUGMethodBegin
+    Set value=..stream.NextNOTEol(number)
+    Set ..keyword="",..peekedlen=0
+    ;$$$DEBUGMethodEnd
+    Quit value
+}
+
+/// lengthAdjust takes into account that you might be peeking past the end but the position has not been updated
+Method eof(lengthAdjust As %Integer = 0) As %Boolean
+{
+    ;q ((..stream.pos+lengthAdjust)>$l(..stream.input))
+    Quit ((..stream.pos+lengthAdjust)>..streamlen)
+}
+
+Method isPunctuationInList(ListOfStrings As %List, longestLen As %Integer = 50, Output foundString As %String) As %Boolean
+{
+    $$$DEBUGMethodBegin
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+
+    Set next50=..peek(longestLen)
+    Set UPP50=$$$UPPER(next50)
+    Set found=$LISTFIND(ListOfStrings,UPP50)
+    If found Set foundString=$LIST(ListOfStrings,found)
+    ;$$$DEBUG($s(found:"("_foundString_") ",1:"NOT ")_"found:"_UPP50_" in list "_$LISTTOSTRING(ListOfStrings))
+    $$$DEBUGMethodEnd
+    Quit found
+}
+
+Method isKeywordInList(ListOfStrings As %List, Output foundString As %String) As %Boolean
+{
+  
+    $$$DEBUGMethodBegin
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+
+    Set keyword=..peekKeyword()
+    Set UPP=$$$UPPER(keyword)
+    Set found=$LISTFIND(ListOfStrings,UPP)
+    If found Set foundString=keyword
+    $$$DEBUG($SELECT(found:"("_foundString_") ",1:"NOT ")_"found:"_UPP_" in list "_$LISTTOSTRING(ListOfStrings))
+    $$$DEBUGMethodEnd
+    Quit found
+}
+
+Method isKeyword(KeywordToCheck As %String, Output foundString As %String) As %Boolean
+{
+    $$$DEBUGMethodBegin
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+
+    Set keyword=..peekKeyword()
+    Set UPP=$$$UPPER(keyword)
+    Set found=(UPP=KeywordToCheck)
+    If found Set foundString=keyword
+    ;$$$DEBUG($s(found:"("_foundString_") ",1:"NOT ")_"found:"_UPP)
+    $$$DEBUGMethodEnd
+    Quit found
+}
+
+Method isStringInList(ListOfStrings As %List, longestLen As %Integer = 50, Output foundString As %String) As %Boolean
+{
+    $$$DEBUGMethodBegin
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+
+    Set next50=..peek(longestLen)
+    Set UPP50=$$$UPPER(next50)
+    Set ptr=0,notfound=1
+    While notfound, $LISTNEXT(ListOfStrings,ptr,value) {
+       Set len=$LENGTH(value)
+       If value?1.A {
+            Set peeked=$$$UPPER(..peekKeyword())
+       } Else {
+            Set peeked=$EXTRACT(UPP50,1,len)
+       }
+        If peeked=value {
+            Set notfound=0,foundString=$EXTRACT(next50,1,len)
+        }
+    }
+    ;$$$DEBUG($s(notfound=0:"("_peeked_","_value_","_..keyword_")",1:"NOT ")_"found:"_UPP50_" in list "_$LISTTOSTRING(ListOfStrings))
+    $$$DEBUGMethodEnd
+    Quit 'notfound
+}
+
+Method isStringSingle(String As %String, Output foundString As %String) As %Boolean
+{
+    $$$DEBUGMethodBegin  
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+    
+    Set len=$LENGTH(String)
+    Set foundString=..peek(len)
+    If $$$UPPER(foundString)=String {
+        Set found=1
+    } Else {
+        Set found=0
+    }
+    ;$$$DEBUG("lookingFor="_String_" found="_found_" foundString="_foundString)
+    ;s x=$i(%pxw1(String,found))
+    $$$DEBUGMethodEnd
+    Quit found
+}
+
+Method isString(ParentElement As PXW.DEV.Element = "", StringToCheck As %String) As %Boolean
+{
+    //#define UPPER(%x) $zconvert(%x,"U")
+    $$$DEBUGMethodBegin
+    ;d ..skipWhiteSpaceAndComments()
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+ 
+    ;$$$DEBUG("checking string '"_StringToCheck_"' found '"_$zconvert(..peek(10),"O","JS")_"'")
+    Set ok=0
+    Set len=$LENGTH(StringToCheck)
+    Set peeked=..peek(len)
+    If $$$UPPER(peeked)=$$$UPPER(StringToCheck) {
+        If $ISOBJECT(ParentElement) {
+            Set value=..next(len)
+            If value?1.P {
+                Set atom=..newAtom("punctuation",value)
+            } Else {
+                Set atom=..newAtom(..#keywordAtomType,value)
+            }
+            Do ParentElement.AddPart(atom)
+            Set ..lastElement=ParentElement
+        }
+        Set ok=1
+    }
+    ;$$$DEBUG("checking string '"_StringToCheck_"' ok="_ok)
+    ;s %pxwstrings(StringToCheck_"="_ok)=$g(%pxwstrings(StringToCheck_"="_ok))+1
+    $$$DEBUGMethodEnd
+     Quit ok
+}
+
+Method isPunctuation(StringToCheck As %String, Output foundString As %String) As %Boolean
+{
+    //#define UPPER(%x) $zconvert(%x,"U")
+    $$$DEBUGMethodBegin
+    ;d ..skipWhiteSpaceAndComments()
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+ 
+    ;$$$DEBUG("checking punctuation '"_StringToCheck_"' found '"_$zconvert(..peek(10),"O","JS")_"'")
+    Set ok=0
+    Set len=$LENGTH(StringToCheck) 
+    Set peeked=..peek(len)
+    If $$$UPPER(peeked)=$$$UPPER(StringToCheck) {
+        Set ok=1
+        Set foundString=peeked
+    }
+    ;$$$DEBUG("checking punctuation'"_StringToCheck_"' ok="_ok)
+    $$$DEBUGMethodEnd
+    Quit ok
+}
+
+Method addString(ParentElement As PXW.DEV.Element = "", StringToCheck As %String) As %Boolean
+{
+    //#define UPPER(%x) $zconvert(%x,"U")
+    $$$DEBUGMethodBegin
+    ;d ..skipWhiteSpaceAndComments()
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+ 
+    $$$DEBUG("checking string '"_StringToCheck_"' found '"_$ZCONVERT(..peek(10),"O","JS")_"'")
+    Set ok=0
+    Set len=$LENGTH(StringToCheck)
+    Set peeked=..peek(len)
+    If $$$UPPER(peeked)=$$$UPPER(StringToCheck) {
+        Set value=..next(len)
+        If value?1.P {
+            Set atom=..newAtom("punctuation",value)
+        } Else {
+            Set atom=..newAtom(..#keywordAtomType,value)
+        }
+        Do ParentElement.AddPart(atom)
+        Set ..lastElement=ParentElement
+        Set ok=1
+    }
+    $$$DEBUG("checking string '"_StringToCheck_"' ok="_ok)
+    ;s %pxwstrings(StringToCheck_"="_ok)=$g(%pxwstrings(StringToCheck_"="_ok))+1
+    $$$DEBUGMethodEnd
+     Quit ok
+}
+
+Method addStringInList(ParentElement As PXW.DEV.Element, ListOfStrings As %List, longestLen As %Integer = 50, Output foundString As %String) As %Boolean
+{
+    $$$DEBUGMethodBegin
+    Set ret=0
+    If ..isStringInList(ListOfStrings,longestLen,.value) {
+        If value?1.P {
+            Set atom=..newAtom("punctuation",value)
+        } Else {
+            Set atom=..newAtom(..#keywordAtomType,value)
+        }
+        Do ParentElement.AddPart(atom)
+        Set ..lastElement=ParentElement
+        Set ret=1
+        Set foundString=value
+    }
+    $$$DEBUGMethodEnd
+    Quit ret
+}
+
+Method addKeywordInList(ParentElement As PXW.DEV.Element, ListOfStrings As %List, Output foundString As %String) As %Boolean
+{
+    $$$DEBUGMethodBegin
+    Set ret=0  
+    If ..isKeywordInList(ListOfStrings,.value) {
+        Set foundString=..next($LENGTH(value))
+        Set atom=..newAtom(..#keywordAtomType,foundString)
+        Do ParentElement.AddPart(atom)
+        Set ..lastElement=ParentElement
+        Set ret=1
+    }
+    $$$DEBUGMethodEnd
+    Quit ret
+}
+
+Method addKeyword(ParentElement As PXW.DEV.Element, Keyword As %String, Output foundString As %String) As %Boolean
+{
+    $$$DEBUGMethodBegin
+    Set ret=0
+    If ..isKeyword(Keyword,.value) {
+        Set foundString=..next($LENGTH(value))
+        Set atom=..newAtom(..#keywordAtomType,foundString)
+        Do ParentElement.AddPart(atom)
+        Set ..lastElement=ParentElement
+        Set ret=1
+    }
+    $$$DEBUGMethodEnd
+    Quit ret
+}
+
+Method addPunctuation(ParentElement As PXW.DEV.Element, Punctuation As %String, Output foundString As %String) As %Boolean
+{
+    $$$DEBUGMethodBegin
+    Set ret=0
+    If ..isPunctuation(Punctuation,.value) {
+        Set foundString=..next($LENGTH(value))
+        Set atom=..newAtom("punctuation",foundString)
+        Do ParentElement.AddPart(atom)
+        Set ..lastElement=ParentElement
+        Set ret=1
+    }
+    $$$DEBUGMethodEnd
+    Quit ret
+}
+
+Method addPunctuationInList(ParentElement As PXW.DEV.Element, ListOfStrings As %List, longestLen As %Integer = 50, Output foundString As %String) As %Boolean
+{
+    $$$DEBUGMethodBegin
+    Set ret=0
+    If ..isPunctuationInList(ListOfStrings,longestLen,.value) {
+        Set foundString=..next(longestLen)
+        Set atom=..newAtom("punctuation",foundString)
+        Do ParentElement.AddPart(atom)
+        Set ..lastElement=ParentElement
+        Set ret=1
+    }
+    $$$DEBUGMethodEnd
+    Quit ret
+}
+
+Method concatChar(ByRef string As %String, char As %String)
+{
+    If ..peek(1)=char Set string=string_char
+}
+
+Method isRegex(ParentElement As PXW.DEV.Element, Match As %String) As %Library.Boolean
+{
+    $$$DEBUGMethodBegin
+    ;d ..skipWhiteSpaceAndComments()
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+    $$$DEBUG("checking match '"_Match_"' found '"_$ZCONVERT(..peek(10),"O","JS")_"'")
+    Set value="",count=1,ok=0
+    While '..eof(count-1),$MATCH(..peek(count),Match) {
+        Set count=count+1
+    }
+    ;$$$DEBUG("count="_count)
+    If count>1 {
+        If $ISOBJECT(ParentElement) {
+            Set value=..next(count-1) 
+            Set atom=..newAtom(ParentElement.type,value)
+            Do ParentElement.AddPart(atom)
+            Set ..lastElement=ParentElement
+        }
+        Set ok=1
+    }
+    ;$$$DEBUG("checking match, ok=1")
+    ;zw atom
+    $$$DEBUGMethodEnd
+    Quit ok
+}
+
+/// methods in here need to do a DIRECT lookup on ..text
+Method skipWhiteSpaceAndComments()
+{
+    #define isWS(%x) $c(32,9,13,10,160)[%x
+    $$$DEBUGMethodBegin
+
+    If ..stopAtEOL { 
+        Set ws=$CHAR(32,9,160)
+    } Else {
+        Set ws=$CHAR(32,9,13,10,160)
+    }
+    $$$DEBUG("StopAtWhiteSpace="_..stopAtWhitespace_",StopAtEOL="_..stopAtEOL)
+    If ..stopAtWhitespace Goto readExit
+
+readNextLoop		
+	Set ch10=..peek(10),ch=$EXTRACT(ch10,1)
+	
+	; leading whitespace and comments end up embedded in the next real object
+	; so you could end up with a returned object like this
+	; object={ 
+	;          type:"variable",
+	;         value:111,
+	;       comment:{
+	;                type:"comment",
+	;               value:"a comment",
+	;          whitespace:{
+	;                      type:"whitespace",
+	;                     value:"  "
+	;                     }
+	;          }                
+	;
+    ;
+	;i '..eof(),$$$isWS(ch) s ..whitespace=..readWhitespace() g readNextLoop
+    If '..eof(),ws[ch Set ..whitespace=..readWhitespace() Goto readNextLoop
+	;s ..currentline=..input.line
+    /*i ..commentMode="COS" {
+        ;i ch=";" s ..comment=..readLineComment(";") g readNextLoop
+        ;s ch2=$e(ch10,1,2),ch3=$e(ch10,1,3)
+        ;i ch2="//" s ..comment=..readLineComment("//") g readNextLoop
+        ;i ch2="#;" s ..comment=..readLineComment("#;") g readNextLoop
+        ;i ch3="##;" s ..comment=..readLineComment("##;") g readNextLoop
+        ;;i $lf($lb("//","#;","##"),ch2) s ..comment=..readLineComment(ch2) g readNextLoop
+        ;i ch2="/*" s ..comment=..readBlockComment() g readNextLoop
+        i ..skipComments(ch10) g readNextLoop
+    } elseif ..commentMode="CDEF" {
+        ;i $e(ch10,1,3)="///" s ..comment=..readLineComment("///") g readNextLoop
+        ;i $e(ch10,1,2)="//" s ..comment=..readLineComment("//") g readNextLoop
+        ;i $e(ch10,1,2)="/*" s ..comment=..readBlockComment() g readNextLoop
+        i ..skipComments(ch10) g readNextLoop
+    } elseif ..commentMode="SQL" {
+        ;i $e(ch10,1,2)="--" s ..comment=..readLineComment("--") g readNextLoop
+        ;i $e(ch10,1,2)="/*" s ..comment=..readBlockComment() g readNextLoop
+        i ..skipComments(ch10) g readNextLoop
+    } elseif ..commentMode="XML" {
+        ;i $e(ch10,1,4)="<!--" s ..comment=..readXMLBlockComment() g readNextLoop  
+        i ..skipComments(ch10) g readNextLoop
+    } elseif ..commentMode="JS" {
+        ;;i $e(ch10,1,2)="//" s ..comment=..readLineComment("//") g readNextLoop
+        ;;i $e(ch10,1,2)="/*" s ..comment=..readBlockComment() g readNextLoop
+        i ..skipComments(ch10) g readNextLoop
+    } else {
+        i ..skipComments(ch10) g readNextLoop
+    }*/
+    If ..skipComments(ch10) Goto readNextLoop
+    Set ..needsWScheck=0
+readExit
+    $$$DEBUGMethodEnd 
+    Quit
+}
+
+/// Skip over the next set of comments, return 1 if something was done or 0.
+/// ch10 is the next 10 chars in the stream
+Method skipComments(ch10 As %String) As %Boolean
+{
+    ;i $e(ch10,1,3)="///" s ..comment=..readLineComment("///") q 1
+    ;i $e(ch10,1,2)="//" s ..comment=..readLineComment("//") q 1
+    ;i $e(ch10,1,2)="/*" s ..comment=..readBlockComment() q 1
+    Quit 0
+}
+
+Method newElement(type As %String) As PXW.DEV.BNF.Element
+{
+    Quit ##class(PXW.DEV.BNF.Element).%New()
+}
+
+Method newAtom(type As %String, value As %String = "") As PXW.DEV.Atom
+{
+ 
+    $$$DEBUGMethodBegin
+	Set a=##class(PXW.DEV.Atom).%New() 
+	Set a.type=type_":"_$GET(%path)  
+    Set a.value=value
+	Set a.col=..stream.col
+	Set a.line=..stream.line
+	If $ISOBJECT(..whitespace) Set a.whitespace=..whitespace
+	If $ISOBJECT(..comment) Set a.comment=..comment
+    ;s:..whitespace a.whitespace=..whitespace
+    ;s:..comment a.comment=..comment
+	Set ..whitespace=""
+	Set ..comment=""
+    Set ..needsWScheck=1
+    Set %atoms=$GET(%atoms)+1
+    $$$DEBUGMethodEnd
+	Quit a
+}
+
+Method readWhitespace() As PXW.DEV.Atom
+{
+    $$$DEBUGMethodBegin
+    If ..stopAtEOL { 
+        Set ws=$CHAR(32,9,160)
+    } Else {
+        Set ws=$CHAR(32,9,13,10,160)
+    }
+    Set o=..newAtom("whitespace",..stream.NextChars(ws))
+    $$$DEBUGMethodEnd
+	Quit o
+}
+
+Method readLineComment(start As %String) As PXW.DEV.Atom
+{
+    $$$DEBUGMethodBegin
+	Set o=..newAtom("linecomment")
+	Set o.start=..stream.NextNOTEol($LENGTH(start)) 
+	Set n=""
+    Do {
+        Set morecomments=0
+       Set n=n_..stream.NextToEol()
+
+        ; now look to see if the NEXT line has the same type of comment
+        ; if it does then add all that to this comment
+        Set next50=..peek(50)
+        
+        ; 
+        If $EXTRACT($ZSTRIP(next50,"<WC"),1,$LENGTH(start))=start {
+            Set ws=$CHAR(32,9,13,10,160)
+           Set n=n_..stream.NextChars(ws)
+            Set morecomments=1
+        }
+    } While morecomments
+
+	Set o.value=n
+    $$$DEBUGMethodEnd
+	Quit o
+}
+
+Method readBlockComment(StartMarker As %String = "/*", EndMarker As %String = "*/") As PXW.DEV.Atom
+{
+    $$$DEBUGMethodBegin
+    If ..peek($LENGTH(StartMarker))'=StartMarker Quit ""
+
+	Set o=..newAtom("blockcomment")
+	Set o.start=..stream.NextNOTEol($LENGTH(StartMarker))
+	Set n=""
+	Set eob=0
+    Set eml=$LENGTH(EndMarker)
+	While '..eof() && 'eob {
+		Set ch2=..peek(eml)
+		If ch2=EndMarker Set eob=1
+		If 'eob {
+			Set n=n_..next()
+		}
+	}
+	If eob Set o.end=..stream.NextNOTEol(eml) ; put the */ in the block
+	Set o.value=n
+    $$$DEBUGMethodEnd
+	Quit o
+}
+
+Method readXMLBlockComment() As PXW.DEV.Atom
+{
+    $$$DEBUGMethodBegin
+	Set o=..newAtom("blockcomment")
+	Set o.start=..stream.NextNOTEol(4) ; <!--
+	Set n=""
+	Set eob=0
+	While '..eof() && 'eob {
+		Set ch3=..peek(3)
+		If ch3="-->" Set eob=1
+		If 'eob {
+			Set n=n_..next()
+		}
+	}
+	If eob Set o.end=..stream.NextNOTEol(3) ; put the --> in the block
+	Set o.value=n
+    $$$DEBUGMethodEnd
+	Quit o
+}
+
+/// Match should be a pair of characters that mark out where we are in the code. Mostly this will be "{}". 
+/// The number of { and } is then counted and when the count becomes -1 that means we have reached 
+/// a good recovery point (eg end of method)
+/// Stop At List should be a list of things that cause the recover to stop (eg $lb($c(13)))
+/// we can only allow 1 char, might need to be a bit cleverer here to deal with cdata blocks in each item in the list
+Method recover(ParentElement As PXW.DEV.Element, ByRef subElement As PXW.DEV.Element, Match As %String, StopAtList As %List) As %Boolean
+{
+	$$$DEBUGMethodBegin
+    #dim a as %CSP.Broker
+	Set subElement=##class(PXW.DEV.Element).%New()
+	Set subElement.type="recover"
+
+    Set matchcount=0 
+	Set ret=0
+	Set r=""
+    ; find where we are now (pos) up to the point of failure (lastPos)
+    While '..eof(),..stream.pos<..stream.lastPos,$LISTFIND(StopAtList,..peek(1))=0,matchcount>=0 {
+        If Match'="" {
+            If ..peek(1)=$EXTRACT(Match,1) Set matchcount=matchcount+1
+            If ..peek(1)=$EXTRACT(Match,2) Set matchcount=matchcount-1
+            If matchcount>=0 {
+                Set r=r_..next()
+                Set ret=1
+            }
+        } Else {
+            Set r=r_..next()
+            Set ret=1
+        }
+    }
+	If ret {
+		Set atom=..newAtom("ERROR",r)
+		Do subElement.AddPart(atom)
+	}	
+    
+    ; now find from the point of failure up to the next recovery point (a mismatch of {}  or a specific char)
+    Set ret=0,r=""
+	While '..eof(),$LISTFIND(StopAtList,..peek(1))=0,matchcount>=0 {
+        If ..peek(1)=$EXTRACT(Match,1) Set matchcount=matchcount+1
+        If ..peek(1)=$EXTRACT(Match,2) Set matchcount=matchcount-1
+        If matchcount>=0 {
+            Set r=r_..next()
+            Set ret=1
+        }
+	}
+	If ret {
+		Set atom=..newAtom("ERROR",r)
+		Do subElement.AddPart(atom)
+		Do ParentElement.AddPart(subElement)
+	}	
+	$$$DEBUGMethodEnd
+	Quit ret
+}
+
+}
