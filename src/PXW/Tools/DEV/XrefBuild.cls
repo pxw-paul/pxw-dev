@@ -4,7 +4,7 @@ Class PXW.Tools.DEV.XrefBuild Extends PXW.Tools.Page
 /// d ##class(PXW.Tools.DEV.BuildAllXref).xrefPackage("eng")
 ClassMethod xrefPackage(Package As %String, Force As %Boolean = 0) As %Status
 {
-	set pack=$p(Package,"*",1)_"*"
+	Set pack=$PIECE(Package,"*",1)_"*"
 	Job ##class(PXW.Xref.Build).Build(%NS,"",pack,Force)
 	Hang 1
 	Write !,"Submitted to background."
@@ -39,50 +39,50 @@ ClassMethod WriteMainBody()
 		Write "</pre>"
 	} 
 
-	write "<table>"
-	w "<thead>"
-	w "<tr>"
-	w "<th>ID</th>"
-	w "<th>PID</th>"
-	w "<th>StartDateTime</th>"
-	w "<th>EndDateTime</th>"
-	w "<th>SearchName</th>"
-	w "<th>CurrentlyBuilding</th>"
-	w "<th>Total</th>"
-	w "<th>Built</th>"
-	w "<th>Errors</th>"
-	w "<th>Skipped</th>"
-	w "<th>Status</th>"
-	w "</tr>"
-	w "</thead>"
-	w "<tbody>"
+	Write "<table>"
+	Write "<thead>"
+	Write "<tr>"
+	Write "<th>ID</th>"
+	Write "<th>PID</th>"
+	Write "<th>StartDateTime</th>"
+	Write "<th>EndDateTime</th>"
+	Write "<th>SearchName</th>"
+	Write "<th>CurrentlyBuilding</th>"
+	Write "<th>Total</th>"
+	Write "<th>Built</th>"
+	Write "<th>Errors</th>"
+	Write "<th>Skipped</th>"
+	Write "<th>Status</th>"
+	Write "</tr>"
+	Write "</thead>"
+	Write "<tbody>"
 
-	s rs=##class(%Library.ResultSet).%New(..%ClassName(1)_":"_"SelectStatus")
+	Set rs=##class(%Library.ResultSet).%New(..%ClassName(1)_":"_"SelectStatus")
 	$$$ThrowOnError(rs.Execute())
-	while rs.%Next() {
-		s rowclass=""
-		s enddatetime=rs.%Get("EndDateTime")
-		s running=rs.%Get("Running")
-		i running s rowclass=" class=goodrow"
-		i 'running,enddatetime="" s rowclass="class=errorrow"
-		w "<tr "_rowclass_">"
-		w "<td>"_..EscapeHTML(rs.%Get("ID"))_"</td>"
-		w "<td>"_..EscapeHTML(rs.%Get("ProcessId"))_"</td>"
-		w "<td>"_..EscapeHTML(rs.%Get("StartDateTime"))_"</td>"
-		w "<td>"_..EscapeHTML(rs.%Get("EndDateTime"))_"</td>"
-		w "<td>"_..EscapeHTML(rs.%Get("RequestSearchName"))_"</td>"
-		w "<td>"_..EscapeHTML(rs.%Get("CurrentlyBuilding"))_"</td>"
-		w "<td>"_..EscapeHTML(rs.%Get("Total"))_"</td>"
-		w "<td>"_..EscapeHTML(rs.%Get("TotalBuilt"))_"</td>"
-		w "<td>"_..EscapeHTML(rs.%Get("TotalErrors"))_"</td>"
-		w "<td>"_..EscapeHTML(rs.%Get("TotalSkipped"))_"</td>"
-		w "<td>"_..EscapeHTML(rs.%Get("Status"))_"</td>"
-		w "</tr>"
+	While rs.%Next() {
+		Set rowclass=""
+		Set enddatetime=rs.%Get("EndDateTime")
+		Set running=rs.%Get("Running")
+		If running Set rowclass=" class=goodrow"
+		If 'running,enddatetime="" Set rowclass="class=errorrow"
+		Write "<tr "_rowclass_">"
+		Write "<td>"_..EscapeHTML(rs.%Get("ID"))_"</td>"
+		Write "<td>"_..EscapeHTML(rs.%Get("ProcessId"))_"</td>"
+		Write "<td>"_..EscapeHTML(rs.%Get("StartDateTime"))_"</td>"
+		Write "<td>"_..EscapeHTML(rs.%Get("EndDateTime"))_"</td>"
+		Write "<td>"_..EscapeHTML(rs.%Get("RequestSearchName"))_"</td>"
+		Write "<td>"_..EscapeHTML(rs.%Get("CurrentlyBuilding"))_"</td>"
+		Write "<td>"_..EscapeHTML(rs.%Get("Total"))_"</td>"
+		Write "<td>"_..EscapeHTML(rs.%Get("TotalBuilt"))_"</td>"
+		Write "<td>"_..EscapeHTML(rs.%Get("TotalErrors"))_"</td>"
+		Write "<td>"_..EscapeHTML(rs.%Get("TotalSkipped"))_"</td>"
+		Write "<td>"_..EscapeHTML(rs.%Get("Status"))_"</td>"
+		Write "</tr>"
 		
 	}
 
-	w "</tbody>"
-	w "</table>"
+	Write "</tbody>"
+	Write "</table>"
 }
 
 Query SelectStatus() As %Library.SQLQuery

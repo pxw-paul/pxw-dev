@@ -559,31 +559,31 @@ Method xrefElement(element As PXW.DEV.Element)
 
 
 	For  {
-		Set atom=element.partsGetNext(.akey)
+		Set part=element.partsGetNext(.akey)
 		Quit:akey=""
 		
-	    If atom.%IsA("PXW.DEV.Element") {
-			Do ..xrefElement(atom)
-		} ElseIf atom.%IsA("PXW.DEV.Atom") {
-            Set type=$$$UPPER($PIECE(atom.type,":",1))
+	    If part.%IsA("PXW.DEV.Element") {
+			Do ..xrefElement(part)
+		} ElseIf part.%IsA("PXW.DEV.Atom") {
+            Set type=$$$UPPER($PIECE(part.type,":",1))
             ; this is the word "method" or "property" etc
             If type="KEYWORD" {
-               Set ..CalledByCommand=atom.value
+               Set ..CalledByCommand=part.value
             }
 			If type="CDEFKEYWORD" {
-               Set ..CalledByCommand=atom.value
+               Set ..CalledByCommand=part.value
             }
 
-			If $ISOBJECT(..Analyser),$DATA(..Analyser.ElementWarnings(+atom)) {
-				Set line=..Analyser.ElementWarnings(+atom)
-				Do ..SaveAnalysis(atom,line)
+			If $ISOBJECT(..Analyser),$DATA(..Analyser.ElementWarnings(+part)) {
+				Set line=..Analyser.ElementWarnings(+part)
+				Do ..SaveAnalysis(part,line)
 			}
 
 
 			; type="ERROR" happens when a RECOVERY takes place
-			; the atom should contain a bit of code up to the point of the error
+			; the part should contain a bit of code up to the point of the error
 			If type="ERROR" {
-				If ..ERROR="" Set ..ERROR=atom.ToString()
+				If ..ERROR="" Set ..ERROR=part.ToString()
 			}
 
 		}

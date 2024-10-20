@@ -9,12 +9,12 @@ Method Build(Namespace As %String, ItemKey1 As %String, PreLoadedText As %String
 
 ClassMethod RegisterType() As %Status
 {
-    set sc=$$$OK 
-    set codetype=..#CodeType
-    if codetype'="" {
-        s sc=##class(PXW.DEV.Dictionary.CodeTypeIndex).RegisterType("XrefBuilder",codetype,..%ClassName(1))
+    Set sc=$$$OK 
+    Set codetype=..#CodeType
+    If codetype'="" {
+        Set sc=##class(PXW.DEV.Dictionary.CodeTypeIndex).RegisterType("XrefBuilder",codetype,..%ClassName(1))
     }
-    quit sc
+    Quit sc
 }
 
 }

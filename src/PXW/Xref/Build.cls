@@ -32,14 +32,14 @@ ClassMethod Build(Namespace As %String, Type As %String, SearchName As %String, 
 					Set status.CurrentlyBuilding="Purging old data: "_typ_","_package
 					$$$ThrowOnError(status.%Save())
 				}
-				set:$$$ISOK(sc) sc=..DeleteAnalysisCalledByTypeKey1Package(Namespace,typ,package)
-				set:$$$ISOK(sc) sc=..DeleteCalledByTypeKey1Package(Namespace,typ,package)
-				set:$$$ISOK(sc) sc=..DeleteLastUpdateCalledByTypeKey1Package(Namespace,typ,package)
+				Set:$$$ISOK(sc) sc=..DeleteAnalysisCalledByTypeKey1Package(Namespace,typ,package)
+				Set:$$$ISOK(sc) sc=..DeleteCalledByTypeKey1Package(Namespace,typ,package)
+				Set:$$$ISOK(sc) sc=..DeleteLastUpdateCalledByTypeKey1Package(Namespace,typ,package)
 				; We have purged the lastupdate table so no need to force now.
 				; Which means we could kick off a Force on *, THEN build PXW package on a second process (because we are impatient)
 				; Then when the * build gets to PXW it will see that its already been done!
 				Set useTheForce=0
-				hang 1
+				Hang 1
 			}
 			Set builderClass=rs.%Get("Builder")
 			If builderClass'="" {
@@ -57,7 +57,7 @@ ClassMethod Build(Namespace As %String, Type As %String, SearchName As %String, 
 			}
 		}
 
-		if $$$ISOK(sc) {
+		If $$$ISOK(sc) {
 			Set:$DATA(status) status.Total=$GET(count)
 			Set iid=""
 			For  {
@@ -99,6 +99,9 @@ ClassMethod Build(Namespace As %String, Type As %String, SearchName As %String, 
 	Quit sc
 }
 
+/// Return 1 if build ok
+///        0 if build error
+///     null if nothing done
 ClassMethod BuildIfNecessary(CodeInterface As PXW.DEV.Dictionary.CodeInterface, Namespace As %String, Type As %String, Name As %String, TimeChanged As %TimeStamp, BuilderClass As %String, Force As %Boolean) As %Boolean [ Internal ]
 {
 	Set savesc=""
@@ -138,23 +141,24 @@ ClassMethod BuildIfNecessary(CodeInterface As PXW.DEV.Dictionary.CodeInterface, 
 		}
 		Set LastUpdate.CheckedAt=$ZDATETIME($HOROLOG,3)
 		Set savesc=LastUpdate.%Save()
+		Set:$$$ISERR(savesc) built=0
 	}
 	Quit built
 }
 
 /// Stick a call to this somewhere so that it gets called often, it should ensure that a full build is done at least 1 time per day
 /// write ##class(PXW.Xref.Build).DailyBuild("LOCAL_USER")
-ClassMethod DailyBuild(Namespace) As %Boolean
+ClassMethod DailyBuild(Namespace As %String) As %Boolean
 {
 	Set id=""
-	set started=0 
+	Set started=0 
 	&SQL(SELECT TOP 1 ID INTO :id FROM PXW_Xref.BuildStatus WHERE RequestNamespace=:Namespace AND StartDate=CURRENT_DATE)
 	; SQLCODE=100 means ok but no rows
-	if SQLCODE=100 {
-		j ..Build(Namespace,"","*",0)
-		set started=1
+	If SQLCODE=100 {
+		Job ..Build(Namespace,"","*",0)
+		Set started=1
 	}
-	quit started
+	Quit started
 }
 
 Query SelectTypes(Namespace As %String, Type As %String) As PXW.LIB.SQL.Query [ SqlProc ]
