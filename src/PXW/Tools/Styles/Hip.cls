@@ -172,7 +172,8 @@ Method WriteStyles()
 	.CDEFKeyword { color: var(--fgProgramKeyword);}
 
     .KeyWord { color:var(--fgCodeKeyword);}
-	.Warning { border-style:solid; border-color:red; border-width:1px 5px 1px 5px;}
+	.Warning { border-style:solid; border-color:orange; border-width:1px 5px 1px 5px;}
+	.Error { border-style:solid; border-color:red; border-width:1px 5px 1px 5px;}
 
 	.CDEFItemMenu { background-color: var(--bgAlternate3);}
 	.CDEFOption, .CDEFOption:visited { color: var(--fgInlineOption);}

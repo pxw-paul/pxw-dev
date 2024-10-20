@@ -3,6 +3,7 @@ Class PXW.Tools.Index Extends PXW.Tools.Page
 
 ClassMethod WriteMainBody()
 {
+	Do ##class(PXW.Xref.Build).DailyBuild(%NS)
 	
 	Set rs=##class(%ResultSet).%New("%Library.ClassDefinition:SubclassOf")
 	$$$THROWONERROR(sc,rs.Execute(##class(PXW.Tools.Page).%ClassName(1)))

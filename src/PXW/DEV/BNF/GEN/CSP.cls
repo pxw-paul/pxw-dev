@@ -1,4 +1,4 @@
-/// Created: 2024-09-25 19:33:57 PXW.DEV.BNF.Compilers.Compiler1
+/// Created: 2024-10-20 14:41:35 PXW.DEV.BNF.Compilers.Compiler1
 Class PXW.DEV.BNF.GEN.CSP Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 
@@ -772,7 +772,7 @@ Method CspJavascriptBoth24Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	if '(..isStringSingle("""TEXT/JAVASCRIPT""",.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addPunctuation(subElement,"""text/javascript""")  {
 		set done=1 ; end compileRules
 	}
@@ -840,7 +840,7 @@ Method CspJavascriptBothopp25Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 	if '(..isStringSingle("""TEXT/JAVASCRIPT""",.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addPunctuation(subElement,"""text/javascript""")  {
 		set done=1 ; end compileRules
 	}
@@ -926,7 +926,7 @@ Method CspJavascriptText22Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	if '(..isStringSingle("""TEXT/JAVASCRIPT""",.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addPunctuation(subElement,"""text/javascript""")  {
 		set done=1 ; end compileRules
 	}

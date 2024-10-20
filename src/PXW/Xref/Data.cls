@@ -7,10 +7,10 @@ Property NameSpace As %String [ InitialExpression = {$GET(%NS)}, Required ];
 Property ItemType As %String;
 
 /// Name of Class, Global, Routine
-Property ItemKey1 As %String(MAXLEN = 1024, TRUNCATE = 1);
+Property ItemKey1 As %String(MAXLEN = "", TRUNCATE = 1);
 
 /// Method of Class, Subscripts of global or Label of routine
-Property ItemKey2 As %String(MAXLEN = 1024, TRUNCATE = 1);
+Property ItemKey2 As %String(MAXLEN = "", TRUNCATE = 1);
 
 /// What is referencing this thing (class, routine)
 Property CalledByType As %String;
@@ -19,19 +19,19 @@ Property CalledByType As %String;
 Property CalledByCommand As %String(TRUNCATE = 1);
 
 /// The routine, class doing the call
-Property CalledByKey1 As %String(MAXLEN = 1024, TRUNCATE = 1);
+Property CalledByKey1 As %String(MAXLEN = "", TRUNCATE = 1);
 
 /// Line label, method
-Property CalledByKey2 As %String(MAXLEN = 1024, TRUNCATE = 1);
+Property CalledByKey2 As %String(MAXLEN = "", TRUNCATE = 1);
 
 /// label relative number
-Property CalledByKey3 As %String(MAXLEN = 1024, TRUNCATE = 1);
+Property CalledByKey3 As %String(MAXLEN = "", TRUNCATE = 1);
 
 /// absolute line number within the entire class text, or routine text
 Property LineNumber As %Integer;
 
 /// data relating to this specific call (label parameters, global subscripts etc)
-Property Parameters As %String(MAXLEN = 1024, TRUNCATE = 1);
+Property Parameters As %String(MAXLEN = "", TRUNCATE = 1);
 
 /// Name of the section of code this is in.  EG the code:
 /// <example>

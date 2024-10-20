@@ -214,21 +214,11 @@ ClassMethod WriteNav(ByRef scratch)
 	If $ISOBJECT($GET(scratch)) {
 		Set output=scratch
 		While output.NextIndexItemByName(.name,.type,.anchor,.error) {
-				;w "<tr>"
-				;w "<td>"
 				If error="" {
-					;w "<span class=toolsMainBodyNavItem>"
 					Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_"CDEF"_type_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
-					;w "</span>"
 				} Else {
-					;w "<span class=toolsMainBodyNavItem>"
-					Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_output.#WarningClass_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
-					;w "</span>"
+					Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_output.#ErrorClass_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
 				}
-				;w "</td>"
-				;w "<td>"_..EscapeHTML(type)_"</td>"
-				;w "<td>"_..EscapeHTML(anchor)_"</td>"
-				;w "</tr>",!
 		}
 		Write "<hr>"
 	}
@@ -274,39 +264,13 @@ ClassMethod HREFTo(Class As %String, Path As %String = "", LineNumber As %Intege
 
 	Set cls=##class(PXW.DEV.Dictionary.ClassDefinitionObject).FullClassName(cls,package)
 
-	/*
-	; method is provided so try to go to the actual origin of it
-	i $$$UPPER(Type)="METHOD" {
-		s mdef=##class(%Dictionary.CompiledMethod).%OpenId(cls_"||"_Name)
-		i $isobject(mdef) {
-			i mdef.Origin'=cls {
-				s cls=mdef.Origin,instance=Class
-			}
-		}
-	}
-	; go to origin of property
-	i $$$UPPER(Type)="PROPERTY" {
-		s pdef=##class(%Dictionary.CompiledProperty).%OpenId(cls_"||"_Name)
-		i $isobject(pdef) {
-			i pdef.Origin'=cls {
-				s cls=pdef.Origin,instance=Class
-			}
-		}
-	}
-	*/
-	
 	Set href=href_sep_"C="_..EscapeURL(cls),sep="&"
 	If instance'="" Set href=href_sep_"I="_..EscapeURL(instance),sep="&"
 	If LineNumber'="" Set href=href_sep_"LN="_..EscapeURL(LineNumber),sep="&"
 	If PropertyParameter'="" Set href=href_sep_"PP="_..EscapeURL(PropertyParameter),sep="&"
 	Set href=href_sep_"P="_..EscapeURL(Path),sep="&"
 
-	; if it looks like a stored proc then make it put the bookmark in
-	; zw Class
-	;i Class["_",Class_".",Path="" s Path=1 
-
 	; must go last
-	;i Path'="" s href=href_"#bookmark"
 	; always put the bookmark on, because the link to stored procedures is not working correctly yet
 	Set href=href_"#bookmark"
 	; do not add anything here
@@ -318,12 +282,7 @@ ClassMethod GetTitle() As %String
 	Do ..HREFFrom(.class,.name,,,,.pp)
 
 	Set class=..GetClassToLoad(class,name,,.method,pp)
-	;i $$$UPPER(type)="METHOD" {
-	;	q class_":"_name_"()"
-	;}
-	;i $$$UPPER(type)="PROPERTY" {
-	;	q class_":"_name_""
-	;}
+
 	If method'="" {
 		Quit class_":"_method_""
 	} Else {

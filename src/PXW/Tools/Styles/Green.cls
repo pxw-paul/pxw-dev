@@ -162,7 +162,8 @@ Method WriteStyles()
 	.CDEFKeyword { /*color:#85A6FF;*/}
 
     .KeyWord { /*color:white;*/}
-	.Warning { /*border-style:solid; border-color:red; border-width:1px 5px 1px 5px; */ background-color:#67BD5A; color:black;}
+	.Warning { background-color:#67BD5A; color:black;}
+	.Error { background-color:#67BD5A; color:black;}
 
 	.CDEFItemMenu {/* background-color:#0E0E0E;*/ }
 	.CDEFOption, .CDEFOption:visited { /* color:silver; */ background-color:#67BD5A; color:black;}

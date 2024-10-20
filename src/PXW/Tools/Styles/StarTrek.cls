@@ -331,7 +331,8 @@ Method WriteStyles()
 	#toolsMainBodyNav .CDEFXdataName  { background-color: var(--lcars6);}
 	#toolsMainBodyNav .toolTypeInternal  { background-color: var(--lcars4); }
 	#toolsMainBodyNav .toolTypeCode  { background-color: var(--lcars5); }	
-	#toolsMainBodyNav .warning { background-color: red;}
+	#toolsMainBodyNav .warning { background-color: orange;}
+	#toolsMainBodyNav .error { background-color: red;}
 	/* END of nav */
 	/* Start of style for the code display */
 
@@ -347,7 +348,8 @@ Method WriteStyles()
 	.CDEFKeyword { color:#85A6FF;}
 
     .KeyWord { color:white;}
-	.Warning { border-style:solid; border-color:red; border-width:1px 5px 1px 5px;}
+	.Warning { border-style:solid; border-color:orange; border-width:1px 5px 1px 5px;}
+	.Error { border-style:solid; border-color:red; border-width:1px 5px 1px 5px;}
 
 	.CDEFItemMenu { background-color:black; margin-top:20px; display:block; } 
 	a.CDEFOption, a.CDEFOption:visited { 

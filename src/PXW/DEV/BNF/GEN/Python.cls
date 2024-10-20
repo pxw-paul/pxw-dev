@@ -1,4 +1,4 @@
-/// Created: 2024-09-25 19:34:36 PXW.DEV.BNF.Compilers.Compiler2
+/// Created: 2024-10-20 14:41:52 PXW.DEV.BNF.Compilers.Compiler2
 Class PXW.DEV.BNF.GEN.Python Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 
@@ -13,19 +13,19 @@ Method AnnotatedRhs(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..YieldExpr(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..StarExpressions(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -47,17 +47,17 @@ Method Annotation(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,":")  && ..Expression(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -79,19 +79,19 @@ Method Args(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Args324Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Kwargs(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -163,7 +163,7 @@ Method Args326Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..StarredExpression(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Args327Or(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -204,7 +204,7 @@ Method Args328Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..AssignmentExpression(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Args329Or(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -279,7 +279,7 @@ Method Args332Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..StarredExpression(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Args333Or(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -320,7 +320,7 @@ Method Args334Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..AssignmentExpression(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Args335Or(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -414,17 +414,17 @@ Method Arguments(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Arguments322Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -487,17 +487,17 @@ Method AsPattern(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..AsPattern134Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -538,17 +538,17 @@ Method AssertStmt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addKeyword(subElement,"ASSERT")  && ..Expression(subElement,.addedElement)  && ..AssertStmt29OptGrp(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -589,23 +589,23 @@ Method Assignment(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Assignment9Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Assignment11Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Assignment14Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Assignment19Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -665,7 +665,7 @@ Method Assignment12Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(subElement,"(")  && ..SingleTarget(subElement,.addedElement)  && ..addPunctuation(subElement,")")  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..SingleSubscriptAttributeTarget(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -762,7 +762,7 @@ Method Assignment17Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..YieldExpr(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..StarExpressions(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -820,7 +820,7 @@ Method Assignment20Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..YieldExpr(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..StarExpressions(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -861,17 +861,17 @@ Method AssignmentExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..AssignmentExpression197Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -912,17 +912,17 @@ Method Async(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addKeyword(subElement,"ASYNC")  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -944,35 +944,35 @@ Method Atom(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Name(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addKeyword(subElement,"TRUE")  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addKeyword(subElement,"FALSE")  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addKeyword(subElement,"NONE")  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Strings(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Number(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Atom249Sub(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Atom250Sub(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Atom251Sub(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addPunctuation(subElement,"...")  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -994,9 +994,9 @@ Method Atom249Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..Tuple(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Group(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Genexp(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -1018,7 +1018,7 @@ Method Atom250Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..List(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Listcomp(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -1040,11 +1040,11 @@ Method Atom251Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..Dict(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Set(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Dictcomp(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Setcomp(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -1066,17 +1066,17 @@ Method Attr(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Attr153Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -1117,41 +1117,41 @@ Method Augassign(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,"+=")  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addPunctuation(subElement,"-=")  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addPunctuation(subElement,"*=")  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addPunctuation(subElement,"@=")  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addPunctuation(subElement,"/=")  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addPunctuation(subElement,"%=")  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addPunctuation(subElement,"&=")  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addPunctuation(subElement,"|=")  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addPunctuation(subElement,"^=")  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addPunctuation(subElement,"<<=")  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addPunctuation(subElement,">>=")  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addPunctuation(subElement,"**=")  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addPunctuation(subElement,"//=")  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -1173,17 +1173,17 @@ Method Await(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addKeyword(subElement,"AWAIT")  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -1205,19 +1205,19 @@ Method AwaitPrimary(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..AwaitPrimary235Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Primary(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -1256,35 +1256,35 @@ Method BitwiseAnd(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
-	s done=0,ok=1,pos=..stream.pos,lastpos=pos
-	i $$$BNFMEMOExists(pos) {
+	set done=0,ok=1,pos=..stream.pos,lastpos=pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s ret=($isobject(subElement))
-		i ret $$$BNFCOMMITCOPY(subElement,ParentElement)
-		q ret
+		set ret=($isobject(subElement))
+		if ret $$$BNFCOMMITCOPY(subElement,ParentElement)
+		quit ret
 	}
 	$$$BNFMEMOSET(pos,"")
-	d ..getBookmark(.bm)
+	do ..getBookmark(.bm)
 	while ok {
 	$$$BNFSTART(subElement)
-		d ..gotoBookmark(.bm)
-		s rec=..BitwiseAnd216Recurse(subElement,.addedElement)
-		i rec,..stream.pos>lastpos {
+		do ..gotoBookmark(.bm)
+		set rec=..BitwiseAnd216Recurse(subElement,.addedElement)
+		if rec,..stream.pos>lastpos {
 			$$$BNFMEMOSET(pos,addedElement)
-			s done=1,lastpos=..stream.pos
+			set done=1,lastpos=..stream.pos
 		} else {
-			s ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
+			set ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
 		}
 	}
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
 		set ret=1
 	} else {
-		i $isobject(subElement) $$$BNFROLLBACK(subElement)
+		if $isobject(subElement) $$$BNFROLLBACK(subElement)
 		set ret=0
 	}
 	$$$DEBUGMethodEnd
-	q ret
+	quit ret
 }
 
 Method BitwiseAnd216Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -1293,7 +1293,7 @@ Method BitwiseAnd216Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..BitwiseAnd217Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..ShiftExpr(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -1330,35 +1330,35 @@ Method BitwiseOr(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
-	s done=0,ok=1,pos=..stream.pos,lastpos=pos
-	i $$$BNFMEMOExists(pos) {
+	set done=0,ok=1,pos=..stream.pos,lastpos=pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s ret=($isobject(subElement))
-		i ret $$$BNFCOMMITCOPY(subElement,ParentElement)
-		q ret
+		set ret=($isobject(subElement))
+		if ret $$$BNFCOMMITCOPY(subElement,ParentElement)
+		quit ret
 	}
 	$$$BNFMEMOSET(pos,"")
-	d ..getBookmark(.bm)
+	do ..getBookmark(.bm)
 	while ok {
 	$$$BNFSTART(subElement)
-		d ..gotoBookmark(.bm)
-		s rec=..BitwiseOr212Recurse(subElement,.addedElement)
-		i rec,..stream.pos>lastpos {
+		do ..gotoBookmark(.bm)
+		set rec=..BitwiseOr212Recurse(subElement,.addedElement)
+		if rec,..stream.pos>lastpos {
 			$$$BNFMEMOSET(pos,addedElement)
-			s done=1,lastpos=..stream.pos
+			set done=1,lastpos=..stream.pos
 		} else {
-			s ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
+			set ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
 		}
 	}
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
 		set ret=1
 	} else {
-		i $isobject(subElement) $$$BNFROLLBACK(subElement)
+		if $isobject(subElement) $$$BNFROLLBACK(subElement)
 		set ret=0
 	}
 	$$$DEBUGMethodEnd
-	q ret
+	quit ret
 }
 
 Method BitwiseOr212Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -1367,7 +1367,7 @@ Method BitwiseOr212Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..BitwiseOr213Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..BitwiseXor(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -1404,35 +1404,35 @@ Method BitwiseXor(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
-	s done=0,ok=1,pos=..stream.pos,lastpos=pos
-	i $$$BNFMEMOExists(pos) {
+	set done=0,ok=1,pos=..stream.pos,lastpos=pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s ret=($isobject(subElement))
-		i ret $$$BNFCOMMITCOPY(subElement,ParentElement)
-		q ret
+		set ret=($isobject(subElement))
+		if ret $$$BNFCOMMITCOPY(subElement,ParentElement)
+		quit ret
 	}
 	$$$BNFMEMOSET(pos,"")
-	d ..getBookmark(.bm)
+	do ..getBookmark(.bm)
 	while ok {
 	$$$BNFSTART(subElement)
-		d ..gotoBookmark(.bm)
-		s rec=..BitwiseXor214Recurse(subElement,.addedElement)
-		i rec,..stream.pos>lastpos {
+		do ..gotoBookmark(.bm)
+		set rec=..BitwiseXor214Recurse(subElement,.addedElement)
+		if rec,..stream.pos>lastpos {
 			$$$BNFMEMOSET(pos,addedElement)
-			s done=1,lastpos=..stream.pos
+			set done=1,lastpos=..stream.pos
 		} else {
-			s ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
+			set ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
 		}
 	}
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
 		set ret=1
 	} else {
-		i $isobject(subElement) $$$BNFROLLBACK(subElement)
+		if $isobject(subElement) $$$BNFROLLBACK(subElement)
 		set ret=0
 	}
 	$$$DEBUGMethodEnd
-	q ret
+	quit ret
 }
 
 Method BitwiseXor214Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -1441,7 +1441,7 @@ Method BitwiseXor214Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..BitwiseXor215Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..BitwiseAnd(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -1480,19 +1480,19 @@ Method Block(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Block47Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..SimpleStmts(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -1533,17 +1533,17 @@ Method CapturePattern(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..PatternCaptureTarget(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -1565,17 +1565,17 @@ Method CaseBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..CaseBlock133Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -1616,19 +1616,19 @@ Method ClassDef(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..ClassDef50Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..ClassDefRaw(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -1669,17 +1669,17 @@ Method ClassDefRaw(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..ClassDefRaw51Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -1739,23 +1739,23 @@ Method ClassPattern(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..ClassPattern170Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..ClassPattern171Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..ClassPattern172Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..ClassPattern173Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -1853,31 +1853,31 @@ Method ClosedPattern(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..LiteralPattern(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..CapturePattern(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..WildcardPattern(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..ValuePattern(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..GroupPattern(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..SequencePattern(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..MappingPattern(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..ClassPattern(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -1899,35 +1899,35 @@ Method CompareOpBitwiseOrPair(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..EqBitwiseOr(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..NoteqBitwiseOr(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..LteBitwiseOr(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..LtBitwiseOr(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..GteBitwiseOr(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..GtBitwiseOr(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..NotinBitwiseOr(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..InBitwiseOr(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..IsnotBitwiseOr(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..IsBitwiseOr(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -1949,19 +1949,19 @@ Method Comparison(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Comparison208Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..BitwiseOr(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -2019,19 +2019,19 @@ Method ComplexNumber(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..ComplexNumber142Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..ComplexNumber143Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -2091,31 +2091,31 @@ Method CompoundStmt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..FunctionDef(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..IfStmt(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..ClassDef(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..WithStmt(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..ForStmt(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..TryStmt(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..WhileStmt(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..MatchStmt(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -2137,19 +2137,19 @@ Method Conjunction(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Conjunction203Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Inversion(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -2227,17 +2227,17 @@ Method Decorators(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Decorators48RepOne(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -2296,17 +2296,17 @@ Method Dedent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,"code dedent")  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -2328,19 +2328,19 @@ Method Default(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,"=")  && ..Expression(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..InvalidDefault(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -2362,17 +2362,17 @@ Method DelStmt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..DelStmt26Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -2435,7 +2435,7 @@ Method DelStmt28Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(subElement,";")  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Newline(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -2457,23 +2457,23 @@ Method DelTAtom(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Name(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..DelTAtom390Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..DelTAtom391Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..DelTAtom392Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -2552,21 +2552,21 @@ Method DelTarget(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..DelTarget386Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..DelTarget388Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..DelTAtom(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -2660,17 +2660,17 @@ Method DelTargets(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..DelTargets385RepSep(subElement,.addedElement)  && $S(..addPunctuation(subElement,",") :1,1:1) {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -2723,17 +2723,17 @@ Method Dict(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Dict305Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -2774,17 +2774,17 @@ Method Dictcomp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Dictcomp321Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -2825,19 +2825,19 @@ Method Disjunction(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Disjunction200Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Conjunction(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -2915,17 +2915,17 @@ Method DottedAsName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..DottedAsName43Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -2985,17 +2985,17 @@ Method DottedAsNames(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..DottedAsNames42RepSep(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -3046,35 +3046,35 @@ Method DottedName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
-	s done=0,ok=1,pos=..stream.pos,lastpos=pos
-	i $$$BNFMEMOExists(pos) {
+	set done=0,ok=1,pos=..stream.pos,lastpos=pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s ret=($isobject(subElement))
-		i ret $$$BNFCOMMITCOPY(subElement,ParentElement)
-		q ret
+		set ret=($isobject(subElement))
+		if ret $$$BNFCOMMITCOPY(subElement,ParentElement)
+		quit ret
 	}
 	$$$BNFMEMOSET(pos,"")
-	d ..getBookmark(.bm)
+	do ..getBookmark(.bm)
 	while ok {
 	$$$BNFSTART(subElement)
-		d ..gotoBookmark(.bm)
-		s rec=..DottedName45Recurse(subElement,.addedElement)
-		i rec,..stream.pos>lastpos {
+		do ..gotoBookmark(.bm)
+		set rec=..DottedName45Recurse(subElement,.addedElement)
+		if rec,..stream.pos>lastpos {
 			$$$BNFMEMOSET(pos,addedElement)
-			s done=1,lastpos=..stream.pos
+			set done=1,lastpos=..stream.pos
 		} else {
-			s ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
+			set ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
 		}
 	}
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
 		set ret=1
 	} else {
-		i $isobject(subElement) $$$BNFROLLBACK(subElement)
+		if $isobject(subElement) $$$BNFROLLBACK(subElement)
 		set ret=0
 	}
 	$$$DEBUGMethodEnd
-	q ret
+	quit ret
 }
 
 Method DottedName45Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -3083,7 +3083,7 @@ Method DottedName45Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..DottedName46Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Name(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -3122,17 +3122,17 @@ Method DoubleStarPattern(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..DoubleStarPattern169Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -3173,19 +3173,19 @@ Method DoubleStarredKvpair(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..DoubleStarredKvpair307Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Kvpair(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -3226,17 +3226,17 @@ Method DoubleStarredKvpairs(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..DoubleStarredKvpairs306RepSep(subElement,.addedElement)  && $S(..addPunctuation(subElement,",") :1,1:1) {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -3287,35 +3287,35 @@ Method ElifStmt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
-	s done=0,ok=1,pos=..stream.pos,lastpos=pos
-	i $$$BNFMEMOExists(pos) {
+	set done=0,ok=1,pos=..stream.pos,lastpos=pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s ret=($isobject(subElement))
-		i ret $$$BNFCOMMITCOPY(subElement,ParentElement)
-		q ret
+		set ret=($isobject(subElement))
+		if ret $$$BNFCOMMITCOPY(subElement,ParentElement)
+		quit ret
 	}
 	$$$BNFMEMOSET(pos,"")
-	d ..getBookmark(.bm)
+	do ..getBookmark(.bm)
 	while ok {
 	$$$BNFSTART(subElement)
-		d ..gotoBookmark(.bm)
-		s rec=..ElifStmt101Recurse(subElement,.addedElement)
-		i rec,..stream.pos>lastpos {
+		do ..gotoBookmark(.bm)
+		set rec=..ElifStmt101Recurse(subElement,.addedElement)
+		if rec,..stream.pos>lastpos {
 			$$$BNFMEMOSET(pos,addedElement)
-			s done=1,lastpos=..stream.pos
+			set done=1,lastpos=..stream.pos
 		} else {
-			s ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
+			set ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
 		}
 	}
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
 		set ret=1
 	} else {
-		i $isobject(subElement) $$$BNFROLLBACK(subElement)
+		if $isobject(subElement) $$$BNFROLLBACK(subElement)
 		set ret=0
 	}
 	$$$DEBUGMethodEnd
-	q ret
+	quit ret
 }
 
 Method ElifStmt101Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -3324,7 +3324,7 @@ Method ElifStmt101Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..ElifStmt102Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..ElifStmt103Or(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -3382,17 +3382,17 @@ Method ElseBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..ElseBlock104Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -3433,17 +3433,17 @@ Method Endmarker(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,"code endmarker")  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -3465,17 +3465,17 @@ Method EqBitwiseOr(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,"==")  && ..BitwiseOr(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -3497,17 +3497,17 @@ Method Eval(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Expressions(subElement,.addedElement)  && ..Eval1RepZero(subElement,.addedElement)  && ..Endmarker(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -3545,19 +3545,19 @@ Method ExceptBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..ExceptBlock124Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..ExceptBlock126Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -3636,17 +3636,17 @@ Method ExceptStarBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..ExceptStarBlock127Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -3704,35 +3704,35 @@ Method Expression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
-	s done=0,ok=1,pos=..stream.pos,lastpos=pos
-	i $$$BNFMEMOExists(pos) {
+	set done=0,ok=1,pos=..stream.pos,lastpos=pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s ret=($isobject(subElement))
-		i ret $$$BNFCOMMITCOPY(subElement,ParentElement)
-		q ret
+		set ret=($isobject(subElement))
+		if ret $$$BNFCOMMITCOPY(subElement,ParentElement)
+		quit ret
 	}
 	$$$BNFMEMOSET(pos,"")
-	d ..getBookmark(.bm)
+	do ..getBookmark(.bm)
 	while ok {
 	$$$BNFSTART(subElement)
-		d ..gotoBookmark(.bm)
-		s rec=..Expression186Recurse(subElement,.addedElement)
-		i rec,..stream.pos>lastpos {
+		do ..gotoBookmark(.bm)
+		set rec=..Expression186Recurse(subElement,.addedElement)
+		if rec,..stream.pos>lastpos {
 			$$$BNFMEMOSET(pos,addedElement)
-			s done=1,lastpos=..stream.pos
+			set done=1,lastpos=..stream.pos
 		} else {
-			s ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
+			set ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
 		}
 	}
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
 		set ret=1
 	} else {
-		i $isobject(subElement) $$$BNFROLLBACK(subElement)
+		if $isobject(subElement) $$$BNFROLLBACK(subElement)
 		set ret=0
 	}
 	$$$DEBUGMethodEnd
-	q ret
+	quit ret
 }
 
 Method Expression186Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -3741,9 +3741,9 @@ Method Expression186Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..Expression187Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Disjunction(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Lambdef(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -3782,21 +3782,21 @@ Method Expressions(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Expressions182Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Expressions185Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Expression(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -3891,35 +3891,35 @@ Method Factor(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
-	s done=0,ok=1,pos=..stream.pos,lastpos=pos
-	i $$$BNFMEMOExists(pos) {
+	set done=0,ok=1,pos=..stream.pos,lastpos=pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s ret=($isobject(subElement))
-		i ret $$$BNFCOMMITCOPY(subElement,ParentElement)
-		q ret
+		set ret=($isobject(subElement))
+		if ret $$$BNFCOMMITCOPY(subElement,ParentElement)
+		quit ret
 	}
 	$$$BNFMEMOSET(pos,"")
-	d ..getBookmark(.bm)
+	do ..getBookmark(.bm)
 	while ok {
 	$$$BNFSTART(subElement)
-		d ..gotoBookmark(.bm)
-		s rec=..Factor230Recurse(subElement,.addedElement)
-		i rec,..stream.pos>lastpos {
+		do ..gotoBookmark(.bm)
+		set rec=..Factor230Recurse(subElement,.addedElement)
+		if rec,..stream.pos>lastpos {
 			$$$BNFMEMOSET(pos,addedElement)
-			s done=1,lastpos=..stream.pos
+			set done=1,lastpos=..stream.pos
 		} else {
-			s ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
+			set ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
 		}
 	}
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
 		set ret=1
 	} else {
-		i $isobject(subElement) $$$BNFROLLBACK(subElement)
+		if $isobject(subElement) $$$BNFROLLBACK(subElement)
 		set ret=0
 	}
 	$$$DEBUGMethodEnd
-	q ret
+	quit ret
 }
 
 Method Factor230Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -3928,11 +3928,11 @@ Method Factor230Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..Factor231Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Factor232Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Factor233Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Power(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -4009,17 +4009,17 @@ Method File(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if $S(..Statements(subElement,.addedElement) :1,1:1) && ..Endmarker(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -4041,17 +4041,17 @@ Method FinallyBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..FinallyBlock129Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -4092,19 +4092,19 @@ Method ForIfClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..ForIfClause309Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..ForIfClause312Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -4236,17 +4236,17 @@ Method ForIfClauses(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..ForIfClauses308RepOne(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -4285,19 +4285,19 @@ Method ForStmt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..ForStmt106Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..ForStmt107Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -4357,17 +4357,17 @@ Method Fstring(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Fstring297Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -4424,17 +4424,17 @@ Method FstringConversion(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..FstringConversion294Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -4475,17 +4475,17 @@ Method FstringEnd(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,"code fstring_end")  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -4507,19 +4507,19 @@ Method FstringFormatSpec(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..FstringMiddle(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..FstringReplacementField(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -4541,17 +4541,17 @@ Method FstringFullFormatSpec(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..FstringFullFormatSpec295Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -4606,35 +4606,35 @@ Method FstringMiddle(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
-	s done=0,ok=1,pos=..stream.pos,lastpos=pos
-	i $$$BNFMEMOExists(pos) {
+	set done=0,ok=1,pos=..stream.pos,lastpos=pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s ret=($isobject(subElement))
-		i ret $$$BNFCOMMITCOPY(subElement,ParentElement)
-		q ret
+		set ret=($isobject(subElement))
+		if ret $$$BNFCOMMITCOPY(subElement,ParentElement)
+		quit ret
 	}
 	$$$BNFMEMOSET(pos,"")
-	d ..getBookmark(.bm)
+	do ..getBookmark(.bm)
 	while ok {
 	$$$BNFSTART(subElement)
-		d ..gotoBookmark(.bm)
-		s rec=..FstringMiddle291Recurse(subElement,.addedElement)
-		i rec,..stream.pos>lastpos {
+		do ..gotoBookmark(.bm)
+		set rec=..FstringMiddle291Recurse(subElement,.addedElement)
+		if rec,..stream.pos>lastpos {
 			$$$BNFMEMOSET(pos,addedElement)
-			s done=1,lastpos=..stream.pos
+			set done=1,lastpos=..stream.pos
 		} else {
-			s ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
+			set ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
 		}
 	}
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
 		set ret=1
 	} else {
-		i $isobject(subElement) $$$BNFROLLBACK(subElement)
+		if $isobject(subElement) $$$BNFROLLBACK(subElement)
 		set ret=0
 	}
 	$$$DEBUGMethodEnd
-	q ret
+	quit ret
 }
 
 Method FstringMiddle291Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -4643,7 +4643,7 @@ Method FstringMiddle291Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..FstringReplacementField(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..FstringMiddle(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -4663,17 +4663,17 @@ Method FstringReplacementField(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..FstringReplacementField292Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -4714,7 +4714,7 @@ Method FstringReplacementField293Sub(ParentElement As PXW.DEV.BNF.Element, ByRef
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..YieldExpr(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..StarExpressions(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -4736,17 +4736,17 @@ Method FstringStart(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,"code fstring_start")  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -4768,17 +4768,17 @@ Method FuncType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,"(")  && $S(..TypeExpressions(subElement,.addedElement) :1,1:1) && ..addPunctuation(subElement,")")  && ..addPunctuation(subElement,"->")  && ..Expression(subElement,.addedElement)  && ..FuncType2RepZero(subElement,.addedElement)  && ..Endmarker(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -4816,19 +4816,19 @@ Method FuncTypeComment(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..FuncTypeComment403Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..TypeComment(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -4911,19 +4911,19 @@ Method FunctionDef(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..FunctionDef53Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..FunctionDefRaw(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -4964,19 +4964,19 @@ Method FunctionDefRaw(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..FunctionDefRaw54Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..FunctionDefRaw56Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -5074,17 +5074,17 @@ Method Genexp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Genexp317Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -5125,7 +5125,7 @@ Method Genexp318Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..AssignmentExpression(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Genexp319Or(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -5183,17 +5183,17 @@ Method GlobalStmt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addKeyword(subElement,"GLOBAL")  && ..GlobalStmt24RepSep(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -5246,17 +5246,17 @@ Method Group(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Group252Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -5297,7 +5297,7 @@ Method Group253Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..YieldExpr(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..NamedExpression(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -5319,17 +5319,17 @@ Method GroupPattern(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..GroupPattern154Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -5370,17 +5370,17 @@ Method GtBitwiseOr(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,">")  && ..BitwiseOr(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -5402,17 +5402,17 @@ Method GteBitwiseOr(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,">=")  && ..BitwiseOr(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -5434,17 +5434,17 @@ Method Guard(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addKeyword(subElement,"IF")  && ..NamedExpression(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -5466,19 +5466,19 @@ Method IfStmt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..IfStmt99Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..IfStmt100Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -5538,17 +5538,17 @@ Method ImaginaryNumber(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Number(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -5570,19 +5570,19 @@ Method ImportFrom(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..ImportFrom30Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..ImportFrom33Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -5639,7 +5639,7 @@ Method ImportFrom32Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(subElement,".")  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"...")  {
 		set done=1 ; end compileRules
 	}
@@ -5697,7 +5697,7 @@ Method ImportFrom35Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(subElement,".")  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"...")  {
 		set done=1 ; end compileRules
 	}
@@ -5719,17 +5719,17 @@ Method ImportFromAsName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..ImportFromAsName40Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -5789,17 +5789,17 @@ Method ImportFromAsNames(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..ImportFromAsNames39RepSep(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -5852,21 +5852,21 @@ Method ImportFromTargets(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..ImportFromTargets36Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..ImportFromTargets37Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addPunctuation(subElement,"*")  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -5943,17 +5943,17 @@ Method ImportName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addKeyword(subElement,"IMPORT")  && ..DottedAsNames(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -5975,19 +5975,19 @@ Method ImportStmt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..ImportName(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..ImportFrom(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -6009,17 +6009,17 @@ Method InBitwiseOr(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addKeyword(subElement,"IN")  && ..BitwiseOr(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -6041,17 +6041,17 @@ Method Indent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,"code indent")  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -6073,17 +6073,17 @@ Method Interactive(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..StatementNewline(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -6105,17 +6105,17 @@ Method InvalidDefault(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,"code invalid_default")  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -6135,35 +6135,35 @@ Method Inversion(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
-	s done=0,ok=1,pos=..stream.pos,lastpos=pos
-	i $$$BNFMEMOExists(pos) {
+	set done=0,ok=1,pos=..stream.pos,lastpos=pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s ret=($isobject(subElement))
-		i ret $$$BNFCOMMITCOPY(subElement,ParentElement)
-		q ret
+		set ret=($isobject(subElement))
+		if ret $$$BNFCOMMITCOPY(subElement,ParentElement)
+		quit ret
 	}
 	$$$BNFMEMOSET(pos,"")
-	d ..getBookmark(.bm)
+	do ..getBookmark(.bm)
 	while ok {
 	$$$BNFSTART(subElement)
-		d ..gotoBookmark(.bm)
-		s rec=..Inversion206Recurse(subElement,.addedElement)
-		i rec,..stream.pos>lastpos {
+		do ..gotoBookmark(.bm)
+		set rec=..Inversion206Recurse(subElement,.addedElement)
+		if rec,..stream.pos>lastpos {
 			$$$BNFMEMOSET(pos,addedElement)
-			s done=1,lastpos=..stream.pos
+			set done=1,lastpos=..stream.pos
 		} else {
-			s ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
+			set ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
 		}
 	}
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
 		set ret=1
 	} else {
-		i $isobject(subElement) $$$BNFROLLBACK(subElement)
+		if $isobject(subElement) $$$BNFROLLBACK(subElement)
 		set ret=0
 	}
 	$$$DEBUGMethodEnd
-	q ret
+	quit ret
 }
 
 Method Inversion206Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -6172,7 +6172,7 @@ Method Inversion206Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..Inversion207Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Comparison(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -6211,17 +6211,17 @@ Method IsBitwiseOr(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addKeyword(subElement,"IS")  && ..BitwiseOr(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -6243,17 +6243,17 @@ Method IsnotBitwiseOr(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addKeyword(subElement,"IS")  && ..addKeyword(subElement,"NOT")  && ..BitwiseOr(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -6275,17 +6275,17 @@ Method ItemsPattern(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..ItemsPattern166RepSep(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -6338,17 +6338,17 @@ Method KeyValuePattern(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..KeyValuePattern167Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -6389,7 +6389,7 @@ Method KeyValuePattern168Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..LiteralExpr(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Attr(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -6411,17 +6411,17 @@ Method KeywordPattern(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..KeywordPattern176Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -6462,17 +6462,17 @@ Method KeywordPatterns(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..KeywordPatterns175RepSep(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -6525,17 +6525,17 @@ Method Kvpair(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Expression(subElement,.addedElement)  && ..addPunctuation(subElement,":")  && ..Expression(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -6557,19 +6557,19 @@ Method KwargOrDoubleStarred(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..KwargOrDoubleStarred346Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..KwargOrDoubleStarred347Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -6629,19 +6629,19 @@ Method KwargOrStarred(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..KwargOrStarred345Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..StarredExpression(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -6682,21 +6682,21 @@ Method Kwargs(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Kwargs339Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Kwargs342RepSep(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Kwargs343RepSep(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -6861,17 +6861,17 @@ Method Kwds(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Kwds86Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -6912,17 +6912,17 @@ Method LambdaKwds(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..LambdaKwds281Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -6963,17 +6963,17 @@ Method LambdaParam(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Name(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -6995,19 +6995,19 @@ Method LambdaParamMaybeDefault(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..LambdaParamMaybeDefault288Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..LambdaParamMaybeDefault289Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -7089,19 +7089,19 @@ Method LambdaParamNoDefault(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..LambdaParamNoDefault282Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..LambdaParamNoDefault283Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -7183,19 +7183,19 @@ Method LambdaParamWithDefault(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..LambdaParamWithDefault285Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..LambdaParamWithDefault286Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -7277,25 +7277,25 @@ Method LambdaParameters(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..LambdaParameters255Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..LambdaParameters258Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..LambdaParameters260Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..LambdaParameters263Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..LambdaStarEtc(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -7491,17 +7491,17 @@ Method LambdaParams(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..LambdaParameters(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -7523,19 +7523,19 @@ Method LambdaSlashNoDefault(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..LambdaSlashNoDefault265Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..LambdaSlashNoDefault267Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -7651,19 +7651,19 @@ Method LambdaSlashWithDefault(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..LambdaSlashWithDefault270Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..LambdaSlashWithDefault273Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -7811,21 +7811,21 @@ Method LambdaStarEtc(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..LambdaStarEtc277Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..LambdaStarEtc279Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..LambdaKwds(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -7918,17 +7918,17 @@ Method Lambdef(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Lambdef254Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -7969,17 +7969,17 @@ Method List(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..List302Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -8020,17 +8020,17 @@ Method Listcomp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Listcomp315Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -8071,27 +8071,27 @@ Method LiteralExpr(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..LiteralExpr139Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..ComplexNumber(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Strings(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addKeyword(subElement,"NONE")  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addKeyword(subElement,"TRUE")  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addKeyword(subElement,"FALSE")  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -8149,7 +8149,7 @@ Method LiteralExpr141Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(subElement,"+")  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"-")  {
 		set done=1 ; end compileRules
 	}
@@ -8171,27 +8171,27 @@ Method LiteralPattern(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..LiteralPattern136Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..ComplexNumber(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Strings(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addKeyword(subElement,"NONE")  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addKeyword(subElement,"TRUE")  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addKeyword(subElement,"FALSE")  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -8249,7 +8249,7 @@ Method LiteralPattern138Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(subElement,"+")  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"-")  {
 		set done=1 ; end compileRules
 	}
@@ -8271,17 +8271,17 @@ Method LtBitwiseOr(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,"<")  && ..BitwiseOr(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -8303,17 +8303,17 @@ Method LteBitwiseOr(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,"<=")  && ..BitwiseOr(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -8335,23 +8335,23 @@ Method MappingPattern(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..MappingPattern162Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..MappingPattern163Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..MappingPattern164Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..MappingPattern165Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -8449,17 +8449,17 @@ Method MatchStmt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..MatchStmt130Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -8517,17 +8517,17 @@ Method MaybeSequencePattern(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..MaybeSequencePattern158Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -8599,19 +8599,19 @@ Method MaybeStarPattern(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..StarPattern(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Pattern(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -8633,17 +8633,17 @@ Method Name(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,"code name")  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -8665,19 +8665,19 @@ Method NameOrAttr(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Attr(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Name(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -8699,19 +8699,19 @@ Method NamedExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..AssignmentExpression(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..NamedExpression198Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -8769,17 +8769,17 @@ Method Newline(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,"code newline")  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -8801,17 +8801,17 @@ Method NonlocalStmt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addKeyword(subElement,"NONLOCAL")  && ..NonlocalStmt25RepSep(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -8864,17 +8864,17 @@ Method NoteqBitwiseOr(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..NoteqBitwiseOr210Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -8913,7 +8913,7 @@ Method NoteqBitwiseOr211Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 {
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addPunctuation(subElement,"!=")  {
 		set done=1 ; end compileRules
 	}
@@ -8932,17 +8932,17 @@ Method NotinBitwiseOr(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addKeyword(subElement,"NOT")  && ..addKeyword(subElement,"IN")  && ..BitwiseOr(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -8964,17 +8964,17 @@ Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,"code number")  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -8996,17 +8996,17 @@ Method OpenSequencePattern(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..OpenSequencePattern157Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -9047,17 +9047,17 @@ Method OrPattern(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..OrPattern135RepSep(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -9110,17 +9110,17 @@ Method Param(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Name(subElement,.addedElement)  && $s(..Annotation(subElement,.addedElement) :1,1:1)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -9142,19 +9142,19 @@ Method ParamMaybeDefault(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..ParamMaybeDefault96Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..ParamMaybeDefault97Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -9236,19 +9236,19 @@ Method ParamNoDefault(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..ParamNoDefault87Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..ParamNoDefault88Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -9330,19 +9330,19 @@ Method ParamNoDefaultStarAnnotation(ParentElement As PXW.DEV.BNF.Element, ByRef 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..ParamNoDefaultStarAnnotation90Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..ParamNoDefaultStarAnnotation91Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -9424,17 +9424,17 @@ Method ParamStarAnnotation(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Name(subElement,.addedElement)  && ..StarAnnotation(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -9456,19 +9456,19 @@ Method ParamWithDefault(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..ParamWithDefault93Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..ParamWithDefault94Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -9550,25 +9550,25 @@ Method Parameters(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Parameters58Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Parameters61Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Parameters63Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Parameters66Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..StarEtc(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -9764,17 +9764,17 @@ Method Params(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Parameters(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -9796,19 +9796,19 @@ Method Pattern(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..AsPattern(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..OrPattern(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -9830,17 +9830,17 @@ Method PatternCaptureTarget(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..PatternCaptureTarget146Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -9915,9 +9915,9 @@ Method PatternCaptureTarget149Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(subElement,".")  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"(")  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"=")  {
 		set done=1 ; end compileRules
 	}
@@ -9939,19 +9939,19 @@ Method Patterns(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..OpenSequencePattern(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Pattern(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -9973,17 +9973,17 @@ Method PositionalPatterns(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..PositionalPatterns174RepSep(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -10036,19 +10036,19 @@ Method Power(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Power234Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..AwaitPrimary(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -10087,35 +10087,35 @@ Method Primary(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
-	s done=0,ok=1,pos=..stream.pos,lastpos=pos
-	i $$$BNFMEMOExists(pos) {
+	set done=0,ok=1,pos=..stream.pos,lastpos=pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s ret=($isobject(subElement))
-		i ret $$$BNFCOMMITCOPY(subElement,ParentElement)
-		q ret
+		set ret=($isobject(subElement))
+		if ret $$$BNFCOMMITCOPY(subElement,ParentElement)
+		quit ret
 	}
 	$$$BNFMEMOSET(pos,"")
-	d ..getBookmark(.bm)
+	do ..getBookmark(.bm)
 	while ok {
 	$$$BNFSTART(subElement)
-		d ..gotoBookmark(.bm)
-		s rec=..Primary236Recurse(subElement,.addedElement)
-		i rec,..stream.pos>lastpos {
+		do ..gotoBookmark(.bm)
+		set rec=..Primary236Recurse(subElement,.addedElement)
+		if rec,..stream.pos>lastpos {
 			$$$BNFMEMOSET(pos,addedElement)
-			s done=1,lastpos=..stream.pos
+			set done=1,lastpos=..stream.pos
 		} else {
-			s ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
+			set ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
 		}
 	}
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
 		set ret=1
 	} else {
-		i $isobject(subElement) $$$BNFROLLBACK(subElement)
+		if $isobject(subElement) $$$BNFROLLBACK(subElement)
 		set ret=0
 	}
 	$$$DEBUGMethodEnd
-	q ret
+	quit ret
 }
 
 Method Primary236Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -10124,13 +10124,13 @@ Method Primary236Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..Primary237Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Primary238Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Primary239Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Primary240Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Atom(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -10226,19 +10226,19 @@ Method RaiseStmt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..RaiseStmt22Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addKeyword(subElement,"RAISE")  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -10298,17 +10298,17 @@ Method RealNumber(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Number(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -10330,17 +10330,17 @@ Method ReturnStmt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..ReturnStmt21Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -10381,19 +10381,19 @@ Method SequencePattern(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..SequencePattern155Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..SequencePattern156Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -10453,17 +10453,17 @@ Method Set(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,"{")  && ..StarNamedExpressions(subElement,.addedElement)  && ..addPunctuation(subElement,"}")  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -10485,17 +10485,17 @@ Method Setcomp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Setcomp316Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -10534,35 +10534,35 @@ Method ShiftExpr(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
-	s done=0,ok=1,pos=..stream.pos,lastpos=pos
-	i $$$BNFMEMOExists(pos) {
+	set done=0,ok=1,pos=..stream.pos,lastpos=pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s ret=($isobject(subElement))
-		i ret $$$BNFCOMMITCOPY(subElement,ParentElement)
-		q ret
+		set ret=($isobject(subElement))
+		if ret $$$BNFCOMMITCOPY(subElement,ParentElement)
+		quit ret
 	}
 	$$$BNFMEMOSET(pos,"")
-	d ..getBookmark(.bm)
+	do ..getBookmark(.bm)
 	while ok {
 	$$$BNFSTART(subElement)
-		d ..gotoBookmark(.bm)
-		s rec=..ShiftExpr218Recurse(subElement,.addedElement)
-		i rec,..stream.pos>lastpos {
+		do ..gotoBookmark(.bm)
+		set rec=..ShiftExpr218Recurse(subElement,.addedElement)
+		if rec,..stream.pos>lastpos {
 			$$$BNFMEMOSET(pos,addedElement)
-			s done=1,lastpos=..stream.pos
+			set done=1,lastpos=..stream.pos
 		} else {
-			s ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
+			set ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
 		}
 	}
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
 		set ret=1
 	} else {
-		i $isobject(subElement) $$$BNFROLLBACK(subElement)
+		if $isobject(subElement) $$$BNFROLLBACK(subElement)
 		set ret=0
 	}
 	$$$DEBUGMethodEnd
-	q ret
+	quit ret
 }
 
 Method ShiftExpr218Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -10571,9 +10571,9 @@ Method ShiftExpr218Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..ShiftExpr219Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..ShiftExpr220Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Sum(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -10631,19 +10631,19 @@ Method SignedNumber(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Number(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..SignedNumber144Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -10684,19 +10684,19 @@ Method SignedRealNumber(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..RealNumber(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..SignedRealNumber145Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -10737,43 +10737,43 @@ Method SimpleStmt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Assignment(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..TypeAlias(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..StarExpressions(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..ReturnStmt(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..ImportStmt(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..RaiseStmt(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addKeyword(subElement,"PASS")  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..DelStmt(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..YieldStmt(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..AssertStmt(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addKeyword(subElement,"BREAK")  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addKeyword(subElement,"CONTINUE")  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..GlobalStmt(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..NonlocalStmt(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -10795,19 +10795,19 @@ Method SimpleStmts(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..SimpleStmts5Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..SimpleStmts7Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -10915,19 +10915,19 @@ Method SingleSubscriptAttributeTarget(ParentElement As PXW.DEV.BNF.Element, ByRe
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..SingleSubscriptAttributeTarget370Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..SingleSubscriptAttributeTarget372Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -11019,35 +11019,35 @@ Method SingleTarget(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
-	s done=0,ok=1,pos=..stream.pos,lastpos=pos
-	i $$$BNFMEMOExists(pos) {
+	set done=0,ok=1,pos=..stream.pos,lastpos=pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s ret=($isobject(subElement))
-		i ret $$$BNFCOMMITCOPY(subElement,ParentElement)
-		q ret
+		set ret=($isobject(subElement))
+		if ret $$$BNFCOMMITCOPY(subElement,ParentElement)
+		quit ret
 	}
 	$$$BNFMEMOSET(pos,"")
-	d ..getBookmark(.bm)
+	do ..getBookmark(.bm)
 	while ok {
 	$$$BNFSTART(subElement)
-		d ..gotoBookmark(.bm)
-		s rec=..SingleTarget368Recurse(subElement,.addedElement)
-		i rec,..stream.pos>lastpos {
+		do ..gotoBookmark(.bm)
+		set rec=..SingleTarget368Recurse(subElement,.addedElement)
+		if rec,..stream.pos>lastpos {
 			$$$BNFMEMOSET(pos,addedElement)
-			s done=1,lastpos=..stream.pos
+			set done=1,lastpos=..stream.pos
 		} else {
-			s ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
+			set ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
 		}
 	}
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
 		set ret=1
 	} else {
-		i $isobject(subElement) $$$BNFROLLBACK(subElement)
+		if $isobject(subElement) $$$BNFROLLBACK(subElement)
 		set ret=0
 	}
 	$$$DEBUGMethodEnd
-	q ret
+	quit ret
 }
 
 Method SingleTarget368Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -11056,9 +11056,9 @@ Method SingleTarget368Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..SingleSubscriptAttributeTarget(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Name(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..SingleTarget369Or(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -11097,19 +11097,19 @@ Method SlashNoDefault(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..SlashNoDefault68Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..SlashNoDefault70Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -11225,19 +11225,19 @@ Method SlashWithDefault(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..SlashWithDefault73Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..SlashWithDefault76Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -11385,19 +11385,19 @@ Method Slice(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Slice247Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..NamedExpression(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -11457,19 +11457,19 @@ Method Slices(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Slices241Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Slices243Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -11577,7 +11577,7 @@ Method Slices245Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..Slice(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..StarredExpression(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -11599,7 +11599,7 @@ Method Slices246Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..Slice(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..StarredExpression(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -11621,17 +11621,17 @@ Method StarAnnotation(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,":")  && ..StarExpression(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -11653,23 +11653,23 @@ Method StarAtom(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Name(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..StarAtom365Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..StarAtom366Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..StarAtom367Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -11748,23 +11748,23 @@ Method StarEtc(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..StarEtc80Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..StarEtc82Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..StarEtc84Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Kwds(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -11892,19 +11892,19 @@ Method StarExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..StarExpression194Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Expression(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -11945,21 +11945,21 @@ Method StarExpressions(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..StarExpressions190Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..StarExpressions193Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..StarExpression(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -12056,19 +12056,19 @@ Method StarNamedExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..StarNamedExpression196Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..NamedExpression(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -12109,17 +12109,17 @@ Method StarNamedExpressions(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..StarNamedExpressions195RepSep(subElement,.addedElement)  && $S(..addPunctuation(subElement,",") :1,1:1) {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -12172,19 +12172,19 @@ Method StarPattern(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..StarPattern160Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..StarPattern161Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -12244,19 +12244,19 @@ Method StarTarget(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..StarTarget358Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..TargetWithStarAtom(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -12334,19 +12334,19 @@ Method StarTargets(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..StarTargets348Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..StarTargets350Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -12459,17 +12459,17 @@ Method StarTargetsListSeq(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..StarTargetsListSeq353RepSep(subElement,.addedElement)  && $S(..addPunctuation(subElement,",") :1,1:1) {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -12522,19 +12522,19 @@ Method StarTargetsTupleSeq(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..StarTargetsTupleSeq354Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..StarTargetsTupleSeq357Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -12631,17 +12631,17 @@ Method StarredExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..StarredExpression344Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -12682,19 +12682,19 @@ Method Statement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..CompoundStmt(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..SimpleStmts(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -12716,23 +12716,23 @@ Method StatementNewline(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..StatementNewline4Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..SimpleStmts(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Newline(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Endmarker(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -12773,17 +12773,17 @@ Method Statements(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Statements3RepOne(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -12820,35 +12820,35 @@ Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
-	s done=0,ok=1,pos=..stream.pos,lastpos=pos
-	i $$$BNFMEMOExists(pos) {
+	set done=0,ok=1,pos=..stream.pos,lastpos=pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s ret=($isobject(subElement))
-		i ret $$$BNFCOMMITCOPY(subElement,ParentElement)
-		q ret
+		set ret=($isobject(subElement))
+		if ret $$$BNFCOMMITCOPY(subElement,ParentElement)
+		quit ret
 	}
 	$$$BNFMEMOSET(pos,"")
-	d ..getBookmark(.bm)
+	do ..getBookmark(.bm)
 	while ok {
 	$$$BNFSTART(subElement)
-		d ..gotoBookmark(.bm)
-		s rec=..String299Recurse(subElement,.addedElement)
-		i rec,..stream.pos>lastpos {
+		do ..gotoBookmark(.bm)
+		set rec=..String299Recurse(subElement,.addedElement)
+		if rec,..stream.pos>lastpos {
 			$$$BNFMEMOSET(pos,addedElement)
-			s done=1,lastpos=..stream.pos
+			set done=1,lastpos=..stream.pos
 		} else {
-			s ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
+			set ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
 		}
 	}
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
 		set ret=1
 	} else {
-		i $isobject(subElement) $$$BNFROLLBACK(subElement)
+		if $isobject(subElement) $$$BNFROLLBACK(subElement)
 		set ret=0
 	}
 	$$$DEBUGMethodEnd
-	q ret
+	quit ret
 }
 
 Method String299Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -12875,17 +12875,17 @@ Method Strings(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Strings300RepOne(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -12924,7 +12924,7 @@ Method Strings301Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..Fstring(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..String(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -12946,19 +12946,19 @@ Method SubjectExpr(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..SubjectExpr132Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..NamedExpression(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -12997,35 +12997,35 @@ Method Sum(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
-	s done=0,ok=1,pos=..stream.pos,lastpos=pos
-	i $$$BNFMEMOExists(pos) {
+	set done=0,ok=1,pos=..stream.pos,lastpos=pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s ret=($isobject(subElement))
-		i ret $$$BNFCOMMITCOPY(subElement,ParentElement)
-		q ret
+		set ret=($isobject(subElement))
+		if ret $$$BNFCOMMITCOPY(subElement,ParentElement)
+		quit ret
 	}
 	$$$BNFMEMOSET(pos,"")
-	d ..getBookmark(.bm)
+	do ..getBookmark(.bm)
 	while ok {
 	$$$BNFSTART(subElement)
-		d ..gotoBookmark(.bm)
-		s rec=..Sum221Recurse(subElement,.addedElement)
-		i rec,..stream.pos>lastpos {
+		do ..gotoBookmark(.bm)
+		set rec=..Sum221Recurse(subElement,.addedElement)
+		if rec,..stream.pos>lastpos {
 			$$$BNFMEMOSET(pos,addedElement)
-			s done=1,lastpos=..stream.pos
+			set done=1,lastpos=..stream.pos
 		} else {
-			s ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
+			set ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
 		}
 	}
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
 		set ret=1
 	} else {
-		i $isobject(subElement) $$$BNFROLLBACK(subElement)
+		if $isobject(subElement) $$$BNFROLLBACK(subElement)
 		set ret=0
 	}
 	$$$DEBUGMethodEnd
-	q ret
+	quit ret
 }
 
 Method Sum221Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -13034,9 +13034,9 @@ Method Sum221Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..Sum222Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Sum223Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Term(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -13094,21 +13094,21 @@ Method TLookahead(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,"(")  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addPunctuation(subElement,"[")  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..addPunctuation(subElement,".")  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -13128,35 +13128,35 @@ Method TPrimary(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
-	s done=0,ok=1,pos=..stream.pos,lastpos=pos
-	i $$$BNFMEMOExists(pos) {
+	set done=0,ok=1,pos=..stream.pos,lastpos=pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s ret=($isobject(subElement))
-		i ret $$$BNFCOMMITCOPY(subElement,ParentElement)
-		q ret
+		set ret=($isobject(subElement))
+		if ret $$$BNFCOMMITCOPY(subElement,ParentElement)
+		quit ret
 	}
 	$$$BNFMEMOSET(pos,"")
-	d ..getBookmark(.bm)
+	do ..getBookmark(.bm)
 	while ok {
 	$$$BNFSTART(subElement)
-		d ..gotoBookmark(.bm)
-		s rec=..TPrimary374Recurse(subElement,.addedElement)
-		i rec,..stream.pos>lastpos {
+		do ..gotoBookmark(.bm)
+		set rec=..TPrimary374Recurse(subElement,.addedElement)
+		if rec,..stream.pos>lastpos {
 			$$$BNFMEMOSET(pos,addedElement)
-			s done=1,lastpos=..stream.pos
+			set done=1,lastpos=..stream.pos
 		} else {
-			s ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
+			set ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
 		}
 	}
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
 		set ret=1
 	} else {
-		i $isobject(subElement) $$$BNFROLLBACK(subElement)
+		if $isobject(subElement) $$$BNFROLLBACK(subElement)
 		set ret=0
 	}
 	$$$DEBUGMethodEnd
-	q ret
+	quit ret
 }
 
 Method TPrimary374Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -13165,13 +13165,13 @@ Method TPrimary374Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..TPrimary375Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..TPrimary377Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..TPrimary379Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..TPrimary381Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..TPrimary383Or(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -13396,21 +13396,21 @@ Method TargetWithStarAtom(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..TargetWithStarAtom361Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..TargetWithStarAtom363Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..StarAtom(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -13502,35 +13502,35 @@ Method Term(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
-	s done=0,ok=1,pos=..stream.pos,lastpos=pos
-	i $$$BNFMEMOExists(pos) {
+	set done=0,ok=1,pos=..stream.pos,lastpos=pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s ret=($isobject(subElement))
-		i ret $$$BNFCOMMITCOPY(subElement,ParentElement)
-		q ret
+		set ret=($isobject(subElement))
+		if ret $$$BNFCOMMITCOPY(subElement,ParentElement)
+		quit ret
 	}
 	$$$BNFMEMOSET(pos,"")
-	d ..getBookmark(.bm)
+	do ..getBookmark(.bm)
 	while ok {
 	$$$BNFSTART(subElement)
-		d ..gotoBookmark(.bm)
-		s rec=..Term224Recurse(subElement,.addedElement)
-		i rec,..stream.pos>lastpos {
+		do ..gotoBookmark(.bm)
+		set rec=..Term224Recurse(subElement,.addedElement)
+		if rec,..stream.pos>lastpos {
 			$$$BNFMEMOSET(pos,addedElement)
-			s done=1,lastpos=..stream.pos
+			set done=1,lastpos=..stream.pos
 		} else {
-			s ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
+			set ok=0 $$$BNFMEMOGET(pos,subElement) ; restore to best 
 		}
 	}
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
 		set ret=1
 	} else {
-		i $isobject(subElement) $$$BNFROLLBACK(subElement)
+		if $isobject(subElement) $$$BNFROLLBACK(subElement)
 		set ret=0
 	}
 	$$$DEBUGMethodEnd
-	q ret
+	quit ret
 }
 
 Method Term224Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -13539,15 +13539,15 @@ Method Term224Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..Term225Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Term226Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Term227Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Term228Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Term229Or(subElement,.addedElement)  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..Factor(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
@@ -13662,21 +13662,21 @@ Method TryStmt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..TryStmt119Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..TryStmt120Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..TryStmt122Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -13789,17 +13789,17 @@ Method Tuple(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..Tuple303Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -13859,17 +13859,17 @@ Method TypeAlias(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..TypeAlias177Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -13910,17 +13910,17 @@ Method TypeComment(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,"code type_comment")  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -13942,29 +13942,29 @@ Method TypeExpressions(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..TypeExpressions393Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..TypeExpressions395Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..TypeExpressions397Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..TypeExpressions399Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..TypeExpressions400Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..TypeExpressions401Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..TypeExpressions402RepSep(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -14224,21 +14224,21 @@ Method TypeParam(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..TypeParam179Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..TypeParam180Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..TypeParam181Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -14317,17 +14317,17 @@ Method TypeParamBound(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,":")  && ..Expression(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -14349,17 +14349,17 @@ Method TypeParamSeq(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..TypeParamSeq178RepSep(subElement,.addedElement)  && $S(..addPunctuation(subElement,",") :1,1:1) {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -14412,17 +14412,17 @@ Method TypeParams(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,"[")  && ..TypeParamSeq(subElement,.addedElement)  && ..addPunctuation(subElement,"]")  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -14444,17 +14444,17 @@ Method ValuePattern(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..ValuePattern150Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -14512,9 +14512,9 @@ Method ValuePattern152Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(subElement,".")  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"(")  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"=")  {
 		set done=1 ; end compileRules
 	}
@@ -14536,17 +14536,17 @@ Method WhileStmt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..WhileStmt105Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -14587,17 +14587,17 @@ Method WildcardPattern(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,"_")  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -14619,19 +14619,19 @@ Method WithItem(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..WithItem116Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..Expression(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -14694,9 +14694,9 @@ Method WithItem118Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(subElement,",")  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..addPunctuation(subElement,")")  {
-		s done=1 ; or
+		set done=1 ; or
 	} elseif ..addPunctuation(subElement,":")  {
 		set done=1 ; end compileRules
 	}
@@ -14718,23 +14718,23 @@ Method WithStmt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..WithStmt108Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..WithStmt110Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..WithStmt112Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..WithStmt114Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -14956,19 +14956,19 @@ Method YieldExpr(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..YieldExpr188Or(subElement,.addedElement)  {
-			s done=1 ; or
+			set done=1 ; or
 		} elseif ..YieldExpr189Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}
@@ -15028,17 +15028,17 @@ Method YieldStmt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	s pos=..stream.pos
-	i $$$BNFMEMOExists(pos) {
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
 		$$$BNFMEMOGET(pos,subElement)
-		s done=$isobject(subElement)
+		set done=$isobject(subElement)
 	} else {
 		if ..YieldExpr(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
 	}
-	i done {
+	if done {
 		$$$BNFMEMOSET(pos,subElement)
 	} else {
 	}

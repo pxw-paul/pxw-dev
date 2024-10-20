@@ -5,7 +5,7 @@ Property NameSpace As %String;
 
 Property ItemType As %String;
 
-Property ItemKey1 As %String(MAXLEN = 1024);
+Property ItemKey1 As %String(MAXLEN = "");
 
 Property LastUpdate As %TimeStamp;
 

@@ -1,4 +1,4 @@
-/// Created: 2024-09-25 19:34:22 PXW.DEV.BNF.Compilers.Compiler1
+/// Created: 2024-10-20 14:41:38 PXW.DEV.BNF.Compilers.Compiler1
 Class PXW.DEV.BNF.GEN.ClassDefinition Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 
@@ -1003,7 +1003,7 @@ Method AttributeFlags132Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	if '(..isKeywordInList($lb("ENUMEDIT","ENUM","LIST"),.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addKeyword(subElement,"ENUMEDIT")  {
 		set done=1 ; or
 	} elseif ..addKeyword(subElement,"ENUM")  {
@@ -1983,7 +1983,7 @@ Method AttributeOdbctype144Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	if '(..isKeywordInList($lb("BIGINT","BIT","DATE","DOUBLE","INTEGER","LONGVARBINARY","LONGVARCHAR","NUMERIC","RESULTSET","SMALLINT","STRUCT","TIME","TIMESTAMP","TINYINT","VARBINARY","VARCHAR","GUID","POSIXTIME"),.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addKeyword(subElement,"BIGINT")  {
 		set done=1 ; or
 	} elseif ..addKeyword(subElement,"BIT")  {
@@ -2457,7 +2457,7 @@ Method AttributeProcedureblock149Sub(ParentElement As PXW.DEV.BNF.Element, ByRef
 	if '(..isStringInList($lb("0","1"),1,.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addPunctuation(subElement,"0")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"1")  {
@@ -2824,7 +2824,7 @@ Method AttributeServeronly156Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 	if '(..isStringInList($lb("0","1"),1,.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addPunctuation(subElement,"0")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"1")  {
@@ -2931,7 +2931,7 @@ Method AttributeSoapbindingstyle158Sub(ParentElement As PXW.DEV.BNF.Element, ByR
 	if '(..isKeywordInList($lb("DOCUMENT","RCP"),.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addKeyword(subElement,"DOCUMENT")  {
 		set done=1 ; or
 	} elseif ..addKeyword(subElement,"RCP")  {
@@ -2984,7 +2984,7 @@ Method AttributeSoapbodyuse159Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	if '(..isKeywordInList($lb("LITERAL","ENCODED"),.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addKeyword(subElement,"LITERAL")  {
 		set done=1 ; or
 	} elseif ..addKeyword(subElement,"ENCODED")  {
@@ -3253,7 +3253,7 @@ Method AttributeSqlcategory164Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	if '(..isKeywordInList($lb("DATE","DOUBLE","FMDATE","FMTIMESTAMP","INTEGER","MVDATE","NAME","NUMERIC","STRING","TIME","TIMESTAMP","POSIXTS"),.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addKeyword(subElement,"DATE")  {
 		set done=1 ; or
 	} elseif ..addKeyword(subElement,"DOUBLE")  {
@@ -3582,7 +3582,7 @@ Method AttributeSqllisttype168Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	if '(..isKeywordInList($lb("LIST","DELIMITED","SUBNODE"),.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addKeyword(subElement,"LIST")  {
 		set done=1 ; or
 	} elseif ..addKeyword(subElement,"DELIMITED")  {
@@ -3984,7 +3984,7 @@ Method AttributeSystem174Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	if '(..isStringInList($lb("0","1","2","3","4"),1,.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addPunctuation(subElement,"0")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"1")  {
@@ -4098,7 +4098,7 @@ Method AttributeType175Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	if '(..isKeywordInList($lb("BITMAP","BITSLICE","INDEX","KEY","COLLATEDKEY"),.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addKeyword(subElement,"BITMAP")  {
 		set done=1 ; or
 	} elseif ..addKeyword(subElement,"BITSLICE")  {
@@ -5945,7 +5945,7 @@ Method ClassPropertyType24Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	if '(..isKeywordInList($lb("ARRAY","LIST"),.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addKeyword(subElement,"ARRAY")  {
 		set done=1 ; or
 	} elseif ..addKeyword(subElement,"LIST")  {
@@ -7851,7 +7851,7 @@ Method IndexProperty116OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	if '(..isStringInList($lb("(ELEMENTS)","(KEYS)"),10,.value)) { quit 1 /* not found is OK */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addPunctuation(subElement,"(ELEMENTS)")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"(KEYS)")  {
@@ -8606,7 +8606,7 @@ Method Number184Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	if '(..isKeywordInList($lb("E","E"),.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addKeyword(subElement,"E")  {
 		set done=1 ; or
 	} elseif ..addKeyword(subElement,"E")  {
@@ -8681,7 +8681,7 @@ Method Number187Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	if '(..isKeywordInList($lb("E","E"),.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addKeyword(subElement,"E")  {
 		set done=1 ; or
 	} elseif ..addKeyword(subElement,"E")  {
@@ -8801,7 +8801,7 @@ Method OneDataAttributeValue130OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRe
 	if '(..isStringInList($lb("(ELEMENTS)","(KEYS)"),10,.value)) { quit 1 /* not found is OK */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addPunctuation(subElement,"(ELEMENTS)")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"(KEYS)")  {
@@ -10525,7 +10525,7 @@ Method StorageXmlIdFunction69Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 	if '(..isKeywordInList($lb("SEQUENCE"),.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addKeyword(subElement,"SEQUENCE")  {
 		set done=1 ; end compileRules
 	}
@@ -12149,7 +12149,7 @@ Method StorageXmlStructure59Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	if '(..isKeywordInList($lb("SUBNODE","NODE"),.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addKeyword(subElement,"SUBNODE")  {
 		set done=1 ; or
 	} elseif ..addKeyword(subElement,"NODE")  {

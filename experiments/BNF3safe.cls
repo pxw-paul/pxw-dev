@@ -8,7 +8,7 @@
 /// Using this method of working the compiler should remain safe - hence the name.
 /// 
 /// Maybe we can go further and remove references to macros.
-Class PXW.DEV.BNF.Compilers.BNF3safe Extends PXW.DEV.BNF.GEN.BNF3
+Class PXW.DEV.BNF.Compilers.BNF3safe Extends PXW.DEV.BNF.super
 {
 
 // Set to CDEF, COS

@@ -5,7 +5,7 @@ Class PXW.DEV.BNF.Compilers.BNF3 Extends PXW.DEV.BNF.Compilers.loader
 /// The code will need to be copied from PXW.DEV.BNF.GEN.BNF3 to PXW.DEV.BNF.Compilers.BNF3safe
 Projection GEN As PXW.DEV.BNF.Compilers.projection(GenerateTo = "PXW.DEV.BNF.GEN.BNF3");
 
-XData file
+XData file 
 {
 <bnf>
 <data><![CDATA[

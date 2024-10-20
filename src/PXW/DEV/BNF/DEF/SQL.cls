@@ -60,7 +60,7 @@ from_optimise				::= ('%firsttable' [alias_name])
 
 join 						::= [('INNER' | 'OUTER' | 'LEFT' | 'RIGHT' | 'CROSS' | 'NATURAL' |'FULL' )*] 'JOIN' table_reference [ join_on ]
 join_on						::= 'ON' sql_expression 
-	/* defined the first group as 0 to many AND optional (limitation of my parser optimisation - if I ever fix the parser we can get rid of the []) */
+	
 table_reference             ::= stored_proc_table | direct_table | derived_table
 direct_table				::= table_name [ table_as_clause ]
 

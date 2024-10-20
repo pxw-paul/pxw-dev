@@ -6,6 +6,8 @@ Parameter CommentClass = "CDEFComment";
 
 Parameter WarningClass = "Warning";
 
+Parameter ErrorClass = "Error";
+
 /// Set this to 0 if the descriptions are to be displayed as HTML
 Property Style As PXW.Tools.Styles.super [ InitialExpression = 1 ];
 
@@ -271,16 +273,12 @@ Method writeElement(element As PXW.DEV.Element)
                 Do ..wrapAtomHTML(a,"<span class='JSRegex'>","</span>")
             }
 
-
-
-
             If type="ERROR" {
-                Do ..wrapAtomHTML(a,"<span class='"_..#WarningClass_"'>","</span>")
+                Do ..wrapAtomHTML(a,"<span class='"_..#ErrorClass_"'>","</span>")
                 Do ..AddToIndexError(..ThisMethod,a.value)
             }
 
             Do:..showPaths ..wrapAtomHTML(a,"<span title='"_a.type_"'>","</span>")
-
  
 		}
 	}

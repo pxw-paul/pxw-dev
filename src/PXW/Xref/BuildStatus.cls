@@ -21,6 +21,8 @@ Property StartDateTime As %TimeStamp;
 
 Property EndDateTime As %TimeStamp;
 
+Property StartDate As %Date;
+
 Property ProcessId As %String [ InitialExpression = {$JOB} ];
 
 Property CurrentlyBuilding As %String(MAXLEN = 500);
@@ -29,8 +31,11 @@ Property Status As %Library.Status;
 
 Property Running As %Boolean [ Calculated, SqlComputeCode = { Set {*}=##class(PXW.Xref.BuildStatus).GetIsRunning({ProcessId}) }, SqlComputed ];
 
+Index iDate On (RequestNamespace, StartDate);
+
 Method Start()
 {
+    set ..StartDate=+$HOROLOG
     Set ..StartDateTime=$ZDATETIME($HOROLOG,3)
     set ..Status=$$$OK
     Lock +^PXW.Xref.BuildStatus.Proc(..ProcessId)
@@ -100,6 +105,9 @@ Storage Default
 </Value>
 <Value name="14">
 <Value>TotalSkipped</Value>
+</Value>
+<Value name="15">
+<Value>StartDate</Value>
 </Value>
 </Data>
 <DataLocation>^PXW.Xref.BuildStatusD</DataLocation>

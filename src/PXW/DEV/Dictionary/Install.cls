@@ -85,4 +85,17 @@ ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, Ate
     Quit sc
 }
 
+ClassMethod GenAll()
+{
+    ;Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.Compilers.BNF1","PXW.DEV.BNF.GEN.BNF1") 
+    ;Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.Compilers.BNF2","PXW.DEV.BNF.GEN.BNF2") 
+    ;Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.Compilers.BNF3","PXW.DEV.BNF.GEN.BNF3") 
+    Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.DEF.COS","PXW.DEV.BNF.GEN.COS") 
+    Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.DEF.CSP","PXW.DEV.BNF.GEN.CSP") 
+    Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.DEF.ClassDefinition","PXW.DEV.BNF.GEN.ClassDefinition") 
+    Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.DEF.JS","PXW.DEV.BNF.GEN.JS") 
+    Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.DEF.Python","PXW.DEV.BNF.GEN.Python") 
+    Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.DEF.SQL","PXW.DEV.BNF.GEN.SQL")
+}
+
 }

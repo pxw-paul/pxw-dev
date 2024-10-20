@@ -24,20 +24,22 @@ ClassMethod Build(Namespace As %String, Type As %String, SearchName As %String, 
 		}
 		Set rs=##class(%Library.ResultSet).%New(..%ClassName(1)_":"_"SelectTypes")
 		Set sc=rs.Execute(Namespace,Type)
+		Set useTheForce=Force
 		While rs.%Next() {
 			Set typ=rs.%Get("Type")
 			If Force,buildmany {
 				If $DATA(status) {
-					Set status.CurrentlyBuilding="Purging old data"
+					Set status.CurrentlyBuilding="Purging old data: "_typ_","_package
 					$$$ThrowOnError(status.%Save())
 				}
-				Do ..DeleteAnalysisCalledByTypeKey1Package(Namespace,typ,package)
-				Do ..DeleteCalledByTypeKey1Package(Namespace,typ,package)
-				Do ..DeleteLastUpdateCalledByTypeKey1Package(Namespace,typ,package)
+				set:$$$ISOK(sc) sc=..DeleteAnalysisCalledByTypeKey1Package(Namespace,typ,package)
+				set:$$$ISOK(sc) sc=..DeleteCalledByTypeKey1Package(Namespace,typ,package)
+				set:$$$ISOK(sc) sc=..DeleteLastUpdateCalledByTypeKey1Package(Namespace,typ,package)
 				; We have purged the lastupdate table so no need to force now.
 				; Which means we could kick off a Force on *, THEN build PXW package on a second process (because we are impatient)
 				; Then when the * build gets to PXW it will see that its already been done!
-				Set Force=0 
+				Set useTheForce=0
+				hang 1
 			}
 			Set builderClass=rs.%Get("Builder")
 			If builderClass'="" {
@@ -55,29 +57,31 @@ ClassMethod Build(Namespace As %String, Type As %String, SearchName As %String, 
 			}
 		}
 
-		Set:$DATA(status) status.Total=$GET(count)
-		Set iid=""
-		For  {
-			Set iid=$ORDER(^||PXWXrefBuild(iid))
-			Quit:iid=""
-			Set interface=##class(PXW.DEV.Dictionary.CodeInterface).%OpenId(iid)
-			Set key=""
+		if $$$ISOK(sc) {
+			Set:$DATA(status) status.Total=$GET(count)
+			Set iid=""
 			For  {
-				Set key=$ORDER(^||PXWXrefBuild(iid,key),1,data)
-				Quit:key=""
-				Set $LISTBUILD(typ,name,timechanged,builderClass)=data
-				If builderClass'="" {
-					If $DATA(status) {
-						Set status.CurrentlyBuilding=Namespace_" : "_typ_" : "_name
-						$$$ThrowOnError(status.%Save())
-					}
-					Set bs=..BuildIfNecessary(interface,Namespace,typ,name,timechanged,builderClass,Force) 
-					If bs=1 {
-						Set:$DATA(status) status.TotalBuilt=status.TotalBuilt+1
-					} ElseIf bs="" {
-						Set:$DATA(status) status.TotalSkipped=status.TotalSkipped+1
-					} Else {
-						Set:$DATA(status) status.TotalErrors=status.TotalErrors+1
+				Set iid=$ORDER(^||PXWXrefBuild(iid))
+				Quit:iid=""
+				Set interface=##class(PXW.DEV.Dictionary.CodeInterface).%OpenId(iid)
+				Set key=""
+				For  {
+					Set key=$ORDER(^||PXWXrefBuild(iid,key),1,data)
+					Quit:key=""
+					Set $LISTBUILD(typ,name,timechanged,builderClass)=data
+					If builderClass'="" {
+						If $DATA(status) {
+							Set status.CurrentlyBuilding=Namespace_" : "_typ_" : "_name
+							$$$ThrowOnError(status.%Save())
+						}
+						Set bs=..BuildIfNecessary(interface,Namespace,typ,name,timechanged,builderClass,useTheForce)
+						If bs=1 {
+							Set:$DATA(status) status.TotalBuilt=status.TotalBuilt+1
+						} ElseIf bs="" {
+							Set:$DATA(status) status.TotalSkipped=status.TotalSkipped+1
+						} Else {
+							Set:$DATA(status) status.TotalErrors=status.TotalErrors+1
+						}
 					}
 				}
 			}
@@ -85,6 +89,7 @@ ClassMethod Build(Namespace As %String, Type As %String, SearchName As %String, 
 	} Catch except {
 		Set sc=except.AsStatus()
 	}
+	
 	If $DATA(status) {
 		Set status.CurrentlyBuilding=""
 		Set status.Status=sc
@@ -135,6 +140,21 @@ ClassMethod BuildIfNecessary(CodeInterface As PXW.DEV.Dictionary.CodeInterface, 
 		Set savesc=LastUpdate.%Save()
 	}
 	Quit built
+}
+
+/// Stick a call to this somewhere so that it gets called often, it should ensure that a full build is done at least 1 time per day
+/// write ##class(PXW.Xref.Build).DailyBuild("LOCAL_USER")
+ClassMethod DailyBuild(Namespace) As %Boolean
+{
+	Set id=""
+	set started=0 
+	&SQL(SELECT TOP 1 ID INTO :id FROM PXW_Xref.BuildStatus WHERE RequestNamespace=:Namespace AND StartDate=CURRENT_DATE)
+	; SQLCODE=100 means ok but no rows
+	if SQLCODE=100 {
+		j ..Build(Namespace,"","*",0)
+		set started=1
+	}
+	quit started
 }
 
 Query SelectTypes(Namespace As %String, Type As %String) As PXW.LIB.SQL.Query [ SqlProc ]
@@ -218,7 +238,9 @@ ClassMethod DeleteLastUpdateCalledByTypeKey1Package(NameSpace As %String, Called
 	Set sc=$$$OK
 	If $$$ISOK(sc) {
 		&SQL(DELETE %NOLOCK FROM PXW_Xref.LastUpdated
-				WHERE NameSpace=:NameSpace AND ItemType=:CalledByType AND ItemKey1 %STARTSWITH :CalledByKey1)
+				WHERE NameSpace=:NameSpace 
+				 AND (ItemType=:CalledByType) 
+				 AND (ItemKey1 %STARTSWITH :CalledByKey1))
         $$$DEBUG($GET(%msg))
 	    If SQLCODE<0 Set sc=$$$ERROR(5001,%msg)
     }

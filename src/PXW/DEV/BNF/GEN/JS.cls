@@ -1,4 +1,4 @@
-/// Created: 2024-09-25 19:34:12 PXW.DEV.BNF.Compilers.Compiler1
+/// Created: 2024-10-20 14:41:47 PXW.DEV.BNF.Compilers.Compiler1
 Class PXW.DEV.BNF.GEN.JS Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 
@@ -611,7 +611,7 @@ Method BigBinaryIntegerLiteral168Sub(ParentElement As PXW.DEV.BNF.Element, ByRef
 	if '(..isStringInList($lb("0B","0B"),2,.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addPunctuation(subElement,"0b")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"0B")  {
@@ -651,7 +651,7 @@ Method BigBinaryIntegerLiteral170Sub(ParentElement As PXW.DEV.BNF.Element, ByRef
 	if '(..isStringInList($lb("0","1"),1,.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addPunctuation(subElement,"0")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"1")  {
@@ -726,7 +726,7 @@ Method BigHexIntegerLiteral162Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	if '(..isStringInList($lb("0X","0X"),2,.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addPunctuation(subElement,"0x")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"0X")  {
@@ -845,7 +845,7 @@ Method BigOctalIntegerLiteral165Sub(ParentElement As PXW.DEV.BNF.Element, ByRef 
 	if '(..isStringInList($lb("0O","0O"),2,.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addPunctuation(subElement,"0o")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"0O")  {
@@ -885,7 +885,7 @@ Method BigOctalIntegerLiteral167Sub(ParentElement As PXW.DEV.BNF.Element, ByRef 
 	if '(..isStringInList($lb("0","1","2","3","4","5","6","7"),1,.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addPunctuation(subElement,"0")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"1")  {
@@ -974,7 +974,7 @@ Method BinaryIntegerLiteral159Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	if '(..isStringInList($lb("0B","0B"),2,.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addPunctuation(subElement,"0b")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"0B")  {
@@ -1014,7 +1014,7 @@ Method BinaryIntegerLiteral161Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	if '(..isStringInList($lb("0","1"),1,.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addPunctuation(subElement,"0")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"1")  {
@@ -3352,7 +3352,7 @@ Method HexIntegerLiteral153Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	if '(..isStringInList($lb("0X","0X"),2,.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addPunctuation(subElement,"0x")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"0X")  {
@@ -5497,7 +5497,7 @@ Method OctalIntegerLiteral156Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 	if '(..isStringInList($lb("0O","0O"),2,.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addPunctuation(subElement,"0o")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"0O")  {
@@ -5537,7 +5537,7 @@ Method OctalIntegerLiteral158Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 	if '(..isStringInList($lb("0","1","2","3","4","5","6","7"),1,.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addPunctuation(subElement,"0")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"1")  {
@@ -5738,7 +5738,7 @@ Method OldsingleExpression101Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 	if '(..isStringInList($lb("==","!=","===","!=="),3,.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addPunctuation(subElement,"==")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"!=")  {
@@ -6682,7 +6682,7 @@ Method OldsingleExpression90Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	if '(..isStringInList($lb("*","/","%"),1,.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addPunctuation(subElement,"*")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"/")  {
@@ -6733,7 +6733,7 @@ Method OldsingleExpression92Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	if '(..isStringInList($lb("+","-"),1,.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addPunctuation(subElement,"+")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(subElement,"-")  {
@@ -6808,7 +6808,7 @@ Method OldsingleExpression95Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	if '(..isStringInList($lb("<<",">>",">>>"),3,.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addPunctuation(subElement,"<<")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(subElement,">>")  {
@@ -6859,7 +6859,7 @@ Method OldsingleExpression97Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	if '(..isStringInList($lb("<",">","<=",">="),2,.value)) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
-	s subElement=ParentElement
+	Set subElement=ParentElement
 	if ..addPunctuation(subElement,"<")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(subElement,">")  {
