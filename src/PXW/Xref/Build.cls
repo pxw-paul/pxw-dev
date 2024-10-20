@@ -3,168 +3,154 @@ Include PXW.Debuggers.Macros
 Class PXW.Xref.Build Extends %Library.RegisteredObject
 {
 
-/// override this for where you want to log the results
-Property output As PXW.Xref.BuildOutput;
-
-/// 
-/// 
-/// k  d ##class(PXW.Xref.Build).XrefClassId("LOCAL_USER","PXW.Xref.Build","xref")
-ClassMethod XrefClassId(Namespace As %String, ClassId As %String, debug As %String = "")
+/// do ##class(PXW.Xref.Build).Build("LOCAL_USER","","PXW*")
+ClassMethod Build(Namespace As %String, Type As %String, SearchName As %String, Force As %Boolean = 0) As %Status
 {
-	; temp fix
-	New %NS Set %NS=Namespace
-
-	If debug=1 Set debug="" $$$DEBUGNew("")
-	$$$DEBUG("Starting "_Namespace_" "_ClassId)
-	Set xrefer=..%New()
-	Set xrefer.output=##class(PXW.Xref.BuildOutput).%New()
-	Do xrefer.xrefClass(Namespace,ClassId,debug)
-	$$$DEBUGStop
-}
-
-/// XrefPackage is a method that can be called from the command line, the output is basic.
-/// debug is the name of a method or property 
-/// d ##CLASS(PXW.Xref.Build).XrefPackage("LOCAL_USER","PXW.Xref","")
-ClassMethod XrefPackage(Namespace As %String, Package As %String, debug As %String = "", force As %Boolean = 0, background As %Boolean = 0)
-{
-	; temp fix
-	New %NS Set %NS=Namespace
-
-	Set xrefer=..%New()
-	If background {
-		Set xrefer.output=##class(PXW.Xref.BuildOutputJob).%New()
-	} Else {
-		Set xrefer.output=##class(PXW.Xref.BuildOutput).%New()
-	}
-	Do xrefer.doPackage(Namespace,Package,force)
-}
-
-Method logBatchStart(CountOfThings As %Integer)
-{
-	If $ISOBJECT(..output) Do ..output.batchStart(CountOfThings)
-}
-
-Method logBatchStatus(CountOfThings As %Integer, Status As %Status)
-{
-	If $ISOBJECT(..output) Do ..output.batchStatus(CountOfThings,Status)
-}
-
-Method logProcessStart(ClassName As %String)
-{
-	If $ISOBJECT(..output) Do ..output.processStart(ClassName)
-}
-
-Method logProcessStatus(ClassName As %String, Status As %Status)
-{
-	If $ISOBJECT(..output) Do ..output.processStatus(ClassName,Status)
-}
-
-/// debug is either classname or a method id
-Method doPackage(Namespace As %String, Package As %String, force As %Boolean = 0) As %Status
-{
-	If force {
-		Set sc=..DeleteAnalysisCalledByKey1Package(Namespace,Package)
-		Set sc=..DeleteCalledByKey1Package(Namespace,Package)
-        If 'sc Quit sc
-	}
-
 	Kill ^||PXWXrefBuild
-	Set cls=Package_"%"
-	Set handler=##class(PXW.DEV.Dictionary.ClassDefinitionObject).%OpenId(Namespace)
-	Set rs=handler.ListClassDetailsLike(cls)
-	Set count=0
-	While rs.%Next() {
-		Set timechanged=rs.%Get("TimeChanged")
-		Set name=rs.%Get("Name")
-		Set ^||PXWXrefBuild($INCREMENT(count))=$LISTBUILD(timechanged,name)
-	}
-	Do ..logBatchStart(count)
-	Set completed=0
-	For i=1:1:count {
-		Set data=^||PXWXrefBuild(i)
-		Set $LISTBUILD(timechanged,name)=data
-		If ..xrefClassIfNecessary(Namespace,name,timechanged,force) {
-			Set completed=completed+1
+	Set sc=$$$OK
+	Try {
+		; if the name has a * that means do everything starting with that string, not true wildcard, just counts as a package
+		; * is valid on its own (it means build all)
+		Set buildmany=(SearchName["*")
+		Set package=$SELECT(buildmany:$PIECE(SearchName,"*",1),1:"")
+		If buildmany=1 {
+			Set status=##class(PXW.Xref.BuildStatus).%New()
+			Set status.RequestNamespace=Namespace
+			Set status.RequestType=Type
+			Set status.RequestSearchName=SearchName
+			Set status.RequestForce=Force
+			Do status.Start()
+			$$$ThrowOnError(status.%Save())
 		}
+		Set rs=##class(%Library.ResultSet).%New(..%ClassName(1)_":"_"SelectTypes")
+		Set sc=rs.Execute(Namespace,Type)
+		While rs.%Next() {
+			Set typ=rs.%Get("Type")
+			If Force,buildmany {
+				If $DATA(status) {
+					Set status.CurrentlyBuilding="Purging old data"
+					$$$ThrowOnError(status.%Save())
+				}
+				Do ..DeleteAnalysisCalledByTypeKey1Package(Namespace,typ,package)
+				Do ..DeleteCalledByTypeKey1Package(Namespace,typ,package)
+				Do ..DeleteLastUpdateCalledByTypeKey1Package(Namespace,typ,package)
+				; We have purged the lastupdate table so no need to force now.
+				; Which means we could kick off a Force on *, THEN build PXW package on a second process (because we are impatient)
+				; Then when the * build gets to PXW it will see that its already been done!
+				Set Force=0 
+			}
+			Set builderClass=rs.%Get("Builder")
+			If builderClass'="" {
+				Set interface=##class(PXW.DEV.Dictionary.CodeInterface).%OpenId(rs.%Get("ID"))
+				If $DATA(status) {
+					Set status.CurrentlyBuilding="Searching "_Namespace_" : "_typ_" : "_SearchName
+					$$$ThrowOnError(status.%Save())
+				}
+				Set rs2=interface.List(SearchName)
+				While rs2.%Next() {
+					Set timechanged=rs2.%Get("TimeChanged")
+					Set name=rs2.%Get("Name")
+					Set ^||PXWXrefBuild(interface.%Id(),$INCREMENT(count))=$LISTBUILD(typ,name,timechanged,builderClass)
+				}
+			}
+		}
+
+		Set:$DATA(status) status.Total=$GET(count)
+		Set iid=""
+		For  {
+			Set iid=$ORDER(^||PXWXrefBuild(iid))
+			Quit:iid=""
+			Set interface=##class(PXW.DEV.Dictionary.CodeInterface).%OpenId(iid)
+			Set key=""
+			For  {
+				Set key=$ORDER(^||PXWXrefBuild(iid,key),1,data)
+				Quit:key=""
+				Set $LISTBUILD(typ,name,timechanged,builderClass)=data
+				If builderClass'="" {
+					If $DATA(status) {
+						Set status.CurrentlyBuilding=Namespace_" : "_typ_" : "_name
+						$$$ThrowOnError(status.%Save())
+					}
+					Set bs=..BuildIfNecessary(interface,Namespace,typ,name,timechanged,builderClass,Force) 
+					If bs=1 {
+						Set:$DATA(status) status.TotalBuilt=status.TotalBuilt+1
+					} ElseIf bs="" {
+						Set:$DATA(status) status.TotalSkipped=status.TotalSkipped+1
+					} Else {
+						Set:$DATA(status) status.TotalErrors=status.TotalErrors+1
+					}
+				}
+			}
+		}
+	} Catch except {
+		Set sc=except.AsStatus()
 	}
-	Do ..logBatchStatus(completed,$$$OK)
-    Quit $$$OK
+	If $DATA(status) {
+		Set status.CurrentlyBuilding=""
+		Set status.Status=sc
+		Do status.End()
+		$$$ThrowOnError(status.%Save())
+	}
+	Quit sc
 }
 
-/// Checks our LastUpdate datetime and builds the xref if needed. If there is a need to rebuild it will, returns 1 if it built
-Method xrefClassIfNecessary(Namespace As %String, ClassId As %String, TimeChanged As %TimeStamp, Force As %Boolean, PreLoadedText As %String = "", Output savesc As %Status) As %Boolean
+ClassMethod BuildIfNecessary(CodeInterface As PXW.DEV.Dictionary.CodeInterface, Namespace As %String, Type As %String, Name As %String, TimeChanged As %TimeStamp, BuilderClass As %String, Force As %Boolean) As %Boolean [ Internal ]
 {
 	Set savesc=""
-	Set built=0
-	Set LastUpdate=##class(PXW.Xref.LastUpdated).OpenOrNew(%NS,"CLS",ClassId)
+	Set built=""
+	Set text=""
+
+	Set builder=$SYSTEM.OBJ.New(BuilderClass)
+	Set LastUpdate=##class(PXW.Xref.LastUpdated).OpenOrNew(Namespace,Type,Name)
 	If Force || LastUpdate.NeedsUpdate(TimeChanged) {
-		Set sc=..xrefClass(Namespace,ClassId,,.PreLoadedText)
+		Set ^PXW("BIF",$INCREMENT(^PXW))=Name_"*"_LastUpdate.LastUpdate_"*"_TimeChanged
+		Set sc=CodeInterface.Load(Name,.text)
+		Set zh=$ZHOROLOG
+		Do ..DeleteAnalysisCalledByTypeKey1(Namespace,Type,Name)
+ 		Do ..DeleteCalledByTypeKey1(Namespace,Type,Name)
+		Set sc=builder.Build(Namespace,Name,text)
 		If $$$ISOK(sc) {
-			Do LastUpdate.%SetModified(1) ; because the lastupdate table is cleared via SQL as part of the build so endure it saves again
+			Do LastUpdate.%SetModified(1) ; because the lastupdate table is cleared via SQL as part of the build so ensure it saves again
 			Set LastUpdate.LastUpdate=TimeChanged
 			Set LastUpdate.BuildStatus=sc
+			Set LastUpdate.BuiltAt=$ZDATETIME($HOROLOG,3)
+			Set LastUpdate.CheckedAt=LastUpdate.BuiltAt
+			Set LastUpdate.BuildProcessTime=$ZHOROLOG-zh
 			Set savesc=LastUpdate.%Save()
+			Set built=1
 		} Else {
 			Do LastUpdate.%SetModified(1)
 			Set LastUpdate.LastUpdate=""
 			Set LastUpdate.BuildStatus=sc
+			Set LastUpdate.CheckedAt=$ZDATETIME($HOROLOG,3)
+			Set LastUpdate.BuildProcessTime=$ZHOROLOG-zh
 			Set savesc=LastUpdate.%Save()
+			Set built=0
 		}
-		If $$$ISOK(sc) Set built=1
 	} Else {
 		If 'Force {
-			Set built=1
+			Set built=""
 		}
+		Set LastUpdate.CheckedAt=$ZDATETIME($HOROLOG,3)
+		Set savesc=LastUpdate.%Save()
 	}
 	Quit built
 }
 
-/// ID of method etc to debug
-/// debug="parse" or "xref"
-Method xrefClass(Namespace As %String, ClassId As %String, debug As %String = "", PreLoadedText As %String = "") As %Status
+Query SelectTypes(Namespace As %String, Type As %String) As PXW.LIB.SQL.Query [ SqlProc ]
 {
-	#dim ele as PXW.DEV.Element
-
-    Set ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).%OpenId(Namespace)
-	If PreLoadedText'="" {
-		Set sc=$$$OK
-		Set text=PreLoadedText
-	} Else { 
-        Do ClassServer.CacheClearClassDetails(ClassId,1) ; pretend the class is deleted so that it REALLY clears it
-		Set sc=ClassServer.GetClassStudioText(ClassId,.text,.linesOfCode)
-	}
-	If $$$ISOK(sc) {
-		Do ..logProcessStart(ClassId)
-		Do ..DeleteAnalysisCalledByKey1(Namespace,ClassId)
- 		Do ..DeleteCalledByKey1(Namespace,ClassId)
- 		Set output=##class(PXW.Xref.bnf).%New()
-		Set output.ClassServer=ClassServer
-		;s output.This=ClassId
-		Do output.begin()
-		Try {
-			Set x=##class(PXW.DEV.BNF.Run.ClassDefinition).%New()
-  		    Set x.stream=##class(PXW.DEV.InputStream).NewString(text)
-  			
-			Set element=##class(PXW.DEV.Element).%New()
-			While x.cheese(element) {
-				Do output.middle(element)
-				If output.ERROR'="" $$$ThrowStatus($$$ERROR(5001,output.ERROR))
-				Set element=##class(PXW.DEV.Element).%New()
-			}
-			Do output.end()
-		} Catch e {
-			Set sc=e.AsStatus()
-			;s txt=$system.Status.GetErrorText(sc)
-			;$$$DEBUG("xrefClass ERROR "_txt)
-			Do ..logProcessStatus(ClassId,sc)
-		}
-		Do output.end()
-		Do ..logProcessStatus(ClassId,sc)
-	}
-	Quit sc
+    SELECT ci.ID
+        , ci.Namespace
+        , ci.Type
+        , cti.Class as Builder
+      FROM PXW_DEV_Dictionary.CodeInterface as ci
+      LEFT OUTER JOIN PXW_DEV_Dictionary.CodeTypeIndex as cti
+                    ON cti.Usage='XrefBuilder' AND cti.CodeType=ci.Type
+      WHERE ci.Namespace=:Namespace
+        AND ((:Type IS NULL) OR (ci.Type=:Type))
 }
 
-ClassMethod DeleteAnalysisCalledByKey1Package(NameSpace As %String, ItemByKey1 As %String) As %Status
+ClassMethod DeleteAnalysisCalledByTypeKey1Package(NameSpace As %String, ItemType As %String, ItemByKey1 As %String) As %Status
 {
     $$$DEBUGMethodBegin
 	Set jrnsts=$$CURRENT^%NOJRN()
@@ -173,25 +159,17 @@ ClassMethod DeleteAnalysisCalledByKey1Package(NameSpace As %String, ItemByKey1 A
 	Set sc=$$$OK
 	If $$$ISOK(sc) {
 		&SQL(DELETE %NOLOCK FROM PXW_Xref.AnalysisData
-			WHERE  NameSpace=:NameSpace AND ItemKey1 %STARTSWITH :ItemKey1)
+			WHERE  NameSpace=:NameSpace AND ItemType=:ItemType AND ItemKey1 %STARTSWITH :ItemKey1)
         $$$DEBUG($GET(%msg))
 	    If SQLCODE<0 Set sc=$$$ERROR(5001,%msg)
     }
-	/*
-	If $$$ISOK(sc) {
-		&SQL(DELETE %NOLOCK FROM PXW_Xref.LastUpdated
-				WHERE NameSpace=:NameSpace AND CalledByKey1 %STARTSWITH :CalledByKey1)
-        $$$DEBUG($GET(%msg))
-	    If SQLCODE<0 Set sc=$$$ERROR(5001,%msg)
-    }
-	*/
 	Do $SYSTEM.SQL.Util.SetOption("AutoCommit",acsts)
 	Do:jrnsts ENABLE^%NOJRN
     $$$DEBUGMethodEnd
 	Quit sc
 }
 
-ClassMethod DeleteAnalysisCalledByKey1(NameSpace As %String, ItemKey1 As %String) As %Status
+ClassMethod DeleteAnalysisCalledByTypeKey1(NameSpace As %String, ItemType As %String, ItemKey1 As %String) As %Status
 {
     $$$DEBUGMethodBegin
 	Set jrnsts=$$CURRENT^%NOJRN()
@@ -200,19 +178,11 @@ ClassMethod DeleteAnalysisCalledByKey1(NameSpace As %String, ItemKey1 As %String
 	Set sc=$$$OK
 	If $$$ISOK(sc) {
 		&SQL(DELETE %NOLOCK FROM PXW_Xref.AnalysisData
-			WHERE NameSpace=:NameSpace AND ItemKey1=:ItemKey1)
+			WHERE NameSpace=:NameSpace AND ItemType=:ItemType AND ItemKey1=:ItemKey1)
         $$$DEBUG($GET(%msg))
         If SQLCODE<0 Set sc=$$$ERROR(5001,%msg)
    	}
 
-	/*
-	If $$$ISOK(sc) {
-		&SQL(DELETE %NOLOCK FROM PXW_Xref.LastUpdated
-			WHERE NameSpace=:NameSpace AND CalledByKey1=:CalledByKey1)
-        $$$DEBUG($GET(%msg))
-	    If SQLCODE<0 Set sc=$$$ERROR(5001,%msg)
-    }
-	*/
 	Do $SYSTEM.SQL.Util.SetOption("AutoCommit",acsts)
 	Do:jrnsts ENABLE^%NOJRN
 
@@ -220,7 +190,7 @@ ClassMethod DeleteAnalysisCalledByKey1(NameSpace As %String, ItemKey1 As %String
 	Quit sc
 }
 
-ClassMethod DeleteCalledByKey1Package(NameSpace As %String, CalledByKey1 As %String) As %Status
+ClassMethod DeleteCalledByTypeKey1Package(NameSpace As %String, CalledByType As %String, CalledByKey1 As %String) As %Status
 {
     $$$DEBUGMethodBegin
 	Set jrnsts=$$CURRENT^%NOJRN()
@@ -229,13 +199,7 @@ ClassMethod DeleteCalledByKey1Package(NameSpace As %String, CalledByKey1 As %Str
 	Set sc=$$$OK
 	If $$$ISOK(sc) {
 		&SQL(DELETE %NOLOCK FROM PXW_Xref.Data
-			WHERE  NameSpace=:NameSpace AND CalledByKey1 %STARTSWITH :CalledByKey1)
-        $$$DEBUG($GET(%msg))
-	    If SQLCODE<0 Set sc=$$$ERROR(5001,%msg)
-    }
-	If $$$ISOK(sc) {
-		&SQL(DELETE %NOLOCK FROM PXW_Xref.LastUpdated
-				WHERE NameSpace=:NameSpace AND ItemKey1 %STARTSWITH :CalledByKey1)
+			WHERE  NameSpace=:NameSpace AND CalledByType=:CalledByType AND CalledByKey1 %STARTSWITH :CalledByKey1)
         $$$DEBUG($GET(%msg))
 	    If SQLCODE<0 Set sc=$$$ERROR(5001,%msg)
     }
@@ -245,7 +209,26 @@ ClassMethod DeleteCalledByKey1Package(NameSpace As %String, CalledByKey1 As %Str
 	Quit sc
 }
 
-ClassMethod DeleteCalledByKey1(NameSpace As %String, CalledByKey1 As %String) As %Status
+ClassMethod DeleteLastUpdateCalledByTypeKey1Package(NameSpace As %String, CalledByType As %String, CalledByKey1 As %String) As %Status
+{
+    $$$DEBUGMethodBegin
+	Set jrnsts=$$CURRENT^%NOJRN()
+	Do $SYSTEM.SQL.Util.SetOption("AutoCommit",0,.acsts)
+	Do DISABLE^%NOJRN
+	Set sc=$$$OK
+	If $$$ISOK(sc) {
+		&SQL(DELETE %NOLOCK FROM PXW_Xref.LastUpdated
+				WHERE NameSpace=:NameSpace AND ItemType=:CalledByType AND ItemKey1 %STARTSWITH :CalledByKey1)
+        $$$DEBUG($GET(%msg))
+	    If SQLCODE<0 Set sc=$$$ERROR(5001,%msg)
+    }
+	Do $SYSTEM.SQL.Util.SetOption("AutoCommit",acsts)
+	Do:jrnsts ENABLE^%NOJRN
+    $$$DEBUGMethodEnd
+	Quit sc
+}
+
+ClassMethod DeleteCalledByTypeKey1(NameSpace As %String, CalledByType As %String, CalledByKey1 As %String) As %Status
 {
     $$$DEBUGMethodBegin
 	Set jrnsts=$$CURRENT^%NOJRN()
@@ -254,7 +237,7 @@ ClassMethod DeleteCalledByKey1(NameSpace As %String, CalledByKey1 As %String) As
 	Set sc=$$$OK
 	If $$$ISOK(sc) {
 		&SQL(DELETE %NOLOCK FROM PXW_Xref.Data
-			WHERE NameSpace=:NameSpace AND CalledByKey1=:CalledByKey1)
+			WHERE NameSpace=:NameSpace AND CalledByType=:CalledByType AND CalledByKey1=:CalledByKey1)
         $$$DEBUG($GET(%msg))
         If SQLCODE<0 Set sc=$$$ERROR(5001,%msg)
    	}
@@ -262,33 +245,7 @@ ClassMethod DeleteCalledByKey1(NameSpace As %String, CalledByKey1 As %String) As
 
 	If $$$ISOK(sc) {
 		&SQL(DELETE %NOLOCK FROM PXW_Xref.LastUpdated
-			WHERE NameSpace=:NameSpace AND ItemKey1=:CalledByKey1)
-        $$$DEBUG($GET(%msg))
-	    If SQLCODE<0 Set sc=$$$ERROR(5001,%msg)
-    }
-	Do $SYSTEM.SQL.Util.SetOption("AutoCommit",acsts)
-	Do:jrnsts ENABLE^%NOJRN
-
-    $$$DEBUGMethodEnd
-	Quit sc
-}
-
-ClassMethod DeleteCalledByKey2(NameSpace As %String, CalledByKey1 As %String, CalledByKey2 As %String) As %Status
-{
-    $$$DEBUGMethodBegin
-	Set jrnsts=$$CURRENT^%NOJRN()
-	Do $SYSTEM.SQL.Util.SetOption("AutoCommit",0,.acsts)
-	Do DISABLE^%NOJRN
-	Set sc=$$$OK
-    If $$$ISOK(sc) {
-    	&SQL(DELETE %NOLOCK FROM PXW_Xref.Data 
-			WHERE  NameSpace=:NameSpace AND CalledByKey1=:CalledByKey1 AND CalledByKey2=:CalledByKey2)
-	    $$$DEBUG($GET(%msg))
-        If SQLCODE<0 Set sc=$$$ERROR(5001,%msg)
-    }
-	If $$$ISOK(sc) {
-		&SQL(DELETE %NOLOCK FROM PXW_Xref.LastUpdated
-			WHERE NameSpace=:NameSpace AND CalledByKey1=:CalledByKey1 AND CalledByKey1=:CalledByKey1)
+			WHERE NameSpace=:NameSpace AND ItemType=:CalledByType AND ItemKey1=:CalledByKey1)
         $$$DEBUG($GET(%msg))
 	    If SQLCODE<0 Set sc=$$$ERROR(5001,%msg)
     }

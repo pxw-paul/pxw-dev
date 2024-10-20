@@ -20,9 +20,11 @@
     // Create /_vscode web app to support intersystems-community.testingmanager VS Code extension
     zpm "install vscode-per-namespace-settings"
     zpm "install pxw-debug"
-
+    zpm "install pxw-lib-sql"
+    
     // Configure %UnitTest in IRISAPP to suit the VS Code extension
     set ^UnitTestRoot="/usr/irissys/.vscode/IRISAPP/UnitTestRoot"
 
-    zpm "load /home/irisowner/dev/ -v":1:1
+    zpm "load /home/irisowner/dev/ -v"
+    do ##class(PXW.DEV.Dictionary.Install).Setup()
     halt

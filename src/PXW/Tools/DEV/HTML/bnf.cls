@@ -380,7 +380,7 @@ Method writeElementSQL(element As PXW.DEV.BNF.Elements.SQL)
 			Set aliasE=withE.findFirstElementByType("AliasName")	    
 		    If $ISOBJECT(aliasE) {
 			    Set aliasname="alias"_aliasE.ToString(0)
-			    Do ..wrapElementHTML(aliasE,"<span class='SQLTableAliasSet' title='show alias usage' varid='"_aliasname_"' onclick=""HiliteSets('"_aliasname_"');"">","</span>")
+			    Do ..wrapElementHTML(aliasE,"<span class='SQLTableAliasSet' title='show alias usage' varid='"_aliasname_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
 		    }	    
         }
     }
@@ -414,10 +414,9 @@ Method writeElementSQL(element As PXW.DEV.BNF.Elements.SQL)
             }
         }
         If ..BookMark'="",$$$UPPER(colname)=$$$UPPER("col"_..BookMark) {
-            ;d ..wrapElementHTML(colnameE,"<a name='bookmark' class='hilite ccccc'>","</a>")
             Set classtxt="class='hilite'"
         }
-		Do ..wrapElementHTML(col,"<span "_classtxt_" fetchid='"_colname_"'>","</span>")        
+		Do ..wrapElementHTML(col,"<span "_classtxt_" fetchid='"_$$$UPPER(colname)_"'>","</span>")        
     }
 
     If element.type="SelectCommand" {
@@ -454,12 +453,12 @@ Method writeElementSQL(element As PXW.DEV.BNF.Elements.SQL)
                 If fulltable'="" {
 	                Do ..FollowImplicitJoins(cref,fulltable)
                 } Else {
-	                Do ..wrapElementHTML(columnNameE,"<span class='COSObjectMember' title='still unable to determine class, possibly because of subquery' fetchid='"_colname_"' onclick=""HiliteSets('"_colname_"');"">","</span>")
+	                Do ..wrapElementHTML(columnNameE,"<span class='COSObjectMember' title='still unable to determine class, possibly because of subquery' fetchid='"_$$$UPPER(colname)_"' onclick=""HiliteSets('"_$$$UPPER(colname)_"');"">","</span>")
                 }
             }
             If $ISOBJECT(aliasNameE) {
                 Set aliasname="alias"_aliasNameE.ToString(0)
-                Do ..wrapElementHTML(aliasNameE,"<span class='SQLTableAlias' title='show alias usage' fetchid='"_aliasname_"' onclick=""HiliteSets('"_aliasname_"');"">","</span>")
+                Do ..wrapElementHTML(aliasNameE,"<span class='SQLTableAlias' title='show alias usage' fetchid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
             }
         }
     }
@@ -477,11 +476,11 @@ Method writeElementSQL(element As PXW.DEV.BNF.Elements.SQL)
             } Else {
                 ; should always be a name
               ;  s colname="col"_$$$UPPER(fieldname),aname=""
-               ; d ..wrapElementHTML(columnNameE,"<span class='COSObjectMember' title='unable to determine class, possibly because of subquery' fetchid='"_colname_"' onclick=""HiliteSets('"_colname_"');"">","</span>")
+               ; d ..wrapElementHTML(columnNameE,"<span class='COSObjectMember' title='unable to determine class, possibly because of subquery' fetchid='"_$$$UPPER(colname)_"' onclick=""HiliteSets('"_$$$UPPER(colname)_"');"">","</span>")
             }
             ;i $ISOBJECT(aliasNameE) {
             ;    s aliasname="alias"_aliasNameE.ToString(0)
-            ;    d ..wrapElementHTML(aliasNameE,"<span class='COSObjectMember' title='show alias usage' fetchid='"_aliasname_"' onclick=""HiliteSets('"_aliasname_"');"">","</span>")
+            ;    d ..wrapElementHTML(aliasNameE,"<span class='COSObjectMember' title='show alias usage' fetchid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
             ;}
         }
     }
@@ -499,11 +498,11 @@ Method writeElementSQL(element As PXW.DEV.BNF.Elements.SQL)
             } Else {
                 ; should always be a name
               ;  s colname="col"_$$$UPPER(fieldname),aname=""
-               ; d ..wrapElementHTML(columnNameE,"<span class='COSObjectMember' title='unable to determine class, possibly because of subquery' fetchid='"_colname_"' onclick=""HiliteSets('"_colname_"');"">","</span>")
+               ; d ..wrapElementHTML(columnNameE,"<span class='COSObjectMember' title='unable to determine class, possibly because of subquery' fetchid='"_$$$UPPER(colname)_"' onclick=""HiliteSets('"_$$$UPPER(colname)_"');"">","</span>")
             }
             ;i $ISOBJECT(aliasNameE) {
             ;    s aliasname="alias"_aliasNameE.ToString(0)
-            ;    d ..wrapElementHTML(aliasNameE,"<span class='COSObjectMember' title='show alias usage' fetchid='"_aliasname_"' onclick=""HiliteSets('"_aliasname_"');"">","</span>")
+            ;    d ..wrapElementHTML(aliasNameE,"<span class='COSObjectMember' title='show alias usage' fetchid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
             ;}
         }
     }
@@ -518,7 +517,7 @@ Method writeElementSQL(element As PXW.DEV.BNF.Elements.SQL)
                 ;zw tablename,..WithAnalyser
                 If tablename'="", tablename'[".", $ISOBJECT(..WithAnalyser), $GET(..WithAnalyser.WithClauseAnalysis(tablename))'="" {
 	                Set aliasname="alias"_tablename
-             	   Do ..wrapElementHTML(tablenameE,"<span class='SQLTableAlias' title='show alias usage' varid='"_aliasname_"' onclick=""HiliteSets('"_aliasname_"');"">","</span>")
+             	   Do ..wrapElementHTML(tablenameE,"<span class='SQLTableAlias' title='show alias usage' varid='"_aliasname_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
                 } Else {
 	                Do ..wrapAtomHTML(tablenameE,"<a class='CDEFClassName' href='"_..HREFToClass(tablename)_"'>","</a>")
                 }
@@ -528,14 +527,14 @@ Method writeElementSQL(element As PXW.DEV.BNF.Elements.SQL)
 
     If element.type="TableAlias" {
             ;s aliasname="alias"_element.ToString(0)
-            ;d ..wrapElementHTML(element,"<span class='SQLTableAliasSet' title='show alias usage' fetchid='"_aliasname_"' onclick=""HiliteSets('"_aliasname_"');"">","</span>")
+            ;d ..wrapElementHTML(element,"<span class='SQLTableAliasSet' title='show alias usage' fetchid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
     }
 
     If element.type="TableAsClause" {
         Set aliasE=element.findFirstElementByType("AliasName")
         If $ISOBJECT(aliasE) {
             Set aliasname="alias"_aliasE.ToString(0)
-            Do ..wrapElementHTML(aliasE,"<span class='SQLTableAliasSet' title='show alias usage' varid='"_aliasname_"' onclick=""HiliteSets('"_aliasname_"');"">","</span>")
+            Do ..wrapElementHTML(aliasE,"<span class='SQLTableAliasSet' title='show alias usage' varid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
         }
     }
 }

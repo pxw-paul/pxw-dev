@@ -1,7 +1,13 @@
 Include PXW.Debuggers.Macros
 
-Class PXW.DEV.Dictionary.Routine
+Class PXW.DEV.Dictionary.Routine Extends PXW.DEV.Dictionary.CodeInterface
 {
+
+Parameter CodeType = "INT";
+
+Parameter CodeTypeDescription = "Iris Routine INT";
+
+Property AtelierSettings As PXW.DEV.Dictionary.AtelierSettings;
 
 /// s %NS="LOCAL_USER" s sc=##class(PXW.DEV.Dictionary.Routine).GetRoutineStudioText("PXW.DEV.Dictionary.Routine.1",.text,.lines,.lastupdate,.summary)
 ClassMethod GetRoutineStudioText(RoutineName As %String, Output Text As %String, Output linesOfCode As %String, Output LastUpdateTime As %TimeStamp, Output Summary As %String, Output IsGenerated As %Boolean) As %Status
@@ -38,19 +44,31 @@ ClassMethod GetRoutineStudioText(RoutineName As %String, Output Text As %String,
 
 /// Routines=PXW.*
 /// 
-ClassMethod ListRoutines(Routines As %String, escape As %String = "", listHidden As %Boolean = 0, listGenerated As %Boolean = 0) As PXW.DEV.Dictionary.AtelierRS
+Method List(Routines As %String) As PXW.DEV.Dictionary.AtelierRS
 {
     $$$DEBUGMethodBegin
 
-	Set server=%NS 
+	Set server=..AtelierSettings.ServerName
 	Set sql=""
-	Set sql=sql_"select * from  %Library.Routine_RoutineList('"_Routines_".INT"_"')"
+	Set sql=sql_"select Name,""Date"" as TimeChanged,null as SubType  from  %Library.Routine_RoutineList('"_Routines_".INT"_"')"
 
    Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj)
   	If $$$ISERR(qsc) $$$ThrowStatus(qsc)
 	Set rs=##class(PXW.DEV.Dictionary.AtelierRS).%New(obj)
     $$$DEBUGMethodEnd
 	Quit rs
+}
+
+Storage Default
+{
+<Data name="RoutineDefaultData">
+<Subscript>"Routine"</Subscript>
+<Value name="1">
+<Value>AtelierSettings</Value>
+</Value>
+</Data>
+<DefaultData>RoutineDefaultData</DefaultData>
+<Type>%Storage.Persistent</Type>
 }
 
 }

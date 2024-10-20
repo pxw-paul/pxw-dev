@@ -9,7 +9,7 @@ Class PXW.Xref.Queries [ Owner = {_PUBLIC} ]
 /// </dl>
 /// Flags: string containing the following flags: 
 ///        EXTERNAL : only list rows where the call is External
-Query Get(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = "", ItemKey2 As %String = "", CalledByCommand As %String = "", CalledByKey1 As %String = "", CalledByKey2 As %String = "", WindowSize As %Integer = 0, Flags As %String = "") As PXW.LIB.SQLQuery [ SqlProc ]
+Query Get(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = "", ItemKey2 As %String = "", CalledByCommand As %String = "", CalledByKey1 As %String = "", CalledByKey2 As %String = "", WindowSize As %Integer = 0, Flags As %String = "") As PXW.LIB.SQL.Query [ SqlProc ]
 {
 	SELECT NameSpace,ItemType,ItemKey1,ItemKey2,
 	       CalledByType,CalledByCommand,CalledByKey1,CalledByKey2,CalledByKey3,LineNumber,Parameters,
@@ -65,7 +65,7 @@ Query Get(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = 
 /// Include all the calls to the same method in the superclasses.
 /// EG there may be no direct call to the method you are looking at, but it is called because its an override of a superclass and the superclass method gets called.
 /// Could this replace Get query entirely? IE in Get mode GetOverrideTree returns only 1 row... Needs testing.
-Query GetSuper(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = "", ItemKey2 As %String = "", CalledByCommand As %String = "", CalledByKey1 As %String = "", WindowSize As %Integer = 0, Flags As %String = "") As PXW.LIB.SQLQuery [ SqlProc ]
+Query GetSuper(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = "", ItemKey2 As %String = "", CalledByCommand As %String = "", CalledByKey1 As %String = "", WindowSize As %Integer = 0, Flags As %String = "") As PXW.LIB.SQL.Query [ SqlProc ]
 {
 	SELECT dat.NameSpace,dat.ItemType,dat.ItemKey1,dat.ItemKey2,
 	       dat.CalledByType,dat.CalledByCommand,dat.CalledByKey1,dat.CalledByKey2,dat.CalledByKey3,dat.LineNumber,dat.Parameters,
@@ -98,7 +98,7 @@ Query GetSuper(NameSpace As %String, ItemType As %String = "", ItemKey1 As %Stri
 		dat.ItemKey1,dat.ItemKey2
 }
 
-Query GetCount(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = "", ItemKey2 As %String = "", CalledByCommand As %String = "") As PXW.LIB.SQLQuery [ SqlProc ]
+Query GetCount(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = "", ItemKey2 As %String = "", CalledByCommand As %String = "") As PXW.LIB.SQL.Query [ SqlProc ]
 {
 	SELECT COUNT(*) AS Number
 	FROM PXW_Xref.Data
@@ -133,17 +133,17 @@ ClassMethod GetCode(%NS As %String, CodeType As %String, CodeKey1 As %String, Co
 	#dim e as %Exception.SystemException
 
 	Set ClassServer=$GET(%PXWClassServer(%NS))
-	If '$ISOBJECT(ClassServer) {
-		Set ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).%OpenId(%NS)
-		Set %PXWClassServer(%NS)=ClassServer
-	}
 
 	If WindowSize=0 Quit ""
 	Set ws=WindowSize-1
 	Try {
-		If $LISTFIND($LISTBUILD("CLS","QRY","VEW"),CodeType) {
+		If CodeType'="" {
+			If '$ISOBJECT(ClassServer) {
+				Set ClassServer=##class(PXW.DEV.Dictionary.CodeInterface).OpenForType(%NS,CodeType)
+				Set %PXWClassServer(%NS)=ClassServer
+			}
 			If '$DATA(%PXWCacheCode(CodeKey1)) {
-				Set sc=ClassServer.GetClassStudioText(CodeKey1,,.lines)
+				Set sc=ClassServer.LoadAsArray(CodeKey1,.lines)
 				If $$$ISOK(sc) {
 					Merge %PXWCacheCode(CodeKey1)=lines
 				} Else {
@@ -168,7 +168,7 @@ ClassMethod GetCode(%NS As %String, CodeType As %String, CodeKey1 As %String, Co
 }
 
 /// Summary of where a class calls something not in the same package
-Query PackageSummary(NameSpace As %String, Package As %String) As PXW.LIB.SQLQuery [ SqlProc ]
+Query PackageSummary(NameSpace As %String, Package As %String) As PXW.LIB.SQL.Query [ SqlProc ]
 {
 SELECT distinct ItemPackage, CalledByPackage
 FROM (
@@ -187,7 +187,7 @@ FROM (
 }
 
 /// Details of where a class calls something not in the same package
-Query PackageDetail(NameSpace As %String, ItemPackage As %String, CalledByPackage As %String, WindowSize As %Integer = 1) As PXW.LIB.SQLQuery [ SqlProc ]
+Query PackageDetail(NameSpace As %String, ItemPackage As %String, CalledByPackage As %String, WindowSize As %Integer = 1) As PXW.LIB.SQL.Query [ SqlProc ]
 {
 SELECT *
 FROM (
@@ -211,7 +211,7 @@ WHERE (ItemType = 'CLS')
     --ENDIF
 }
 
-Query BuildProblems(NameSpace As %String) As PXW.LIB.SQLQuery [ SqlProc ]
+Query BuildProblems(NameSpace As %String) As PXW.LIB.SQL.Query [ SqlProc ]
 {
 	SELECT ID, BuildStatus, ItemKey1, ItemType, LastUpdate, NameSpace
 	  FROM LastUpdated
@@ -271,7 +271,7 @@ ClassMethod GetOverrideTreeFetch(ByRef qHandle As %Binary, ByRef Row As %List, B
 	Quit $$$OK
 }
 
-Query GetOverrides(NameSpace As %String, ItemKey1 As %String, ItemKey2 As %String) As PXW.LIB.SQLQuery
+Query GetOverrides(NameSpace As %String, ItemKey1 As %String, ItemKey2 As %String) As PXW.LIB.SQL.Query
 {
 	SELECT * from PXW_Xref.Data
 	WHERE Namespace=:NameSpace

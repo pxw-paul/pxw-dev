@@ -4,6 +4,102 @@ Class PXW.Tools.DEV.Code Extends PXW.Tools.Page
 
 ClassMethod WriteMainBody(ByRef scratch)
 {
+
+    Do ..HREFFrom(.CodeReference,.utype,.name)
+
+    if name'="" {
+        ; no type so do lookup
+        If utype="" {
+            Do ..WriteCodeList(utype,name)
+        } Else {
+            ; name is not known
+            If name["*" {
+                Do ..WriteCodeList(utype,name)
+            } Else {
+                ;Do ..WriteCode(utype,name)
+                w "No direct link yet"
+            }
+        }
+    } else {
+        w "Nothing to search for"
+    }
+}
+
+ClassMethod WriteCodeList(Type As %String, Name As %String)
+{
+    Write "<table>"
+    Write "<thead>"
+    Write "<tr><th>Type</th><th>SubType</th><th>Name</th><th>Modified</th></tr>"
+    Write "</thead><tbody>"
+    
+
+    Set rs=##class(%Library.ResultSet).%New(..%ClassName(1)_":"_"SelectTypes")
+    Set sc=rs.Execute(%NS,Type)
+    While rs.%Next() {
+        set typ=rs.%Get("Type")
+        set page=rs.%Get("Page")
+        Set interface=##class(PXW.DEV.Dictionary.CodeInterface).%OpenId(rs.%Get("ID"))
+        Set rs2=interface.List(Name)
+        While rs2.%Next() {
+            Write "<tr>"
+            Write "<td>"_..EscapeHTML(typ)_"</td>"
+            Write "<td>"_..EscapeHTML(rs2.%Get("SubType"))_"</td>"
+            Write "<td>"
+            if page="" {
+                Write "<span title='CodeType ("_typ_") has no display page defined'>"
+                Write ..EscapeHTML(rs2.%Get("Name")) 
+                write "</span>"
+                
+            } else {
+                Write "<a class='CDEFClassName' href='"_$CLASSMETHOD(page,"HREFToK123",rs2.%Get("Name"))_"'>"
+                Write ..EscapeHTML(rs2.%Get("Name")) 
+                Write "</a>"
+            }
+            Write "</td>"
+            Write "<td>"_..EscapeHTML(rs2.%Get("TimeChanged"))_"</td>"
+            Write "</tr>",!
+        }
+	}
+    
+	Write "</tbody></table>"
+}
+
+/// Output 1 Anchor tag for each option in the navigation. Use the scratch variable for anything you want to get from BODY
+ClassMethod WriteNav(ByRef scratch)
+{
+   Do ..HREFFrom(.CodeReference)
+    Set type=$PIECE(CodeReference,".",*)
+    Set utype=$$$UPPER(type)
+
+    If ##class(PXW.DEV.Dictionary.CodeType).%ExistsId(utype) {
+        Set name=$PIECE(CodeReference,".",1,*-1)
+    } Else {
+        Set name=CodeReference
+        Set utype=""
+    }
+    Set rs=##class(%Library.ResultSet).%New(..%ClassName(1)_":"_"SelectTypes")
+    Set sc=rs.Execute(%NS,"")
+    While rs.%Next() {
+        Set cref=name_"."_rs.%Get("Type")
+        Write "<a href='"_..HREFTo(cref)_"'>"_..EscapeHTML(cref)_"</a>"
+    }
+}
+
+Query SelectTypes(Namespace As %String, Type As %String) As PXW.LIB.SQL.Query [ SqlProc ]
+{
+    SELECT ci.ID
+        , ci.Namespace
+        , ci.Type
+        , cti.Class as Page
+      FROM PXW_DEV_Dictionary.CodeInterface as ci
+      LEFT OUTER JOIN PXW_DEV_Dictionary.CodeTypeIndex as cti
+                    ON cti.Usage='CodeDisplay' AND cti.CodeType=ci.Type
+      WHERE ci.Namespace=:Namespace
+        AND ((:Type IS NULL) OR (ci.Type=:Type))
+}
+
+ClassMethod WriteMainBodyold(ByRef scratch)
+{
 	Do ..HREFFrom(.CodeReference)
 
     Set type=$PIECE(CodeReference,".",*)
@@ -61,10 +157,22 @@ ClassMethod WriteHeadForm(Page As %String)
     >
 }
 
-ClassMethod HREFFrom(Output CodeReference As %String)
+ClassMethod HREFFrom(Output CodeReference As %String, Output CodeType As %String, Output Name As %String)
 {
 	#define ReqGet(%name) %request.Get(%name)
 	Set CodeReference=$$$ReqGet("CR")
+
+    Set type=$PIECE(CodeReference,".",*)
+    Set utype=$$$UPPER(type)
+
+    If ##class(PXW.DEV.Dictionary.CodeType).%ExistsId(utype) {
+        Set nam=$PIECE(CodeReference,".",1,*-1)
+    } Else {
+        Set nam=CodeReference
+        Set utype=""
+    }
+    set CodeType=utype
+    set Name=nam
 }
 
 ClassMethod HREFTo(CodeReference As %String) As %String

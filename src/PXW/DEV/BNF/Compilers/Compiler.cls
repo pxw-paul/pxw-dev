@@ -509,7 +509,7 @@ Method compileSubRule(Method As %Dictionary.MethodDefinition, Element As PXW.DEV
         ;$$$WRITECR($$$Tab(indent)_"; sub summary="_summary_", transaction="_transaction)
         Do ..compileQuickCheck(Method,Element,indent)
         Do ..compileMethodStart(Method,indent,path,transaction,debug)
-        If 'transaction $$$WRITECR($$$Tab(indent)_"s subElement=ParentElement")
+        If 'transaction $$$WRITECR($$$Tab(indent)_"Set subElement=ParentElement")
         Do ..compileRules(Method,Element,indent)
         Do ..compileMethodEnd(Method,indent,,transaction,debug,copy)
     }
@@ -531,7 +531,7 @@ Method compileOptionalGroup(Method As %Dictionary.MethodDefinition, Element As P
         If summary?1"P"0."|P" Set transaction=0,debug=0
         Do ..compileQuickCheck(Method,Element,indent,"1 /* not found is OK */")
         Do ..compileMethodStart(Method,indent,,transaction,debug)
-        If 'transaction $$$WRITECR($$$Tab(indent)_"s subElement=ParentElement")
+        If 'transaction $$$WRITECR($$$Tab(indent)_"Set subElement=ParentElement")
         Do ..compileRules(Method,Element,indent)
         Do ..compileMethodEnd(Method,indent,"1 /* failure rollsback but returns OK */",transaction,debug,copy)
     }

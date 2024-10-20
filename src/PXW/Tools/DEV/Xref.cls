@@ -49,24 +49,12 @@ ClassMethod WriteXRef(itemtype As %String, itemk1 As %String, itemk2 As %String,
 		Write "<td>"_..EscapeHTML(rs.CalledByType)_"</td>"
 		Write "<td class='CDEFClassName'>"_..EscapeHTML(rs.CalledByKey1)_"</td>"
 		Write "<td>"
-			If rs.CalledByType="CLS" {
-				;w "<a class='COSObjectsMethod' href='"_##class(PXW.Tools.DEV.Class).HREFTo(rs.CalledByKey1,rs.CalledByKey2,rs.CalledByKey3)_"'>"
-				Write "<a class='CDEFMember' href='"_##class(PXW.Tools.DEV.Class).HREFTo(rs.CalledByKey1,rs.CalledByKey2,rs.LineNumber)_"'>"
+			set page=##class(PXW.Tools.DEV.CodeDisplayPage).GetPageClass(rs.CalledByType)
+			If page'="" {
+				Write "<a class='CDEFMember' href='"_$CLASSMETHOD(page,"HREFToK123",rs.CalledByKey1,rs.CalledByKey2,rs.LineNumber)_"'>"
 				Write ..EscapeHTML(rs.CalledByKey2)
 				Write "</a>"
-			} /* elseif rs.CalledByType="QRY" {
-				w "<a class='COSObjectsQuery' href='"_##class(PXW.Tools.DEV.Class).HREFTo(rs.CalledByKey1,rs.CalledByKey2,rs.CalledByKey3)_"'>"
-				w ..EscapeHTML(rs.CalledByKey2)
-				w "</a>"
-			} elseif rs.CalledByType="VEW" {
-				w "<a class='COSObjectsMethod' href='"_##class(PXW.Tools.DEV.Class).HREFTo(rs.CalledByKey1,rs.CalledByKey2,rs.CalledByKey3)_"'>"
-				w ..EscapeHTML(rs.CalledByKey2)
-				w "</a>"
-			} elseif rs.CalledByType="PRP" {
-				w "<a class='COSObjectsProperty' href='"_##class(PXW.Tools.DEV.Class).HREFTo(rs.CalledByKey1,rs.CalledByKey2,rs.CalledByKey3)_"'>"
-				w ..EscapeHTML(rs.CalledByKey2)
-				w "</a>"
-			} */ Else {
+			}  Else {
 				Write ..EscapeHTML(rs.CalledByKey2)
 			} 
 		Write "</td>"

@@ -1,4 +1,4 @@
-Class PXW.DEV.BNF.DEF.SQL Extends PXW.DEV.BNF.Compilers.loader
+Class experiments.DEF.SQL Extends PXW.DEV.BNF.Compilers.loader
 {
 
 Projection GEN As PXW.DEV.BNF.Compilers.projection(GenerateTo = "PXW.DEV.BNF.GEN.SQL");
@@ -26,6 +26,7 @@ subquery_specification 		::= select_command ( union select_command )*
 
 with_command 				::= 'WITH' with_clause (',' with_clause)*
 with_clause					::= alias_name 'AS' '(' select_command ')' 
+with_name					::= identifier 
  
 select_command				::= 'SELECT' [ set_quantifier ] select_list [select_into] [ table_expression ]
 
@@ -74,7 +75,11 @@ index_reference_list		::= index_reference ( ',' index_reference )*
 table_as_clause                   ::= [ 'AS' ] alias_name
 
 select_into				  	::= 'INTO' select_into_variable ( ',' select_into_variable)*
-select_into_variable		::= [':'] sql_cos_variable /* it appears that on the INTO the : is not required */
+select_into_variable		::= [':'] sql_cos_variable /*variable *//* it appears that on the INTO the : is not required */
+
+correlation_specification ::= [ 'AS' ] correlation_name /* [ '(' derived_column_list ')' ]*/
+
+derived_column_list         ::= column_name_list
 
 derived_table               ::= table_subquery [ table_as_clause ]
 derived_table_noalias       ::= table_subquery
@@ -87,25 +92,26 @@ cross_join                  ::= table_reference 'CROSS' 'JOIN'  table_reference
 
 qualified_join              ::= table_reference [ 'NATURAL' ] [ join_type ] 'JOIN' table_reference [ join_specification ]
 
-join_type                   ::=	'INNER' |  (outer_join_type [ 'OUTER' ]) 
+join_type                   ::=	'INNER' |  (outer_join_type [ 'OUTER' ]) /* |   'UNION' */
 
 outer_join_type             ::= 'LEFT' | 'RIGHT' | 'FULL'
 
 join_specification          ::= join_condition | named_columns_join
 
-join_condition              ::= 'ON' sql_expression 
+join_condition              ::= 'ON' search_condition
+
 
 named_columns_join          ::= 'USING' '(' join_column_list ')'
 
 join_column_list            ::= column_name_list
 
-where_clause                ::= 'WHERE' sql_expression 
+where_clause                ::= 'WHERE' sql_expression /* search_condition */
 
 group_by_clause             ::= 'GROUP' 'BY' grouping_column_reference_list
 
 grouping_column_reference_list ::=	grouping_column_reference  ( ',' grouping_column_reference )* 
 
-grouping_column_reference   ::= sql_expression 
+grouping_column_reference   ::= sql_expression /* column_reference */ /*[ <collate clause> ]*/
 
 having_clause               ::= 'HAVING' sql_expression
 
@@ -113,26 +119,33 @@ order_by_clause             ::= 'ORDER' 'BY' ordering_column_reference_list
 
 ordering_column_reference_list ::=	ordering_column_reference  ( ',' ordering_column_reference )* 
 
-ordering_column_reference   ::= sql_expression [ 'ASC' | 'DESC']  
+ordering_column_reference   ::= sql_expression [ 'ASC' | 'DESC']  /*[ <collate clause> ]*/
 
 
 union						::= 'UNION' ('ALL' | '%PARALLEL')*
+
+scalar_subquery ::= subquery
 
 subquery ::= '(' query_expression ')'
 
 query_expression ::= non_join_query_expression | joined_table
 
 non_join_query_expression ::= non_join_query_term
+	/* |	<query expression> UNION [ ALL ] [ <corresponding spec> ] <query term> */
+	/* |	<query expression> EXCEPT [ ALL ] [ <corresponding spec> ] <query term> */
 
 non_join_query_term ::= non_join_query_primary 
+	/*|	<query term> INTERSECT [ ALL ] [ <corresponding spec> ] <query primary>*/
 
 non_join_query_primary ::= simple_table | ( '(' non_join_query_expression ')' )
 
 simple_table ::= query_specification
+	/*|	<table value constructor>*/
+	/*|	<explicit table> */
  
 column_name_list ::= column_name ( ',' column_name )*
 
-table_name ::=  [ schema_name '.' ] qualified_identifier 
+table_name ::=  [ schema_name '.' ] qualified_identifier /* | qualified_local_table_name*/
 
 insert_command				::= 'INSERT' (update_keyword)* ['INTO'] direct_table insert_method
 insert_method				::= insert_set_list | insert_values_list | insert_multirow
@@ -166,6 +179,30 @@ CHECKPRIV_command			::= '%CHECKPRIV' checkpriv_objpriv [ '(' column_name ( ',' c
 checkpriv_objpriv			::= '%ALTER' | 'DELETE' | 'SELECT' | 'INSERT' | 'UPDATE' | 'EXECUTE' | 'REFERENCES'
 
 call_command				::= 'CALL' stored_proc_call
+
+/* Search Condition */
+search_condition	::= condition_expression
+condition_expression                       ::= condition_factor ( condition_dyadicop condition_factor )*
+condition_dyadicop                      ::=  "+" | "-" | "\\" | "/" | "<>" | ">" | "'>" | ">=" | "<" | "'<" | "<="
+                                        | "=" | "'=" | "**" | "*" | "&&" | "&" | "]]" | "[" | "'[" | "!" | "||" | "_" | "#" 
+										| "AND" | "OR" 
+										| "%STARTSWITH" | "LIKE"
+										| 'IS'
+                                        /* | "?" | "'?" */ 
+
+
+condition_factor                       ::= [ condition_monadicop ] condition_term
+condition_monadicop                    ::= "+" | "-"  | 'NOT' 
+
+condition_term                         ::= condition_primary 
+condition_primary                      ::= sql_number
+                                          | sql_string
+										  | sql_cos_variable
+										  | sql_special_variable
+										  | column_reference
+										  | macrocall
+										  | ( '(' subquery_specification ')' ) 
+										  | ( '(' sql_expression ')' )
 
 sql_special_variable					::= 'NULL' | '?' | '$H'  | '$ZNSPACE'
 										  
@@ -260,6 +297,32 @@ sql_case_expression2				::= sql_expression ('WHEN' sql_expression 'THEN' sql_exp
 col_list							::= column_reference ( ',' column_reference )*
 
 
+
+value_expression    ::=	numeric_value_expression |  string_value_expression
+	/*|   <datetime value expression>	|   <interval value expression> */
+
+/* NUMERIC */
+
+numeric_value_expression ::= term
+	|  ( numeric_value_expression '+' term )
+	|  ( numeric_value_expression '-' term )
+
+term                    ::= factor
+	|  ( term '*' factor )
+	|  ( term '/' factor )
+
+factor ::= [ sign ] numeric_primary
+
+sign ::= '+' | '-'
+
+numeric_primary ::= value_expression_primary | numeric_value_function
+
+
+value_expression_primary ::= number /* unsigned_value_specification */
+    |   column_reference
+	/*|   <set function specification>	|   <scalar subquery>	|   <case expression>	|   <left paren> <value expression> <right paren>	|   <cast specification> */
+
+
 column_reference 					::= [ alias_name '.' ] column_name [column_reference_implicit]
 column_reference_implicit 			::= ('->' column_name)*
 
@@ -272,10 +335,68 @@ qualifier ::= table_name /* | <correlation name> */
 
 number                              ::= ('regexp:[0-9]*' [ '.' 'regexp:[0-9]+'] [ ('e' | 'E') 'regexp:[0-9]+']) | ('.' 'regexp:[0-9]+' [ ('e' | 'E') 'regexp:[0-9]+'])  
 
+
+unsigned_value_specification ::= unsigned_literal | general_value_specification
+
+unsigned_literal ::= unsigned_numeric_literal | general_literal
+
+unsigned_numeric_literal ::= exact_numeric_literal | approximate_numeric_literal
+
+exact_numeric_literal ::= (unsigned_integer [ '.' [ unsigned_integer ] ] )
+	                    |	('.' unsigned_integer)
+
+unsigned_integer_ ::= ( '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '0')*
+
+approximate_numeric_literal ::= mantissa 'E' exponent
+
+mantissa ::= exact_numeric_literal
+
+exponent ::= signed_integer
+
+signed_integer ::= [ sign ] unsigned_integer
+
+general_literal ::= character_string_literal /*	|	<national character string literal> 	|	<bit string literal>	|	<hex string literal>	|	<datetime literal>	|	<interval literal> */
+
+character_string_literal ::= '"' 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)'  '"'
+
+general_value_specification ::= cos_variable_identifier | '?' 
+	|   'USER'
+	|   'CURRENT_USER'
+	|   'SESSION_USER'
+	|   'SYSTEM_USER'
+	|   'VALUE'
+
+
+numeric_value_function ::= /*<position expression> | <extract expression> |	*/ length_expression
+
+length_expression ::= 'LENGTH' '(' character_Value_expression ')'
+
+/* STRINGS */
+
+string_value_expression ::= character_value_expression /* | <bit value expression> */
+
+character_value_expression ::= concatenation | character_factor
+
+concatenation ::= character_value_expression '||' character_factor
+
+character_factor ::= character_primary /* [ <collate clause> ]*/
+
+character_primary ::= value_expression_primary | string_value_function
+
+string_value_function ::= character_value_function /* | <bit value function>*/
+
+character_value_function ::= character_substring_function 
+	/*|   <fold>	|   <form-of-use conversion>	|   <character translation>	|   <trim function> */
+
+character_substring_function ::= 'SUBSTRING' '(' character_value_expression ',' numeric_value_expression ',' numeric_value_expression ')'
+
+
 schema_name ::= identifier
 qualified_identifier ::= identifier
+correlation_name ::= identifier
 column_name ::= identifier 
 alias_name ::= identifier
+cos_variable_identifier ::= ':' (['{' identifier '}'] | identifier ) /* if the SQL is in a trigger then we can allow {var} coding for ALL sql for ease*/ 
 identifier                    ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)' 
 
     ]]></data></bnf>

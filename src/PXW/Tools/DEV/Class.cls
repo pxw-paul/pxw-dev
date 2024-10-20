@@ -1,7 +1,7 @@
-Class PXW.Tools.DEV.Class Extends PXW.Tools.Page
+Class PXW.Tools.DEV.Class Extends PXW.Tools.DEV.CodeDisplayPage
 {
 
-Parameter ToolType = "Code";
+Parameter CodeType = "CLS";
 
 ClassMethod WriteMainBody(ByRef scratch)
 {
@@ -21,7 +21,7 @@ ClassMethod WriteMainBody(ByRef scratch)
 /// If this class does not have the definition of what we are looking at then this returns the name of the class it might be inherited from, otherwise it returns null
 ClassMethod GetClassToLoad(cls As %String, path As %String, Output bookmark As %String, Output method As %String, PropertyParameter As %String = "") As %String
 {
-	Set ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).%OpenId(%NS)
+	Set ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)
 	; table name?
 	Set method=""
 	If PropertyParameter'="" {
@@ -94,12 +94,12 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 	#dim ele,element as PXW.DEV.Element
 	Set zh=$ZHOROLOG
     Set output=##class(PXW.Tools.DEV.HTML.bnf).%New()
-	Set output.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).%OpenId(%NS)
+	Set output.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)
 
 	Set showPaths=0
     Write "<pre>"
-	If +Debug=1 $$$DEBUGNew(##class(PXW.Debuggers.Tools).%ClassName(1))
-	If Debug["$TIME" $$$DEBUGNew(##class(PXW.Debuggers.Timing).%ClassName(1))
+	If +Debug=1 $$$DEBUGNew(##class(PXW.Tools.Debugger).%ClassName(1))
+	;If Debug["$TIME" $$$DEBUGNew(##class(PXW.Debuggers.Timing).%ClassName(1))
 	If Debug["$FILE" $$$DEBUGNew(##class(PXW.Debuggers.BasicToFile).%ClassName(1)) 
 	If Debug["$PATHS" Set showPaths=1,%path="" ; no need to set any output its just for tooltips
 	
@@ -150,9 +150,10 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 
 		Set zh(5,"render end")=$ZHOROLOG-zh,zh=$ZHOROLOG
 
-		Set xref=##class(PXW.Xref.Build).%New()
+		;Set xref=##class(PXW.Xref.Build).%New()
 		;zw ClassName,timestamp
-		Do xref.xrefClassIfNecessary(%NS,ClassName,timestamp,0,text)
+		;Do xref.xrefClassIfNecessary(%NS,ClassName,timestamp,0,text)
+		do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName)
 
 		Set zh(6,"xref")=$ZHOROLOG-zh,zh=$ZHOROLOG
 		Kill element,x,output

@@ -11,7 +11,15 @@ Property LastUpdate As %TimeStamp;
 
 Property BuildStatus As %Status;
 
+Property BuiltAt As %TimeStamp;
+
+Property CheckedAt As %TimeStamp;
+
+Property BuildProcessTime As %Numeric;
+
 Index PK On (NameSpace, ItemType, ItemKey1) [ IdKey, PrimaryKey, Unique ];
+
+Index iCheckedAtNS On (CheckedAt, NameSpace);
 
 ClassMethod OpenOrNew(NameSpace As %String, ItemType As %String, ItemKey1 As %String) As PXW.Xref.LastUpdated
 {
@@ -47,46 +55,20 @@ Storage Default
 <Value name="3">
 <Value>BuildStatus</Value>
 </Value>
+<Value name="4">
+<Value>BuiltAt</Value>
+</Value>
+<Value name="5">
+<Value>CheckedAt</Value>
+</Value>
+<Value name="6">
+<Value>BuildProcessTime</Value>
+</Value>
 </Data>
 <DataLocation>^PXW.Xref.LastUpdatedD</DataLocation>
 <DefaultData>LastUpdatedDefaultData</DefaultData>
-<ExtentSize>5350</ExtentSize>
 <IdLocation>^PXW.Xref.LastUpdatedD</IdLocation>
 <IndexLocation>^PXW.Xref.LastUpdatedI</IndexLocation>
-<Property name="%%CLASSNAME">
-<AverageFieldSize>2</AverageFieldSize>
-<Selectivity>100.0000%</Selectivity>
-</Property>
-<Property name="%%ID">
-<AverageFieldSize>46.21</AverageFieldSize>
-<Selectivity>1</Selectivity>
-</Property>
-<Property name="BuildStatus">
-<AverageFieldSize>5.75</AverageFieldSize>
-<OutlierSelectivity>.994953:1</OutlierSelectivity>
-<Selectivity>0.0210%</Selectivity>
-</Property>
-<Property name="ItemKey1">
-<AverageFieldSize>29.2</AverageFieldSize>
-<Selectivity>0.0187%</Selectivity>
-</Property>
-<Property name="ItemType">
-<AverageFieldSize>5</AverageFieldSize>
-<Selectivity>100.0000%</Selectivity>
-</Property>
-<Property name="LastUpdate">
-<AverageFieldSize>20.92</AverageFieldSize>
-<OutlierSelectivity>.320561:"2023-07-31 18:13:32"</OutlierSelectivity>
-<Selectivity>0.5479%</Selectivity>
-</Property>
-<Property name="NameSpace">
-<AverageFieldSize>12</AverageFieldSize>
-<OutlierSelectivity>.998692:"LOCAL_USER"</OutlierSelectivity>
-<Selectivity>0.1308%</Selectivity>
-</Property>
-<SQLMap name="PK">
-<BlockCount>-152</BlockCount>
-</SQLMap>
 <StreamLocation>^PXW.Xref.LastUpdatedS</StreamLocation>
 <Type>%Storage.Persistent</Type>
 }

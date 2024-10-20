@@ -120,7 +120,7 @@ Method SetNetRequest(ServerName As %String)
         Set netrequest.Port=..Settings.Port ; 52773 ; 1972
         Set netrequest.InitiateAuthentication=..Settings.InitiateAuthentication ; Basic
         Set netrequest.Username=..Settings.Username ; _SYSTEM
-        Set netrequest.Password=..Settings.Password ; "pw1471"
+        Set netrequest.Password=..Settings.Password ; "pxw123456"
         Set netrequest.ContentType=..Settings.ContentType ; "application/json"
         Set ..NetRequest=netrequest
         Do ..restorecookies()

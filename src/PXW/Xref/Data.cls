@@ -4,28 +4,28 @@ Class PXW.Xref.Data Extends %Library.Persistent [ Owner = {_PUBLIC} ]
 Property NameSpace As %String [ InitialExpression = {$GET(%NS)}, Required ];
 
 /// Class, Global, Routine
-Property ItemType As %String(COLLATION = "EXACT", DISPLAYLIST = "/Routine/Class/Global/Include", TRUNCATE = 1, VALUELIST = "/INT/CLS/GBL/INC");
+Property ItemType As %String;
 
 /// Name of Class, Global, Routine
-Property ItemKey1 As %String(COLLATION = "EXACT", MAXLEN = 1024, TRUNCATE = 1);
+Property ItemKey1 As %String(MAXLEN = 1024, TRUNCATE = 1);
 
 /// Method of Class, Subscripts of global or Label of routine
-Property ItemKey2 As %String(COLLATION = "EXACT", MAXLEN = 1024, TRUNCATE = 1);
+Property ItemKey2 As %String(MAXLEN = 1024, TRUNCATE = 1);
 
 /// What is referencing this thing (class, routine)
-Property CalledByType As %String(COLLATION = "EXACT", DISPLAYLIST = "/Routine/Class/GlobalRef/Query/View/Property", TRUNCATE = 1, VALUELIST = "/INT/CLS/GBL/QRY/VEW/PRP");
+Property CalledByType As %String;
 
 /// The command used for the call (set/kill)
-Property CalledByCommand As %String(COLLATION = "EXACT", TRUNCATE = 1);
+Property CalledByCommand As %String(TRUNCATE = 1);
 
 /// The routine, class doing the call
-Property CalledByKey1 As %String(COLLATION = "EXACT", MAXLEN = 1024, TRUNCATE = 1);
+Property CalledByKey1 As %String(MAXLEN = 1024, TRUNCATE = 1);
 
 /// Line label, method
-Property CalledByKey2 As %String(COLLATION = "EXACT", MAXLEN = 1024, TRUNCATE = 1);
+Property CalledByKey2 As %String(MAXLEN = 1024, TRUNCATE = 1);
 
 /// label relative number
-Property CalledByKey3 As %String(COLLATION = "EXACT", MAXLEN = 1024, TRUNCATE = 1);
+Property CalledByKey3 As %String(MAXLEN = 1024, TRUNCATE = 1);
 
 /// absolute line number within the entire class text, or routine text
 Property LineNumber As %Integer;

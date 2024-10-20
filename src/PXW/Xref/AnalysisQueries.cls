@@ -1,7 +1,7 @@
 Class PXW.Xref.AnalysisQueries Extends %RegisteredObject
 {
 
-Query Get(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = "", ItemKey2 As %String = "", Flags As %String = "") As PXW.LIB.SQLQuery [ SqlProc ]
+Query Get(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = "", ItemKey2 As %String = "", Flags As %String = "") As PXW.LIB.SQL.Query [ SqlProc ]
 {
 	SELECT NameSpace,ItemType,ItemKey1,ItemKey2,LineNumber,Description
 	       --,PXW_Xref.Queries_GetCode(NameSpace,CalledByType,CalledByKey1,CalledByKey2,CalledByKey3,ItemKey1,ItemKey2,LineNumber,:WindowSize) AS CallingCode 

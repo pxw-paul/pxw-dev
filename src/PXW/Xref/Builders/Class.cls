@@ -1,7 +1,9 @@
 Include PXW.Debuggers.Macros
 
-Class PXW.Xref.bnf Extends %RegisteredObject
+Class PXW.Xref.Builders.Class Extends PXW.Xref.Builder
 {
+
+Parameter CodeType = "CLS";
 
 /// The command used for the call (set/kill)
 Property CalledByKeyword As %String;
@@ -25,6 +27,55 @@ Property ClassServer As PXW.DEV.Dictionary.ClassDefinitionObject;
 
 Property ThisItemType As %String;
 
+/// Are we in a view
+Property InView As %Boolean [ InitialExpression = 0 ];
+
+Property SQLPaths As %String [ MultiDimensional ];
+
+/// d ##class(PXW.Xref.Builders.Class).test()
+ClassMethod test()
+{
+	; GET RID OF %NS
+	Set %NS="LOCAL_USER",cls="PXW.Xref.Builders.Class"
+	Set x=..%New()
+	Set cs=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)
+	Do cs.Load(cls,.text)
+	Do x.Build(%NS,cls,text)
+}
+
+Method Build(Namespace As %String, ItemKey1 As %String, PreLoadedText As %String = "") As %Status
+{
+	#dim ele as PXW.DEV.Element
+
+	;;; YUCK
+	Set %NS=Namespace
+	
+	Set sc=$$$OK
+
+    Set ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(Namespace)
+	Set text=PreLoadedText
+
+    Do ClassServer.CacheClearClassDetails(ItemKey1,1) ; pretend the class is deleted so that it REALLY clears it
+
+	If $$$ISOK(sc) {
+ 		Set ..ClassServer=ClassServer
+		Try {
+			Set x=##class(PXW.DEV.BNF.Run.ClassDefinition).%New()
+  		    Set x.stream=##class(PXW.DEV.InputStream).NewString(text)
+  			
+			Set element=##class(PXW.DEV.Element).%New()
+			While x.cheese(element) {
+   				Do ..xrefElement(element)
+   				If ..ERROR'="" $$$ThrowStatus($$$ERROR(5001,..ERROR))
+				Set element=##class(PXW.DEV.Element).%New()
+			}
+		} Catch e {
+			Set sc=e.AsStatus()
+		}
+	}
+	Quit sc
+}
+
 Method SaveAnalysis(atom As PXW.DEV.Atom, Description As %String) As %Status
 {
 	Set adata=##class(PXW.Xref.AnalysisData).%New()
@@ -45,7 +96,7 @@ Method SaveCDEFCref(ItemKey1 As %String, LineNumber As %Integer, ItemKey2 As %St
 	Set ik2=$SELECT($DATA(ItemKey2):ItemKey2,1:"_class")
 	$$$DEBUG("Saving CDEF "_ItemKey1_", "_ik2)
 	Set xref=##class(PXW.Xref.Data).%New()
-	Set xref.CalledByType="CLS"
+	Set xref.CalledByType=..#CodeType
 	Set xref.CalledByKey1=..CalledByClassName
 	Set xref.CalledByKey2=..CalledByItemName
 	Set xref.CalledByKey3=0 ; definition of property/method etc
@@ -68,7 +119,7 @@ Method SaveCOSXref(ItemType As %String, ItemKey1 As %String, ItemKey2 As %String
 	;i ItemKey2["Variables" zw ItemType,ItemKey1,ItemKey2
 	$$$DEBUG("Saving COS "_ItemType_","_ ItemKey1_","_ItemKey2_","_CalledByCommand)
 	Set xref=##class(PXW.Xref.Data).%New()
-	Set xref.CalledByType="CLS"
+	Set xref.CalledByType=..#CodeType
 	Set xref.CalledByKey1=..CalledByClassName
 	Set xref.CalledByKey2=..CalledByItemName
 	Set xref.CalledByCommand=CalledByCommand
@@ -117,14 +168,14 @@ Method SaveCOSXref(ItemType As %String, ItemKey1 As %String, ItemKey2 As %String
 	}
 }
 
-Method SaveSQLXref(ItemType As %String, ItemKey1 As %String, ItemKey2 As %String, CalledByCommand As %String, Atom As PXW.DEV.Atom = "")
+Method SaveSQLXref(ItemType As %String, ItemKey1 As %String, ItemKey2 As %String, CalledByCommand As %String, Atom As PXW.DEV.Atom = "", CalledByKey2 As %String = "")
 {
 	Set sc=$$$OK
 	$$$DEBUG("Saving SQL "_ItemType_","_ ItemKey1_","_ItemKey2_","_CalledByCommand)
 	Set xref=##class(PXW.Xref.Data).%New()
-	Set xref.CalledByType="CLS" 
+	Set xref.CalledByType=..#CodeType 
 	Set xref.CalledByKey1=..CalledByClassName
-	Set xref.CalledByKey2=..CalledByItemName
+	Set xref.CalledByKey2=$SELECT($GET(CalledByKey2)'="":CalledByKey2,1:..CalledByItemName)
 
 	If $ISOBJECT(Atom) {
 		Set xref.CalledByKey3=Atom.line-..ClassElementLineNumber
@@ -151,28 +202,6 @@ Method SaveSQLXref(ItemType As %String, ItemKey1 As %String, ItemKey2 As %String
 			Do ..SaveCOSXref(ItemType,origin,ItemKey2,CalledByCommand,Atom)
 		}
 	}
-}
-
-Method output(text As %String)
-{
-
-    Write text
-}
-
-Method begin()
-{
-	;d ..output("<pre>")
-}
-
-Method end()
-{
-	;d ..output("</pre>")
-}
-
-Method middle(element As PXW.DEV.Element)
-{
-   If $ISOBJECT(..Analyser) Do ..Analyser.middle(element) 
-   Do ..xrefElement(element)
 }
 
 Method xrefElement(element As PXW.DEV.Element)
@@ -409,13 +438,23 @@ Method xrefElement(element As PXW.DEV.Element)
 
 	/* ------------------------------------------- */
 	; from SQL
+	If element.type="AttributeViewquery" {
+		Set oldInView=..InView
+		Set ..InView=1	
+		Set ..CalledByItemName="" ; no name until we hit columns
+	}
 	If element.type="SelectCommand" {
+		Do ..SQLInternalXREF(element)
         Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
 		Set sqlanalyse.This=..CalledByClassName
         Do sqlanalyse.checkElement(element)
         Set cref=""
 		While sqlanalyse.NextColumnReference(.cref,.fulltable,.fieldname) {
+            Kill CalledByItem
             If fulltable'="" {
+	            If ..InView {
+					Set CalledByItem=""_$GET(..SQLPaths(+cref),"unk")
+	            }
                 ;d ..wrapAtomHTML(cref,"<a class='CDEFName' href='"_##class(PXW.Tools.DEV.Class).HREFTo(fulltable,fieldname)_"'>","</a>")
 				Kill patharray
 				Do ..ClassServer.GetClassPathFromTable(fulltable,fieldname,.patharray)
@@ -425,10 +464,21 @@ Method xrefElement(element As PXW.DEV.Element)
 					Set data=patharray(i)
 					Set class=$LISTGET(data,1),item=$LISTGET(data,2)
 					If class'="",item'="" {
-						Do ..SaveSQLXref("CLS",class,item,command,atom)
+						Do ..SaveSQLXref("CLS",class,item,command,atom,.CalledByItem)
 					}
 				}
             } Else {
+	            If ..InView {
+		            Set aliasNameE=cref.findFirstElementByType("AliasName",0)
+		            Set columnNameE=cref.findFirstElementByType("ColumnName",0)
+					Set command=element.type
+					Set atom=cref.FirstAtom()
+		            Set CalledByItem=""_$GET(..SQLPaths(+cref),"unk")
+		            If $ISOBJECT(aliasNameE),$ISOBJECT(columnNameE) {
+			            Do ..SaveSQLXref("CLS",..CalledByClassName,aliasNameE.ToString(0)_"."_columnNameE.ToString(0),command,atom,.CalledByItem)
+		            }
+	            }
+
                 ;s colname="col"_$$$UPPER(fieldname)
                 ;d ..wrapAtomHTML(cref,"<span class='COSObjectsProperty' title='unable to determine class, possibly because of subquery' fetchid='"_colname_"' onclick=""HiliteSets('"_colname_"');"">","</span>")
             }
@@ -497,10 +547,11 @@ Method xrefElement(element As PXW.DEV.Element)
         If $ISOBJECT(spNameE) {
             Set spname=spNameE.ToString(0)
 			Set class=..ClassServer.GetClassNameFromStoredProc(spname,.method,..CalledByClassName)
+			Set cbk2=$GET(..SQLPaths(+element),"unk")
 			If class'="" {
 				Set atom=element.FirstAtom()
 				Set command=element.type
-				Do ..SaveSQLXref("CLS",class,method,command,atom)    
+				Do ..SaveSQLXref("CLS",class,method,command,atom,cbk2)
 			}
         }
     }
@@ -537,6 +588,8 @@ Method xrefElement(element As PXW.DEV.Element)
 
 		}
 	}
+
+	Set:$DATA(oldInView) ..InView=oldInView
 }
 
 Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName As %String)
@@ -557,7 +610,7 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName
         Set objectchain=ParentElement.findFirstElementByType("ObjectChain",1) ; var.property
     }
     Set path="",sep=""
-    While $IsObject(objectchain) {
+    While $ISOBJECT(objectchain) {
         
         Set propertyatom=""
         ; the objectchain has the "." and the name
@@ -587,6 +640,42 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName
 			If $EXTRACT(item,1)="#" Set item=$EXTRACT(item,2,*) ; strip the # from parameters
 			If class'="",item'="" {
 				Do ..SaveCOSXref("CLS",class,item,command,atom)
+			}
+		}
+	}
+}
+
+/// Recursive, pass in Element, get out the ..Index of what element is where on the path, path is the current path
+Method SQLInternalXREF(Element As PXW.DEV.Element, table As %String = "", column As %String = "")
+{
+	If '$DATA(..SQLPaths(+Element)) {
+
+		If Element.type="SubquerySpecification" {
+			
+		}
+		If Element.type="DerivedTable" {
+			Set TableAsClauseE=Element.findFirstElementByType("TableAsClause",0)
+			If $ISOBJECT(TableAsClauseE) {
+				Set TableNameE=TableAsClauseE.findFirstElementByType("AliasName",0)
+				If $ISOBJECT(TableNameE) {
+					Set table=TableNameE.ToString(0)
+					Set column=""
+				}
+			}
+		}
+		If Element.type="DerivedColumn" {
+			Do ##class(PXW.DEV.BNF.Analyse.SQL).GetDerivedColumnInfo(Element,.colname)
+			If column="" Set column=colname
+		}
+		Set ..SQLPaths(+Element)=$SELECT(column'="":"column:"_$SELECT(table'="":$$$UPPER(table)_".",1:"")_$$$UPPER(column),1:"")
+
+		Set akey=""
+		For  {
+			Set atom=Element.partsGetNext(.akey)
+			Quit:akey=""
+			
+			If atom.%IsA("PXW.DEV.Element") {
+				Do ..SQLInternalXREF(atom,table,column)
 			}
 		}
 	}

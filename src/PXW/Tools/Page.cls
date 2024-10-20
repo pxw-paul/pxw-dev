@@ -169,7 +169,7 @@ ClassMethod OnPage() As %Status
 	<body  onload='bodyonload();'>
 		<div id=toolsHead>
 			<div id=toolsForms>
-				<form id=toolsFormHome action='PXW.Tools.cls'>
+				<form id=toolsFormHome action='PXW.Tools.Index.cls'>
 					<fieldset id=toolsHome>
 					<legend>Home</legend>
 						<input type=hidden name=%NS value='#(%NS)#'>

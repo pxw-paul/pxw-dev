@@ -2,18 +2,13 @@ Class PXW.Tools.DEV.XrefBuild Extends PXW.Tools.Page
 {
 
 /// d ##class(PXW.Tools.DEV.BuildAllXref).xrefPackage("eng")
-ClassMethod xrefPackage(Package As %String, Force As %Boolean = 0, Background As %Boolean = 1) As %Status
+ClassMethod xrefPackage(Package As %String, Force As %Boolean = 0) As %Status
 {
-	Set xrefer=##class(PXW.Xref.Build).%New()
-	If Background {
-        Job ##class(PXW.Xref.Build).XrefPackage(%NS,Package,"",Force,Background)
-        Hang 1
-        Write !,"Submitted to background."
-        Set sc=$$$OK
-    } Else {
-        Set xrefer.output=##class(PXW.Tools.DEV.Xref.Output).%New()
-	    Set sc=xrefer.doPackage(Package,Force)
-    }
+	set pack=$p(Package,"*",1)_"*"
+	Job ##class(PXW.Xref.Build).Build(%NS,"",pack,Force)
+	Hang 1
+	Write !,"Submitted to background."
+	Set sc=$$$OK
 	Quit sc
 }
 
@@ -29,29 +24,70 @@ ClassMethod WriteMainBody()
 				title='Enter Package name'
 			type=text id=inputPackage name=P ovalue='#(package)#' value='' size=10>
 			Force <input type='checkbox' name="F" value=1 #($SELECT(force:"checked",1:""))#>
-            Background <input type='checkbox' name="B" value=1 #($SELECT(background:"checked",1:""))#>
 			<input type=hidden name="%NS" value='#(%NS)#'>
 			<input type=submit value='Go'>
 		</form>
 	</fieldset>
-
 	>
 
 	If package'="" {
         If package="*" Set package=""
 		Write "<pre>"
 		Write "Clearing Cache" Do ##class(PXW.DEV.Dictionary.ClassDefinitionObject).ClearCache()
-		Set sc=..xrefPackage(package,force,background)
+		Set sc=..xrefPackage(package,force)
 		Do ..WriteStatus(sc)
 		Write "</pre>"
 	} 
 
-    If background {
-        Write "Showing status"
-        Write "<pre>"
-        Do ##class(PXW.Xref.BuildOutputJob).DisplayStatus()
-        Write "</pre>"
-    }
+	write "<table>"
+	w "<thead>"
+	w "<tr>"
+	w "<th>ID</th>"
+	w "<th>PID</th>"
+	w "<th>StartDateTime</th>"
+	w "<th>EndDateTime</th>"
+	w "<th>SearchName</th>"
+	w "<th>CurrentlyBuilding</th>"
+	w "<th>Total</th>"
+	w "<th>Built</th>"
+	w "<th>Errors</th>"
+	w "<th>Skipped</th>"
+	w "<th>Status</th>"
+	w "</tr>"
+	w "</thead>"
+	w "<tbody>"
+
+	s rs=##class(%Library.ResultSet).%New(..%ClassName(1)_":"_"SelectStatus")
+	$$$ThrowOnError(rs.Execute())
+	while rs.%Next() {
+		s rowclass=""
+		s enddatetime=rs.%Get("EndDateTime")
+		s running=rs.%Get("Running")
+		i running s rowclass=" class=goodrow"
+		i 'running,enddatetime="" s rowclass="class=errorrow"
+		w "<tr "_rowclass_">"
+		w "<td>"_..EscapeHTML(rs.%Get("ID"))_"</td>"
+		w "<td>"_..EscapeHTML(rs.%Get("ProcessId"))_"</td>"
+		w "<td>"_..EscapeHTML(rs.%Get("StartDateTime"))_"</td>"
+		w "<td>"_..EscapeHTML(rs.%Get("EndDateTime"))_"</td>"
+		w "<td>"_..EscapeHTML(rs.%Get("RequestSearchName"))_"</td>"
+		w "<td>"_..EscapeHTML(rs.%Get("CurrentlyBuilding"))_"</td>"
+		w "<td>"_..EscapeHTML(rs.%Get("Total"))_"</td>"
+		w "<td>"_..EscapeHTML(rs.%Get("TotalBuilt"))_"</td>"
+		w "<td>"_..EscapeHTML(rs.%Get("TotalErrors"))_"</td>"
+		w "<td>"_..EscapeHTML(rs.%Get("TotalSkipped"))_"</td>"
+		w "<td>"_..EscapeHTML(rs.%Get("Status"))_"</td>"
+		w "</tr>"
+		
+	}
+
+	w "</tbody>"
+	w "</table>"
+}
+
+Query SelectStatus() As %Library.SQLQuery
+{
+	SELECT top 25 * FROM PXW_Xref.BuildStatus ORDER BY ID DESC
 }
 
 /// This shoud output some variables, getting the data from %request

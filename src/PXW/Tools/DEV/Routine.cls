@@ -1,7 +1,9 @@
-Class PXW.Tools.DEV.Routine Extends PXW.Tools.Page
+Class PXW.Tools.DEV.Routine Extends PXW.Tools.DEV.CodeDisplayPage
 {
 
-Parameter ToolType = "Code";
+
+Parameter CodeType="INT";
+
 
 ClassMethod WriteMainBody()
 {

@@ -34,7 +34,7 @@ Method ToString(wspace As %String = "") As %String
 	If $ISOBJECT(..whitespace) {
 		If wspace="" {
 			Set str=str_..whitespace.ToString()
-		} ElseIf wspace=0{
+		} ElseIf wspace=0 {
 			Set str=str
 		}
 		Else {

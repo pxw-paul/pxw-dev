@@ -1,7 +1,7 @@
-Class PXW.Tools.DEV.Include Extends PXW.Tools.Page
+Class PXW.Tools.DEV.Include Extends PXW.Tools.DEV.CodeDisplayPage
 {
 
-Parameter ToolType = "Code";
+Parameter CodeType = "INC";
 
 ClassMethod WriteMainBody(ByRef scratch)
 {
@@ -48,7 +48,7 @@ ClassMethod WriteInclude(Include As %String, MacroToHilite As %Integer = "", Deb
         Set output.BookMark=MacroToHilite
 		; we can attempt to analyse as if it was COS
 		Set output.Analyser=##class(PXW.DEV.BNF.Analyse.COS).%New()
-		Set output.Analyser.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).%OpenId(%NS)
+		Set output.Analyser.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)
 		Set scratch=output
 		If Debug="$PATHS" Set output.showPaths=1,%path=""
 

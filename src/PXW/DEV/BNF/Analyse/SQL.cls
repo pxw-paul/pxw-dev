@@ -173,6 +173,7 @@ Method SelectCommand(element As PXW.DEV.Element)
 /// For cols that use implict joins only the first table in the chain is returned.
 ClassMethod GetDerivedColumnInfo(DerivedColumn As PXW.DEV.Element, ByRef ColName As %String, Output ColumnReference As PXW.DEV.Element)
 {
+    Set ColName="unknown"
     Set ColumnReference=""
     ; if the column is just a reference to another column
     Do DerivedColumn.findElementsByType("ColumnReference",.colrefs,2)

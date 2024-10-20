@@ -2,10 +2,12 @@ Include PXW.Debuggers.Macros
 
 /// Crazy caching in here, it all started so simple and then got a bit out of
 /// control!
-Class PXW.DEV.Dictionary.ClassDefinitionObject Extends %Library.Persistent
+Class PXW.DEV.Dictionary.ClassDefinitionObject Extends PXW.DEV.Dictionary.CodeInterface
 {
 
-Property Namespace As %String;
+Parameter CodeType = "CLS";
+
+Parameter CodeTypeDescription = "Iris Class Definition";
 
 Property AtelierSettings As PXW.DEV.Dictionary.AtelierSettings;
 
@@ -13,7 +15,7 @@ Property AtelierSettings As PXW.DEV.Dictionary.AtelierSettings;
 /// each item in the list will be added to the SQL in the form: AND name NOT LIKE '...'
 /// If % is part of the name then you must escape it like this:
 /// "\%Library%" means "%Library*" 
-/// vs
+/// vs 
 /// "%Library%" means "*Library*"
 Property ExcludeClassesLike As %List;
 
@@ -25,25 +27,6 @@ Property ExcludeClassesExtends As %List;
 /// declared anywhere.
 /// EG. %request=%CSP.Request
 Property KnownVariables As array Of %String;
-
-Index iNamespace On Namespace [ IdKey ];
-
-ClassMethod Setup() As %Status
-{
-
-    Set ns="LOCAL_USER"
-    Set o=..%OpenId(ns)
-    If '$ISOBJECT(o) {
-        Set o=..%New()
-        Set o.Namespace=ns
-    }
-    Do o.AtelierSettingsSetObjectId(ns)
-    Set o.ExcludeClassesLike=$LISTBUILD("ui3%")
-    Do o.KnownVariables.SetAt("%CSP.Request","%request")
-    Do o.KnownVariables.SetAt("%CSP.Session","%session")
-    Set sc=o.%Save()
-    Quit sc
-}
 
 ClassMethod ClearCache() [ CodeMode = objectgenerator ]
 {
@@ -58,6 +41,11 @@ ClassMethod ClearCache() [ CodeMode = objectgenerator ]
 ClassMethod Now() As %TimeStamp
 {
     Quit $ZDATETIME($HOROLOG,3)
+}
+
+Method Load(Name As %String, Output Text As %String, Output LastUpdateTime As %TimeStamp) As %Status
+{
+	q ..GetClassStudioText(Name,.Text,,.LastUpdateTime)
 }
 
 Method GetClassStudioText(ClassName As %String, Output Text As %String, Output linesOfCode As %String, Output LastUpdateTime As %TimeStamp) As %Status
@@ -107,8 +95,8 @@ Method ListClassDetailsLike(ClassLike As %String, escape As %String = "", listHi
 
 	Set server=..AtelierSettings.ServerName 
 	Set sql=""
-	Set sql=sql_"SELECT cc.ClassType,cc.Name,to_char($piece(cc.TimeChanged,'.',1),'YYYY-MM-DD HH24:MI:SS') as TimeChanged"
-    Set sql=sql_",cc.Super,cc.PrimarySuper "
+	Set sql=sql_"SELECT cc.ClassType,cc.Name,to_char($piece(cd.TimeChanged,'.',1),'YYYY-MM-DD HH24:MI:SS') as TimeChanged"
+    Set sql=sql_",cc.Super,cc.PrimarySuper,cc.ClassType as SubType "
 	Set sql=sql_"	FROM %Dictionary.CompiledClass AS cc"
     Set sql=sql_" INNER JOIN %Dictionary.ClassDefinition AS cd ON cd.ID=cc.ID"
 	Set sql=sql_"	WHERE 1=1"
@@ -625,6 +613,11 @@ ClassMethod FullClassName(Class As %String, CurrentPackage As %String = "") As %
 	Quit Class
 }
 
+Method List(Name As %String) As PXW.DEV.Dictionary.AtelierRS
+{
+    q ..ListClassDetailsWild(Name)
+}
+
 Method ListClassDetails(ClassName As %String = "", SQLTableName As %String = "") As PXW.DEV.Dictionary.AtelierRS
 {
     $$$DEBUGMethodBegin
@@ -632,7 +625,7 @@ Method ListClassDetails(ClassName As %String = "", SQLTableName As %String = "")
 	Set server=..AtelierSettings.ServerName
 	Set sql=""
     Set sql=sql_"SELECT Name,ClassType,Super,PrimarySuper,to_char($piece(TimeChanged,'.',1),'YYYY-MM-DD HH24:MI:SS') as TimeChanged"
-    Set sql=sql_",SqlQualifiedNameQ,IncludeCodeAll,IncludeMGenAll,PropertyClass"
+    Set sql=sql_",SqlQualifiedNameQ,IncludeCodeAll,IncludeMGenAll,PropertyClass,ClassType as SubType"
     Set sql=sql_" FROM %Dictionary.CompiledClass "
     Set sql=sql_" WHERE "
     If ClassName'="" Set sql=sql_" Name ='"_ClassName_"'"
@@ -894,57 +887,23 @@ Method GetMacroLocation(ClassUsingMacro As %String, MacroName As %String, Output
 Storage Default
 {
 <Data name="ClassDefinitionObjectDefaultData">
+<Subscript>"ClassDefinitionObject"</Subscript>
 <Value name="1">
-<Value>%%CLASSNAME</Value>
-</Value>
-<Value name="2">
 <Value>AtelierSettings</Value>
 </Value>
-<Value name="3">
+<Value name="2">
 <Value>ExcludeClassesLike</Value>
 </Value>
-<Value name="4">
+<Value name="3">
 <Value>ExcludeClassesExtends</Value>
 </Value>
 </Data>
 <Data name="KnownVariables">
 <Attribute>KnownVariables</Attribute>
 <Structure>subnode</Structure>
-<Subscript>"KnownVariables"</Subscript>
+<Subscript>"PXW.DEV.Dictionary.ClassDefinitionObject.KnownVariables"</Subscript>
 </Data>
-<DataLocation>^PXW.DEV.Di9C1D.ClassDefiniEA37D</DataLocation>
 <DefaultData>ClassDefinitionObjectDefaultData</DefaultData>
-<ExtentSize>1</ExtentSize>
-<IdLocation>^PXW.DEV.Di9C1D.ClassDefiniEA37D</IdLocation>
-<IndexLocation>^PXW.DEV.Di9C1D.ClassDefiniEA37I</IndexLocation>
-<Property name="%%CLASSNAME">
-<AverageFieldSize>2</AverageFieldSize>
-<Selectivity>100.0000%</Selectivity>
-</Property>
-<Property name="%%ID">
-<AverageFieldSize>12</AverageFieldSize>
-<Selectivity>1</Selectivity>
-</Property>
-<Property name="AtelierSettings">
-<AverageFieldSize>12</AverageFieldSize>
-<Selectivity>100.0000%</Selectivity>
-</Property>
-<Property name="ExcludeClassesExtends">
-<AverageFieldSize>2</AverageFieldSize>
-<Selectivity>100.0000%</Selectivity>
-</Property>
-<Property name="ExcludeClassesLike">
-<AverageFieldSize>8</AverageFieldSize>
-<Selectivity>100.0000%</Selectivity>
-</Property>
-<Property name="Namespace">
-<AverageFieldSize>12</AverageFieldSize>
-<Selectivity>1</Selectivity>
-</Property>
-<SQLMap name="iNamespace">
-<BlockCount>-4</BlockCount>
-</SQLMap>
-<StreamLocation>^PXW.DEV.Di9C1D.ClassDefiniEA37S</StreamLocation>
 <Type>%Storage.Persistent</Type>
 }
 
