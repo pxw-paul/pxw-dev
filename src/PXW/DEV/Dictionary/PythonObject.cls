@@ -9,12 +9,13 @@ Property LibraryLocation As %List;
 
 Index iPK On Namespace [ IdKey, PrimaryKey, Unique ];
 
-ClassMethod SetUp()
+ClassMethod SetUp() As %Status
 {
-    Set x=..%New()
-    Set x.Namespace="LOCAL_USER"
-    Set x.LibraryLocation=$LISTBUILD("/usr/lib/python3.10/")
-    Set sc=x.%Save()
+    Set pythonObject=..%New()
+    Set pythonObject.Namespace="LOCAL_USER"
+    Set pythonObject.LibraryLocation=$LISTBUILD("/usr/lib/python3.10/")
+    Set sc=pythonObject.%Save()
+    Quit sc
 }
 
 /// s py=##class(PXW.DEV.Dictionary.PythonObject).%OpenId("LOCAL_USER")
@@ -43,7 +44,7 @@ Method GetModule(Name As %String, Output Text As %String, Output linesOfCode As 
 
 Method FindFileName(ModuleName As %String) As %String
 {
-    Set ret=""
+    Set found=""
     Set dirsep="/" ; ONLY FOR UNIX AT THE MOMENT
     Set nopy=$SELECT($$$LOWER($PIECE(ModuleName,".",*))="py":$PIECE(ModuleName,".",1,*-1),1:ModuleName)
     Set undotted=$TRANSLATE(nopy,".",dirsep)
@@ -52,17 +53,17 @@ Method FindFileName(ModuleName As %String) As %String
         ; try file directly
         Set filename=dir_undotted_".py"
         If ##class(%Library.File).Exists(filename) {
-            Set ret=filename
+            Set found=filename
             Quit ; loop
         }
         ; maybe there is an init file
         Set filename=dir_undotted_dirsep_"__init__.py"
         If ##class(%Library.File).Exists(filename) {
-            Set ret=filename
+            Set found=filename
             Quit ; loop
         }
     }
-    Quit ret
+    Quit found
 }
 
 Storage Default

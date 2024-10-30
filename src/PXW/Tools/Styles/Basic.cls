@@ -199,8 +199,8 @@ Method WriteStyles()
 	.SQLTableAliasSet { color: var(--fgCodeVariable); font-weight:bold;}
 
 	@keyframes blinker {
-	from {opacity: 1.0;}
-	to {opacity: 0.1;}
+	from {background-color:var(--bgAlternate1);}
+	to {background-color:var(--bgHilite);}
 	}
 
 	.hilite {  background-color: /*#505050;*/ var(--bgHilite); border-bottom:1px solid yellow;
@@ -220,23 +220,23 @@ Method WriteStyles()
 	.warningdata { background-color: var(--bgWarning); }
 	.errordata { background-color: var(--bgError); }
 	
-	.hiliteSET1 { background-color:#ffcc00; } 
-	.hiliteSET2 { background-color:#ff0000; }
-	.hiliteSET3 { background-color:#0000ff; }
-	.hiliteSET4 { background-color:#00cc00; }
-	.hiliteSET5 { background-color:#800080; }
-	.hiliteSET6 { background-color:#00ccb4; }
-	.hiliteSET7 { background-color:#be00cc; }
-	.hiliteSET8 { background-color:#b30000; }
+	.hiliteSET1 { background-color:#ffcc00; color:white; } 
+	.hiliteSET2 { background-color:#ff0000; color:white; }
+	.hiliteSET3 { background-color:#0000ff; color:white; }
+	.hiliteSET4 { background-color:#00cc00; color:white; }
+	.hiliteSET5 { background-color:#800080; color:white; }
+	.hiliteSET6 { background-color:#00ccb4; color:white; }
+	.hiliteSET7 { background-color:#be00cc; color:white; }
+	.hiliteSET8 { background-color:#b30000; color:white; }
 	.hiliteSET9 { background-color:none; }
-	.hiliteGET1 { background-color:#cca300; } 
-	.hiliteGET2 { background-color:#cc0000; } 
-	.hiliteGET3 { background-color:#0000cc; }
-	.hiliteGET4 { background-color:#009900; }
-	.hiliteGET5 { background-color:#660066; }
-	.hiliteGET6 { background-color:#009987; }
-	.hiliteGET7 { background-color:#8e0099; }
-	.hiliteGET8 { background-color:#860000; }
+	.hiliteGET1 { background-color:#cca300; color:white; } 
+	.hiliteGET2 { background-color:#cc0000; color:white; } 
+	.hiliteGET3 { background-color:#0000cc; color:white; }
+	.hiliteGET4 { background-color:#009900; color:white; }
+	.hiliteGET5 { background-color:#660066; color:white; }
+	.hiliteGET6 { background-color:#009987; color:white; }
+	.hiliteGET7 { background-color:#8e0099; color:white; }
+	.hiliteGET8 { background-color:#860000; color:white; }
 	.hiliteGET9 { background-color:none; }
 	
 	/* End of code display */

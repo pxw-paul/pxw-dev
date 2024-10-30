@@ -191,7 +191,7 @@ ClassMethod WriteNav(ByRef scratch)
 }
 
 /// Write out extra javascript here, the SCRIPT tags are already in place
-ClassMethod WriteScripts() As %Status
+ClassMethod WriteScripts()
 {
 	Write "function edit(clsname) {"
 	Write " 	var editor=window.frames['editor'];",!

@@ -73,10 +73,6 @@ Method Load(Name As %String, Output Text As %String, Output LastUpdateTime As %T
         Set line=0
         While iter.%GetNext(.key,.value) {
             ; the top line is not to be included in the text
-            If line=0 {
-                Set Summary=value
-                If $$$UPPER($PIECE($PIECE($PIECE(Summary,"[",2),"]",1),",",2))="GENERATED" Set IsGenerated=1
-            }
             ; ROUTINE PXW.DEV.JS.Parser.1 [Type=INT,Generated]"_$c(13,10)_" ;PXW.DEV.JS.Parser.1"_$c(13,10)_" ;Gen......
             If line>0 {
                 Set Text=Text_sep_value Set sep=$CHAR(13,10)

@@ -345,7 +345,7 @@ Method addString(ParentElement As PXW.DEV.Element = "", StringToCheck As %String
 Method addStringInList(ParentElement As PXW.DEV.Element, ListOfStrings As %List, longestLen As %Integer = 50, Output foundString As %String) As %Boolean
 {
     $$$DEBUGMethodBegin
-    Set ret=0
+    Set ok=0
     If ..isStringInList(ListOfStrings,longestLen,.value) {
         If value?1.P {
             Set atom=..newAtom("punctuation",value)
@@ -354,71 +354,71 @@ Method addStringInList(ParentElement As PXW.DEV.Element, ListOfStrings As %List,
         }
         Do ParentElement.AddPart(atom)
         Set ..lastElement=ParentElement
-        Set ret=1
+        Set ok=1
         Set foundString=value
     }
     $$$DEBUGMethodEnd
-    Quit ret
+    Quit ok
 }
 
 Method addKeywordInList(ParentElement As PXW.DEV.Element, ListOfStrings As %List, Output foundString As %String) As %Boolean
 {
     $$$DEBUGMethodBegin
-    Set ret=0  
+    Set ok=0  
     If ..isKeywordInList(ListOfStrings,.value) {
         Set foundString=..next($LENGTH(value))
         Set atom=..newAtom(..#keywordAtomType,foundString)
         Do ParentElement.AddPart(atom)
         Set ..lastElement=ParentElement
-        Set ret=1
+        Set ok=1
     }
     $$$DEBUGMethodEnd
-    Quit ret
+    Quit ok
 }
 
 Method addKeyword(ParentElement As PXW.DEV.Element, Keyword As %String, Output foundString As %String) As %Boolean
 {
     $$$DEBUGMethodBegin
-    Set ret=0
+    Set ok=0
     If ..isKeyword(Keyword,.value) {
         Set foundString=..next($LENGTH(value))
         Set atom=..newAtom(..#keywordAtomType,foundString)
         Do ParentElement.AddPart(atom)
         Set ..lastElement=ParentElement
-        Set ret=1
+        Set ok=1
     }
     $$$DEBUGMethodEnd
-    Quit ret
+    Quit ok
 }
 
 Method addPunctuation(ParentElement As PXW.DEV.Element, Punctuation As %String, Output foundString As %String) As %Boolean
 {
     $$$DEBUGMethodBegin
-    Set ret=0
+    Set ok=0
     If ..isPunctuation(Punctuation,.value) {
         Set foundString=..next($LENGTH(value))
         Set atom=..newAtom("punctuation",foundString)
         Do ParentElement.AddPart(atom)
         Set ..lastElement=ParentElement
-        Set ret=1
+        Set ok=1
     }
     $$$DEBUGMethodEnd
-    Quit ret
+    Quit ok
 }
 
 Method addPunctuationInList(ParentElement As PXW.DEV.Element, ListOfStrings As %List, longestLen As %Integer = 50, Output foundString As %String) As %Boolean
 {
     $$$DEBUGMethodBegin
-    Set ret=0
+    Set ok=0
     If ..isPunctuationInList(ListOfStrings,longestLen,.value) {
         Set foundString=..next(longestLen)
         Set atom=..newAtom("punctuation",foundString)
         Do ParentElement.AddPart(atom)
         Set ..lastElement=ParentElement
-        Set ret=1
+        Set ok=1
     }
     $$$DEBUGMethodEnd
-    Quit ret
+    Quit ok
 }
 
 Method concatChar(ByRef string As %String, char As %String)
@@ -654,7 +654,7 @@ Method recover(ParentElement As PXW.DEV.Element, ByRef subElement As PXW.DEV.Ele
 	Set subElement.type="recover"
 
     Set matchcount=0 
-	Set ret=0
+	Set ok=0
 	Set r=""
     ; find where we are now (pos) up to the point of failure (lastPos)
     While '..eof(),..stream.pos<..stream.lastPos,$LISTFIND(StopAtList,..peek(1))=0,matchcount>=0 {
@@ -663,35 +663,35 @@ Method recover(ParentElement As PXW.DEV.Element, ByRef subElement As PXW.DEV.Ele
             If ..peek(1)=$EXTRACT(Match,2) Set matchcount=matchcount-1
             If matchcount>=0 {
                 Set r=r_..next()
-                Set ret=1
+                Set ok=1
             }
         } Else {
             Set r=r_..next()
-            Set ret=1
+            Set ok=1
         }
     }
-	If ret {
+	If ok {
 		Set atom=..newAtom("ERROR",r)
 		Do subElement.AddPart(atom)
 	}	
     
     ; now find from the point of failure up to the next recovery point (a mismatch of {}  or a specific char)
-    Set ret=0,r=""
+    Set ok=0,r=""
 	While '..eof(),$LISTFIND(StopAtList,..peek(1))=0,matchcount>=0 {
         If ..peek(1)=$EXTRACT(Match,1) Set matchcount=matchcount+1
         If ..peek(1)=$EXTRACT(Match,2) Set matchcount=matchcount-1
         If matchcount>=0 {
             Set r=r_..next()
-            Set ret=1
+            Set ok=1
         }
 	}
-	If ret {
+	If ok {
 		Set atom=..newAtom("ERROR",r)
 		Do subElement.AddPart(atom)
 		Do ParentElement.AddPart(subElement)
 	}	
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 }

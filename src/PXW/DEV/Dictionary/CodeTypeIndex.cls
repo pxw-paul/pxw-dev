@@ -12,22 +12,22 @@ Index PK On (Usage, CodeType) [ IdKey ];
 
 ClassMethod RegisterType(Usage As %String, CodeType As %String, Class As %String) As %Status
 {
-    set ct=##class(PXW.DEV.Dictionary.CodeType).%OpenId(CodeType,,.sc)
-    quit:'$isobject(ct) sc
+    Set ct=##class(PXW.DEV.Dictionary.CodeType).%OpenId(CodeType,,.sc)
+    Quit:'$ISOBJECT(ct) sc
 
-    set cti=..PKOpen(Usage,CodeType) 
-    if '$isobject(cti) {
-        set cti=..%New()
-        set cti.Usage=Usage
-        set cti.CodeType=ct
+    Set cti=..PKOpen(Usage,CodeType) 
+    If '$ISOBJECT(cti) {
+        Set cti=..%New()
+        Set cti.Usage=Usage
+        Set cti.CodeType=ct
     }
-    if cti.Class="" set cti.Class=Class
-    if cti.Class=Class {
-        set sc=cti.%Save()
-    } else {
-        set sc=$$$ERROR(5001,"CodeType ("_Usage_","_CodeType_") is already linked to "_cti.DisplayPageClass)
+    If cti.Class="" Set cti.Class=Class
+    If cti.Class=Class {
+        Set sc=cti.%Save()
+    } Else {
+        Set sc=$$$ERROR(5001,"CodeType ("_Usage_","_CodeType_") is already linked to "_cti.DisplayPageClass)
     }
-    quit sc
+    Quit sc
 }
 
 ClassMethod GetClassForUsage(Usage As %String, CodeTypeName As %String) As %String
@@ -38,8 +38,8 @@ ClassMethod GetClassForUsage(Usage As %String, CodeTypeName As %String) As %Stri
          WHERE Usage=:Usage
            AND CodeType->Name=:CodeTypeName
     )
-    I SQLCODE>-1 Q class
-    Q ""
+    If SQLCODE>-1 Quit class
+    Quit ""
 }
 
 Storage Default

@@ -59,8 +59,8 @@ Method write(indent As %String)
 Method writeFull(indent As %String)
 {
 	Write indent_"type="_..type,!
-	If $ISOBJECT(..whitespace) Do ..whitespace.writeFull(indent_"  ")
-	If $ISOBJECT(..comment) Do ..comment.writeFull(indent_"  ")
+	Do:$ISOBJECT(..whitespace) ..whitespace.writeFull(indent_"  ")
+	Do:$ISOBJECT(..comment) ..comment.writeFull(indent_"  ")
 	Write indent_" "_..start_..value_..end,!
 }
 

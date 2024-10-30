@@ -23,9 +23,9 @@ Method AddPart(Part As PXW.DEV.Particle)
 
 Method partsGetAt(key As %Integer) As PXW.DEV.Particle
 {
-	#dim %PXWparts as PXW.DEV.Particle
-	;q ..parts.GetAt(key)
-	Quit $GET(%PXWparts(+$THIS,key))
+	#dim part as PXW.DEV.Particle
+	set part=$GET(%PXWparts(+$THIS,key))
+	Quit part
 }
 
 Method partsGetNext(ByRef key As %Integer = "") As PXW.DEV.Particle
@@ -161,6 +161,8 @@ Method findElementTypes(ClassName As %String, ByRef OuputArray As %String)
 
 Method findFirstElementByType(Type As %String, deep As %Boolean = 1) As PXW.DEV.Element
 {
+	#dim ele,founda as PXW.DEV.Element
+
 	Set uType=$$$UPPER(Type)
 	Set found=""
 	If deep {
@@ -189,17 +191,16 @@ Method findFirstElementByType(Type As %String, deep As %Boolean = 1) As PXW.DEV.
 
 Method findNextElement(ByRef key As %Integer) As PXW.DEV.Element
 {
-fnel Set x=..partsGetNext(.key)
-	 If x="" Quit x
-	 If 'x.%IsA("PXW.DEV.Element") Goto fnel
-	 Quit x
+	#dim ele as PXW.DEV.Element
+	do {
+		Set ele=..partsGetNext(.key)
+	 	If ele="" Quit
+	} While 'ele.%IsA("PXW.DEV.Element") 
+	Quit ele
 }
 
 Method countElements() As %Integer
 {
-	;Set count=0,k=""
-	;For  Set x=..findNextElement(.k) Quit:k=""  Set count=count+1
-	;Quit count
 	Set count=0,k=""
 	While $isobject(..findNextElement(.k)) {
 		Set count=count+1

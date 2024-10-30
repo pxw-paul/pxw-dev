@@ -207,8 +207,8 @@ Method WriteStyles()
 	.SQLTableAliasSet { color: var(--fgCodeVariable); font-weight:bold;}
 
 	@keyframes blinker {
-	from {opacity: 1.0;}
-	to {opacity: 0.1;}
+	from {background-color:var(--bgAlternate1);}
+	to {background-color:var(--bgHilite);}
 	}
 
 	.hilite {  background-color: /*#505050;*/ var(--bgHilite); border-bottom:1px solid yellow;

@@ -66,20 +66,18 @@ ClassMethod WriteXRef(itemtype As %String, itemk1 As %String, itemk2 As %String,
 			Set from=mid-ws,relfrom=rel-ws
 			Set to=mid+ws
 			Set pieces=$LENGTH(rs.CallingCode,$CHAR(13,10))
-			Set piece=0
+			Set piecenumber=0
 			If from<1 Set relfrom=relfrom-from+1,from=1
-			If relfrom<0 Set from=from-relfrom,piece=piece-relfrom ; do not display code before the method start
+			If relfrom<0 Set from=from-relfrom,piecenumber=piecenumber-relfrom ; do not display code before the method start
 			For i=from:1:to {
-				Set piece=piece+1
-				If piece<=pieces {
+				Set piecenumber=piecenumber+1
+				If piecenumber<=pieces {
 					If ws>0,i=mid Write "<span class='hilite'>"
-					Write ..EscapeHTML($PIECE(rs.CallingCode,$CHAR(13,10),piece))_"<br>"
+					Write ..EscapeHTML($PIECE(rs.CallingCode,$CHAR(13,10),piecenumber))_"<br>"
 					If ws>0,i=mid Write "</span>"
 				}
 			}
 		Write "</pre></td>"
-		
-		
 		Write "</tr>",!
 	}
 	Write "</tbody></table>"

@@ -1,4 +1,4 @@
-/// Created: 2024-10-20 14:41:38 PXW.DEV.BNF.Compilers.Compiler1
+/// Created: 2024-10-26 12:15:32 PXW.DEV.BNF.Compilers.Compiler1
 Class PXW.DEV.BNF.GEN.ClassDefinition Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 
@@ -8,6 +8,7 @@ Parameter Keywords = "ABSTRACT,ACCESSTYPE,ACCESSVAR,AFTER,ALIASES,ALPHAUP,ARRAY,
 
 ///  alias_identifier ::= 'NEED ALIAS IDENT'
 /// summary values:NEED ALIAS IDENT
+/// summary=P
 Method AliasIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -22,20 +23,21 @@ Method AliasIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  as_type_class_reference ::= 'as' type_class_reference
 /// summary values:AS
+/// summary=K&C
 Method AsTypeClassReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?
+	; rules summary K&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("AS"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -50,17 +52,18 @@ Method AsTypeClassReference(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Abstract ::= 'abstract'
 /// summary values:ABSTRACT
+/// summary=K
 Method AttributeAbstract(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -75,20 +78,21 @@ Method AttributeAbstract(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Aliases ::= 'aliases' '=' '{' attribute_AliasList '}'
 /// summary values:ALIASES
+/// summary=K&P&P&C&P
 Method AttributeAliases(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&P&?1Rule?&P
+	; rules summary K&P&P&C&P
 	; first rule summary K
 	if '(..isKeywordInList($lb("ALIASES"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -109,19 +113,20 @@ Method AttributeAliases(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_AliasList ::= attribute_OneAlias ( ',' attribute_OneAlias )*
+/// summary=C&(?4punctuation:4?)*
 Method AttributeAliaslist(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&(?4?)*
+	; rules summary C&(?4punctuation:4?)*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -134,37 +139,38 @@ Method AttributeAliaslist(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( ',' attribute_OneAlias )*
 Method AttributeAliaslist122RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..AttributeAliaslist123Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  ',' attribute_OneAlias
 /// summary values:,
+/// summary=P&C
 Method AttributeAliaslist123Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -178,17 +184,18 @@ Method AttributeAliaslist123Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Calculated ::= 'calculated'
 /// summary values:CALCULATED
+/// summary=K
 Method AttributeCalculated(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -203,20 +210,21 @@ Method AttributeCalculated(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Cardinality ::= 'cardinality' '=' attribute_Cardinality_type
 /// summary values:CARDINALITY
+/// summary=K&P&C
 Method AttributeCardinality(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("CARDINALITY"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -233,17 +241,18 @@ Method AttributeCardinality(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Cardinality_type ::= 'one' | 'many' | 'parent' | 'children'
 /// summary values:ONE,MANY,PARENT,CHILDREN
+/// summary=K|K|K|K
 Method AttributeCardinalityType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|K|K|K
@@ -264,20 +273,21 @@ Method AttributeCardinalityType(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_ClassType ::= 'classtype' '=' class_type_name
 /// summary values:CLASSTYPE
+/// summary=K&P&C
 Method AttributeClasstype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("CLASSTYPE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -294,20 +304,21 @@ Method AttributeClasstype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_ClientDataType ::= 'clientdatatype' '=' client_data_type_name
 /// summary values:CLIENTDATATYPE
+/// summary=K&P&C
 Method AttributeClientdatatype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("CLIENTDATATYPE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -324,20 +335,21 @@ Method AttributeClientdatatype(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_ClientName ::= 'clientname' '=' attribute_ClientName_value
 /// summary values:CLIENTNAME
+/// summary=K&P&C
 Method AttributeClientname(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("CLIENTNAME"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -354,19 +366,20 @@ Method AttributeClientname(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_ClientName_value ::= client_identifier
+/// summary=C
 Method AttributeClientnameValue(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -377,20 +390,21 @@ Method AttributeClientnameValue(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_CodeMode ::= 'codemode' '=' attribute_CodeModeType
 /// summary values:CODEMODE
+/// summary=K&P&C
 Method AttributeCodemode(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("CODEMODE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -407,17 +421,18 @@ Method AttributeCodemode(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_CodeModeType ::= 'call' | 'code' | 'expression' | 'objectgenerator' | 'generator'
 /// summary values:CALL,CODE,EXPRESSION,OBJECTGENERATOR,GENERATOR
+/// summary=K|K|K|K|K
 Method AttributeCodemodetype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|K|K|K|K
@@ -440,20 +455,21 @@ Method AttributeCodemodetype(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_CompileAfter ::= 'compileafter' '=' [class_reference_list | class_reference]
 /// summary values:COMPILEAFTER
+/// summary=K&P&[C|C]
 Method AttributeCompileafter(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?4?
+	; rules summary K&P&[C|C]
 	; first rule summary K
 	if '(..isKeywordInList($lb("COMPILEAFTER"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -470,21 +486,23 @@ Method AttributeCompileafter(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
+/// 
+/// summary=C|C
 Method AttributeCompileafter125OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..ClassReferenceList(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..ClassReference(subElement,.addedElement)  {
@@ -492,21 +510,19 @@ Method AttributeCompileafter125OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRe
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Condition ::= 'condition' '=' '{' expression '}'
 /// summary values:CONDITION
+/// summary=K&P&P&C&P
 Method AttributeCondition(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&P&?1Rule?&P
+	; rules summary K&P&P&C&P
 	; first rule summary K
 	if '(..isKeywordInList($lb("CONDITION"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -527,20 +543,21 @@ Method AttributeCondition(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Constraint ::= 'constraint' '=' (number | string | identifier)
 /// summary values:CONSTRAINT
+/// summary=K&P&C|C|C
 Method AttributeConstraint(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C|C|C
 	; first rule summary K
 	if '(..isKeywordInList($lb("CONSTRAINT"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -557,22 +574,23 @@ Method AttributeConstraint(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// number | string | identifier
+/// summary=C|C|C
 Method AttributeConstraint124Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..Number(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..String(subElement,.addedElement)  {
@@ -582,21 +600,19 @@ Method AttributeConstraint124Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Data ::= 'data' '=' ( one_data_attribute_value | ( '(' one_data_attribute_value ( ',' one_data_attribute_value )* ')' ) )
 /// summary values:DATA
+/// summary=K&P&C|P&C&(?4punctuation:4?)*&P
 Method AttributeData(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C|P&C&(?4punctuation:4?)*&P
 	; first rule summary K
 	if '(..isKeywordInList($lb("DATA"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -613,19 +629,20 @@ Method AttributeData(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  one_data_attribute_value | ( '(' one_data_attribute_value ( ',' one_data_attribute_value )* ')' )
+/// summary=C|P&C&(?4punctuation:4?)*&P
 Method AttributeData126Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
+	; rules summary C|P&C&(?4punctuation:4?)*&P
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -637,20 +654,21 @@ Method AttributeData126Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  '(' one_data_attribute_value ( ',' one_data_attribute_value )* ')'
 /// summary values:(
+/// summary=P&C&(?4punctuation:4?)*&P
 Method AttributeData127Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&(?4?)*&P
+	; rules summary P&C&(?4punctuation:4?)*&P
 	; first rule summary P
 	if '(..isStringSingle("(",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -668,37 +686,38 @@ Method AttributeData127Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( ',' one_data_attribute_value )*
 Method AttributeData128RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..AttributeData129Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  ',' one_data_attribute_value
 /// summary values:,
+/// summary=P&C
 Method AttributeData129Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -712,17 +731,18 @@ Method AttributeData129Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_DDLAllowed ::= 'ddlallowed'
 /// summary values:DDLALLOWED
+/// summary=K
 Method AttributeDdlallowed(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -737,20 +757,21 @@ Method AttributeDdlallowed(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_DependsOn ::= 'dependson' '=' ( class_reference_list | class_reference )
 /// summary values:DEPENDSON
+/// summary=K&P&C|C
 Method AttributeDependson(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C|C
 	; first rule summary K
 	if '(..isKeywordInList($lb("DEPENDSON"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -767,22 +788,23 @@ Method AttributeDependson(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_reference_list | class_reference
+/// summary=C|C
 Method AttributeDependson131Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..ClassReferenceList(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..ClassReference(subElement,.addedElement)  {
@@ -790,18 +812,16 @@ Method AttributeDependson131Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Deprecated ::= 'deprecated'
 /// summary values:DEPRECATED
+/// summary=K
 Method AttributeDeprecated(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -816,20 +836,21 @@ Method AttributeDeprecated(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_EmbeddedClass ::= 'EmbeddedClass' '=' class_reference
 /// summary values:EMBEDDEDCLASS
+/// summary=K&P&C
 Method AttributeEmbeddedclass(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("EMBEDDEDCLASS"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -846,20 +867,21 @@ Method AttributeEmbeddedclass(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Event ::= 'event' '=' event_keyword
 /// summary values:EVENT
+/// summary=K&P&C
 Method AttributeEvent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("EVENT"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -876,17 +898,18 @@ Method AttributeEvent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Extent ::= 'extent'
 /// summary values:EXTENT
+/// summary=K
 Method AttributeExtent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -901,20 +924,21 @@ Method AttributeExtent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_ExternalProcName ::= 'externalprocname' '=' text
 /// summary values:EXTERNALPROCNAME
+/// summary=K&P&C
 Method AttributeExternalprocname(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("EXTERNALPROCNAME"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -931,17 +955,18 @@ Method AttributeExternalprocname(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Final ::= 'final'
 /// summary values:FINAL
+/// summary=K
 Method AttributeFinal(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -956,20 +981,21 @@ Method AttributeFinal(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Flags ::= 'flags' '=' ( 'enumedit' | 'enum' | 'list' )
 /// summary values:FLAGS
+/// summary=K&P&K|K|K
 Method AttributeFlags(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&K|K|K
 	; first rule summary K
 	if '(..isKeywordInList($lb("FLAGS"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -986,17 +1012,18 @@ Method AttributeFlags(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  'enumedit' | 'enum' | 'list'
 /// summary values:ENUMEDIT,ENUM,LIST
+/// summary=K|K|K
 Method AttributeFlags132Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|K|K
@@ -1013,15 +1040,16 @@ Method AttributeFlags132Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	}
 
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	quit ret
+	quit ok
 }
 
 ///  attribute_ForceGenerate ::= 'forcegenerate'
 /// summary values:FORCEGENERATE
+/// summary=K
 Method AttributeForcegenerate(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -1036,20 +1064,21 @@ Method AttributeForcegenerate(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_ForEach ::= 'foreach' '=' foreach_type
 /// summary values:FOREACH
+/// summary=K&P&C
 Method AttributeForeach(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("FOREACH"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -1066,20 +1095,21 @@ Method AttributeForeach(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_GenerateAfter ::= 'generateafter' '=' ( method_reference | ( '(' method_reference ( ',' method_reference )* ')' ) )
 /// summary values:GENERATEAFTER
+/// summary=K&P&C|P&C&(?4punctuation:4?)*&P
 Method AttributeGenerateafter(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C|P&C&(?4punctuation:4?)*&P
 	; first rule summary K
 	if '(..isKeywordInList($lb("GENERATEAFTER"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -1096,19 +1126,20 @@ Method AttributeGenerateafter(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  method_reference | ( '(' method_reference ( ',' method_reference )* ')' )
+/// summary=C|P&C&(?4punctuation:4?)*&P
 Method AttributeGenerateafter133Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
+	; rules summary C|P&C&(?4punctuation:4?)*&P
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -1120,20 +1151,21 @@ Method AttributeGenerateafter133Sub(ParentElement As PXW.DEV.BNF.Element, ByRef 
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  '(' method_reference ( ',' method_reference )* ')'
 /// summary values:(
+/// summary=P&C&(?4punctuation:4?)*&P
 Method AttributeGenerateafter134Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&(?4?)*&P
+	; rules summary P&C&(?4punctuation:4?)*&P
 	; first rule summary P
 	if '(..isStringSingle("(",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -1151,37 +1183,38 @@ Method AttributeGenerateafter134Sub(ParentElement As PXW.DEV.BNF.Element, ByRef 
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( ',' method_reference )*
 Method AttributeGenerateafter135RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..AttributeGenerateafter136Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  ',' method_reference
 /// summary values:,
+/// summary=P&C
 Method AttributeGenerateafter136Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -1195,20 +1228,21 @@ Method AttributeGenerateafter136Sub(ParentElement As PXW.DEV.BNF.Element, ByRef 
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_GeneratedBy ::= 'generatedby' '=' (class_reference | string | filename)
 /// summary values:GENERATEDBY
+/// summary=K&P&C|C|C
 Method AttributeGeneratedby(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C|C|C
 	; first rule summary K
 	if '(..isKeywordInList($lb("GENERATEDBY"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -1225,22 +1259,23 @@ Method AttributeGeneratedby(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// class_reference | string | filename
+/// summary=C|C|C
 Method AttributeGeneratedby137Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..ClassReference(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..String(subElement,.addedElement)  {
@@ -1250,18 +1285,16 @@ Method AttributeGeneratedby137Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Hidden ::= 'hidden'
 /// summary values:HIDDEN
+/// summary=K
 Method AttributeHidden(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -1276,17 +1309,18 @@ Method AttributeHidden(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Identity ::= 'identity'
 /// summary values:IDENTITY
+/// summary=K
 Method AttributeIdentity(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -1301,17 +1335,18 @@ Method AttributeIdentity(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_IdKey ::= 'idkey'
 /// summary values:IDKEY
+/// summary=K
 Method AttributeIdkey(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -1326,20 +1361,21 @@ Method AttributeIdkey(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Inheritance ::= 'inheritance' '=' inheritance_direction
 /// summary values:INHERITANCE
+/// summary=K&P&C
 Method AttributeInheritance(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("INHERITANCE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -1356,20 +1392,21 @@ Method AttributeInheritance(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_InitialExpression ::= 'initialexpression' '=' initialexpression_value
 /// summary values:INITIALEXPRESSION
+/// summary=K&P&C
 Method AttributeInitialexpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("INITIALEXPRESSION"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -1386,17 +1423,18 @@ Method AttributeInitialexpression(ParentElement As PXW.DEV.BNF.Element, ByRef su
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Internal ::= 'internal'
 /// summary values:INTERNAL
+/// summary=K
 Method AttributeInternal(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -1411,20 +1449,21 @@ Method AttributeInternal(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Inverse ::= 'inverse' '=' identifier
 /// summary values:INVERSE
+/// summary=K&P&C
 Method AttributeInverse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("INVERSE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -1441,20 +1480,21 @@ Method AttributeInverse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Language ::= 'language' '=' class_language_name
 /// summary values:LANGUAGE
+/// summary=K&P&C
 Method AttributeLanguage(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("LANGUAGE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -1471,17 +1511,18 @@ Method AttributeLanguage(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_LegacyInstanceContext ::= 'legacyinstancecontext'
 /// summary values:LEGACYINSTANCECONTEXT
+/// summary=K
 Method AttributeLegacyinstancecontext(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -1496,20 +1537,21 @@ Method AttributeLegacyinstancecontext(ParentElement As PXW.DEV.BNF.Element, ByRe
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_MemberSuper ::= 'MemberSuper' '=' ( ( '(' class_reference ( ',' class_reference )*')' ) | class_reference )
 /// summary values:MEMBERSUPER
+/// summary=K&P&P&C&(?4punctuation:4?)*&P|C
 Method AttributeMembersuper(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&P&C&(?4punctuation:4?)*&P|C
 	; first rule summary K
 	if '(..isKeywordInList($lb("MEMBERSUPER"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -1526,19 +1568,21 @@ Method AttributeMembersuper(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( '(' class_reference ( ',' class_reference )*')' ) | class_reference
+/// summary=P&C&(?4punctuation:4?)*&P|C
 Method AttributeMembersuper138Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
+	; rules summary P&C&(?4punctuation:4?)*&P|C
+	; first rule summary P&C&(?4punctuation:4?)*&P
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -1550,20 +1594,21 @@ Method AttributeMembersuper138Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  '(' class_reference ( ',' class_reference )*')'
 /// summary values:(
+/// summary=P&C&(?4punctuation:4?)*&P
 Method AttributeMembersuper139Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&(?4?)*&P
+	; rules summary P&C&(?4punctuation:4?)*&P
 	; first rule summary P
 	if '(..isStringSingle("(",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -1581,37 +1626,38 @@ Method AttributeMembersuper139Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( ',' class_reference )*
 Method AttributeMembersuper140RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..AttributeMembersuper141Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  ',' class_reference
 /// summary values:,
+/// summary=P&C
 Method AttributeMembersuper141Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -1625,20 +1671,21 @@ Method AttributeMembersuper141Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_MimeType ::= 'mimetype' '=' identifier ('/' identifier)*
 /// summary values:MIMETYPE
+/// summary=K&P&C&(?4punctuation:4?)*
 Method AttributeMimetype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?&(?4?)*
+	; rules summary K&P&C&(?4punctuation:4?)*
 	; first rule summary K
 	if '(..isKeywordInList($lb("MIMETYPE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -1657,37 +1704,38 @@ Method AttributeMimetype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ('/' identifier)*
 Method AttributeMimetype142RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..AttributeMimetype143Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 /// '/' identifier
 /// summary values:/
+/// summary=P&C
 Method AttributeMimetype143Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle("/",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -1701,17 +1749,18 @@ Method AttributeMimetype143Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_MultiDimensional ::= 'multidimensional'
 /// summary values:MULTIDIMENSIONAL
+/// summary=K
 Method AttributeMultidimensional(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -1726,20 +1775,21 @@ Method AttributeMultidimensional(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_NewTable ::= 'newtable' '=' tablename
 /// summary values:NEWTABLE
+/// summary=K&P&C
 Method AttributeNewtable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("NEWTABLE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -1756,17 +1806,18 @@ Method AttributeNewtable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_NoCheck ::= 'nocheck'
 /// summary values:NOCHECK
+/// summary=K
 Method AttributeNocheck(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -1781,17 +1832,18 @@ Method AttributeNocheck(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_NoContext ::= 'nocontext'
 /// summary values:NOCONTEXT
+/// summary=K
 Method AttributeNocontext(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -1806,17 +1858,18 @@ Method AttributeNocontext(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_NoExtent ::= 'noextent'
 /// summary values:NOEXTENT
+/// summary=K
 Method AttributeNoextent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -1831,20 +1884,21 @@ Method AttributeNoextent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Not ::= 'not' ( attribute_Abstract | attribute_DDLAllowed | attribute_Deprecated | attribute_Final | attribute_Hidden | attribute_Internal | attribute_LegacyInstanceContext | attribute_NoExtent | attribute_Private | attribute_ProcedureBlock | attribute_ReadOnly | attribute_Required | attribute_ServerOnly | attribute_SQLComputed | attribute_Transient | attribute_Unique )
 /// summary values:NOT
+/// summary=K&C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
 Method AttributeNot(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?
+	; rules summary K&C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
 	; first rule summary K
 	if '(..isKeywordInList($lb("NOT"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -1859,22 +1913,23 @@ Method AttributeNot(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Abstract | attribute_DDLAllowed | attribute_Deprecated | attribute_Final | attribute_Hidden | attribute_Internal | attribute_LegacyInstanceContext | attribute_NoExtent | attribute_Private | attribute_ProcedureBlock | attribute_ReadOnly | attribute_Required | attribute_ServerOnly | attribute_SQLComputed | attribute_Transient | attribute_Unique
+/// summary=C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
 Method AttributeNot29Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..AttributeAbstract(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..AttributeDdlallowed(subElement,.addedElement)  {
@@ -1910,18 +1965,16 @@ Method AttributeNot29Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_NotInheritable ::= 'notinheritable'
 /// summary values:NOTINHERITABLE
+/// summary=K
 Method AttributeNotinheritable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -1936,20 +1989,21 @@ Method AttributeNotinheritable(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_ODBCType ::= 'odbctype' '=' ( 'bigint' | 'bit' | 'date' | 'double' | 'integer' | 'longvarbinary' | 'longvarchar' | 'numeric' | 'resultset' | 'smallint' | 'struct' | 'time' | 'timestamp' | 'tinyint' | 'varbinary' | 'varchar' | 'guid' | 'POSIXTIME')
 /// summary values:ODBCTYPE
+/// summary=K&P&K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K
 Method AttributeOdbctype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K
 	; first rule summary K
 	if '(..isKeywordInList($lb("ODBCTYPE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -1966,17 +2020,18 @@ Method AttributeOdbctype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  'bigint' | 'bit' | 'date' | 'double' | 'integer' | 'longvarbinary' | 'longvarchar' | 'numeric' | 'resultset' | 'smallint' | 'struct' | 'time' | 'timestamp' | 'tinyint' | 'varbinary' | 'varchar' | 'guid' | 'POSIXTIME'
 /// summary values:BIGINT,BIT,DATE,DOUBLE,INTEGER,LONGVARBINARY,LONGVARCHAR,NUMERIC,RESULTSET,SMALLINT,STRUCT,TIME,TIMESTAMP,TINYINT,VARBINARY,VARCHAR,GUID,POSIXTIME
+/// summary=K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K
 Method AttributeOdbctype144Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K
@@ -2023,18 +2078,19 @@ Method AttributeOdbctype144Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	}
 
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	quit ret
+	quit ok
 }
 
 ///  attribute_OldTable ::= 'oldtable' '=' tablename
 /// summary values:OLDTABLE
+/// summary=K&P&C
 Method AttributeOldtable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("OLDTABLE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -2051,17 +2107,18 @@ Method AttributeOldtable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_OnAction_type ::= 'cascade' | 'noaction' | 'setdefault' | 'setnull'
 /// summary values:CASCADE,NOACTION,SETDEFAULT,SETNULL
+/// summary=K|K|K|K
 Method AttributeOnactionType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|K|K|K
@@ -2082,20 +2139,21 @@ Method AttributeOnactionType(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_OnDelete ::= 'ondelete' '=' attribute_OnAction_type
 /// summary values:ONDELETE
+/// summary=K&P&C
 Method AttributeOndelete(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("ONDELETE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -2112,19 +2170,20 @@ Method AttributeOndelete(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_OneAlias ::= alias_identifier
+/// summary=C
 Method AttributeOnealias(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -2135,20 +2194,21 @@ Method AttributeOnealias(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_OnUpdate ::= 'onupdate' '=' attribute_OnAction_type
 /// summary values:ONUPDATE
+/// summary=K&P&C
 Method AttributeOnupdate(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("ONUPDATE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -2165,20 +2225,21 @@ Method AttributeOnupdate(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Order ::= 'order' '=' expression
 /// summary values:ORDER
+/// summary=K&P&C
 Method AttributeOrder(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("ORDER"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -2195,20 +2256,21 @@ Method AttributeOrder(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Owner ::= 'owner' '=' ( string | number | '{' text_in_curly '}' )
 /// summary values:OWNER
+/// summary=K&P&C|C|P&C&P
 Method AttributeOwner(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C|C|P&C&P
 	; first rule summary K
 	if '(..isKeywordInList($lb("OWNER"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -2225,19 +2287,20 @@ Method AttributeOwner(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  string | number | '{' text_in_curly '}'
+/// summary=C|C|P&C&P
 Method AttributeOwner145Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|P&?1Rule?&P
+	; rules summary C|C|P&C&P
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -2255,20 +2318,21 @@ Method AttributeOwner145Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_PlaceAfter ::= 'placeafter' '=' method_reference ('(' ',' method_reference ')')*
 /// summary values:PLACEAFTER
+/// summary=K&P&C&(?4punctuation:4?)*
 Method AttributePlaceafter(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?&(?4?)*
+	; rules summary K&P&C&(?4punctuation:4?)*
 	; first rule summary K
 	if '(..isKeywordInList($lb("PLACEAFTER"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -2287,37 +2351,38 @@ Method AttributePlaceafter(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ('(' ',' method_reference ')')*
 Method AttributePlaceafter146RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..AttributePlaceafter147Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 /// '(' ',' method_reference ')'
 /// summary values:(
+/// summary=P&P&C&P
 Method AttributePlaceafter147Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&P&?1Rule?&P
+	; rules summary P&P&C&P
 	; first rule summary P
 	if '(..isStringSingle("(",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -2335,17 +2400,18 @@ Method AttributePlaceafter147Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_PrimaryKey ::= 'primarykey'
 /// summary values:PRIMARYKEY
+/// summary=K
 Method AttributePrimarykey(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -2360,17 +2426,18 @@ Method AttributePrimarykey(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Private ::= 'private'
 /// summary values:PRIVATE
+/// summary=K
 Method AttributePrivate(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -2385,20 +2452,21 @@ Method AttributePrivate(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_ProcedureBlock ::= 'procedureblock' [ '=' ( '0' | '1' ) ]
 /// summary values:PROCEDUREBLOCK
+/// summary=K&[P&P|P]
 Method AttributeProcedureblock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?4?
+	; rules summary K&[P&P|P]
 	; first rule summary K
 	if '(..isKeywordInList($lb("PROCEDUREBLOCK"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -2413,20 +2481,21 @@ Method AttributeProcedureblock(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:=
+/// summary=P&P|P
 Method AttributeProcedureblock148OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&P|P
 	; first rule summary P
 	if '(..isStringSingle("=",.value)) { quit 1 /* not found is OK */ }
 	$$$DEBUGMethodBegin
@@ -2440,17 +2509,18 @@ Method AttributeProcedureblock148OptGrp(ParentElement As PXW.DEV.BNF.Element, By
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  '0' | '1'
 /// summary values:0,1
+/// summary=P|P
 Method AttributeProcedureblock149Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P|P
@@ -2465,18 +2535,19 @@ Method AttributeProcedureblock149Sub(ParentElement As PXW.DEV.BNF.Element, ByRef
 	}
 
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	quit ret
+	quit ok
 }
 
 ///  attribute_PropertyClass ::= 'propertyclass' '=' class_reference ('(' ',' class_reference ')')*
 /// summary values:PROPERTYCLASS
+/// summary=K&P&C&(?4punctuation:4?)*
 Method AttributePropertyclass(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?&(?4?)*
+	; rules summary K&P&C&(?4punctuation:4?)*
 	; first rule summary K
 	if '(..isKeywordInList($lb("PROPERTYCLASS"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -2495,37 +2566,38 @@ Method AttributePropertyclass(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ('(' ',' class_reference ')')*
 Method AttributePropertyclass150RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..AttributePropertyclass151Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 /// '(' ',' class_reference ')'
 /// summary values:(
+/// summary=P&P&C&P
 Method AttributePropertyclass151Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&P&?1Rule?&P
+	; rules summary P&P&C&P
 	; first rule summary P
 	if '(..isStringSingle("(",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -2543,20 +2615,21 @@ Method AttributePropertyclass151Sub(ParentElement As PXW.DEV.BNF.Element, ByRef 
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_PublicList ::= 'publiclist' '=' ( ('(' identifier (',' identifier )* ')' ) | identifier)
 /// summary values:PUBLICLIST
+/// summary=K&P&P&C&(?4punctuation:4?)*&P|C
 Method AttributePubliclist(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&P&C&(?4punctuation:4?)*&P|C
 	; first rule summary K
 	if '(..isKeywordInList($lb("PUBLICLIST"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -2573,19 +2646,21 @@ Method AttributePubliclist(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ('(' identifier (',' identifier )* ')' ) | identifier
+/// summary=P&C&(?4punctuation:4?)*&P|C
 Method AttributePubliclist152Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
+	; rules summary P&C&(?4punctuation:4?)*&P|C
+	; first rule summary P&C&(?4punctuation:4?)*&P
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -2597,20 +2672,21 @@ Method AttributePubliclist152Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// '(' identifier (',' identifier )* ')'
 /// summary values:(
+/// summary=P&C&(?4punctuation:4?)*&P
 Method AttributePubliclist153Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&(?4?)*&P
+	; rules summary P&C&(?4punctuation:4?)*&P
 	; first rule summary P
 	if '(..isStringSingle("(",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -2628,37 +2704,38 @@ Method AttributePubliclist153Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  (',' identifier )*
 Method AttributePubliclist154RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..AttributePubliclist155Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 /// ',' identifier
 /// summary values:,
+/// summary=P&C
 Method AttributePubliclist155Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -2672,17 +2749,18 @@ Method AttributePubliclist155Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_ReadOnly ::= 'readonly'
 /// summary values:READONLY
+/// summary=K
 Method AttributeReadonly(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -2697,17 +2775,18 @@ Method AttributeReadonly(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Required ::= 'required'
 /// summary values:REQUIRED
+/// summary=K
 Method AttributeRequired(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -2722,17 +2801,18 @@ Method AttributeRequired(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_ReturnResultSets ::= 'returnresultsets'
 /// summary values:RETURNRESULTSETS
+/// summary=K
 Method AttributeReturnresultsets(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -2747,20 +2827,21 @@ Method AttributeReturnresultsets(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_SchemaSpec ::= 'schemaspec' '=' string
 /// summary values:SCHEMASPEC
+/// summary=K&P&C
 Method AttributeSchemaspec(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("SCHEMASPEC"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -2777,20 +2858,21 @@ Method AttributeSchemaspec(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_ServerOnly ::= 'serveronly' '=' ( '0' | '1' )
 /// summary values:SERVERONLY
+/// summary=K&P&P|P
 Method AttributeServeronly(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&P|P
 	; first rule summary K
 	if '(..isKeywordInList($lb("SERVERONLY"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -2807,17 +2889,18 @@ Method AttributeServeronly(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  '0' | '1'
 /// summary values:0,1
+/// summary=P|P
 Method AttributeServeronly156Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P|P
@@ -2832,18 +2915,19 @@ Method AttributeServeronly156Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 	}
 
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	quit ret
+	quit ok
 }
 
 ///  attribute_SOAPAction ::= 'soapaction' '=' (identifier | string)
 /// summary values:SOAPACTION
+/// summary=K&P&C|C
 Method AttributeSoapaction(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C|C
 	; first rule summary K
 	if '(..isKeywordInList($lb("SOAPACTION"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -2860,22 +2944,23 @@ Method AttributeSoapaction(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// identifier | string
+/// summary=C|C
 Method AttributeSoapaction157Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..Identifier(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..String(subElement,.addedElement)  {
@@ -2883,21 +2968,19 @@ Method AttributeSoapaction157Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_SOAPBindingStyle ::= 'SoapBindingStyle' '=' ( 'document' | 'rcp' )
 /// summary values:SOAPBINDINGSTYLE
+/// summary=K&P&K|K
 Method AttributeSoapbindingstyle(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&K|K
 	; first rule summary K
 	if '(..isKeywordInList($lb("SOAPBINDINGSTYLE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -2914,17 +2997,18 @@ Method AttributeSoapbindingstyle(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  'document' | 'rcp'
 /// summary values:DOCUMENT,RCP
+/// summary=K|K
 Method AttributeSoapbindingstyle158Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|K
@@ -2939,18 +3023,19 @@ Method AttributeSoapbindingstyle158Sub(ParentElement As PXW.DEV.BNF.Element, ByR
 	}
 
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	quit ret
+	quit ok
 }
 
 ///  attribute_SOAPBodyuse ::= 'soapbodyuse' '=' ( 'literal' | 'encoded' )
 /// summary values:SOAPBODYUSE
+/// summary=K&P&K|K
 Method AttributeSoapbodyuse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&K|K
 	; first rule summary K
 	if '(..isKeywordInList($lb("SOAPBODYUSE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -2967,17 +3052,18 @@ Method AttributeSoapbodyuse(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  'literal' | 'encoded'
 /// summary values:LITERAL,ENCODED
+/// summary=K|K
 Method AttributeSoapbodyuse159Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|K
@@ -2992,18 +3078,19 @@ Method AttributeSoapbodyuse159Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	}
 
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	quit ret
+	quit ok
 }
 
 ///  attribute_SOAPMessageName ::= 'soapmessagename' '=' ( string | soap_identifier )
 /// summary values:SOAPMESSAGENAME
+/// summary=K&P&C|C
 Method AttributeSoapmessagename(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C|C
 	; first rule summary K
 	if '(..isKeywordInList($lb("SOAPMESSAGENAME"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -3020,22 +3107,23 @@ Method AttributeSoapmessagename(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  string | soap_identifier
+/// summary=C|C
 Method AttributeSoapmessagename160Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..String(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..SoapIdentifier(subElement,.addedElement)  {
@@ -3043,21 +3131,19 @@ Method AttributeSoapmessagename160Sub(ParentElement As PXW.DEV.BNF.Element, ByRe
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_SOAPNameSpace ::= 'soapnamespace' '=' ( string | soap_identifier)
 /// summary values:SOAPNAMESPACE
+/// summary=K&P&C|C
 Method AttributeSoapnamespace(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C|C
 	; first rule summary K
 	if '(..isKeywordInList($lb("SOAPNAMESPACE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -3074,22 +3160,23 @@ Method AttributeSoapnamespace(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  string | soap_identifier
+/// summary=C|C
 Method AttributeSoapnamespace161Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..String(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..SoapIdentifier(subElement,.addedElement)  {
@@ -3097,21 +3184,19 @@ Method AttributeSoapnamespace161Sub(ParentElement As PXW.DEV.BNF.Element, ByRef 
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_SOAPRequestMessage ::= 'soaprequestmessage' '=' ( string | soap_identifier )
 /// summary values:SOAPREQUESTMESSAGE
+/// summary=K&P&C|C
 Method AttributeSoaprequestmessage(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C|C
 	; first rule summary K
 	if '(..isKeywordInList($lb("SOAPREQUESTMESSAGE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -3128,22 +3213,23 @@ Method AttributeSoaprequestmessage(ParentElement As PXW.DEV.BNF.Element, ByRef s
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  string | soap_identifier
+/// summary=C|C
 Method AttributeSoaprequestmessage162Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..String(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..SoapIdentifier(subElement,.addedElement)  {
@@ -3151,21 +3237,19 @@ Method AttributeSoaprequestmessage162Sub(ParentElement As PXW.DEV.BNF.Element, B
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_SOAPTypeNamespace ::= 'soaptypenamespace' '=' ( string | soap_identifier )
 /// summary values:SOAPTYPENAMESPACE
+/// summary=K&P&C|C
 Method AttributeSoaptypenamespace(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C|C
 	; first rule summary K
 	if '(..isKeywordInList($lb("SOAPTYPENAMESPACE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -3182,22 +3266,23 @@ Method AttributeSoaptypenamespace(ParentElement As PXW.DEV.BNF.Element, ByRef su
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  string | soap_identifier
+/// summary=C|C
 Method AttributeSoaptypenamespace163Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..String(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..SoapIdentifier(subElement,.addedElement)  {
@@ -3205,21 +3290,19 @@ Method AttributeSoaptypenamespace163Sub(ParentElement As PXW.DEV.BNF.Element, By
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_SQLCategory ::= 'sqlcategory' '=' ( 'date' | 'double' | 'fmdate' | 'fmtimestamp' | 'integer' | 'mvdate' | 'name' | 'numeric' | 'string' | 'time' | 'timestamp' | 'POSIXTS' )
 /// summary values:SQLCATEGORY
+/// summary=K&P&K|K|K|K|K|K|K|K|K|K|K|K
 Method AttributeSqlcategory(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&K|K|K|K|K|K|K|K|K|K|K|K
 	; first rule summary K
 	if '(..isKeywordInList($lb("SQLCATEGORY"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -3236,17 +3319,18 @@ Method AttributeSqlcategory(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  'date' | 'double' | 'fmdate' | 'fmtimestamp' | 'integer' | 'mvdate' | 'name' | 'numeric' | 'string' | 'time' | 'timestamp' | 'POSIXTS'
 /// summary values:DATE,DOUBLE,FMDATE,FMTIMESTAMP,INTEGER,MVDATE,NAME,NUMERIC,STRING,TIME,TIMESTAMP,POSIXTS
+/// summary=K|K|K|K|K|K|K|K|K|K|K|K
 Method AttributeSqlcategory164Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|K|K|K|K|K|K|K|K|K|K|K
@@ -3281,18 +3365,19 @@ Method AttributeSqlcategory164Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	}
 
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	quit ret
+	quit ok
 }
 
 ///  attribute_SQLColumnNumber ::= 'SqlColumnNumber' '=' number
 /// summary values:SQLCOLUMNNUMBER
+/// summary=K&P&C
 Method AttributeSqlcolumnnumber(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("SQLCOLUMNNUMBER"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -3309,20 +3394,21 @@ Method AttributeSqlcolumnnumber(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_SQLComputeCode ::= 'sqlcomputecode' '=' '{' cos_code_block_sql '}'
 /// summary values:SQLCOMPUTECODE
+/// summary=K&P&P&C&P
 Method AttributeSqlcomputecode(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&P&?1Rule?&P
+	; rules summary K&P&P&C&P
 	; first rule summary K
 	if '(..isKeywordInList($lb("SQLCOMPUTECODE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -3343,17 +3429,18 @@ Method AttributeSqlcomputecode(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_SQLComputed ::= 'sqlcomputed'
 /// summary values:SQLCOMPUTED
+/// summary=K
 Method AttributeSqlcomputed(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -3368,20 +3455,21 @@ Method AttributeSqlcomputed(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_SQLComputeOnChange ::= 'sqlcomputeonchange' '=' property_reference | ('(' property_reference (',' property_reference )* ')')
 /// summary values:SQLCOMPUTEONCHANGE
+/// summary=K&P&C|P&C&(?4punctuation:4?)*&P
 Method AttributeSqlcomputeonchange(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?|?1Rule?
+	; rules summary K&P&C|P&C&(?4punctuation:4?)*&P
 	; first rule summary K
 	if '(..isKeywordInList($lb("SQLCOMPUTEONCHANGE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -3400,20 +3488,21 @@ Method AttributeSqlcomputeonchange(ParentElement As PXW.DEV.BNF.Element, ByRef s
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// '(' property_reference (',' property_reference )* ')'
 /// summary values:(
+/// summary=P&C&(?4punctuation:4?)*&P
 Method AttributeSqlcomputeonchange165Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&(?4?)*&P
+	; rules summary P&C&(?4punctuation:4?)*&P
 	; first rule summary P
 	if '(..isStringSingle("(",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -3431,37 +3520,38 @@ Method AttributeSqlcomputeonchange165Sub(ParentElement As PXW.DEV.BNF.Element, B
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  (',' property_reference )*
 Method AttributeSqlcomputeonchange166RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..AttributeSqlcomputeonchange167Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 /// ',' property_reference
 /// summary values:,
+/// summary=P&C
 Method AttributeSqlcomputeonchange167Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -3475,20 +3565,21 @@ Method AttributeSqlcomputeonchange167Sub(ParentElement As PXW.DEV.BNF.Element, B
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_SQLFieldname ::= 'sqlfieldname' '=' sql_field_name
 /// summary values:SQLFIELDNAME
+/// summary=K&P&C
 Method AttributeSqlfieldname(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("SQLFIELDNAME"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -3505,20 +3596,21 @@ Method AttributeSqlfieldname(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_SQLListDelimiter ::= 'sqllistdelimiter' '=' expression
 /// summary values:SQLLISTDELIMITER
+/// summary=K&P&C
 Method AttributeSqllistdelimiter(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("SQLLISTDELIMITER"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -3535,20 +3627,21 @@ Method AttributeSqllistdelimiter(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_SQLListType ::= 'sqllisttype' '=' ( 'list' | 'delimited' | 'subnode' )
 /// summary values:SQLLISTTYPE
+/// summary=K&P&K|K|K
 Method AttributeSqllisttype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&K|K|K
 	; first rule summary K
 	if '(..isKeywordInList($lb("SQLLISTTYPE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -3565,17 +3658,18 @@ Method AttributeSqllisttype(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  'list' | 'delimited' | 'subnode'
 /// summary values:LIST,DELIMITED,SUBNODE
+/// summary=K|K|K
 Method AttributeSqllisttype168Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|K|K
@@ -3592,18 +3686,19 @@ Method AttributeSqllisttype168Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	}
 
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	quit ret
+	quit ok
 }
 
 ///  attribute_SQLName ::= 'sqlname' '=' (sql_table_name | string )
 /// summary values:SQLNAME
+/// summary=K&P&C|C
 Method AttributeSqlname(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C|C
 	; first rule summary K
 	if '(..isKeywordInList($lb("SQLNAME"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -3620,22 +3715,23 @@ Method AttributeSqlname(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// sql_table_name | string
+/// summary=C|C
 Method AttributeSqlname169Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..SqlTableName(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..String(subElement,.addedElement)  {
@@ -3643,18 +3739,16 @@ Method AttributeSqlname169Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_SQLProc ::= 'sqlproc'
 /// summary values:SQLPROC
+/// summary=K
 Method AttributeSqlproc(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -3669,20 +3763,21 @@ Method AttributeSqlproc(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_SQLRowidName ::= 'sqlrowidname' '=' ( '""' | string | sql_table_name )
 /// summary values:SQLROWIDNAME
+/// summary=K&P&P|C|C
 Method AttributeSqlrowidname(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&P|C|C
 	; first rule summary K
 	if '(..isKeywordInList($lb("SQLROWIDNAME"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -3699,19 +3794,20 @@ Method AttributeSqlrowidname(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  '""' | string | sql_table_name
+/// summary=P|C|C
 Method AttributeSqlrowidname170Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P|?1Rule?|?1Rule?
+	; rules summary P|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -3725,17 +3821,18 @@ Method AttributeSqlrowidname170Sub(ParentElement As PXW.DEV.BNF.Element, ByRef s
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_SQLRowidPrivate ::= 'sqlrowidprivate'
 /// summary values:SQLROWIDPRIVATE
+/// summary=K
 Method AttributeSqlrowidprivate(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -3750,20 +3847,21 @@ Method AttributeSqlrowidprivate(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_SQLTableName ::= 'sqltablename' '=' ( '""' | sql_table_name )
 /// summary values:SQLTABLENAME
+/// summary=K&P&P|C
 Method AttributeSqltablename(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&P|C
 	; first rule summary K
 	if '(..isKeywordInList($lb("SQLTABLENAME"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -3780,19 +3878,20 @@ Method AttributeSqltablename(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  '""' | sql_table_name
+/// summary=P|C
 Method AttributeSqltablename171Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P|?1Rule?
+	; rules summary P|C
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -3804,17 +3903,18 @@ Method AttributeSqltablename171Sub(ParentElement As PXW.DEV.BNF.Element, ByRef s
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_SQLView ::= 'sqlview'
 /// summary values:SQLVIEW
+/// summary=K
 Method AttributeSqlview(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -3829,20 +3929,21 @@ Method AttributeSqlview(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_SQLViewname ::= 'sqlviewname' '=' ( string | sql_table_name )
 /// summary values:SQLVIEWNAME
+/// summary=K&P&C|C
 Method AttributeSqlviewname(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C|C
 	; first rule summary K
 	if '(..isKeywordInList($lb("SQLVIEWNAME"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -3859,22 +3960,23 @@ Method AttributeSqlviewname(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  string | sql_table_name
+/// summary=C|C
 Method AttributeSqlviewname172Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..String(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..SqlTableName(subElement,.addedElement)  {
@@ -3882,21 +3984,19 @@ Method AttributeSqlviewname172Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_StorageStrategy ::= 'storagestrategy' '=' ('""' | class_item_identifier)
 /// summary values:STORAGESTRATEGY
+/// summary=K&P&P|C
 Method AttributeStoragestrategy(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&P|C
 	; first rule summary K
 	if '(..isKeywordInList($lb("STORAGESTRATEGY"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -3913,19 +4013,20 @@ Method AttributeStoragestrategy(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// '""' | class_item_identifier
+/// summary=P|C
 Method AttributeStoragestrategy173Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P|?1Rule?
+	; rules summary P|C
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -3937,20 +4038,21 @@ Method AttributeStoragestrategy173Sub(ParentElement As PXW.DEV.BNF.Element, ByRe
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_System ::= 'system' '=' ( '0' | '1' | '2' | '3' | '4' )
 /// summary values:SYSTEM
+/// summary=K&P&P|P|P|P|P
 Method AttributeSystem(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&P|P|P|P|P
 	; first rule summary K
 	if '(..isKeywordInList($lb("SYSTEM"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -3967,17 +4069,18 @@ Method AttributeSystem(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  '0' | '1' | '2' | '3' | '4'
 /// summary values:0,1,2,3,4
+/// summary=P|P|P|P|P
 Method AttributeSystem174Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P|P|P|P|P
@@ -3998,18 +4101,19 @@ Method AttributeSystem174Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	}
 
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	quit ret
+	quit ok
 }
 
 ///  attribute_Time ::= 'time' '=' time_value
 /// summary values:TIME
+/// summary=K&P&C
 Method AttributeTime(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("TIME"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -4026,17 +4130,18 @@ Method AttributeTime(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Transient ::= 'transient'
 /// summary values:TRANSIENT
+/// summary=K
 Method AttributeTransient(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -4051,20 +4156,21 @@ Method AttributeTransient(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_Type ::= 'type' '=' ( 'bitmap' | 'bitslice' | 'index' |'key' | 'collatedkey' )
 /// summary values:TYPE
+/// summary=K&P&K|K|K|K|K
 Method AttributeType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&K|K|K|K|K
 	; first rule summary K
 	if '(..isKeywordInList($lb("TYPE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -4081,17 +4187,18 @@ Method AttributeType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  'bitmap' | 'bitslice' | 'index' |'key' | 'collatedkey'
 /// summary values:BITMAP,BITSLICE,INDEX,KEY,COLLATEDKEY
+/// summary=K|K|K|K|K
 Method AttributeType175Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|K|K|K|K
@@ -4112,15 +4219,16 @@ Method AttributeType175Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	}
 
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	quit ret
+	quit ok
 }
 
 ///  attribute_Unique ::= 'unique'
 /// summary values:UNIQUE
+/// summary=K
 Method AttributeUnique(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -4135,20 +4243,21 @@ Method AttributeUnique(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_UpdateColumnList ::= 'updatecolumnlist' '=' ( one_column_name | ( '(' one_column_name ( ',' one_column_name )* ')' ) )
 /// summary values:UPDATECOLUMNLIST
+/// summary=K&P&C|P&C&(?4punctuation:4?)*&P
 Method AttributeUpdatecolumnlist(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C|P&C&(?4punctuation:4?)*&P
 	; first rule summary K
 	if '(..isKeywordInList($lb("UPDATECOLUMNLIST"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -4165,19 +4274,20 @@ Method AttributeUpdatecolumnlist(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  one_column_name | ( '(' one_column_name ( ',' one_column_name )* ')' )
+/// summary=C|P&C&(?4punctuation:4?)*&P
 Method AttributeUpdatecolumnlist176Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
+	; rules summary C|P&C&(?4punctuation:4?)*&P
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -4189,20 +4299,21 @@ Method AttributeUpdatecolumnlist176Sub(ParentElement As PXW.DEV.BNF.Element, ByR
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  '(' one_column_name ( ',' one_column_name )* ')'
 /// summary values:(
+/// summary=P&C&(?4punctuation:4?)*&P
 Method AttributeUpdatecolumnlist177Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&(?4?)*&P
+	; rules summary P&C&(?4punctuation:4?)*&P
 	; first rule summary P
 	if '(..isStringSingle("(",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -4220,37 +4331,38 @@ Method AttributeUpdatecolumnlist177Sub(ParentElement As PXW.DEV.BNF.Element, ByR
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( ',' one_column_name )*
 Method AttributeUpdatecolumnlist178RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..AttributeUpdatecolumnlist179Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  ',' one_column_name
 /// summary values:,
+/// summary=P&C
 Method AttributeUpdatecolumnlist179Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -4264,20 +4376,21 @@ Method AttributeUpdatecolumnlist179Sub(ParentElement As PXW.DEV.BNF.Element, ByR
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_ViewQuery ::= 'viewquery' '=' '{' class_query_body '}'
 /// summary values:VIEWQUERY
+/// summary=K&P&P&C&P
 Method AttributeViewquery(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&P&?1Rule?&P
+	; rules summary K&P&P&C&P
 	; first rule summary K
 	if '(..isKeywordInList($lb("VIEWQUERY"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -4298,17 +4411,18 @@ Method AttributeViewquery(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_WebMethod ::= 'webmethod'
 /// summary values:WEBMETHOD
+/// summary=K
 Method AttributeWebmethod(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -4323,20 +4437,21 @@ Method AttributeWebmethod(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_XMLNamespace ::= 'xmlnamespace' '=' (string | identifier)
 /// summary values:XMLNAMESPACE
+/// summary=K&P&C|C
 Method AttributeXmlnamespace(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&?1Rule?
+	; rules summary K&P&C|C
 	; first rule summary K
 	if '(..isKeywordInList($lb("XMLNAMESPACE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -4353,22 +4468,23 @@ Method AttributeXmlnamespace(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// string | identifier
+/// summary=C|C
 Method AttributeXmlnamespace180Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..String(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..Identifier(subElement,.addedElement)  {
@@ -4376,18 +4492,16 @@ Method AttributeXmlnamespace180Sub(ParentElement As PXW.DEV.BNF.Element, ByRef s
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  attribute_ZenMethod ::= 'zenmethod'
 /// summary values:ZENMETHOD
+/// summary=K
 Method AttributeZenmethod(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -4402,19 +4516,20 @@ Method AttributeZenmethod(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_attribute ::= attribute_Abstract | attribute_ClassType | attribute_ClientDataType | attribute_ClientName | attribute_CompileAfter | attribute_DDLAllowed | attribute_DependsOn | attribute_Deprecated | attribute_Embeddedclass | attribute_Final | attribute_GeneratedBy | attribute_Hidden | attribute_Inheritance | attribute_Language | attribute_LegacyInstanceContext | attribute_MemberSuper | attribute_NoContext | attribute_NoExtent | attribute_Not | attribute_ODBCType | attribute_Owner | attribute_ProcedureBlock | attribute_PropertyClass | attribute_ServerOnly | attribute_SOAPBindingStyle | attribute_SOAPBodyuse | attribute_SQLCategory | attribute_SQLRowidName | attribute_SQLRowidPrivate | attribute_SQLTableName | attribute_StorageStrategy | attribute_System | attribute_ViewQuery
+/// summary=C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
 Method ClassAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?
+	; rules summary C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -4489,19 +4604,20 @@ Method ClassAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_attribute_list ::= class_attribute ( ',' class_attribute )*
+/// summary=C&(?4punctuation:4?)*
 Method ClassAttributeList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&(?4?)*
+	; rules summary C&(?4punctuation:4?)*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -4514,37 +4630,38 @@ Method ClassAttributeList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( ',' class_attribute )*
 Method ClassAttributeList15RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..ClassAttributeList16Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  ',' class_attribute
 /// summary values:,
+/// summary=P&C
 Method ClassAttributeList16Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -4558,20 +4675,21 @@ Method ClassAttributeList16Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_attributes ::= '[' class_attribute_list ']'
 /// summary values:[
+/// summary=P&C&P
 Method ClassAttributes(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&P
+	; rules summary P&C&P
 	; first rule summary P
 	if '(..isStringSingle("[",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -4588,20 +4706,21 @@ Method ClassAttributes(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_class_method ::= 'classmethod' method_name '(' [ formal_spec_list ] ')' [ 'as' return_type_class_reference ] [ method_attribute_list ] '{' method_body '}'
 /// summary values:CLASSMETHOD
+/// summary=K&C&P&[C]&P&[K&C]&[C]&P&C&P
 Method ClassClassMethod(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?&P&?4?&P&?4?&?4?&P&?1Rule?&P
+	; rules summary K&C&P&[C]&P&[K&C]&[C]&P&C&P
 	; first rule summary K
 	if '(..isKeywordInList($lb("CLASSMETHOD"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -4632,20 +4751,21 @@ Method ClassClassMethod(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:AS
+/// summary=K&C
 Method ClassClassMethod30OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?
+	; rules summary K&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("AS"),.value)) { quit 1 /* not found is OK */ }
 	$$$DEBUGMethodBegin
@@ -4659,20 +4779,21 @@ Method ClassClassMethod30OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_client_method ::= 'clientmethod' method_name '(' [ formal_spec_list ] ')' [ 'as' type_class_reference ] [ method_attribute_list ] '{' javascript_code_block '}'
 /// summary values:CLIENTMETHOD
+/// summary=K&C&P&[C]&P&[K&C]&[C]&P&C&P
 Method ClassClientMethod(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?&P&?4?&P&?4?&?4?&P&?1Rule?&P
+	; rules summary K&C&P&[C]&P&[K&C]&[C]&P&C&P
 	; first rule summary K
 	if '(..isKeywordInList($lb("CLIENTMETHOD"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -4703,20 +4824,21 @@ Method ClassClientMethod(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:AS
+/// summary=K&C
 Method ClassClientMethod36OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?
+	; rules summary K&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("AS"),.value)) { quit 1 /* not found is OK */ }
 	$$$DEBUGMethodBegin
@@ -4730,20 +4852,21 @@ Method ClassClientMethod36OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_definition ::= 'class' class_name [ 'extends' ( class_reference_list | class_reference ) ] [class_attributes] class_member_section
 /// summary values:CLASS
+/// summary=K&C&[K&C|C]&[C]&C
 Method ClassDefinition(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?&?4?&?4?&?1Rule?
+	; rules summary K&C&[K&C|C]&[C]&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("CLASS"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -4764,20 +4887,21 @@ Method ClassDefinition(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:EXTENDS
+/// summary=K&C|C
 Method ClassDefinition11OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?
+	; rules summary K&C|C
 	; first rule summary K
 	if '(..isKeywordInList($lb("EXTENDS"),.value)) { quit 1 /* not found is OK */ }
 	$$$DEBUGMethodBegin
@@ -4791,22 +4915,23 @@ Method ClassDefinition11OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_reference_list | class_reference
+/// summary=C|C
 Method ClassDefinition12Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..ClassReferenceList(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..ClassReference(subElement,.addedElement)  {
@@ -4814,21 +4939,19 @@ Method ClassDefinition12Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_ForeignKey ::= 'foreignkey' foreignkey_name [ '(' key_props ')' ] 'references' class_reference [ '(' [ref_props] ')' ] [ foreignKey_attribute_list ] ';'
 /// summary values:FOREIGNKEY
+/// summary=K&C&[P&C&P]&K&C&[P&[C]&P]&[C]&P
 Method ClassForeignkey(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?&?4?&K&?1Rule?&?4?&?4?&P
+	; rules summary K&C&[P&C&P]&K&C&[P&[C]&P]&[C]&P
 	; first rule summary K
 	if '(..isKeywordInList($lb("FOREIGNKEY"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -4855,20 +4978,21 @@ Method ClassForeignkey(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:(
+/// summary=P&C&P
 Method ClassForeignkey38OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&P
+	; rules summary P&C&P
 	; first rule summary P
 	if '(..isStringSingle("(",.value)) { quit 1 /* not found is OK */ }
 	$$$DEBUGMethodBegin
@@ -4884,20 +5008,21 @@ Method ClassForeignkey38OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:(
+/// summary=P&[C]&P
 Method ClassForeignkey39OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?4?&P
+	; rules summary P&[C]&P
 	; first rule summary P
 	if '(..isStringSingle("(",.value)) { quit 1 /* not found is OK */ }
 	$$$DEBUGMethodBegin
@@ -4913,17 +5038,18 @@ Method ClassForeignkey39OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_identifier ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)'
 /// summary values:REGEXP:(((\%[A-ZA-Z0-9])|(\$[A-ZA-Z])|[A-ZA-Z])[A-ZA-Z0-9\.]*)
+/// summary=P
 Method ClassIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -4938,20 +5064,21 @@ Method ClassIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_index ::= 'index' index_name [ 'on' index_property_expression_list ] [ index_attributes ] [ 'as' type_class_reference ]';'
 /// summary values:INDEX
+/// summary=K&C&[K&C]&[C]&[K&C]&P
 Method ClassIndex(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?&?4?&?4?&?4?&P
+	; rules summary K&C&[K&C]&[C]&[K&C]&P
 	; first rule summary K
 	if '(..isKeywordInList($lb("INDEX"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -4974,20 +5101,21 @@ Method ClassIndex(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:ON
+/// summary=K&C
 Method ClassIndex112OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?
+	; rules summary K&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("ON"),.value)) { quit 1 /* not found is OK */ }
 	$$$DEBUGMethodBegin
@@ -5001,20 +5129,21 @@ Method ClassIndex112OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:AS
+/// summary=K&C
 Method ClassIndex113OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?
+	; rules summary K&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("AS"),.value)) { quit 1 /* not found is OK */ }
 	$$$DEBUGMethodBegin
@@ -5028,19 +5157,20 @@ Method ClassIndex113OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_item_identifier ::= string | identifier
+/// summary=C|C
 Method ClassItemIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
+	; rules summary C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -5053,17 +5183,18 @@ Method ClassItemIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_language_name ::= 'cache' | 'basic' | 'javascript' | 'java' | 'mvbasic' | 'tsql' | 'cpp' | 'objectscript' | 'python'
 /// summary values:CACHE,BASIC,JAVASCRIPT,JAVA,MVBASIC,TSQL,CPP,OBJECTSCRIPT,PYTHON
+/// summary=K|K|K|K|K|K|K|K|K
 Method ClassLanguageName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|K|K|K|K|K|K|K|K
@@ -5094,19 +5225,20 @@ Method ClassLanguageName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_member_list ::= one_classMember ( one_classMember )*
+/// summary=C&(?4punctuation:4?)*
 Method ClassMemberList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&(?4?)*
+	; rules summary C&(?4punctuation:4?)*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -5119,59 +5251,58 @@ Method ClassMemberList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( one_classMember )*
 Method ClassMemberList17RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..ClassMemberList18Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  one_classMember
+/// summary=C
 Method ClassMemberList18Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..OneClassmember(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_member_section ::= '{' class_member_list? '}'
 /// summary values:{
+/// summary=P&?4OptionalSingle4?&P
 Method ClassMemberSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?4?&P
+	; rules summary P&?4OptionalSingle4?&P
 	; first rule summary P
 	if '(..isStringSingle("{",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -5188,20 +5319,21 @@ Method ClassMemberSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_method ::= 'method' method_name '(' [ formal_spec_list ] ')' [ 'as' return_type_class_reference ] [ method_attribute_list ] '{' method_body '}'
 /// summary values:METHOD
+/// summary=K&C&P&[C]&P&[K&C]&[C]&P&C&P
 Method ClassMethod(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?&P&?4?&P&?4?&?4?&P&?1Rule?&P
+	; rules summary K&C&P&[C]&P&[K&C]&[C]&P&C&P
 	; first rule summary K
 	if '(..isKeywordInList($lb("METHOD"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -5232,20 +5364,21 @@ Method ClassMethod(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:AS
+/// summary=K&C
 Method ClassMethod31OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?
+	; rules summary K&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("AS"),.value)) { quit 1 /* not found is OK */ }
 	$$$DEBUGMethodBegin
@@ -5259,19 +5392,20 @@ Method ClassMethod31OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_name ::= class_identifier
+/// summary=C
 Method ClassName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -5282,20 +5416,21 @@ Method ClassName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_parameter ::= 'parameter' class_parameter_name [ 'as' class_parameter_type ] [ class_parameter_attribute_list ] [ '=' class_parameter_value ] ';'
 /// summary values:PARAMETER
+/// summary=K&C&[K&C]&[C]&[P&C]&P
 Method ClassParameter(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?&?4?&?4?&?4?&P
+	; rules summary K&C&[K&C]&[C]&[P&C]&P
 	; first rule summary K
 	if '(..isKeywordInList($lb("PARAMETER"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -5318,20 +5453,21 @@ Method ClassParameter(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:AS
+/// summary=K&C
 Method ClassParameter45OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?
+	; rules summary K&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("AS"),.value)) { quit 1 /* not found is OK */ }
 	$$$DEBUGMethodBegin
@@ -5345,20 +5481,21 @@ Method ClassParameter45OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:=
+/// summary=P&C
 Method ClassParameter46OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle("=",.value)) { quit 1 /* not found is OK */ }
 	$$$DEBUGMethodBegin
@@ -5372,19 +5509,20 @@ Method ClassParameter46OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_parameter_attribute ::= attribute_Abstract | attribute_Constraint | attribute_Final | attribute_Flags | attribute_Internal | attribute_Deprecated
+/// summary=C|C|C|C|C|C
 Method ClassParameterAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?
+	; rules summary C|C|C|C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -5405,20 +5543,21 @@ Method ClassParameterAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_parameter_attribute_list ::= '[' class_parameter_attribute ( ',' class_parameter_attribute )* ']'
 /// summary values:[
+/// summary=P&C&(?4punctuation:4?)*&P
 Method ClassParameterAttributeList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&(?4?)*&P
+	; rules summary P&C&(?4punctuation:4?)*&P
 	; first rule summary P
 	if '(..isStringSingle("[",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -5437,37 +5576,38 @@ Method ClassParameterAttributeList(ParentElement As PXW.DEV.BNF.Element, ByRef s
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( ',' class_parameter_attribute )*
 Method ClassParameterAttributeList48RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..ClassParameterAttributeList49Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  ',' class_parameter_attribute
 /// summary values:,
+/// summary=P&C
 Method ClassParameterAttributeList49Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -5481,19 +5621,20 @@ Method ClassParameterAttributeList49Sub(ParentElement As PXW.DEV.BNF.Element, By
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_parameter_name ::= class_item_identifier
+/// summary=C
 Method ClassParameterName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -5504,19 +5645,20 @@ Method ClassParameterName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_parameter_type ::= class_reference | 'COSEXPRESSION'
+/// summary=C|K
 Method ClassParameterType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|K
+	; rules summary C|K
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -5529,19 +5671,20 @@ Method ClassParameterType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_parameter_value ::= string | number | ( '{' expression '}' )
+/// summary=C|C|P&C&P
 Method ClassParameterValue(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?
+	; rules summary C|C|P&C&P
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -5556,20 +5699,21 @@ Method ClassParameterValue(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  '{' expression '}'
 /// summary values:{
+/// summary=P&C&P
 Method ClassParameterValue47Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&P
+	; rules summary P&C&P
 	; first rule summary P
 	if '(..isStringSingle("{",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -5585,20 +5729,21 @@ Method ClassParameterValue47Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_projection ::= 'projection' projection_name [ class_projection_type ] [ class_property_attributes ] ';'
 /// summary values:PROJECTION
+/// summary=K&C&[C]&[C]&P
 Method ClassProjection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?&?4?&?4?&P
+	; rules summary K&C&[C]&[C]&P
 	; first rule summary K
 	if '(..isKeywordInList($lb("PROJECTION"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -5619,20 +5764,21 @@ Method ClassProjection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_projection_type ::= 'as' type_class_reference
 /// summary values:AS
+/// summary=K&C
 Method ClassProjectionType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?
+	; rules summary K&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("AS"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -5647,20 +5793,21 @@ Method ClassProjectionType(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_property ::= 'property' property_name [ class_property_type ] [ class_property_attributes ] ';'
 /// summary values:PROPERTY
+/// summary=K&C&[C]&[C]&P
 Method ClassProperty(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?&?4?&?4?&P
+	; rules summary K&C&[C]&[C]&P
 	; first rule summary K
 	if '(..isKeywordInList($lb("PROPERTY"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -5681,19 +5828,20 @@ Method ClassProperty(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_property_attribute ::= attribute_Aliases | attribute_Calculated | attribute_Cardinality | attribute_ClientName | attribute_Deprecated | attribute_Final | attribute_Identity | attribute_InitialExpression | attribute_Internal | attribute_Inverse | attribute_MultiDimensional | attribute_OnDelete | attribute_Private | attribute_ReadOnly | attribute_Required | attribute_ServerOnly | attribute_SQLColumnNumber | attribute_SQLComputeCode | attribute_SQLComputed | attribute_SQLComputeOnChange | attribute_SQLFieldname | attribute_SQLListDelimiter | attribute_SQLListType | attribute_Transient | attribute_Not
+/// summary=C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
 Method ClassPropertyAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?
+	; rules summary C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -5752,19 +5900,20 @@ Method ClassPropertyAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_property_attribute_list ::= class_property_attribute ( ',' class_property_attribute )*
+/// summary=C&(?4punctuation:4?)*
 Method ClassPropertyAttributeList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&(?4?)*
+	; rules summary C&(?4punctuation:4?)*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -5777,37 +5926,38 @@ Method ClassPropertyAttributeList(ParentElement As PXW.DEV.BNF.Element, ByRef su
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( ',' class_property_attribute )*
 Method ClassPropertyAttributeList25RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..ClassPropertyAttributeList26Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  ',' class_property_attribute
 /// summary values:,
+/// summary=P&C
 Method ClassPropertyAttributeList26Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -5821,20 +5971,21 @@ Method ClassPropertyAttributeList26Sub(ParentElement As PXW.DEV.BNF.Element, ByR
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_property_attributes ::= '[' class_property_attribute_list ']'
 /// summary values:[
+/// summary=P&C&P
 Method ClassPropertyAttributes(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&P
+	; rules summary P&C&P
 	; first rule summary P
 	if '(..isStringSingle("[",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -5851,19 +6002,21 @@ Method ClassPropertyAttributes(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_property_type ::= ('as' [ ( 'array' | 'list' ) 'of' ] type_class_reference ) | type_parameters
+/// summary=K&[K|K&K]&C|C
 Method ClassPropertyType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
+	; rules summary K&[K|K&K]&C|C
+	; first rule summary K&[K|K&K]&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -5876,20 +6029,21 @@ Method ClassPropertyType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 'as' [ ( 'array' | 'list' ) 'of' ] type_class_reference
 /// summary values:AS
+/// summary=K&[K|K&K]&C
 Method ClassPropertyType22Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?4?&?1Rule?
+	; rules summary K&[K|K&K]&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("AS"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -5905,18 +6059,20 @@ Method ClassPropertyType22Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
+/// 
+/// summary=K|K&K
 Method ClassPropertyType23OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K
+	; rules summary K|K&K
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -5928,17 +6084,18 @@ Method ClassPropertyType23OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  'array' | 'list'
 /// summary values:ARRAY,LIST
+/// summary=K|K
 Method ClassPropertyType24Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|K
@@ -5953,18 +6110,19 @@ Method ClassPropertyType24Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	}
 
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	quit ret
+	quit ok
 }
 
 ///  class_query ::= 'query' query_name '(' [ formal_spec_list ] ')' [ 'as' type_class_reference ] [ class_query_attributes ] '{' class_query_body '}'
 /// summary values:QUERY
+/// summary=K&C&P&[C]&P&[K&C]&[C]&P&C&P
 Method ClassQuery(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?&P&?4?&P&?4?&?4?&P&?1Rule?&P
+	; rules summary K&C&P&[C]&P&[K&C]&[C]&P&C&P
 	; first rule summary K
 	if '(..isKeywordInList($lb("QUERY"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -5995,20 +6153,21 @@ Method ClassQuery(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:AS
+/// summary=K&C
 Method ClassQuery87OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?
+	; rules summary K&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("AS"),.value)) { quit 1 /* not found is OK */ }
 	$$$DEBUGMethodBegin
@@ -6022,19 +6181,20 @@ Method ClassQuery87OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_query_attribute ::= attribute_ClientName | attribute_Deprecated | attribute_Final | attribute_Internal | attribute_Private | attribute_SOAPBindingStyle | attribute_SOAPBodyuse | attribute_SOAPNameSpace | attribute_SQLName | attribute_SQLProc | attribute_SQLView | attribute_SQLViewname | attribute_WebMethod
+/// summary=C|C|C|C|C|C|C|C|C|C|C|C|C
 Method ClassQueryAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?
+	; rules summary C|C|C|C|C|C|C|C|C|C|C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -6069,20 +6229,21 @@ Method ClassQueryAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_query_attributes ::= '[' class_query_attribute ( ',' class_query_attribute )* ']'
 /// summary values:[
+/// summary=P&C&(?4punctuation:4?)*&P
 Method ClassQueryAttributes(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&(?4?)*&P
+	; rules summary P&C&(?4punctuation:4?)*&P
 	; first rule summary P
 	if '(..isStringSingle("[",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -6101,37 +6262,38 @@ Method ClassQueryAttributes(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( ',' class_query_attribute )*
 Method ClassQueryAttributes88RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..ClassQueryAttributes89Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  ',' class_query_attribute
 /// summary values:,
+/// summary=P&C
 Method ClassQueryAttributes89Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -6145,19 +6307,20 @@ Method ClassQueryAttributes89Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_query_body ::= text_brace_block
+/// summary=C
 Method ClassQueryBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -6168,19 +6331,20 @@ Method ClassQueryBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_reference ::= class_identifier
+/// summary=C
 Method ClassReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -6191,20 +6355,21 @@ Method ClassReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_reference_list ::= '(' [class_reference] ( ',' class_reference )* ')'
 /// summary values:(
+/// summary=P&[C]&(?4punctuation:4?)*&P
 Method ClassReferenceList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?4?&(?4?)*&P
+	; rules summary P&[C]&(?4punctuation:4?)*&P
 	; first rule summary P
 	if '(..isStringSingle("(",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -6223,37 +6388,38 @@ Method ClassReferenceList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( ',' class_reference )*
 Method ClassReferenceList13RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..ClassReferenceList14Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  ',' class_reference
 /// summary values:,
+/// summary=P&C
 Method ClassReferenceList14Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -6267,20 +6433,21 @@ Method ClassReferenceList14Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_relationship ::= 'relationship' property_name [ class_property_type ] class_property_attributes ';'
 /// summary values:RELATIONSHIP
+/// summary=K&C&[C]&C&P
 Method ClassRelationship(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?&?4?&?1Rule?&P
+	; rules summary K&C&[C]&C&P
 	; first rule summary K
 	if '(..isKeywordInList($lb("RELATIONSHIP"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -6301,20 +6468,21 @@ Method ClassRelationship(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_storage ::= 'storage' storage_name '{' storage_xml '}'
 /// summary values:STORAGE
+/// summary=K&C&P&C&P
 Method ClassStorage(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?&P&?1Rule?&P
+	; rules summary K&C&P&C&P
 	; first rule summary K
 	if '(..isKeywordInList($lb("STORAGE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -6335,20 +6503,21 @@ Method ClassStorage(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_trigger ::= 'trigger' trigger_name [ trigger_attribute_list ] '{' [ trigger_code_block ] '}'
 /// summary values:TRIGGER
+/// summary=K&C&[C]&P&[C]&P
 Method ClassTrigger(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?&?4?&P&?4?&P
+	; rules summary K&C&[C]&P&[C]&P
 	; first rule summary K
 	if '(..isKeywordInList($lb("TRIGGER"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -6371,16 +6540,17 @@ Method ClassTrigger(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_type_name ::= 'datatype' | 'persistent' | 'serial' | 'stream' | 'view' | 'index' | 'donotuse' | 'dynamic' | '""'
+/// summary=K|K|K|K|K|K|K|K|P
 Method ClassTypeName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|K|K|K|K|K|K|K|P
@@ -6410,20 +6580,21 @@ Method ClassTypeName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  class_xdata ::= 'xdata' xdata_name [ '[' (xdata_attributes)* ']' ] '{' (xdata_text | xdata_xml | xdata_json ) '}'
 /// summary values:XDATA
+/// summary=K&C&[P&(?4punctuation:4?)*&P]&P&C|C|C&P
 Method ClassXdata(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?&?4?&P&?1Rule?&P
+	; rules summary K&C&[P&(?4punctuation:4?)*&P]&P&C|C|C&P
 	; first rule summary K
 	if '(..isKeywordInList($lb("XDATA"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -6446,20 +6617,21 @@ Method ClassXdata(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:[
+/// summary=P&(?4punctuation:4?)*&P
 Method ClassXdata90OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&(?4?)*&P
+	; rules summary P&(?4punctuation:4?)*&P
 	; first rule summary P
 	if '(..isStringSingle("[",.value)) { quit 1 /* not found is OK */ }
 	$$$DEBUGMethodBegin
@@ -6475,61 +6647,60 @@ Method ClassXdata90OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  (xdata_attributes)*
 Method ClassXdata91RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..ClassXdata92Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 /// xdata_attributes
+/// summary=C
 Method ClassXdata92Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..XdataAttributes(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// xdata_text | xdata_xml | xdata_json
+/// summary=C|C|C
 Method ClassXdata93Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..XdataText(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..XdataXml(subElement,.addedElement)  {
@@ -6539,18 +6710,16 @@ Method ClassXdata93Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  client_data_type_name ::= 'bigint' | 'binary' | 'binarystream' | 'boolean' | 'characterstream' | 'currency' | 'date' | 'decimal' | 'double' | 'fdate' | 'ftimestamp' | 'handle' | 'integer' | 'list' | 'longvarchar' | 'numeric' | 'status' | 'timestamp' | 'time' | 'varchar' | 'MVDATE'
 /// summary values:BIGINT,BINARY,BINARYSTREAM,BOOLEAN,CHARACTERSTREAM,CURRENCY,DATE,DECIMAL,DOUBLE,FDATE,FTIMESTAMP,HANDLE,INTEGER,LIST,LONGVARCHAR,NUMERIC,STATUS,TIMESTAMP,TIME,VARCHAR,MVDATE
+/// summary=K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K
 Method ClientDataTypeName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K
@@ -6605,17 +6774,18 @@ Method ClientDataTypeName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  client_identifier ::= 'NEEDS CLIENT IDENTIFIER'
 /// summary values:NEEDS CLIENT IDENTIFIER
+/// summary=P
 Method ClientIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -6630,19 +6800,20 @@ Method ClientIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  collation_type ::= 'exact' | 'mvr' | 'sqlstring' | ('sqlupper' [ '(' number ')' ] )| 'truncate' | 'plus' | 'minus' | 'alphaup' | 'string' | 'upper' | 'space'
+/// summary=K|K|K|K&[P&C&P]|K|K|K|K|K|K|K
 Method CollationType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K|K|K|?1Rule?|K|K|K|K|K|K|K
+	; rules summary K|K|K|K&[P&C&P]|K|K|K|K|K|K|K
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -6673,20 +6844,21 @@ Method CollationType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 'sqlupper' [ '(' number ')' ]
 /// summary values:SQLUPPER
+/// summary=K&[P&C&P]
 Method CollationType118Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?4?
+	; rules summary K&[P&C&P]
 	; first rule summary K
 	if '(..isKeywordInList($lb("SQLUPPER"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -6700,20 +6872,21 @@ Method CollationType118Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:(
+/// summary=P&C&P
 Method CollationType119OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&P
+	; rules summary P&C&P
 	; first rule summary P
 	if '(..isStringSingle("(",.value)) { quit 1 /* not found is OK */ }
 	$$$DEBUGMethodBegin
@@ -6729,17 +6902,18 @@ Method CollationType119OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  cos_code_block ::= 'NEEDS COS CODE BLOCK'
 /// summary values:NEEDS COS CODE BLOCK
+/// summary=P
 Method CosCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -6754,17 +6928,18 @@ Method CosCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  cos_code_block_sql ::= 'NEEDS COS SQL CODE BLOCK'
 /// summary values:NEEDS COS SQL CODE BLOCK
+/// summary=P
 Method CosCodeBlockSql(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -6779,17 +6954,18 @@ Method CosCodeBlockSql(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  cos_code_block_sql_storage ::= 'NEEDS COS SQL CODE BLOCK'
 /// summary values:NEEDS COS SQL CODE BLOCK
+/// summary=P
 Method CosCodeBlockSqlStorage(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -6804,19 +6980,21 @@ Method CosCodeBlockSqlStorage(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  cos_code_block_storage ::= ('<!' '[CDATA[' cos_code_block_sql_storage ']]' '>') | cos_code_block_sql_storage
+/// summary=P&P&C&P&P|C
 Method CosCodeBlockStorage(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
+	; rules summary P&P&C&P&P|C
+	; first rule summary P&P&C&P&P
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -6829,20 +7007,21 @@ Method CosCodeBlockStorage(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// '<!' '[CDATA[' cos_code_block_sql_storage ']]' '>'
 /// summary values:<!
+/// summary=P&P&C&P&P
 Method CosCodeBlockStorage190Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&P&?1Rule?&P&P
+	; rules summary P&P&C&P&P
 	; first rule summary P
 	if '(..isStringSingle("<!",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -6862,17 +7041,18 @@ Method CosCodeBlockStorage190Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  cos_code_block_trigger ::= 'NEEDS COS SQL CODE BLOCK'
 /// summary values:NEEDS COS SQL CODE BLOCK
+/// summary=P
 Method CosCodeBlockTrigger(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -6887,17 +7067,18 @@ Method CosCodeBlockTrigger(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  cos_expression_sql ::= 'NEEDS COS EXPRESSION SQL'
 /// summary values:NEEDS COS EXPRESSION SQL
+/// summary=P
 Method CosExpressionSql(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -6912,19 +7093,21 @@ Method CosExpressionSql(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  cos_expression_storage ::= ('<!' '[CDATA[' cos_expression_sql ']]' '>') | cos_expression_sql
+/// summary=P&P&C&P&P|C
 Method CosExpressionStorage(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
+	; rules summary P&P&C&P&P|C
+	; first rule summary P&P&C&P&P
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -6937,20 +7120,21 @@ Method CosExpressionStorage(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// '<!' '[CDATA[' cos_expression_sql ']]' '>'
 /// summary values:<!
+/// summary=P&P&C&P&P
 Method CosExpressionStorage189Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&P&?1Rule?&P&P
+	; rules summary P&P&C&P&P
 	; first rule summary P
 	if '(..isStringSingle("<!",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -6970,17 +7154,18 @@ Method CosExpressionStorage189Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  event_keyword ::= 'insert/update/delete' | 'insert/update' | 'insert/delete' | 'update/delete' | 'delete' | 'insert' | 'update'
 /// summary values:INSERT/UPDATE/DELETE,INSERT/UPDATE,INSERT/DELETE,UPDATE/DELETE,DELETE,INSERT,UPDATE
+/// summary=K|K|K|K|K|K|K
 Method EventKeyword(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|K|K|K|K|K|K
@@ -7007,17 +7192,18 @@ Method EventKeyword(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  expression ::= 'NEEDS EXPRESSION'
 /// summary values:NEEDS EXPRESSION
+/// summary=P
 Method Expression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -7032,19 +7218,20 @@ Method Expression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  fieldname ::= property_reference
+/// summary=C
 Method Fieldname(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -7055,17 +7242,18 @@ Method Fieldname(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  filename ::= 'NEEDS FILE NAME'
 /// summary values:NEEDS FILE NAME
+/// summary=P
 Method Filename(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -7080,17 +7268,18 @@ Method Filename(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  foreach_type ::= 'row' | 'row/object' | 'statement'
 /// summary values:ROW,ROW/OBJECT,STATEMENT
+/// summary=K|K|K
 Method ForeachType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|K|K
@@ -7109,20 +7298,21 @@ Method ForeachType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  foreignKey_attribute_list ::= '[' one_foreignkey_atttribute ( ',' one_foreignkey_atttribute )* ']'
 /// summary values:[
+/// summary=P&C&(?4punctuation:4?)*&P
 Method ForeignkeyAttributeList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&(?4?)*&P
+	; rules summary P&C&(?4punctuation:4?)*&P
 	; first rule summary P
 	if '(..isStringSingle("[",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -7141,37 +7331,38 @@ Method ForeignkeyAttributeList(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( ',' one_foreignkey_atttribute )*
 Method ForeignkeyAttributeList43RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..ForeignkeyAttributeList44Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  ',' one_foreignkey_atttribute
 /// summary values:,
+/// summary=P&C
 Method ForeignkeyAttributeList44Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -7185,19 +7376,20 @@ Method ForeignkeyAttributeList44Sub(ParentElement As PXW.DEV.BNF.Element, ByRef 
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  foreignkey_name ::= class_item_identifier
+/// summary=C
 Method ForeignkeyName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -7208,19 +7400,20 @@ Method ForeignkeyName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  formal_spec_item ::= [ formal_spec_mode ] variable_set ['...'] [ as_type_class_reference ] [ parameter_default_value ]
+/// summary=[C]&C&[P]&[C]&[C]
 Method FormalSpecItem(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?&?1Rule?&?4?&?4?&?4?
+	; rules summary [C]&C&[P]&[C]&[C]
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -7239,19 +7432,20 @@ Method FormalSpecItem(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  formal_spec_list ::= formal_spec_item( ',' formal_spec_item )*
+/// summary=C&(?4punctuation:4?)*
 Method FormalSpecList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&(?4?)*
+	; rules summary C&(?4punctuation:4?)*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -7264,37 +7458,38 @@ Method FormalSpecList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// ( ',' formal_spec_item )*
 Method FormalSpecList32RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..FormalSpecList33Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  ',' formal_spec_item
 /// summary values:,
+/// summary=P&C
 Method FormalSpecList33Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -7308,17 +7503,18 @@ Method FormalSpecList33Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  formal_spec_mode ::= 'byref' | 'output' | 'byval'
 /// summary values:BYREF,OUTPUT,BYVAL
+/// summary=K|K|K
 Method FormalSpecMode(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|K|K
@@ -7337,19 +7533,20 @@ Method FormalSpecMode(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  global ::= cos_expression_sql
+/// summary=C
 Method Global(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -7360,17 +7557,18 @@ Method Global(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  identifier ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)'
 /// summary values:REGEXP:(((\%[A-ZA-Z0-9])|(\$[A-ZA-Z])|[A-ZA-Z])[A-ZA-Z0-9\.]*)
+/// summary=P
 Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -7385,20 +7583,21 @@ Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  import_definition ::= 'import' ( package_name | ( '(' package_list ')' ) )
 /// summary values:IMPORT
+/// summary=K&C|P&C&P
 Method ImportDefinition(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?
+	; rules summary K&C|P&C&P
 	; first rule summary K
 	if '(..isKeywordInList($lb("IMPORT"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -7413,19 +7612,20 @@ Method ImportDefinition(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  package_name | ( '(' package_list ')' )
+/// summary=C|P&C&P
 Method ImportDefinition3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
+	; rules summary C|P&C&P
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -7437,20 +7637,21 @@ Method ImportDefinition3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  '(' package_list ')'
 /// summary values:(
+/// summary=P&C&P
 Method ImportDefinition4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&P
+	; rules summary P&C&P
 	; first rule summary P
 	if '(..isStringSingle("(",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -7466,20 +7667,21 @@ Method ImportDefinition4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  include_definition ::= 'include' ( include_list | include_name )
 /// summary values:INCLUDE
+/// summary=K&C|C
 Method IncludeDefinition(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?
+	; rules summary K&C|C
 	; first rule summary K
 	if '(..isKeywordInList($lb("INCLUDE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -7494,22 +7696,23 @@ Method IncludeDefinition(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  include_list | include_name
+/// summary=C|C
 Method IncludeDefinition6Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..IncludeList(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..IncludeName(subElement,.addedElement)  {
@@ -7517,21 +7720,19 @@ Method IncludeDefinition6Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  include_generator_definition ::= 'includegenerator' ( include_list | include_name )
 /// summary values:INCLUDEGENERATOR
+/// summary=K&C|C
 Method IncludeGeneratorDefinition(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?
+	; rules summary K&C|C
 	; first rule summary K
 	if '(..isKeywordInList($lb("INCLUDEGENERATOR"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -7546,22 +7747,23 @@ Method IncludeGeneratorDefinition(ParentElement As PXW.DEV.BNF.Element, ByRef su
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  include_list | include_name
+/// summary=C|C
 Method IncludeGeneratorDefinition5Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..IncludeList(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..IncludeName(subElement,.addedElement)  {
@@ -7569,21 +7771,19 @@ Method IncludeGeneratorDefinition5Sub(ParentElement As PXW.DEV.BNF.Element, ByRe
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  include_list ::= '(' include_name ( ',' include_name )* ')'
 /// summary values:(
+/// summary=P&C&(?4punctuation:4?)*&P
 Method IncludeList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&(?4?)*&P
+	; rules summary P&C&(?4punctuation:4?)*&P
 	; first rule summary P
 	if '(..isStringSingle("(",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -7602,20 +7802,21 @@ Method IncludeList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ',' include_name
 /// summary values:,
+/// summary=P&C
 Method IncludeList10Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -7629,36 +7830,37 @@ Method IncludeList10Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( ',' include_name )*
 Method IncludeList9RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..IncludeList10Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  include_name ::= identifier
+/// summary=C
 Method IncludeName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -7669,19 +7871,20 @@ Method IncludeName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  index_attribute ::= attribute_Condition | attribute_Data | attribute_Extent | attribute_IdKey | attribute_Internal | attribute_PrimaryKey | attribute_SQLName | attribute_Type | attribute_Unique
+/// summary=C|C|C|C|C|C|C|C|C
 Method IndexAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?
+	; rules summary C|C|C|C|C|C|C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -7708,20 +7911,21 @@ Method IndexAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  index_attributes ::= '[' index_attribute ( ',' index_attribute )* ']'
 /// summary values:[
+/// summary=P&C&(?4punctuation:4?)*&P
 Method IndexAttributes(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&(?4?)*&P
+	; rules summary P&C&(?4punctuation:4?)*&P
 	; first rule summary P
 	if '(..isStringSingle("[",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -7740,37 +7944,38 @@ Method IndexAttributes(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( ',' index_attribute )*
 Method IndexAttributes120RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..IndexAttributes121Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  ',' index_attribute
 /// summary values:,
+/// summary=P&C
 Method IndexAttributes121Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -7784,19 +7989,20 @@ Method IndexAttributes121Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  index_name ::= class_item_identifier
+/// summary=C
 Method IndexName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -7807,19 +8013,20 @@ Method IndexName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  index_property ::= fieldname ['(ELEMENTS)' | '(KEYS)' ] [ 'as' collation_type]
+/// summary=C&[P|P]&[K&C]
 Method IndexProperty(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&?4?&?4?
+	; rules summary C&[P|P]&[K&C]
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -7834,17 +8041,18 @@ Method IndexProperty(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:(ELEMENTS),(KEYS)
+/// summary=P|P
 Method IndexProperty116OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P|P
@@ -7859,18 +8067,19 @@ Method IndexProperty116OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	}
 
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:AS
+/// summary=K&C
 Method IndexProperty117OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?
+	; rules summary K&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("AS"),.value)) { quit 1 /* not found is OK */ }
 	$$$DEBUGMethodBegin
@@ -7884,19 +8093,20 @@ Method IndexProperty117OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  index_property_expression_list ::= index_property | index_property_list
+/// summary=C|C
 Method IndexPropertyExpressionList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
+	; rules summary C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -7909,20 +8119,21 @@ Method IndexPropertyExpressionList(ParentElement As PXW.DEV.BNF.Element, ByRef s
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  index_property_list ::= '(' index_property ( ',' index_property )* ')'
 /// summary values:(
+/// summary=P&C&(?4punctuation:4?)*&P
 Method IndexPropertyList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&(?4?)*&P
+	; rules summary P&C&(?4punctuation:4?)*&P
 	; first rule summary P
 	if '(..isStringSingle("(",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -7941,37 +8152,38 @@ Method IndexPropertyList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( ',' index_property )*
 Method IndexPropertyList114RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..IndexPropertyList115Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  ',' index_property
 /// summary values:,
+/// summary=P&C
 Method IndexPropertyList115Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -7985,17 +8197,18 @@ Method IndexPropertyList115Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  inheritance_direction ::= 'left' | 'right'
 /// summary values:LEFT,RIGHT
+/// summary=K|K
 Method InheritanceDirection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|K
@@ -8012,20 +8225,21 @@ Method InheritanceDirection(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  initial_expression_complex ::= '{' expression '}'
 /// summary values:{
+/// summary=P&C&P
 Method InitialExpressionComplex(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&P
+	; rules summary P&C&P
 	; first rule summary P
 	if '(..isStringSingle("{",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -8042,19 +8256,20 @@ Method InitialExpressionComplex(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  initial_expression_simple ::= string | number
+/// summary=C|C
 Method InitialExpressionSimple(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
+	; rules summary C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -8067,19 +8282,20 @@ Method InitialExpressionSimple(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  initialexpression_value ::= initial_expression_complex | initial_expression_simple
+/// summary=C|C
 Method InitialexpressionValue(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
+	; rules summary C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -8092,17 +8308,18 @@ Method InitialexpressionValue(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  javascript_code_block ::= 'NEEDS JS CODE BLOCK'
 /// summary values:NEEDS JS CODE BLOCK
+/// summary=P
 Method JavascriptCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -8117,17 +8334,18 @@ Method JavascriptCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  json_string ::= 'NEED JSON STRING'
 /// summary values:NEED JSON STRING
+/// summary=P
 Method JsonString(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -8142,19 +8360,20 @@ Method JsonString(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  key_props ::= name_value_pair_list
+/// summary=C
 Method KeyProps(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -8165,19 +8384,20 @@ Method KeyProps(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  method_attribute ::= attribute_Abstract | attribute_ClientName | attribute_CodeMode | attribute_Deprecated | attribute_ExternalProcName | attribute_Final | attribute_ForceGenerate | attribute_GenerateAfter | attribute_Internal | attribute_Language | attribute_NoContext | attribute_NotInheritable | attribute_PlaceAfter | attribute_Private | attribute_ProcedureBlock | attribute_PublicList | attribute_ReturnResultSets | attribute_ServerOnly | attribute_SOAPAction | attribute_SOAPBindingStyle | attribute_SOAPBodyuse | attribute_SOAPMessageName | attribute_SOAPNameSpace | attribute_SOAPRequestMessage | attribute_SOAPTypeNamespace | attribute_SQLName | attribute_SQLProc | attribute_WebMethod | attribute_ZenMethod
+/// summary=C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
 Method MethodAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?
+	; rules summary C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -8244,20 +8464,21 @@ Method MethodAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  method_attribute_list ::= '[' method_attribute ( ',' method_attribute )* ']'
 /// summary values:[
+/// summary=P&C&(?4punctuation:4?)*&P
 Method MethodAttributeList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&(?4?)*&P
+	; rules summary P&C&(?4punctuation:4?)*&P
 	; first rule summary P
 	if '(..isStringSingle("[",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -8276,37 +8497,38 @@ Method MethodAttributeList(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( ',' method_attribute )*
 Method MethodAttributeList34RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..MethodAttributeList35Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  ',' method_attribute
 /// summary values:,
+/// summary=P&C
 Method MethodAttributeList35Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -8320,19 +8542,20 @@ Method MethodAttributeList35Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  method_body ::= cos_code_block
+/// summary=C
 Method MethodBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -8343,19 +8566,20 @@ Method MethodBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  method_name ::= class_item_identifier
+/// summary=C
 Method MethodName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -8366,19 +8590,20 @@ Method MethodName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  method_reference ::= class_item_identifier
+/// summary=C
 Method MethodReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -8389,17 +8614,18 @@ Method MethodReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  mime_type ::= 'regex:[a-zA-Z][a-zA-Z0-9]*\/[a-zA-Z][a-zA-Z0-9]*'
 /// summary values:REGEX:[A-ZA-Z][A-ZA-Z0-9]*\/[A-ZA-Z][A-ZA-Z0-9]*
+/// summary=P
 Method MimeType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -8414,19 +8640,20 @@ Method MimeType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  name_value_pair_list ::= one_name_value_pair ( ',' one_name_value_pair )*
+/// summary=C&(?4punctuation:4?)*
 Method NameValuePairList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&(?4?)*
+	; rules summary C&(?4punctuation:4?)*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -8439,37 +8666,38 @@ Method NameValuePairList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( ',' one_name_value_pair )*
 Method NameValuePairList40RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..NameValuePairList41Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  ',' one_name_value_pair
 /// summary values:,
+/// summary=P&C
 Method NameValuePairList41Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -8483,19 +8711,20 @@ Method NameValuePairList41Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  number ::= ['-'] ('regexp:[0-9]*' [ '.' 'regexp:[0-9]+'] [ ('e' | 'E') 'regexp:[0-9]+']) | ('.' 'regexp:[0-9]+' [ ('e' | 'E') 'regexp:[0-9]+'])
+/// summary=[P]&P&[P&P]&[K|K&P]|P&P&[K|K&P]
 Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?&?1Rule?|?1Rule?
+	; rules summary [P]&P&[P&P]&[K|K&P]|P&P&[K|K&P]
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -8510,20 +8739,21 @@ Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 'regexp:[0-9]*' [ '.' 'regexp:[0-9]+'] [ ('e' | 'E') 'regexp:[0-9]+']
 /// summary values:REGEXP:[0-9]*
+/// summary=P&[P&P]&[K|K&P]
 Method Number181Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?4?&?4?
+	; rules summary P&[P&P]&[K|K&P]
 	; first rule summary P
 	if '(..isStringSingle("REGEXP:[0-9]*",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -8539,17 +8769,18 @@ Method Number181Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:.
+/// summary=P&P
 Method Number182OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&P
@@ -8566,18 +8797,20 @@ Method Number182OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
+/// 
+/// summary=K|K&P
 Method Number183OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&P
+	; rules summary K|K&P
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -8589,17 +8822,18 @@ Method Number183OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 'e' | 'E'
 /// summary values:E,E
+/// summary=K|K
 Method Number184Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|K
@@ -8614,18 +8848,19 @@ Method Number184Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	}
 
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	quit ret
+	quit ok
 }
 
 /// '.' 'regexp:[0-9]+' [ ('e' | 'E') 'regexp:[0-9]+']
 /// summary values:.
+/// summary=P&P&[K|K&P]
 Method Number185Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&P&?4?
+	; rules summary P&P&[K|K&P]
 	; first rule summary P
 	if '(..isStringSingle(".",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -8641,18 +8876,20 @@ Method Number185Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
+/// 
+/// summary=K|K&P
 Method Number186OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&P
+	; rules summary K|K&P
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -8664,17 +8901,18 @@ Method Number186OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 'e' | 'E'
 /// summary values:E,E
+/// summary=K|K
 Method Number187Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|K
@@ -8689,17 +8927,18 @@ Method Number187Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	}
 
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	quit ret
+	quit ok
 }
 
 ///  one_classMember ::= class_class_method | class_ForeignKey | class_index | class_method | class_property | class_parameter | class_projection | class_query | class_relationship | class_storage | class_trigger | class_xdata | class_client_method
+/// summary=C|C|C|C|C|C|C|C|C|C|C|C|C
 Method OneClassmember(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?
+	; rules summary C|C|C|C|C|C|C|C|C|C|C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -8734,19 +8973,20 @@ Method OneClassmember(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  one_column_name ::= string | text
+/// summary=C|C
 Method OneColumnName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
+	; rules summary C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -8759,19 +8999,20 @@ Method OneColumnName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  one_data_attribute_value ::= property_reference ['(ELEMENTS)' | '(KEYS)' ]
+/// summary=C&[P|P]
 Method OneDataAttributeValue(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&?4?
+	; rules summary C&[P|P]
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -8784,17 +9025,18 @@ Method OneDataAttributeValue(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:(ELEMENTS),(KEYS)
+/// summary=P|P
 Method OneDataAttributeValue130OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P|P
@@ -8809,17 +9051,18 @@ Method OneDataAttributeValue130OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRe
 	}
 
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
-	quit ret
+	quit ok
 }
 
 ///  one_foreignkey_atttribute ::= attribute_Internal | attribute_NoCheck | attribute_OnDelete | attribute_OnUpdate | attribute_SQLName
+/// summary=C|C|C|C|C
 Method OneForeignkeyAtttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?
+	; rules summary C|C|C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -8838,19 +9081,20 @@ Method OneForeignkeyAtttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  one_name_value_pair ::= class_item_identifier [ '=' expression ]
+/// summary=C&[P&C]
 Method OneNameValuePair(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&?4?
+	; rules summary C&[P&C]
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -8863,20 +9107,21 @@ Method OneNameValuePair(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:=
+/// summary=P&C
 Method OneNameValuePair42OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle("=",.value)) { quit 1 /* not found is OK */ }
 	$$$DEBUGMethodBegin
@@ -8890,19 +9135,20 @@ Method OneNameValuePair42OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  package_list ::= package_name ( ',' package_name )*
+/// summary=C&(?4punctuation:4?)*
 Method PackageList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&(?4?)*
+	; rules summary C&(?4punctuation:4?)*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -8915,37 +9161,38 @@ Method PackageList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( ',' package_name )*
 Method PackageList7RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..PackageList8Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  ',' package_name
 /// summary values:,
+/// summary=P&C
 Method PackageList8Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -8959,19 +9206,20 @@ Method PackageList8Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  package_name ::= identifier
+/// summary=C
 Method PackageName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -8982,20 +9230,21 @@ Method PackageName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  parameter_default_expression ::= '{' expression '}'
 /// summary values:{
+/// summary=P&C&P
 Method ParameterDefaultExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&P
+	; rules summary P&C&P
 	; first rule summary P
 	if '(..isStringSingle("{",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -9012,19 +9261,20 @@ Method ParameterDefaultExpression(ParentElement As PXW.DEV.BNF.Element, ByRef su
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  parameter_default_simple ::= [ '+' ] number | string
+/// summary=[P]&C|C
 Method ParameterDefaultSimple(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?&?1Rule?|?1Rule?
+	; rules summary [P]&C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9039,20 +9289,21 @@ Method ParameterDefaultSimple(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  parameter_default_value ::= '=' ( 'NULL' | parameter_default_simple | parameter_default_expression )
 /// summary values:=
+/// summary=P&K|C|C
 Method ParameterDefaultValue(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&K|C|C
 	; first rule summary P
 	if '(..isStringSingle("=",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -9067,19 +9318,20 @@ Method ParameterDefaultValue(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  'NULL' | parameter_default_simple | parameter_default_expression
+/// summary=K|C|C
 Method ParameterDefaultValue37Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K|?1Rule?|?1Rule?
+	; rules summary K|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -9093,19 +9345,20 @@ Method ParameterDefaultValue37Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  projection_name ::= string | identifier
+/// summary=C|C
 Method ProjectionName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
+	; rules summary C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9118,19 +9371,20 @@ Method ProjectionName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  property_name ::= class_item_identifier
+/// summary=C
 Method PropertyName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9141,19 +9395,20 @@ Method PropertyName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  property_reference ::= class_item_identifier
+/// summary=C
 Method PropertyReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9164,19 +9419,20 @@ Method PropertyReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  query_name ::= class_item_identifier
+/// summary=C
 Method QueryName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9187,19 +9443,20 @@ Method QueryName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ref_props ::= name_value_pair_list
+/// summary=C
 Method RefProps(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9210,19 +9467,20 @@ Method RefProps(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  relationship_attribute ::= attribute_Cardinality | attribute_Final | attribute_Internal | attribute_Inverse | attribute_Required | attribute_SQLFieldname | attribute_Private | attribute_OnDelete
+/// summary=C|C|C|C|C|C|C|C
 Method RelationshipAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?
+	; rules summary C|C|C|C|C|C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9247,20 +9505,21 @@ Method RelationshipAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  relationship_attributes ::= '[' relationship_attribute ( ',' relationship_attribute )* ']'
 /// summary values:[
+/// summary=P&C&(?4punctuation:4?)*&P
 Method RelationshipAttributes(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&(?4?)*&P
+	; rules summary P&C&(?4punctuation:4?)*&P
 	; first rule summary P
 	if '(..isStringSingle("[",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -9279,37 +9538,38 @@ Method RelationshipAttributes(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( ',' relationship_attribute )*
 Method RelationshipAttributes27RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..RelationshipAttributes28Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  ',' relationship_attribute
 /// summary values:,
+/// summary=P&C
 Method RelationshipAttributes28Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -9323,19 +9583,20 @@ Method RelationshipAttributes28Sub(ParentElement As PXW.DEV.BNF.Element, ByRef s
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  return_type_class_reference ::= class_reference [ type_parameters ]
+/// summary=C&[C]
 Method ReturnTypeClassReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&?4?
+	; rules summary C&[C]
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9348,19 +9609,20 @@ Method ReturnTypeClassReference(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  soap_identifier ::= identifier
+/// summary=C
 Method SoapIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9371,19 +9633,20 @@ Method SoapIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  sql_field_name ::= text
+/// summary=C
 Method SqlFieldName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9394,17 +9657,18 @@ Method SqlFieldName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  sql_table_name ::= 'NEEDS SQL TABLE NAME'
 /// summary values:NEEDS SQL TABLE NAME
+/// summary=P
 Method SqlTableName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -9419,19 +9683,20 @@ Method SqlTableName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_name ::= class_item_identifier
+/// summary=C
 Method StorageName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9442,19 +9707,20 @@ Method StorageName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml ::= (xml_data)*
+/// summary=(?4punctuation:4?)*
 Method StorageXml(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary (?4?)*
+	; rules summary (?4punctuation:4?)*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9465,58 +9731,57 @@ Method StorageXml(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  (xml_data)*
 Method StorageXml50RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..StorageXml51Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 /// xml_data
+/// summary=C
 Method StorageXml51Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..XmlData(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_attribute ::= xml_tag_s_a 'Attribute' xml_tag_s_b identifier xml_tag_e_a 'Attribute' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9539,19 +9804,20 @@ Method StorageXmlAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_complex ::= ( storage_xml_data | storage_xml_data_location | storage_xml_default_data | storage_xml_description | storage_xml_extent_location | storage_xml_extent_size | storage_xml_id_function | storage_xml_id_location | storage_xml_index_location | storage_xml_index | storage_xml_stream_location | storage_xml_state | storage_xml_type | storage_xml_property | storage_xml_sqlmap | storage_xml_counterlocation )*
+/// summary=(?4punctuation:4?)*
 Method StorageXmlComplex(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary (?4?)*
+	; rules summary (?4punctuation:4?)*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9562,39 +9828,40 @@ Method StorageXmlComplex(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( storage_xml_data | storage_xml_data_location | storage_xml_default_data | storage_xml_description | storage_xml_extent_location | storage_xml_extent_size | storage_xml_id_function | storage_xml_id_location | storage_xml_index_location | storage_xml_index | storage_xml_stream_location | storage_xml_state | storage_xml_type | storage_xml_property | storage_xml_sqlmap | storage_xml_counterlocation )*
 Method StorageXmlComplex52RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..StorageXmlComplex53Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_data | storage_xml_data_location | storage_xml_default_data | storage_xml_description | storage_xml_extent_location | storage_xml_extent_size | storage_xml_id_function | storage_xml_id_location | storage_xml_index_location | storage_xml_index | storage_xml_stream_location | storage_xml_state | storage_xml_type | storage_xml_property | storage_xml_sqlmap | storage_xml_counterlocation
+/// summary=C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
 Method StorageXmlComplex53Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..StorageXmlData(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..StorageXmlDataLocation(subElement,.addedElement)  {
@@ -9630,20 +9897,18 @@ Method StorageXmlComplex53Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_counterlocation ::= xml_tag_s_a 'CounterLocation' xml_tag_s_b global xml_tag_e_a 'CounterLocation' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlCounterlocation(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9666,19 +9931,20 @@ Method StorageXmlCounterlocation(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_data ::= xml_tag_s_a 'Data' 'name' '=' string ( xml_tag_s_c | (xml_tag_s_b (storage_xml_dataelement)* xml_tag_e_a 'Data' xml_tag_e_b) )
+/// summary=C&K&K&P&C&C|C&(?4punctuation:4?)*&C&K&C
 Method StorageXmlData(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&K&P&?1Rule?&?1Rule?
+	; rules summary C&K&K&P&C&C|C&(?4punctuation:4?)*&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9699,19 +9965,20 @@ Method StorageXmlData(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xml_tag_s_c | (xml_tag_s_b (storage_xml_dataelement)* xml_tag_e_a 'Data' xml_tag_e_b)
+/// summary=C|C&(?4punctuation:4?)*&C&K&C
 Method StorageXmlData54Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
+	; rules summary C|C&(?4punctuation:4?)*&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -9723,19 +9990,20 @@ Method StorageXmlData54Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// xml_tag_s_b (storage_xml_dataelement)* xml_tag_e_a 'Data' xml_tag_e_b
+/// summary=C&(?4punctuation:4?)*&C&K&C
 Method StorageXmlData55Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&(?4?)*&?1Rule?&K&?1Rule?
+	; rules summary C&(?4punctuation:4?)*&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -9753,58 +10021,57 @@ Method StorageXmlData55Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  (storage_xml_dataelement)*
 Method StorageXmlData56RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..StorageXmlData57Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 /// storage_xml_dataelement
+/// summary=C
 Method StorageXmlData57Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..StorageXmlDataelement(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_data_delimiter ::= xml_tag_s_a 'Delimiter' xml_tag_s_b cos_expression_storage xml_tag_e_a 'Delimiter' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlDataDelimiter(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9827,19 +10094,20 @@ Method StorageXmlDataDelimiter(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_data_location ::= xml_tag_s_a 'DataLocation'xml_tag_s_b (expression | ('{%%PARENT}' ['(' string ')'])) xml_tag_e_a 'DataLocation' xml_tag_e_b
+/// summary=C&K&C&C|P&[P&C&P]&C&K&C
 Method StorageXmlDataLocation(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C|P&[P&C&P]&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9862,19 +10130,20 @@ Method StorageXmlDataLocation(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// expression | ('{%%PARENT}' ['(' string ')'])
+/// summary=C|P&[P&C&P]
 Method StorageXmlDataLocation64Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
+	; rules summary C|P&[P&C&P]
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -9886,20 +10155,21 @@ Method StorageXmlDataLocation64Sub(ParentElement As PXW.DEV.BNF.Element, ByRef s
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// '{%%PARENT}' ['(' string ')']
 /// summary values:{%%PARENT}
+/// summary=P&[P&C&P]
 Method StorageXmlDataLocation65Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?4?
+	; rules summary P&[P&C&P]
 	; first rule summary P
 	if '(..isStringSingle("{%%PARENT}",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -9913,20 +10183,21 @@ Method StorageXmlDataLocation65Sub(ParentElement As PXW.DEV.BNF.Element, ByRef s
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:(
+/// summary=P&C&P
 Method StorageXmlDataLocation66OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&P
+	; rules summary P&C&P
 	; first rule summary P
 	if '(..isStringSingle("(",.value)) { quit 1 /* not found is OK */ }
 	$$$DEBUGMethodBegin
@@ -9942,19 +10213,20 @@ Method StorageXmlDataLocation66OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRe
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_data_node ::= xml_tag_s_a 'Node' xml_tag_s_b (number | string) xml_tag_e_a 'Node' xml_tag_e_b
+/// summary=C&K&C&C|C&C&K&C
 Method StorageXmlDataNode(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C|C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9977,22 +10249,23 @@ Method StorageXmlDataNode(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// number | string
+/// summary=C|C
 Method StorageXmlDataNode68Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..Number(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..String(subElement,.addedElement)  {
@@ -10000,20 +10273,18 @@ Method StorageXmlDataNode68Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_data_piece ::= xml_tag_s_a 'Piece' xml_tag_s_b number [ ',' number ] xml_tag_e_a 'Piece' xml_tag_e_b
+/// summary=C&K&C&C&[P&C]&C&K&C
 Method StorageXmlDataPiece(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?4?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&[P&C]&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -10038,20 +10309,21 @@ Method StorageXmlDataPiece(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:,
+/// summary=P&C
 Method StorageXmlDataPiece67OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 1 /* not found is OK */ }
 	$$$DEBUGMethodBegin
@@ -10065,19 +10337,20 @@ Method StorageXmlDataPiece67OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef s
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_data_position ::= xml_tag_s_a 'Value' 'name' '=' string xml_tag_s_b (storage_xml_data_position_field)* xml_tag_e_a 'Value' xml_tag_e_b
+/// summary=C&K&K&P&C&C&(?4punctuation:4?)*&C&K&C
 Method StorageXmlDataPosition(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&K&P&?1Rule?&?1Rule?&(?4?)*&?1Rule?&K&?1Rule?
+	; rules summary C&K&K&P&C&C&(?4punctuation:4?)*&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -10106,58 +10379,57 @@ Method StorageXmlDataPosition(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  (storage_xml_data_position_field)*
 Method StorageXmlDataPosition61RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..StorageXmlDataPosition62Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 /// storage_xml_data_position_field
+/// summary=C
 Method StorageXmlDataPosition62Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..StorageXmlDataPositionField(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_data_position_field ::= xml_tag_s_a 'Value' xml_tag_s_b (identifier) xml_tag_e_a 'Value' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlDataPositionField(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -10180,41 +10452,40 @@ Method StorageXmlDataPositionField(ParentElement As PXW.DEV.BNF.Element, ByRef s
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// identifier
+/// summary=C
 Method StorageXmlDataPositionField63Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..Identifier(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_data_retrieval_code ::= xml_tag_s_a 'RetrievalCode' xml_tag_s_b cos_code_block_storage xml_tag_e_a 'RetrievalCode' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlDataRetrievalCode(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -10237,19 +10508,20 @@ Method StorageXmlDataRetrievalCode(ParentElement As PXW.DEV.BNF.Element, ByRef s
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_dataelement ::= storage_xml_attribute | storage_xml_structure | storage_xml_subscript | storage_xml_data_position | storage_xml_data_piece | storage_xml_data_node | storage_xml_data_delimiter | storage_xml_data_retrieval_code
+/// summary=C|C|C|C|C|C|C|C
 Method StorageXmlDataelement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?
+	; rules summary C|C|C|C|C|C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -10274,19 +10546,20 @@ Method StorageXmlDataelement(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_default_data ::= xml_tag_s_a 'DefaultData' xml_tag_s_b cos_expression_storage xml_tag_e_a 'DefaultData' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlDefaultData(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -10309,19 +10582,20 @@ Method StorageXmlDefaultData(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_description ::= xml_tag_s_a 'Description' xml_tag_s_b (xml_cdata | xml_content) xml_tag_e_a 'Description' xml_tag_e_b
+/// summary=C&K&C&C|C&C&K&C
 Method StorageXmlDescription(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C|C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -10344,22 +10618,23 @@ Method StorageXmlDescription(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// xml_cdata | xml_content
+/// summary=C|C
 Method StorageXmlDescription58Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..XmlCdata(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..XmlContent(subElement,.addedElement)  {
@@ -10367,20 +10642,18 @@ Method StorageXmlDescription58Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_extent_location ::= xml_tag_s_a 'ExtentLocation' xml_tag_s_b global xml_tag_e_a 'ExtentLocation' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlExtentLocation(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -10403,19 +10676,20 @@ Method StorageXmlExtentLocation(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_extent_size ::= xml_tag_s_a 'ExtentSize' xml_tag_s_b number xml_tag_e_a 'ExtentSize' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlExtentSize(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -10438,19 +10712,20 @@ Method StorageXmlExtentSize(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_global ::= xml_tag_s_a 'Global' xml_tag_s_b global xml_tag_e_a 'Global' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlGlobal(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -10473,19 +10748,20 @@ Method StorageXmlGlobal(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_id_function ::= xml_tag_s_a 'IdFunction' xml_tag_s_b ( 'sequence' )xml_tag_e_a 'IdFunction' xml_tag_e_b
+/// summary=C&K&C&K&C&K&C
 Method StorageXmlIdFunction(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&K&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -10508,17 +10784,18 @@ Method StorageXmlIdFunction(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  'sequence'
 /// summary values:SEQUENCE
+/// summary=K
 Method StorageXmlIdFunction69Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K
@@ -10531,17 +10808,18 @@ Method StorageXmlIdFunction69Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 	}
 
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_id_location ::= xml_tag_s_a 'IdLocation' xml_tag_s_b ( ('{%%PARENT}' ['(' string ')']) | (expression [ '(' string ')' ]) ) xml_tag_e_a 'IdLocation' xml_tag_e_b
+/// summary=C&K&C&P&[P&C&P]|C&[P&C&P]&C&K&C
 Method StorageXmlIdLocation(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&P&[P&C&P]|C&[P&C&P]&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -10564,19 +10842,21 @@ Method StorageXmlIdLocation(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ('{%%PARENT}' ['(' string ')']) | (expression [ '(' string ')' ])
+/// summary=P&[P&C&P]|C&[P&C&P]
 Method StorageXmlIdLocation70Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
+	; rules summary P&[P&C&P]|C&[P&C&P]
+	; first rule summary P&[P&C&P]
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -10588,20 +10868,21 @@ Method StorageXmlIdLocation70Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// '{%%PARENT}' ['(' string ')']
 /// summary values:{%%PARENT}
+/// summary=P&[P&C&P]
 Method StorageXmlIdLocation71Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?4?
+	; rules summary P&[P&C&P]
 	; first rule summary P
 	if '(..isStringSingle("{%%PARENT}",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -10615,20 +10896,21 @@ Method StorageXmlIdLocation71Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:(
+/// summary=P&C&P
 Method StorageXmlIdLocation72OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&P
+	; rules summary P&C&P
 	; first rule summary P
 	if '(..isStringSingle("(",.value)) { quit 1 /* not found is OK */ }
 	$$$DEBUGMethodBegin
@@ -10644,19 +10926,20 @@ Method StorageXmlIdLocation72OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef 
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// expression [ '(' string ')' ]
+/// summary=C&[P&C&P]
 Method StorageXmlIdLocation73Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&?4?
+	; rules summary C&[P&C&P]
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -10668,20 +10951,21 @@ Method StorageXmlIdLocation73Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:(
+/// summary=P&C&P
 Method StorageXmlIdLocation74OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&P
+	; rules summary P&C&P
 	; first rule summary P
 	if '(..isStringSingle("(",.value)) { quit 1 /* not found is OK */ }
 	$$$DEBUGMethodBegin
@@ -10697,19 +10981,20 @@ Method StorageXmlIdLocation74OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef 
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_index ::= xml_tag_s_a 'Index' 'name' '=' string xml_tag_s_b (storage_xml_index_sublocation)* xml_tag_e_a 'Index' xml_tag_e_b
+/// summary=C&K&K&P&C&C&(?4punctuation:4?)*&C&K&C
 Method StorageXmlIndex(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&K&P&?1Rule?&?1Rule?&(?4?)*&?1Rule?&K&?1Rule?
+	; rules summary C&K&K&P&C&C&(?4punctuation:4?)*&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -10738,58 +11023,57 @@ Method StorageXmlIndex(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  (storage_xml_index_sublocation)*
 Method StorageXmlIndex75RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..StorageXmlIndex76Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 /// storage_xml_index_sublocation
+/// summary=C
 Method StorageXmlIndex76Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..StorageXmlIndexSublocation(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_index_location ::= xml_tag_s_a 'IndexLocation' xml_tag_s_b expression xml_tag_e_a 'IndexLocation' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlIndexLocation(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -10812,19 +11096,20 @@ Method StorageXmlIndexLocation(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_index_sublocation ::= xml_tag_s_a 'Location' xml_tag_s_b (expression)xml_tag_e_a 'Location' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlIndexSublocation(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -10847,41 +11132,40 @@ Method StorageXmlIndexSublocation(ParentElement As PXW.DEV.BNF.Element, ByRef su
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// expression
+/// summary=C
 Method StorageXmlIndexSublocation77Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..Expression(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_property ::= storage_xml_property_empty | storage_xml_property_full
+/// summary=C|C
 Method StorageXmlProperty(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
+	; rules summary C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -10894,19 +11178,20 @@ Method StorageXmlProperty(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_property_empty ::= xml_tag_s_a 'Property' 'name' '=' string xml_tag_s_b (storage_xml_property_selectivity | storage_xml_property_outlier_selectivity | storage_xml_property_fieldsize | storage_xml_property_histogram)* xml_tag_e_a 'Property' xml_tag_e_b
+/// summary=C&K&K&P&C&C&(?4punctuation:4?)*&C&K&C
 Method StorageXmlPropertyEmpty(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&K&P&?1Rule?&?1Rule?&(?4?)*&?1Rule?&K&?1Rule?
+	; rules summary C&K&K&P&C&C&(?4punctuation:4?)*&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -10935,39 +11220,40 @@ Method StorageXmlPropertyEmpty(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  (storage_xml_property_selectivity | storage_xml_property_outlier_selectivity | storage_xml_property_fieldsize | storage_xml_property_histogram)*
 Method StorageXmlPropertyEmpty78RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..StorageXmlPropertyEmpty79Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 /// storage_xml_property_selectivity | storage_xml_property_outlier_selectivity | storage_xml_property_fieldsize | storage_xml_property_histogram
+/// summary=C|C|C|C
 Method StorageXmlPropertyEmpty79Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C|C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..StorageXmlPropertySelectivity(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..StorageXmlPropertyOutlierSelectivity(subElement,.addedElement)  {
@@ -10979,20 +11265,18 @@ Method StorageXmlPropertyEmpty79Sub(ParentElement As PXW.DEV.BNF.Element, ByRef 
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_property_fieldsize ::= xml_tag_s_a 'AverageFieldSize' xml_tag_s_b number xml_tag_e_a 'AverageFieldSize' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlPropertyFieldsize(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -11015,19 +11299,20 @@ Method StorageXmlPropertyFieldsize(ParentElement As PXW.DEV.BNF.Element, ByRef s
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_property_full ::= xml_tag_s_a 'Property' 'name' '=' string xml_tag_s_c
+/// summary=C&K&K&P&C&C
 Method StorageXmlPropertyFull(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&K&P&?1Rule?&?1Rule?
+	; rules summary C&K&K&P&C&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -11048,19 +11333,20 @@ Method StorageXmlPropertyFull(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_property_histogram ::= xml_tag_s_a 'Histogram' xml_tag_s_b expression xml_tag_e_a 'Histogram' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlPropertyHistogram(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -11083,19 +11369,20 @@ Method StorageXmlPropertyHistogram(ParentElement As PXW.DEV.BNF.Element, ByRef s
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_property_outlier_selectivity ::= xml_tag_s_a 'OutlierSelectivity' xml_tag_s_b number ':' number xml_tag_e_a 'OutlierSelectivity' xml_tag_e_b
+/// summary=C&K&C&C&P&C&C&K&C
 Method StorageXmlPropertyOutlierSelectivity(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&P&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&P&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -11122,19 +11409,20 @@ Method StorageXmlPropertyOutlierSelectivity(ParentElement As PXW.DEV.BNF.Element
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_property_selectivity ::= xml_tag_s_a 'Selectivity' xml_tag_s_b number ['%'] xml_tag_e_a 'Selectivity' xml_tag_e_b
+/// summary=C&K&C&C&[P]&C&K&C
 Method StorageXmlPropertySelectivity(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?4?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&[P]&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -11159,19 +11447,20 @@ Method StorageXmlPropertySelectivity(ParentElement As PXW.DEV.BNF.Element, ByRef
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_sqlmap ::= xml_tag_s_a 'SQLMap' 'name' '=' string xml_tag_s_b (storage_xml_sqlmap_blockcount | storage_xml_data | storage_xml_global | storage_xml_sqlmap_condition | storage_xml_sqlmap_population | storage_xml_sqlmap_type | storage_xml_sqlmap_structure | storage_xml_sqlmap_subscript | storage_xml_sqlmap_rowidspec )* xml_tag_e_a 'SQLMap' xml_tag_e_b
+/// summary=C&K&K&P&C&C&(?4punctuation:4?)*&C&K&C
 Method StorageXmlSqlmap(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&K&P&?1Rule?&?1Rule?&(?4?)*&?1Rule?&K&?1Rule?
+	; rules summary C&K&K&P&C&C&(?4punctuation:4?)*&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -11200,39 +11489,40 @@ Method StorageXmlSqlmap(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  (storage_xml_sqlmap_blockcount | storage_xml_data | storage_xml_global | storage_xml_sqlmap_condition | storage_xml_sqlmap_population | storage_xml_sqlmap_type | storage_xml_sqlmap_structure | storage_xml_sqlmap_subscript | storage_xml_sqlmap_rowidspec )*
 Method StorageXmlSqlmap80RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..StorageXmlSqlmap81Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 /// storage_xml_sqlmap_blockcount | storage_xml_data | storage_xml_global | storage_xml_sqlmap_condition | storage_xml_sqlmap_population | storage_xml_sqlmap_type | storage_xml_sqlmap_structure | storage_xml_sqlmap_subscript | storage_xml_sqlmap_rowidspec
+/// summary=C|C|C|C|C|C|C|C|C
 Method StorageXmlSqlmap81Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C|C|C|C|C|C|C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..StorageXmlSqlmapBlockcount(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..StorageXmlData(subElement,.addedElement)  {
@@ -11254,20 +11544,18 @@ Method StorageXmlSqlmap81Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_sqlmap_blockcount ::= xml_tag_s_a 'BlockCount' xml_tag_s_b number xml_tag_e_a 'BlockCount' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlSqlmapBlockcount(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -11290,19 +11578,20 @@ Method StorageXmlSqlmapBlockcount(ParentElement As PXW.DEV.BNF.Element, ByRef su
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_sqlmap_condition ::= xml_tag_s_a 'Condition' xml_tag_s_b cos_expression_storage xml_tag_e_a 'Condition' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlSqlmapCondition(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -11325,19 +11614,20 @@ Method StorageXmlSqlmapCondition(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_sqlmap_population ::= xml_tag_s_a 'PopulationType' xml_tag_s_b identifier xml_tag_e_a 'PopulationType' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlSqlmapPopulation(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -11360,19 +11650,20 @@ Method StorageXmlSqlmapPopulation(ParentElement As PXW.DEV.BNF.Element, ByRef su
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_sqlmap_row_expression ::= xml_tag_s_a 'Expression' xml_tag_s_b cos_expression_storage xml_tag_e_a 'Expression' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlSqlmapRowExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -11395,19 +11686,20 @@ Method StorageXmlSqlmapRowExpression(ParentElement As PXW.DEV.BNF.Element, ByRef
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_sqlmap_row_field ::= xml_tag_s_a 'Field' xml_tag_s_b identifier xml_tag_e_a 'Field' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlSqlmapRowField(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -11430,19 +11722,20 @@ Method StorageXmlSqlmapRowField(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_sqlmap_rowidspec ::= xml_tag_s_a 'RowIdSpec' 'name' '=' string xml_tag_s_b (storage_xml_sqlmap_row_expression | storage_xml_sqlmap_row_field)* xml_tag_e_a 'RowIdSpec' xml_tag_e_b
+/// summary=C&K&K&P&C&C&(?4punctuation:4?)*&C&K&C
 Method StorageXmlSqlmapRowidspec(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&K&P&?1Rule?&?1Rule?&(?4?)*&?1Rule?&K&?1Rule?
+	; rules summary C&K&K&P&C&C&(?4punctuation:4?)*&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -11471,39 +11764,40 @@ Method StorageXmlSqlmapRowidspec(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  (storage_xml_sqlmap_row_expression | storage_xml_sqlmap_row_field)*
 Method StorageXmlSqlmapRowidspec85RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..StorageXmlSqlmapRowidspec86Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 /// storage_xml_sqlmap_row_expression | storage_xml_sqlmap_row_field
+/// summary=C|C
 Method StorageXmlSqlmapRowidspec86Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..StorageXmlSqlmapRowExpression(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..StorageXmlSqlmapRowField(subElement,.addedElement)  {
@@ -11511,20 +11805,18 @@ Method StorageXmlSqlmapRowidspec86Sub(ParentElement As PXW.DEV.BNF.Element, ByRe
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_sqlmap_structure ::= xml_tag_s_a 'Structure' xml_tag_s_b identifier xml_tag_e_a 'Structure' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlSqlmapStructure(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -11547,19 +11839,20 @@ Method StorageXmlSqlmapStructure(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_sqlmap_sub_accesstype ::= xml_tag_s_a 'AccessType' xml_tag_s_b identifier xml_tag_e_a 'AccessType' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlSqlmapSubAccesstype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -11582,19 +11875,20 @@ Method StorageXmlSqlmapSubAccesstype(ParentElement As PXW.DEV.BNF.Element, ByRef
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_sqlmap_sub_accessvar ::= xml_tag_s_a 'Accessvar' 'name' '=' string xml_tag_s_b (storage_xml_sqlmap_sub_code storage_xml_sqlmap_sub_variable) xml_tag_e_a 'Accessvar' xml_tag_e_b
+/// summary=C&K&K&P&C&C&C&C&C&K&C
 Method StorageXmlSqlmapSubAccessvar(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&K&P&?1Rule?&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&K&P&C&C&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -11623,19 +11917,20 @@ Method StorageXmlSqlmapSubAccessvar(ParentElement As PXW.DEV.BNF.Element, ByRef 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// storage_xml_sqlmap_sub_code storage_xml_sqlmap_sub_variable
+/// summary=C&C
 Method StorageXmlSqlmapSubAccessvar84Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&?1Rule?
+	; rules summary C&C
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -11647,19 +11942,20 @@ Method StorageXmlSqlmapSubAccessvar84Sub(ParentElement As PXW.DEV.BNF.Element, B
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_sqlmap_sub_code ::= xml_tag_s_a 'Code' xml_tag_s_b cos_code_block_storage xml_tag_e_a 'Code' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlSqlmapSubCode(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -11682,19 +11978,20 @@ Method StorageXmlSqlmapSubCode(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_sqlmap_sub_dataaccess ::= xml_tag_s_a 'DataAccess' xml_tag_s_b cos_expression_storage xml_tag_e_a 'DataAccess' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlSqlmapSubDataaccess(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -11717,19 +12014,20 @@ Method StorageXmlSqlmapSubDataaccess(ParentElement As PXW.DEV.BNF.Element, ByRef
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_sqlmap_sub_expression ::= xml_tag_s_a 'Expression' xml_tag_s_b cos_expression_storage xml_tag_e_a 'Expression' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlSqlmapSubExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -11752,19 +12050,20 @@ Method StorageXmlSqlmapSubExpression(ParentElement As PXW.DEV.BNF.Element, ByRef
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_sqlmap_sub_invcond ::= xml_tag_s_a 'InvalidCondition' 'name' '=' string xml_tag_s_b storage_xml_sqlmap_sub_expression xml_tag_e_a 'Invalidcondition' xml_tag_e_b
+/// summary=C&K&K&P&C&C&C&C&K&C
 Method StorageXmlSqlmapSubInvcond(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&K&P&?1Rule?&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&K&P&C&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -11793,19 +12092,20 @@ Method StorageXmlSqlmapSubInvcond(ParentElement As PXW.DEV.BNF.Element, ByRef su
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_sqlmap_sub_loopinitval ::= xml_tag_s_a 'LoopInitValue' xml_tag_s_b cos_expression_storage xml_tag_e_a 'LoopInitValue' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlSqlmapSubLoopinitval(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -11828,19 +12128,20 @@ Method StorageXmlSqlmapSubLoopinitval(ParentElement As PXW.DEV.BNF.Element, ByRe
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_sqlmap_sub_next_code ::= xml_tag_s_a 'NextCode' xml_tag_s_b cos_code_block_storage xml_tag_e_a 'NextCode' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlSqlmapSubNextCode(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -11863,19 +12164,20 @@ Method StorageXmlSqlmapSubNextCode(ParentElement As PXW.DEV.BNF.Element, ByRef s
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_sqlmap_sub_variable ::= xml_tag_s_a 'Variable' xml_tag_s_b cos_expression_storage xml_tag_e_a 'Variable' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlSqlmapSubVariable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -11898,19 +12200,20 @@ Method StorageXmlSqlmapSubVariable(ParentElement As PXW.DEV.BNF.Element, ByRef s
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_sqlmap_subscript ::= xml_tag_s_a 'Subscript' 'name' '=' string xml_tag_s_b (storage_xml_sqlmap_sub_expression | storage_xml_sqlmap_sub_accessvar | storage_xml_sqlmap_sub_accesstype | storage_xml_sqlmap_sub_invcond | storage_xml_data_delimiter | storage_xml_sqlmap_sub_loopinitval | storage_xml_sqlmap_sub_dataaccess | storage_xml_sqlmap_sub_next_code )* xml_tag_e_a 'Subscript' xml_tag_e_b
+/// summary=C&K&K&P&C&C&(?4punctuation:4?)*&C&K&C
 Method StorageXmlSqlmapSubscript(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&K&P&?1Rule?&?1Rule?&(?4?)*&?1Rule?&K&?1Rule?
+	; rules summary C&K&K&P&C&C&(?4punctuation:4?)*&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -11939,39 +12242,40 @@ Method StorageXmlSqlmapSubscript(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  (storage_xml_sqlmap_sub_expression | storage_xml_sqlmap_sub_accessvar | storage_xml_sqlmap_sub_accesstype | storage_xml_sqlmap_sub_invcond | storage_xml_data_delimiter | storage_xml_sqlmap_sub_loopinitval | storage_xml_sqlmap_sub_dataaccess | storage_xml_sqlmap_sub_next_code )*
 Method StorageXmlSqlmapSubscript82RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..StorageXmlSqlmapSubscript83Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 /// storage_xml_sqlmap_sub_expression | storage_xml_sqlmap_sub_accessvar | storage_xml_sqlmap_sub_accesstype | storage_xml_sqlmap_sub_invcond | storage_xml_data_delimiter | storage_xml_sqlmap_sub_loopinitval | storage_xml_sqlmap_sub_dataaccess | storage_xml_sqlmap_sub_next_code
+/// summary=C|C|C|C|C|C|C|C
 Method StorageXmlSqlmapSubscript83Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C|C|C|C|C|C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..StorageXmlSqlmapSubExpression(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..StorageXmlSqlmapSubAccessvar(subElement,.addedElement)  {
@@ -11991,20 +12295,18 @@ Method StorageXmlSqlmapSubscript83Sub(ParentElement As PXW.DEV.BNF.Element, ByRe
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_sqlmap_type ::= xml_tag_s_a 'Type' xml_tag_s_b identifier xml_tag_e_a 'Type' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlSqlmapType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -12027,19 +12329,20 @@ Method StorageXmlSqlmapType(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_state ::= xml_tag_s_a 'State' xml_tag_s_b identifier xml_tag_e_a 'State' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlState(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -12062,19 +12365,20 @@ Method StorageXmlState(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_stream_location ::= xml_tag_s_a 'StreamLocation' xml_tag_s_b expression xml_tag_e_a 'StreamLocation' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlStreamLocation(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -12097,19 +12401,20 @@ Method StorageXmlStreamLocation(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_structure ::= xml_tag_s_a 'Structure' xml_tag_s_b ( 'subnode' | 'node') xml_tag_e_a 'Structure' xml_tag_e_b
+/// summary=C&K&C&K|K&C&K&C
 Method StorageXmlStructure(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&K|K&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -12132,17 +12437,18 @@ Method StorageXmlStructure(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  'subnode' | 'node'
 /// summary values:SUBNODE,NODE
+/// summary=K|K
 Method StorageXmlStructure59Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|K
@@ -12157,17 +12463,18 @@ Method StorageXmlStructure59Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	}
 
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_subscript ::= xml_tag_s_a 'Subscript' xml_tag_s_b (string | number) xml_tag_e_a 'Subscript' xml_tag_e_b
+/// summary=C&K&C&C|C&C&K&C
 Method StorageXmlSubscript(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C|C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -12190,22 +12497,23 @@ Method StorageXmlSubscript(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// string | number
+/// summary=C|C
 Method StorageXmlSubscript60Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..String(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..Number(subElement,.addedElement)  {
@@ -12213,20 +12521,18 @@ Method StorageXmlSubscript60Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  storage_xml_type ::= xml_tag_s_a 'Type' xml_tag_s_b class_reference xml_tag_e_a 'Type' xml_tag_e_b
+/// summary=C&K&C&C&C&K&C
 Method StorageXmlType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -12249,19 +12555,20 @@ Method StorageXmlType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  string ::= '""' | ('"' 'regexp:[^\"\r\n]*' '"')
+/// summary=P|P&P&P
 Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P|?1Rule?
+	; rules summary P|P&P&P
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -12274,17 +12581,18 @@ Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// '"' 'regexp:[^\"\r\n]*' '"'
 /// summary values:""
+/// summary=P&P&P
 Method String188Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&P&P
@@ -12303,19 +12611,20 @@ Method String188Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  tablename ::= identifier
+/// summary=C
 Method Tablename(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -12326,17 +12635,18 @@ Method Tablename(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  text ::= 'regexp:.*'
 /// summary values:REGEXP:.*
+/// summary=P
 Method Text(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -12351,20 +12661,21 @@ Method Text(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  text_brace_block ::= '{' text '}'
 /// summary values:{
+/// summary=P&C&P
 Method TextBraceBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&P
+	; rules summary P&C&P
 	; first rule summary P
 	if '(..isStringSingle("{",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -12381,17 +12692,18 @@ Method TextBraceBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  text_in_curly ::= 'NEEDS TEXT IN CURLY'
 /// summary values:NEEDS TEXT IN CURLY
+/// summary=P
 Method TextInCurly(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -12406,17 +12718,18 @@ Method TextInCurly(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  time_value ::= 'after' | 'before'
 /// summary values:AFTER,BEFORE
+/// summary=K|K
 Method TimeValue(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|K
@@ -12433,19 +12746,20 @@ Method TimeValue(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  trigger_attribute ::= attribute_CodeMode | attribute_Event | attribute_Final | attribute_ForEach | attribute_Internal | attribute_Language | attribute_NewTable | attribute_OldTable | attribute_Order | attribute_SQLName | attribute_Time | attribute_UpdateColumnList
+/// summary=C|C|C|C|C|C|C|C|C|C|C|C
 Method TriggerAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?
+	; rules summary C|C|C|C|C|C|C|C|C|C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -12478,20 +12792,21 @@ Method TriggerAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  trigger_attribute_list ::= '[' trigger_attribute ( ',' trigger_attribute )* ']'
 /// summary values:[
+/// summary=P&C&(?4punctuation:4?)*&P
 Method TriggerAttributeList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&(?4?)*&P
+	; rules summary P&C&(?4punctuation:4?)*&P
 	; first rule summary P
 	if '(..isStringSingle("[",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -12510,37 +12825,38 @@ Method TriggerAttributeList(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( ',' trigger_attribute )*
 Method TriggerAttributeList110RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..TriggerAttributeList111Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  ',' trigger_attribute
 /// summary values:,
+/// summary=P&C
 Method TriggerAttributeList111Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -12554,19 +12870,20 @@ Method TriggerAttributeList111Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  trigger_code_block ::= cos_code_block_trigger
+/// summary=C
 Method TriggerCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -12577,19 +12894,20 @@ Method TriggerCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  trigger_name ::= class_item_identifier
+/// summary=C
 Method TriggerName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -12600,19 +12918,20 @@ Method TriggerName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  type_class_reference ::= class_reference [ type_parameters ]
+/// summary=C&[C]
 Method TypeClassReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&?4?
+	; rules summary C&[C]
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -12625,19 +12944,20 @@ Method TypeClassReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  type_parameter_item ::= class_item_identifier '=' ( string | number )
+/// summary=C&P&C|C
 Method TypeParameterItem(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&P&?1Rule?
+	; rules summary C&P&C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -12652,22 +12972,23 @@ Method TypeParameterItem(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  string | number
+/// summary=C|C
 Method TypeParameterItem21Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..String(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..Number(subElement,.addedElement)  {
@@ -12675,21 +12996,19 @@ Method TypeParameterItem21Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  type_parameters ::= '(' type_parameters_list ')'
 /// summary values:(
+/// summary=P&C&P
 Method TypeParameters(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&P
+	; rules summary P&C&P
 	; first rule summary P
 	if '(..isStringSingle("(",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -12706,19 +13025,20 @@ Method TypeParameters(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  type_parameters_list ::= type_parameter_item (',' type_parameter_item)*
+/// summary=C&(?4punctuation:4?)*
 Method TypeParametersList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&(?4?)*
+	; rules summary C&(?4punctuation:4?)*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -12731,37 +13051,38 @@ Method TypeParametersList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  (',' type_parameter_item)*
 Method TypeParametersList19RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..TypeParametersList20Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 /// ',' type_parameter_item
 /// summary values:,
+/// summary=P&C
 Method TypeParametersList20Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -12775,19 +13096,20 @@ Method TypeParametersList20Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  udl_program ::= udl_statement
+/// summary=C
 Method UdlProgram(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -12798,19 +13120,20 @@ Method UdlProgram(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  udl_statement ::= ( import_definition | include_generator_definition | include_definition )* class_definition
+/// summary=(?4punctuation:4?)*&C
 Method UdlStatement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary (?4?)*&?1Rule?
+	; rules summary (?4punctuation:4?)*&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -12823,39 +13146,40 @@ Method UdlStatement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( import_definition | include_generator_definition | include_definition )*
 Method UdlStatement1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..UdlStatement2Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  import_definition | include_generator_definition | include_definition
+/// summary=C|C|C
 Method UdlStatement2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..ImportDefinition(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..IncludeGeneratorDefinition(subElement,.addedElement)  {
@@ -12865,20 +13189,18 @@ Method UdlStatement2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  variable ::= variable_identifier
+/// summary=C
 Method Variable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -12889,17 +13211,18 @@ Method Variable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  variable_identifier ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)'
 /// summary values:REGEXP:(((\%[A-ZA-Z0-9])|(\$[A-ZA-Z])|[A-ZA-Z])[A-ZA-Z0-9\.]*)
+/// summary=P
 Method VariableIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -12914,19 +13237,20 @@ Method VariableIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  variable_set ::= variable_identifier
+/// summary=C
 Method VariableSet(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -12937,19 +13261,20 @@ Method VariableSet(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xdata_attributes ::= attribute_Internal | attribute_MimeType | attribute_SchemaSpec | attribute_XMLNamespace
+/// summary=C|C|C|C
 Method XdataAttributes(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?|?1Rule?
+	; rules summary C|C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -12966,19 +13291,20 @@ Method XdataAttributes(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xdata_json ::= xdata_json_object | xdata_json_array | xdata_json_prim
+/// summary=C|C|C
 Method XdataJson(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?
+	; rules summary C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -12993,20 +13319,21 @@ Method XdataJson(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xdata_json_array ::= '[' [ xdata_json_array_items ] ']'
 /// summary values:[
+/// summary=P&[C]&P
 Method XdataJsonArray(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?4?&P
+	; rules summary P&[C]&P
 	; first rule summary P
 	if '(..isStringSingle("[",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -13023,19 +13350,20 @@ Method XdataJsonArray(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xdata_json_array_items ::= xdata_json (',' xdata_json)*
+/// summary=C&(?4punctuation:4?)*
 Method XdataJsonArrayItems(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&(?4?)*
+	; rules summary C&(?4punctuation:4?)*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -13048,37 +13376,38 @@ Method XdataJsonArrayItems(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  (',' xdata_json)*
 Method XdataJsonArrayItems108RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..XdataJsonArrayItems109Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 /// ',' xdata_json
 /// summary values:,
+/// summary=P&C
 Method XdataJsonArrayItems109Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -13092,20 +13421,21 @@ Method XdataJsonArrayItems109Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xdata_json_object ::= '{' [ xdata_json_pair ( ',' xdata_json_pair )*] '}'
 /// summary values:{
+/// summary=P&[C&(?4punctuation:4?)*]&P
 Method XdataJsonObject(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?4?&P
+	; rules summary P&[C&(?4punctuation:4?)*]&P
 	; first rule summary P
 	if '(..isStringSingle("{",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -13122,18 +13452,20 @@ Method XdataJsonObject(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
+/// 
+/// summary=C&(?4punctuation:4?)*
 Method XdataJsonObject105OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&(?4?)*
+	; rules summary C&(?4punctuation:4?)*
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -13145,37 +13477,38 @@ Method XdataJsonObject105OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( ',' xdata_json_pair )*
 Method XdataJsonObject106RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..XdataJsonObject107Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  ',' xdata_json_pair
 /// summary values:,
+/// summary=P&C
 Method XdataJsonObject107Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -13189,19 +13522,20 @@ Method XdataJsonObject107Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xdata_json_pair ::= json_string ':' xdata_json
+/// summary=C&P&C
 Method XdataJsonPair(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&P&?1Rule?
+	; rules summary C&P&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -13216,19 +13550,20 @@ Method XdataJsonPair(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xdata_json_prim ::= number | json_string | 'true' | 'false' | 'null'
+/// summary=C|C|K|K|K
 Method XdataJsonPrim(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|K|K|K
+	; rules summary C|C|K|K|K
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -13247,19 +13582,20 @@ Method XdataJsonPrim(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xdata_name ::= class_item_identifier
+/// summary=C
 Method XdataName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -13270,19 +13606,20 @@ Method XdataName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xdata_text ::= text
+/// summary=C
 Method XdataText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -13293,19 +13630,20 @@ Method XdataText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xdata_xml ::= [xml_xml] xml_data
+/// summary=[C]&C
 Method XdataXml(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?&?1Rule?
+	; rules summary [C]&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -13318,19 +13656,20 @@ Method XdataXml(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xml_attribute ::= [ xml_schema ':' ] xml_attribute_name '=' xml_attribute_value
+/// summary=[C&P]&C&P&C
 Method XmlAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?&?1Rule?&P&?1Rule?
+	; rules summary [C&P]&C&P&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -13347,18 +13686,20 @@ Method XmlAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
+/// 
+/// summary=C&P
 Method XmlAttribute102OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&P
+	; rules summary C&P
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -13370,19 +13711,20 @@ Method XmlAttribute102OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xml_attribute_name ::= xml_identifier
+/// summary=C
 Method XmlAttributeName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -13393,19 +13735,20 @@ Method XmlAttributeName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xml_attribute_value ::= string | number
+/// summary=C|C
 Method XmlAttributeValue(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
+	; rules summary C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -13418,20 +13761,21 @@ Method XmlAttributeValue(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xml_cdata ::= '<' '!' '[CDATA[' xml_cdata_text ']]' '>'
 /// summary values:<
+/// summary=P&P&P&C&P&P
 Method XmlCdata(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&P&P&?1Rule?&P&P
+	; rules summary P&P&P&C&P&P
 	; first rule summary P
 	if '(..isStringSingle("<",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -13454,17 +13798,18 @@ Method XmlCdata(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xml_cdata_text ::= 'NEED XML CDATA TEXT THAT READS UP TO END OF CDATA'
 /// summary values:NEED XML CDATA TEXT THAT READS UP TO END OF CDATA
+/// summary=P
 Method XmlCdataText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -13479,19 +13824,20 @@ Method XmlCdataText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xml_content ::= text
+/// summary=C
 Method XmlContent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -13502,19 +13848,20 @@ Method XmlContent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xml_data ::= xml_cdata | ( xml_start_tag ( xml_data | xml_content)* xml_end_tag) | xml_empty_tag
+/// summary=C|C&(?4punctuation:4?)*&C|C
 Method XmlData(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?
+	; rules summary C|C&(?4punctuation:4?)*&C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -13529,19 +13876,20 @@ Method XmlData(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xml_start_tag ( xml_data | xml_content)* xml_end_tag
+/// summary=C&(?4punctuation:4?)*&C
 Method XmlData94Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&(?4?)*&?1Rule?
+	; rules summary C&(?4punctuation:4?)*&C
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -13555,39 +13903,40 @@ Method XmlData94Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( xml_data | xml_content)*
 Method XmlData95RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..XmlData96Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  xml_data | xml_content
+/// summary=C|C
 Method XmlData96Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..XmlData(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..XmlContent(subElement,.addedElement)  {
@@ -13595,20 +13944,18 @@ Method XmlData96Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xml_empty_tag ::= xml_tag_s_a xml_tag_ns_name (xml_attribute)* xml_tag_s_c
+/// summary=C&C&(?4punctuation:4?)*&C
 Method XmlEmptyTag(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&?1Rule?&(?4?)*&?1Rule?
+	; rules summary C&C&(?4punctuation:4?)*&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -13625,58 +13972,57 @@ Method XmlEmptyTag(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// xml_attribute
+/// summary=C
 Method XmlEmptyTag100Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..XmlAttribute(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  (xml_attribute)*
 Method XmlEmptyTag99RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..XmlEmptyTag100Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  xml_end_tag ::= xml_tag_e_a xml_tag_ns_name xml_tag_e_b
+/// summary=C&C&C
 Method XmlEndTag(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&?1Rule?&?1Rule?
+	; rules summary C&C&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -13691,17 +14037,18 @@ Method XmlEndTag(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xml_identifier ::= 'NEEDS XML identifier'
 /// summary values:NEEDS XML IDENTIFIER
+/// summary=P
 Method XmlIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -13716,19 +14063,20 @@ Method XmlIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xml_schema ::= xml_identifier
+/// summary=C
 Method XmlSchema(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -13739,19 +14087,20 @@ Method XmlSchema(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xml_start_tag ::= xml_tag_s_a xml_tag_ns_name (xml_attribute)* xml_tag_s_b
+/// summary=C&C&(?4punctuation:4?)*&C
 Method XmlStartTag(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&?1Rule?&(?4?)*&?1Rule?
+	; rules summary C&C&(?4punctuation:4?)*&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -13768,56 +14117,55 @@ Method XmlStartTag(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  (xml_attribute)*
 Method XmlStartTag97RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..XmlStartTag98Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 /// xml_attribute
+/// summary=C
 Method XmlStartTag98Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..XmlAttribute(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xml_tag_e_a ::= '</'
 /// summary values:</
+/// summary=P
 Method XmlTagEA(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -13832,17 +14180,18 @@ Method XmlTagEA(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xml_tag_e_b ::= '>'
 /// summary values:>
+/// summary=P
 Method XmlTagEB(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -13857,19 +14206,20 @@ Method XmlTagEB(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xml_tag_name ::= xml_identifier
+/// summary=C
 Method XmlTagName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -13880,19 +14230,20 @@ Method XmlTagName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xml_tag_ns_name ::= [ xml_schema ':'] xml_tag_name
+/// summary=[C&P]&C
 Method XmlTagNsName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?&?1Rule?
+	; rules summary [C&P]&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -13905,18 +14256,20 @@ Method XmlTagNsName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
+/// 
+/// summary=C&P
 Method XmlTagNsName101OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&P
+	; rules summary C&P
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -13928,17 +14281,18 @@ Method XmlTagNsName101OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xml_tag_s_a ::= '<'
 /// summary values:<
+/// summary=P
 Method XmlTagSA(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -13953,17 +14307,18 @@ Method XmlTagSA(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xml_tag_s_b ::= '>'
 /// summary values:>
+/// summary=P
 Method XmlTagSB(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -13978,17 +14333,18 @@ Method XmlTagSB(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xml_tag_s_c ::= '/>'
 /// summary values:/>
+/// summary=P
 Method XmlTagSC(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -14003,19 +14359,20 @@ Method XmlTagSC(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  xml_xml ::= xml_tag_s_a '?xml' (xml_attribute)* '?' xml_tag_s_b
+/// summary=C&P&(?4punctuation:4?)*&P&C
 Method XmlXml(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&P&(?4?)*&P&?1Rule?
+	; rules summary C&P&(?4punctuation:4?)*&P&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -14034,52 +14391,50 @@ Method XmlXml(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  (xml_attribute)*
 Method XmlXml103RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..XmlXml104Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 /// xml_attribute
+/// summary=C
 Method XmlXml104Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..XmlAttribute(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 Method newElement(Type As %String) As PXW.DEV.BNF.Elements.ClassDefinition

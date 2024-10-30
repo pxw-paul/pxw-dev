@@ -56,9 +56,23 @@ Method %OnClose() As %Status
 ClassMethod GetIsRunning(PID As %String) As %Boolean
 {
     Set isrunning=0
-    Lock +^PXW.Xref.BuildStatus.Proc(PID):0 Else  Set isrunning=1
-    Lock -^PXW.Xref.BuildStatus.Proc(PID)
+    Lock +^PXW.Xref.BuildStatus.Proc(PID):0 
+    Set locked=$TEST
+    If locked {
+       Lock -^PXW.Xref.BuildStatus.Proc(PID)
+    } else {
+        Set isrunning=1
+    }
     Quit isrunning
+}
+
+ClassMethod Purge() As %Status
+{
+    Set sc=$$$OK
+    &SQL(DELETE PXW_Xref.BuildStatus 
+         WHERE Running=0)
+    If SQLCODE<0 Set sc=$$$ERROR(5001,%msg)
+    Quit sc
 }
 
 Storage Default

@@ -31,8 +31,8 @@ ClassMethod goload(DEFClass As %String = "", DestinationClass As %String, forceV
     Set input=..load(DEFClass_"||"_"file",.arr,.version)
     If forceVersion'="" Set version=forceVersion
     If version=3 {
-        Set compiler=##class(PXW.DEV.BNF.Compilers.Compiler3).%New(input)
-     } elseif version=2 {
+        ;Set compiler=##class(PXW.DEV.BNF.Compilers.Compiler3).%New(input)
+     } ElseIf version=2 {
         Set compiler=##class(PXW.DEV.BNF.Compilers.Compiler2).%New(input)
     } Else {
         Set compiler=##class(PXW.DEV.BNF.Compilers.Compiler1).%New(input)
@@ -173,10 +173,11 @@ Method compileDefinition(Element As PXW.DEV.Element)
     #define WRITECR(%code) $$$WRITELINE(method,%code)
     #dim method as %Dictionary.MethodDefinition
 
-    Set pkey=""
-    Set nameE=Element.partsGetNext(.pkey)
-    Set eqE=Element.partsGetNext(.pkey)
-    Set rulesE=Element.partsGetNext(.pkey)
+    ; 1    2   3
+    ; name ::= rules
+    Set nameE=Element.partsGetAt(1)
+    ;Set eqE=Element.partsGetNext(.pkey)
+    Set rulesE=Element.partsGetAt(3)
 
     Set mname=..methodName(nameE.ToString(0))
     ;w !,mname_" compiling",!
@@ -186,7 +187,6 @@ Method compileDefinition(Element As PXW.DEV.Element)
     Set method.Description=Element.ToString(" ")
     Set ..CurrentMethod=method
     
-    Set rkey=""
     Set indent=1
     Do ..compileQuickCheck(method,rulesE,indent)
     Do ..compileMethodStart(method,indent,1)
@@ -283,13 +283,13 @@ Method compileMethodEnd(Method As %Dictionary.MethodDefinition, indent As %Integ
         If copyMode=0 $$$WRITECR($$$Tab(indent+1)_"$$$BNFCOMMIT(subElement,ParentElement)")
         If copyMode=1 $$$WRITECR($$$Tab(indent+1)_"$$$BNFCOMMITCOPY(subElement,ParentElement)")
     }
-	$$$WRITECR($$$Tab(indent+1)_"set ret=1")
+	$$$WRITECR($$$Tab(indent+1)_"set ok=1")
 	$$$WRITECR($$$Tab(indent)_"} else {")
 	If needsTransation $$$WRITECR($$$Tab(indent+1)_"$$$BNFROLLBACK(subElement)")
-	$$$WRITECR($$$Tab(indent+1)_"set ret="_rollbackReturns)
+	$$$WRITECR($$$Tab(indent+1)_"set ok="_rollbackReturns)
 	$$$WRITECR($$$Tab(indent)_"}")
 	If needsDebug $$$WRITECR($$$Tab(indent)_"$$$DEBUGMethodEnd")
-	$$$WRITECR($$$Tab(indent)_"quit ret")
+	$$$WRITECR($$$Tab(indent)_"quit ok")
 }
 
 Method NewMethod(Name As %String, Element As PXW.DEV.Element) As %Dictionary.MethodDefinition
@@ -316,7 +316,7 @@ Method compileRules(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.E
     #define WRITECR(%code) $$$WRITELINE(Method,%code)
 
     Set summary=..summariseRules(Element)
-    ;s Method.Description=Method.Description_$c(13,10)_"summary="_summary
+    Set Method.Description=Method.Description_$CHAR(13,10)_"summary="_summary
     
     Set firstRuleE=Element.partsGetNext(.nkey)
     If $ISOBJECT(firstRuleE) {
@@ -600,14 +600,14 @@ Method compilePeek(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.El
     ; for lookahead we ALWAYS rollback even if we are returning 0 - this is a Peek only
     ;d ..compileMethodEnd(Method,indent,,transaction,debug)
     $$$WRITECR($$$Tab(indent)_"if done {")
-	$$$WRITECR($$$Tab(indent+1)_"set ret=1")
+	$$$WRITECR($$$Tab(indent+1)_"set ok=1")
 	$$$WRITECR($$$Tab(indent+1)_"$$$BNFROLLBACK(subElement)")
     $$$WRITECR($$$Tab(indent)_"} else {")
 	$$$WRITECR($$$Tab(indent+1)_"$$$BNFROLLBACK(subElement)")
-	$$$WRITECR($$$Tab(indent+1)_"set ret=0")
+	$$$WRITECR($$$Tab(indent+1)_"set ok=0")
 	$$$WRITECR($$$Tab(indent)_"}")
 	If debug $$$WRITECR($$$Tab(indent)_"$$$DEBUGMethodEnd")
-	$$$WRITECR($$$Tab(indent)_"quit ret")
+	$$$WRITECR($$$Tab(indent)_"quit ok")
 }
 
 Method findModifier(Element As PXW.DEV.Element) As %String
@@ -640,9 +640,7 @@ Method methodName(text As %String) As %String
 
 ClassMethod load(XDATAname As %String, Output array As %String, ByRef version As %String) As %String
 {
-    ;#define strip(%x) $ZSTRIP($tr(%x,$c(9,160)," "),"<>W")
     #define strip(%x) $ZSTRIP($tr(%x,$c(9,160)," "),"<>W")
-    Set cr=$CHAR(13,10),eq="::="
     Set xdata=##class(%Dictionary.XDataDefinition).%OpenId(XDATAname)
     Do xdata.Data.Rewind()
     Set alltext=xdata.Data.Read()
@@ -653,6 +651,9 @@ ClassMethod load(XDATAname As %String, Output array As %String, ByRef version As
     Quit cdata
 }
 
+/// The summary of the rules could be used to look for patterns that could be optimised in some way.
+/// EG if the summary says something like "P|P|P|P" then its searching for a list of punctuation
+///    which could be done in some clever fast way.
 Method summariseRules(Element As PXW.DEV.Element, ByRef listOfValues As %List) As %String
 {
     Set summary=""
@@ -681,7 +682,7 @@ Method summariseRule(Element As PXW.DEV.Element, listOfValues As %List = "") As 
     #dim rulesE as PXW.DEV.Element
 
     If Element.%IsA("PXW.DEV.Element") {
-        Set summary="?1"_Element.type_"?"
+        Set summary="?1"_Element.type_"1?"
         Set subelement=Element.partsGetNext("") ; get the first thing
 
         If subelement.type="Keyword" {
@@ -697,12 +698,17 @@ Method summariseRule(Element As PXW.DEV.Element, listOfValues As %List = "") As 
                 Set listOfValues=listOfValues_$LISTBUILD($$$UPPER(word)) ; needs to be upper because of things like i%
             }
         } ElseIf subelement.type="Call" {
-            Set mnameA=Element.FirstAtom()
-            Set mname=..methodName(mnameA.ToString(0))
+            ;Set mnameA=Element.FirstAtom()
+            ;Set mname=..methodName(mnameA.ToString(0))
+            Set summary="C"
         } ElseIf subelement.type="Subrule" {
             Set rulesE=subelement.findFirstElementByType("rules",0)
             Set subsumm=..summariseRules(rulesE,.listOfValues)
+            Set summary=""_subsumm
         } ElseIf subelement.type="Optionalgroup" {
+            Set rulesE=subelement.findFirstElementByType("rules",0)
+            Set summary="["_..summariseRules(rulesE,.listOfValues)_"]"
+        } ElseIf subelement.type="OptionalGroup" {
             Set rulesE=subelement.findFirstElementByType("rules",0)
             Set summary="["_..summariseRules(rulesE,.listOfValues)_"]"
         } ElseIf subelement.type="RepeatOne" {
@@ -712,7 +718,7 @@ Method summariseRule(Element As PXW.DEV.Element, listOfValues As %List = "") As 
             Set ruleE=subelement.findFirstElementByType("RepeatableRule") 
             Set summary="("_..summariseRules(ruleE,.listOfValues)_")*"
         } Else {
-            Set summary="?4?"
+            Set summary="?4"_subelement.type_"4?"
         }
     } Else {
         Set summary=""

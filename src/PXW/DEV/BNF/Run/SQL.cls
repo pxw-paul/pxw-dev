@@ -37,13 +37,13 @@ Method AliasName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	}
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0
+		Set ok=0
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 /// column_name ::= identifier
@@ -80,13 +80,13 @@ Method ColumnName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
     }
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0
+		Set ok=0
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 Method Identifier(ParentElement As PXW.DEV.BNF.Element) As %Boolean
@@ -229,12 +229,12 @@ Method SqlNumber(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	If done {
         Set atom=..newAtom("Number",n)
         Do ParentElement.AddPart(atom)
-		Set ret=1
+		Set ok=1
 	} Else {
-		Set ret=0
+		Set ok=0
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 /// sql_string ::= 'NEED STRING'
@@ -291,12 +291,12 @@ Method SqlString(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=0
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	q ret*/
+	q ok*/
 }
 
 Method SqlCosVariable(ParentElement As PXW.DEV.BNF.Element) As %Library.Boolean
@@ -305,7 +305,7 @@ Method SqlCosVariable(ParentElement As PXW.DEV.BNF.Element) As %Library.Boolean
     $$$DEBUGMethodBegin
 	$$$BNFPATH
  	$$$BNFSTART(subElement)
-    Set ret=0
+    Set ok=0
  
     ;d:..needsWScheck ..skipWhiteSpaceAndComments()
     ;i ..isString(subElement,":") {
@@ -318,9 +318,9 @@ Method SqlCosVariable(ParentElement As PXW.DEV.BNF.Element) As %Library.Boolean
         Set parser.comment=..comment
         ;d parser.skipWhiteSpaceAndComments()
         If parser.Variable(subElement) {
-            Set ret=1
+            Set ok=1
         } 
-        If ret=1 {
+        If ok=1 {
             Set ..whitespace=parser.whitespace
             Set ..comment=parser.comment
             $$$BNFCOMMIT(subElement,ParentElement)
@@ -329,7 +329,7 @@ Method SqlCosVariable(ParentElement As PXW.DEV.BNF.Element) As %Library.Boolean
         }
     ;}
     $$$DEBUGMethodEnd
-    Quit ret
+    Quit ok
 }
 
 Method skipComments(ch10 As %String) As %Boolean

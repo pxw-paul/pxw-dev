@@ -242,12 +242,12 @@ ClassMethod GetTitle() As %String
 }
 
 /// Write out extra styles here, the STYLE tags are already in place
-ClassMethod WriteStyles() As %Status
+ClassMethod WriteStyles()
 {
 }
 
 /// Write out extra javascript here, the SCRIPT tags are already in place
-ClassMethod WriteScripts() As %Status
+ClassMethod WriteScripts()
 {
 }
 

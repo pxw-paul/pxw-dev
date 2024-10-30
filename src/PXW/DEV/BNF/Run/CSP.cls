@@ -79,9 +79,9 @@ Method CspElement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 {
 	Set oldmode=..commentMode
     Set ..commentMode="XML"
-    Set ret=##super(ParentElement,.subElement)
+    Set ok=##super(ParentElement,.subElement)
     Set ..commentMode=oldmode
-    Quit ret
+    Quit ok
 }
 
 Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -175,7 +175,7 @@ Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
             Set o.value=n
             Do subElement.AddPart(o)
             If cos {
-                Set cosdone=..CosExpression(subElement,.cosSubElement) 
+                Do ..CosExpression(subElement,.cosSubElement) 
             }
         }
     }
@@ -281,13 +281,13 @@ Method JavascriptBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
         Set ..comment=parser.comment
         Set atom=..newAtom("JavascriptCodeBlock End","")
         Do ParentElement.AddPart(atom)
-        Set ret=1
+        Set ok=1
     } Else {
         $$$BNFROLLBACK(subElement)
-        Set ret=0
+        Set ok=0
     }
     $$$DEBUGMethodBegin
-    Quit ret
+    Quit ok
    	/*#dim tokenstream as PXW.DEV.TokenStream
 
 	$$$DEBUGMethodBegin

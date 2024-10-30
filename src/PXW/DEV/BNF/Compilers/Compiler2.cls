@@ -14,10 +14,10 @@ Method compileDefinition(Element As PXW.DEV.Element)
     #define WRITECR(%code) $$$WRITELINE(method,%code)
     #dim method as %Dictionary.MethodDefinition
 
-    Set pkey=""
-    Set nameE=Element.partsGetNext(.pkey)
-    Set eqE=Element.partsGetNext(.pkey)
-    Set rulesE=Element.partsGetNext(.pkey)
+    ; name := rules
+    Set nameE=Element.partsGetAt(1)
+    ;Set eqE=Element.partsGetAt(2)
+    Set rulesE=Element.partsGetAt(3)
 
     Set mname=..methodName(nameE.ToString(0))
    
@@ -43,14 +43,14 @@ Method compileDefinition(Element As PXW.DEV.Element)
         $$$WRITECR($$$Tab(indent)_"set done=0,ok=1,pos=..stream.pos,lastpos=pos")
         $$$WRITECR($$$Tab(indent)_"if $$$BNFMEMOExists(pos) {")
         $$$WRITECR($$$Tab(indent+1)_"$$$BNFMEMOGET(pos,subElement)")
-        $$$WRITECR($$$Tab(indent+1)_"set ret=($isobject(subElement))")
-        $$$WRITECR($$$Tab(indent+1)_"if ret $$$BNFCOMMITCOPY(subElement,ParentElement)")
-        $$$WRITECR($$$Tab(indent+1)_"quit ret")
+        $$$WRITECR($$$Tab(indent+1)_"set ok=($isobject(subElement))")
+        $$$WRITECR($$$Tab(indent+1)_"if ok $$$BNFCOMMITCOPY(subElement,ParentElement)")
+        $$$WRITECR($$$Tab(indent+1)_"quit ok")
         $$$WRITECR($$$Tab(indent)_"}")
         $$$WRITECR($$$Tab(indent)_"$$$BNFMEMOSET(pos,"""")")
         $$$WRITECR($$$Tab(indent)_"do ..getBookmark(.bm)")
         $$$WRITECR($$$Tab(indent)_"while ok {")
-        $$$WRITECR($$$Tab(indent)_"$$$BNFSTART(subElement)")
+        $$$WRITECR($$$Tab(indent+1)_"$$$BNFSTART(subElement)")
         $$$WRITECR($$$Tab(indent+1)_"do ..gotoBookmark(.bm)")
         ;$$$WRITECR($$$Tab(indent+1)_"set rec=.."_recmethod.Name_"(ParentElement,.addedElement)")
         $$$WRITECR($$$Tab(indent+1)_"set rec=.."_recmethod.Name_"(subElement,.addedElement)")
@@ -63,25 +63,24 @@ Method compileDefinition(Element As PXW.DEV.Element)
         $$$WRITECR($$$Tab(indent)_"}")
         $$$WRITECR($$$Tab(indent)_"if done {")
             If '..#COMPACT {
-                $$$WRITECR($$$Tab(indent+1)_"$$$BNFCOMMIT(subElement,ParentElement)")
+                $$$WRITECR($$$Tab(indent+1)_"$$$BNFCOMMIT(subElement,ParentElement) ; 1")
             } Else {
                 $$$WRITECR($$$Tab(indent+1)_"if subElement.partsCount()=1,subElement.partsGetAt(1).%IsA(""PXW.DEV.Atom"") {")
-                $$$WRITECR($$$Tab(indent+2)_"$$$BNFCOMMITCOPY(subElement,ParentElement)")
+                $$$WRITECR($$$Tab(indent+2)_"$$$BNFCOMMITCOPY(subElement,ParentElement) ; 2")
                 $$$WRITECR($$$Tab(indent+1)_"} elseif subElement.partsCount()=1,subElement.partsGetAt(1).type'="""_mname_""" {")
-                $$$WRITECR($$$Tab(indent+2)_"$$$BNFCOMMITCOPY(subElement,ParentElement)")
+                $$$WRITECR($$$Tab(indent+2)_"$$$BNFCOMMITCOPY(subElement,ParentElement) ; 3")
                 $$$WRITECR($$$Tab(indent+1)_"} else {")
                 $$$WRITECR($$$Tab(indent+2)_"$$$BNFCOMMIT(subElement,ParentElement)")
                 $$$WRITECR($$$Tab(indent+1)_"}")
             }
-        $$$WRITECR($$$Tab(indent+1)_"set ret=1")
+        $$$WRITECR($$$Tab(indent+1)_"set ok=1")
         $$$WRITECR($$$Tab(indent)_"} else {")
         $$$WRITECR($$$Tab(indent+1)_"if $isobject(subElement) $$$BNFROLLBACK(subElement)")
-        $$$WRITECR($$$Tab(indent+1)_"set ret=0")
+        $$$WRITECR($$$Tab(indent+1)_"set ok=0")
         $$$WRITECR($$$Tab(indent)_"}")
         $$$WRITECR($$$Tab(indent)_"$$$DEBUGMethodEnd")
-        $$$WRITECR($$$Tab(indent)_"quit ret")
+        $$$WRITECR($$$Tab(indent)_"quit ok")
     } Else {
-        Set rkey=""
         Set indent=1
         Do ..compileQuickCheck(method,rulesE,indent)
         Do ..compileMethodStart(method,indent,1)
@@ -90,8 +89,8 @@ Method compileDefinition(Element As PXW.DEV.Element)
             $$$WRITECR($$$Tab(indent)_"if $$$BNFMEMOExists(pos) {")
             $$$WRITECR($$$Tab(indent+1)_"$$$BNFMEMOGET(pos,subElement)")
             $$$WRITECR($$$Tab(indent+1)_"set done=$isobject(subElement)")
-            ;$$$WRITECR($$$Tab(indent+1)_"$$$BNFCOMMIT(subElement,ParentElement)")
-            ;$$$WRITECR($$$Tab(indent+1)_"quit ret")
+            ;$$$WRITECR($$$Tab(indent+1)_"$$$BNFCOMMIT(subElement,ParentElement) ; 4")
+            ;$$$WRITECR($$$Tab(indent+1)_"quit ok")
             $$$WRITECR($$$Tab(indent)_$$$CloseCurly_" else "_$$$OpenCurly)
             Set indent=indent+1
 
@@ -118,7 +117,7 @@ Method compileRules(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.E
     #define WRITECR(%code) $$$WRITELINE(Method,%code) 
 
     Set summary=..summariseRules(Element)
-    ;s Method.Description=Method.Description_$c(13,10)_"summary="_summary    
+    Set Method.Description=Method.Description_$CHAR(13,10)_"summary="_summary    
     
     Set initialIndent=indent
     Set first=1
@@ -290,12 +289,12 @@ Method compileNotRule(Method As %Dictionary.MethodDefinition, Element As PXW.DEV
 	$$$WRITECR($$$Tab(indent)_"$$$BNFROLLBACK(subElement)") ; always rollback
 
     $$$WRITECR($$$Tab(indent)_"if done {")
-	$$$WRITECR($$$Tab(indent+1)_"set ret=0") ; reverse for NOT
+	$$$WRITECR($$$Tab(indent+1)_"set ok=0") ; reverse for NOT
 	$$$WRITECR($$$Tab(indent)_"} else {")
-	$$$WRITECR($$$Tab(indent+1)_"set ret=1") ; reverse for NOT
+	$$$WRITECR($$$Tab(indent+1)_"set ok=1") ; reverse for NOT
 	$$$WRITECR($$$Tab(indent)_"}")
 	$$$WRITECR($$$Tab(indent)_"$$$DEBUGMethodEnd")
-	$$$WRITECR($$$Tab(indent)_"quit ret")
+	$$$WRITECR($$$Tab(indent)_"quit ok")
 }
 
 Method compileMethodEnd(Method As %Dictionary.MethodDefinition, indent As %Integer, rollbackReturns As %String = "0 ; normal rollback", needsTransation As %Boolean = 1, needsDebug As %Boolean = 1, copyMode As %Boolean = 0)
@@ -311,21 +310,21 @@ Method compileMethodEnd(Method As %Dictionary.MethodDefinition, indent As %Integ
                 $$$WRITECR($$$Tab(indent+1)_"if subElement.partsCount()=1,subElement.partsGetAt(1).%IsA(""PXW.DEV.Atom"") {")
                 $$$WRITECR($$$Tab(indent+2)_"$$$BNFCOMMITCOPY(subElement,ParentElement)")
                 $$$WRITECR($$$Tab(indent+1)_"} else {")
-                $$$WRITECR($$$Tab(indent+2)_"$$$BNFCOMMIT(subElement,ParentElement)")
+                $$$WRITECR($$$Tab(indent+2)_"$$$BNFCOMMIT(subElement,ParentElement) ; 5")
                 $$$WRITECR($$$Tab(indent+1)_"}")
             } Else {
-                $$$WRITECR($$$Tab(indent+2)_"$$$BNFCOMMIT(subElement,ParentElement)")
+                $$$WRITECR($$$Tab(indent+1)_"$$$BNFCOMMIT(subElement,ParentElement) ; 6")
             }
         }
         If copyMode=1 $$$WRITECR($$$Tab(indent+1)_"$$$BNFCOMMITCOPY(subElement,ParentElement)")
     }
-	$$$WRITECR($$$Tab(indent+1)_"set ret=1")
+	$$$WRITECR($$$Tab(indent+1)_"set ok=1")
 	$$$WRITECR($$$Tab(indent)_"} else {")
 	If needsTransation $$$WRITECR($$$Tab(indent+1)_"$$$BNFROLLBACK(subElement)")
-	$$$WRITECR($$$Tab(indent+1)_"set ret="_rollbackReturns)
+	$$$WRITECR($$$Tab(indent+1)_"set ok="_rollbackReturns)
 	$$$WRITECR($$$Tab(indent)_"}")
 	If needsDebug $$$WRITECR($$$Tab(indent)_"$$$DEBUGMethodEnd")
-	$$$WRITECR($$$Tab(indent)_"quit ret")
+	$$$WRITECR($$$Tab(indent)_"quit ok")
 }
 
 }

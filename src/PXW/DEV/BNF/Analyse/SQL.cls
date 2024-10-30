@@ -42,15 +42,15 @@ Method GetColumnReference(element As PXW.DEV.Element, Output fulltable As %Strin
 
 Method NextColumnReference(ByRef element As PXW.DEV.Element, Output fulltable As %String, Output fullfieldname As %String) As %Boolean
 {
-    Set ret=0
+    Set found=0
     Set key=+element
     Set key=$ORDER(..columnReferencesElement(key))
     If key'="" {
         Set element=$GET(..columnReferencesElement(key))
         Do ..GetColumnReference(element,.fulltable,.fullfieldname)
-        Set ret=1
+        Set found=1
     }
-    Quit ret
+    Quit found
 }
 
 Method checkElement(element As PXW.DEV.Element)

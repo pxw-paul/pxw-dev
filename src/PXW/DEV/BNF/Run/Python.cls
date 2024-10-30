@@ -13,9 +13,9 @@ Property currentIndent As %String;
 
 Method addPunctuation(ParentElement As PXW.DEV.Element, Punctuation As %String, Output foundString As %String) As %Boolean
 {
-	Set ret=##super(ParentElement,Punctuation,.foundString)
+	Set ok=##super(ParentElement,Punctuation,.foundString)
     ; stuff in ( ) can span more than 1 line
-    If ret {
+    If ok {
         If foundString="(" {
             Set ..bracketDepth=..bracketDepth+1,..stopAtEOL=0
         } ElseIf foundString=")" {
@@ -33,7 +33,7 @@ Method addPunctuation(ParentElement As PXW.DEV.Element, Punctuation As %String, 
             Set ..stopAtEOL=1
         }
     }
-    Quit ret
+    Quit ok
 }
 
 Method getBookmark(ByRef bookmark As %String)
@@ -80,11 +80,11 @@ Method gotoBookmark(ByRef bookmark As %String)
 
 Method File(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	Set ret=##super(ParentElement,.subElement)
-    If ret=0 {
-        Set ret=..recover(ParentElement,.recsub,"",$LISTBUILD())
+	Set ok=##super(ParentElement,.subElement)
+    If ok=0 {
+        Set ok=..recover(ParentElement,.recsub,"",$LISTBUILD())
     }
-    Quit ret
+    Quit ok
 }
 
 ///  func_type_comment: | NEWLINE TYPE_COMMENT &(NEWLINE INDENT) | TYPE_COMMENT
@@ -160,7 +160,7 @@ Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
         If $$$LOWER(..peek(1))="r" Set r1=..nextNotEOL(1)
         Set q1=..nextNotEOL(3),n="",instring=1
         While '..eof() && instring {
-            Set chs=..peek(3),ch=$EXTRACT(chs,1),ch2=$EXTRACT(chs,2),ch3=$EXTRACT(chs,3)
+            Set chs=..peek(3),ch=$EXTRACT(chs,1),ch2=$EXTRACT(chs,2)
             ; what do embedded quotes look like here?
            If chs=q1 {
                     Set instring=0
@@ -251,7 +251,7 @@ Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
         If n'="" {
             Set atom=..newAtom("Number",n)
             Do subElement.AddPart(atom)
-            Set ret=1
+            Set ok=1
         }
     ; binary number
     } ElseIf $$$LOWER(..peek(2))="0b" {
@@ -262,7 +262,7 @@ Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
         If n'="" {
             Set atom=..newAtom("Number",n)
             Do subElement.AddPart(atom)
-            Set ret=1
+            Set ok=1
         }
     } Else {
 
@@ -310,17 +310,17 @@ Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 
             If done {
                 $$$BNFCOMMITCOPY(subElement,ParentElement)
-                Set ret=1
+                Set ok=1
             } Else {
                 $$$BNFROLLBACK(subElement)
-                Set ret=0
+                Set ok=0
             }
         } Else {
-            Set ret=0
+            Set ok=0
         }
     }
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 ///  ENDMARKER : 'code endmarker'
@@ -337,40 +337,40 @@ Method Endmarker(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 Method Newline(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
     $$$DEBUGMethodBegin
-    Set ret=0
+    Set ok=0
     ; this must not stop at new line, thats exactly what its looking for
     Set old=..stopAtEOL
     Set ..stopAtEOL=0,..needsWScheck=1
 	Do:..needsWScheck ..skipWhiteSpaceAndComments()
-    If $ISOBJECT(..whitespace),..whitespace.value[..stream.eolChar Set ret=1
-    If ..eof() Set ret=1
+    If $ISOBJECT(..whitespace),..whitespace.value[..stream.eolChar Set ok=1
+    If ..eof() Set ok=1
     Set ..stopAtEOL=old
     $$$DEBUGMethodEnd
-    Quit ret
+    Quit ok
 }
 
 /// Does the white space have indentation? Not keeping track of the depth yet.
 Method Indent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
     $$$DEBUGMethodBegin
-    Set ret=0
+    Set ok=0
 	Do:..needsWScheck ..skipWhiteSpaceAndComments()
-    If $ISOBJECT(..whitespace),..whitespace.value[" " Set ret=1
-    If $ISOBJECT(..whitespace),..whitespace.value[$CHAR(9) Set ret=1
+    If $ISOBJECT(..whitespace),..whitespace.value[" " Set ok=1
+    If $ISOBJECT(..whitespace),..whitespace.value[$CHAR(9) Set ok=1
     $$$DEBUGMethodEnd
-    Quit ret
+    Quit ok
 }
 
 /// Not keeping track of the depth yet, always pass
 Method Dedent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
     $$$DEBUGMethodBegin
-    Set ret=1
+    Set ok=1
 	;d:..needsWScheck ..skipWhiteSpaceAndComments()
-    ;i $isobject(..whitespace),..whitespace.value[" " s ret=1
-    ;i $isobject(..whitespace),..whitespace.value[$c(9) s ret=1
+    ;i $isobject(..whitespace),..whitespace.value[" " s ok=1
+    ;i $isobject(..whitespace),..whitespace.value[$c(9) s ok=1
     $$$DEBUGMethodEnd
-    Quit ret
+    Quit ok
 }
 
 ///  TYPE_COMMENT : 'code type_comment'
@@ -381,9 +381,9 @@ Method TypeComment(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 {
     $$$DEBUGMethodBegin
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
-    Set ret=1
+    Set ok=1
     $$$DEBUGMethodEnd
-    Quit ret
+    Quit ok
 }
 
 ///  FSTRING_START : 'code fstring_start'
@@ -395,15 +395,15 @@ Method FstringStart(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
     If $$$UPPER(..peek(2))="F'" Set ok=1,..fStringEndChar="'"
     If $$$UPPER(..peek(2))="F""" Set ok=1,..fStringEndChar=""""
     If ok=1 {
-        Set ret=1
+        Set ok=1
         Set atom=..newAtom("FstringStart")
         Set atom.value=..next(2)
         Do ParentElement.AddPart(atom)
     } Else {
-        Set ret=0
+        Set ok=0
     }
     $$$DEBUGMethodEnd
-    Quit ret
+    Quit ok
 }
 
 ///  FSTRING_END : 'code fstring_end'
@@ -417,13 +417,13 @@ Method FstringEnd(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
         Set atom=..newAtom("FstringEnd")
         Set atom.value=..next($LENGTH(..fStringEndChar))
         Do ParentElement.AddPart(atom)
-        Set ret=1
+        Set ok=1
         Set ..fStringEndChar=""
     } Else {
-        Set ret=0
+        Set ok=0
     }
     $$$DEBUGMethodEnd
-    Quit ret
+    Quit ok
 }
 
 Method FstringMiddle(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -437,12 +437,12 @@ Method FstringMiddle(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		Set done=1 ; end compileRules
 	}
 	If done {
-		Set ret=1
+		Set ok=1
 	} Else {
-		Set ret=0 ; normal rollback
+		Set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 Method FstringMiddleText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
@@ -458,12 +458,12 @@ Method FstringMiddleText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
     If n'="" {
         Set o=..newAtom("String",n)
         Do ParentElement.AddPart(o)
-        Set ret=1
+        Set ok=1
     } Else {
-        Set ret=0
+        Set ok=0
     }
     $$$DEBUGMethodEnd
-    Quit ret
+    Quit ok
 }
 
 ///  statement: compound_stmt | simple_stmts
@@ -476,22 +476,22 @@ Method Statement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
     ; Until I sort out the whole skipWhiteSpaceAndComment issue:
     ; The superclass happily skips whitespaces but in Python they are important!
     ; I will have to track indents here
-    Set ret=1
+    Set ok=1
     If $ISOBJECT(..whitespace) {
         Set indent=$PIECE(..whitespace.value,..stream.eolChar,*)
         ; have we moved back a level, if so then treat this as a FAILURE
         ; which should fall back into the block and allow it to continue again later
         If $LENGTH(indent)<$LENGTH(..currentIndent) {
-            Set ret=0
+            Set ok=0
         }
         Set ..currentIndent=indent
     }
 
-    If ret {
-        Set ret=##super(ParentElement,.subElement)
+    If ok {
+        Set ok=##super(ParentElement,.subElement)
     }
     Set ..stopAtEOL=old
-    Quit ret
+    Quit ok
 }
 
 /// Skip over the next set of comments, return 1 if something was done or 0.

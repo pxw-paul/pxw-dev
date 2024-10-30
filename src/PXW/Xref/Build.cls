@@ -6,6 +6,7 @@ Class PXW.Xref.Build Extends %Library.RegisteredObject
 /// do ##class(PXW.Xref.Build).Build("LOCAL_USER","","PXW*")
 ClassMethod Build(Namespace As %String, Type As %String, SearchName As %String, Force As %Boolean = 0) As %Status
 {
+	$$$DEBUG("Building:"_Namespace_":"_Type_":"_SearchName)
 	Kill ^||PXWXrefBuild
 	Set sc=$$$OK
 	Try {
@@ -29,17 +30,26 @@ ClassMethod Build(Namespace As %String, Type As %String, SearchName As %String, 
 			Set typ=rs.%Get("Type")
 			If Force,buildmany {
 				If $DATA(status) {
-					Set status.CurrentlyBuilding="Purging old data: "_typ_","_package
+					Set status.CurrentlyBuilding="Purging Analysis data: "_Namespace_","_typ_","_package
 					$$$ThrowOnError(status.%Save())
 				}
 				Set:$$$ISOK(sc) sc=..DeleteAnalysisCalledByTypeKey1Package(Namespace,typ,package)
+
+				If $DATA(status) {
+					Set status.CurrentlyBuilding="Purging Xref data: "_Namespace_","_typ_","_package
+					$$$ThrowOnError(status.%Save())
+				}
 				Set:$$$ISOK(sc) sc=..DeleteCalledByTypeKey1Package(Namespace,typ,package)
+
+				If $DATA(status) {
+					Set status.CurrentlyBuilding="Purging LastUpdate data: "_Namespace_","_typ_","_package
+					$$$ThrowOnError(status.%Save())
+				}
 				Set:$$$ISOK(sc) sc=..DeleteLastUpdateCalledByTypeKey1Package(Namespace,typ,package)
 				; We have purged the lastupdate table so no need to force now.
 				; Which means we could kick off a Force on *, THEN build PXW package on a second process (because we are impatient)
 				; Then when the * build gets to PXW it will see that its already been done!
 				Set useTheForce=0
-				Hang 1
 			}
 			Set builderClass=rs.%Get("Builder")
 			If builderClass'="" {
@@ -56,7 +66,7 @@ ClassMethod Build(Namespace As %String, Type As %String, SearchName As %String, 
 				}
 			}
 		}
-
+		$$$DEBUGStop
 		If $$$ISOK(sc) {
 			Set:$DATA(status) status.Total=$GET(count)
 			Set iid=""
@@ -91,7 +101,9 @@ ClassMethod Build(Namespace As %String, Type As %String, SearchName As %String, 
 	}
 	
 	If $DATA(status) {
-		Set status.CurrentlyBuilding=""
+		If $$$ISOK(sc) {
+			Set status.CurrentlyBuilding=""
+		}
 		Set status.Status=sc
 		Do status.End()
 		$$$ThrowOnError(status.%Save())
@@ -104,6 +116,9 @@ ClassMethod Build(Namespace As %String, Type As %String, SearchName As %String, 
 ///     null if nothing done
 ClassMethod BuildIfNecessary(CodeInterface As PXW.DEV.Dictionary.CodeInterface, Namespace As %String, Type As %String, Name As %String, TimeChanged As %TimeStamp, BuilderClass As %String, Force As %Boolean) As %Boolean [ Internal ]
 {
+	#dim builder as PXW.Xref.Builder
+	$$$DEBUG("BuildIfNecessary:"_Namespace_":"_Type_":"_Name)
+	
 	Set savesc=""
 	Set built=""
 	Set text=""
@@ -111,7 +126,6 @@ ClassMethod BuildIfNecessary(CodeInterface As PXW.DEV.Dictionary.CodeInterface, 
 	Set builder=$SYSTEM.OBJ.New(BuilderClass)
 	Set LastUpdate=##class(PXW.Xref.LastUpdated).OpenOrNew(Namespace,Type,Name)
 	If Force || LastUpdate.NeedsUpdate(TimeChanged) {
-		Set ^PXW("BIF",$INCREMENT(^PXW))=Name_"*"_LastUpdate.LastUpdate_"*"_TimeChanged
 		Set sc=CodeInterface.Load(Name,.text)
 		Set zh=$ZHOROLOG
 		Do ..DeleteAnalysisCalledByTypeKey1(Namespace,Type,Name)
@@ -150,15 +164,24 @@ ClassMethod BuildIfNecessary(CodeInterface As PXW.DEV.Dictionary.CodeInterface, 
 /// write ##class(PXW.Xref.Build).DailyBuild("LOCAL_USER")
 ClassMethod DailyBuild(Namespace As %String) As %Boolean
 {
-	Set id=""
 	Set started=0 
-	&SQL(SELECT TOP 1 ID INTO :id FROM PXW_Xref.BuildStatus WHERE RequestNamespace=:Namespace AND StartDate=CURRENT_DATE)
-	; SQLCODE=100 means ok but no rows
-	If SQLCODE=100 {
-		Job ..Build(Namespace,"","*",0)
+	Set rs=..SelectDailyBuildFunc()
+	While rs.%Next() {
+		Job ..Build(rs.Namespace,"","*",0)
 		Set started=1
 	}
 	Quit started
+}
+
+Query SelectDailyBuild() As %Library.SQLQuery
+{
+	SELECT * 
+	  FROM (
+			SELECT nsp."Name" as Namespace
+			,(SELECT MAX(StartDate) FROM PXW_Xref.BuildStatus AS bs WHERE bs.RequestNamespace=nsp.Name) AS StartDate 
+			FROM PXW_DEV_Dictionary.Namespace as nsp
+	  )
+	WHERE (StartDate IS NULL) OR (StartDate<CURRENT_DATE)
 }
 
 Query SelectTypes(Namespace As %String, Type As %String) As PXW.LIB.SQL.Query [ SqlProc ]
@@ -174,16 +197,18 @@ Query SelectTypes(Namespace As %String, Type As %String) As PXW.LIB.SQL.Query [ 
         AND ((:Type IS NULL) OR (ci.Type=:Type))
 }
 
-ClassMethod DeleteAnalysisCalledByTypeKey1Package(NameSpace As %String, ItemType As %String, ItemByKey1 As %String) As %Status
+ClassMethod DeleteAnalysisCalledByTypeKey1Package(NameSpace As %String, ItemType As %String, ItemKey1 As %String) As %Status
 {
     $$$DEBUGMethodBegin
+	$$$DEBUG("Deleting:"_NameSpace_":"_ItemType_":"_ItemKey1_"*")
+
 	Set jrnsts=$$CURRENT^%NOJRN()
 	Do $SYSTEM.SQL.Util.SetOption("AutoCommit",0,.acsts)
 	Do DISABLE^%NOJRN
 	Set sc=$$$OK
 	If $$$ISOK(sc) {
 		&SQL(DELETE %NOLOCK FROM PXW_Xref.AnalysisData
-			WHERE  NameSpace=:NameSpace AND ItemType=:ItemType AND ItemKey1 %STARTSWITH :ItemKey1)
+			WHERE  (NameSpace=:NameSpace) AND (ItemType=:ItemType) AND (ItemKey1 %STARTSWITH :ItemKey1))
         $$$DEBUG($GET(%msg))
 	    If SQLCODE<0 Set sc=$$$ERROR(5001,%msg)
     }
@@ -196,13 +221,14 @@ ClassMethod DeleteAnalysisCalledByTypeKey1Package(NameSpace As %String, ItemType
 ClassMethod DeleteAnalysisCalledByTypeKey1(NameSpace As %String, ItemType As %String, ItemKey1 As %String) As %Status
 {
     $$$DEBUGMethodBegin
+	$$$DEBUG("Deleting:"_NameSpace_":"_ItemType_":"_ItemKey1)
 	Set jrnsts=$$CURRENT^%NOJRN()
 	Do $SYSTEM.SQL.Util.SetOption("AutoCommit",0,.acsts)
 	Do DISABLE^%NOJRN
 	Set sc=$$$OK
 	If $$$ISOK(sc) {
 		&SQL(DELETE %NOLOCK FROM PXW_Xref.AnalysisData
-			WHERE NameSpace=:NameSpace AND ItemType=:ItemType AND ItemKey1=:ItemKey1)
+			WHERE (NameSpace=:NameSpace) AND (ItemType=:ItemType) AND (ItemKey1=:ItemKey1))
         $$$DEBUG($GET(%msg))
         If SQLCODE<0 Set sc=$$$ERROR(5001,%msg)
    	}
@@ -217,13 +243,15 @@ ClassMethod DeleteAnalysisCalledByTypeKey1(NameSpace As %String, ItemType As %St
 ClassMethod DeleteCalledByTypeKey1Package(NameSpace As %String, CalledByType As %String, CalledByKey1 As %String) As %Status
 {
     $$$DEBUGMethodBegin
+	$$$DEBUG("Deleting:"_NameSpace_":"_CalledByType_":"_CalledByKey1_"*")
 	Set jrnsts=$$CURRENT^%NOJRN()
 	Do $SYSTEM.SQL.Util.SetOption("AutoCommit",0,.acsts)
 	Do DISABLE^%NOJRN
 	Set sc=$$$OK
 	If $$$ISOK(sc) {
 		&SQL(DELETE %NOLOCK FROM PXW_Xref.Data
-			WHERE  NameSpace=:NameSpace AND CalledByType=:CalledByType AND CalledByKey1 %STARTSWITH :CalledByKey1)
+			WHERE  NameSpace=:NameSpace AND (CalledByType=:CalledByType) AND (CalledByKey1 %STARTSWITH :CalledByKey1)
+			)
         $$$DEBUG($GET(%msg))
 	    If SQLCODE<0 Set sc=$$$ERROR(5001,%msg)
     }
@@ -236,6 +264,7 @@ ClassMethod DeleteCalledByTypeKey1Package(NameSpace As %String, CalledByType As 
 ClassMethod DeleteLastUpdateCalledByTypeKey1Package(NameSpace As %String, CalledByType As %String, CalledByKey1 As %String) As %Status
 {
     $$$DEBUGMethodBegin
+	$$$DEBUG("Deleting:"_NameSpace_":"_CalledByType_":"_CalledByKey1_"*")
 	Set jrnsts=$$CURRENT^%NOJRN()
 	Do $SYSTEM.SQL.Util.SetOption("AutoCommit",0,.acsts)
 	Do DISABLE^%NOJRN
@@ -257,6 +286,7 @@ ClassMethod DeleteLastUpdateCalledByTypeKey1Package(NameSpace As %String, Called
 ClassMethod DeleteCalledByTypeKey1(NameSpace As %String, CalledByType As %String, CalledByKey1 As %String) As %Status
 {
     $$$DEBUGMethodBegin
+	$$$DEBUG("Deleting:"_NameSpace_":"_CalledByType_":"_CalledByKey1)
 	Set jrnsts=$$CURRENT^%NOJRN()
 	Do $SYSTEM.SQL.Util.SetOption("AutoCommit",0,.acsts)
 	Do DISABLE^%NOJRN
@@ -267,7 +297,6 @@ ClassMethod DeleteCalledByTypeKey1(NameSpace As %String, CalledByType As %String
         $$$DEBUG($GET(%msg))
         If SQLCODE<0 Set sc=$$$ERROR(5001,%msg)
    	}
-
 
 	If $$$ISOK(sc) {
 		&SQL(DELETE %NOLOCK FROM PXW_Xref.LastUpdated

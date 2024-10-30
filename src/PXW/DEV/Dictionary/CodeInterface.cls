@@ -11,7 +11,7 @@ Property Type As PXW.DEV.Dictionary.CodeType [ InitialExpression = {..#CodeType}
 
 Index PK On (Namespace, Type) [ Unique ];
 
-ClassMethod RegisterType()
+ClassMethod RegisterType() As %Status
 {
     Set sc=$$$OK
     Set codetype=..#CodeType
@@ -36,7 +36,7 @@ ClassMethod RegisterType()
 
 ClassMethod OpenForType(Namespace As %String, CodeType As %String) As PXW.DEV.Dictionary.CodeInterface
 {
-    q ..PKOpen(Namespace,CodeType)
+    Quit ..PKOpen(Namespace,CodeType)
 }
 
 ClassMethod OpenNamespace(Namespace As %String) As PXW.DEV.Dictionary.CodeInterface
@@ -47,11 +47,11 @@ ClassMethod OpenNamespace(Namespace As %String) As PXW.DEV.Dictionary.CodeInterf
 
 /// Needs to return at least SubType,Name,TimeChanged
 /// The return must be similar to %ResultSet
-Method List(SearchName As %String) As %RegisteredObject
+Method List(SearchName As %String) As %RegisteredObject [ Abstract ]
 {
 }
 
-Method Load(Name As %String, Output Text As %String, Output LastUpdateTime As %TimeStamp) As %Status
+Method Load(Name As %String, Output Text As %String, Output LastUpdateTime As %TimeStamp) As %Status [ Abstract ]
 {
 }
 

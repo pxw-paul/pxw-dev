@@ -1,9 +1,7 @@
 Class PXW.Tools.DEV.Routine Extends PXW.Tools.DEV.CodeDisplayPage
 {
 
-
-Parameter CodeType="INT";
-
+Parameter CodeType = "INT";
 
 ClassMethod WriteMainBody()
 {
@@ -109,6 +107,16 @@ ClassMethod HREFTo(Routine As %String) As %String
 	Quit href
 }
 
+ClassMethod HREFToK123(Routine As %String, Label As %String = "", LineNumber As %Integer = "") As %String
+{
+	If Label'="" {
+		Set href=..HREFTo(Label_"^"_Routine)
+	} Else {
+		Set href=..HREFTo(Routine)
+	}
+	Quit href
+}
+
 ClassMethod HREFFrom(Output Routine As %String, Output Label As %String, Output Plus As %String, Output Debug As %String)
 {
 	Set Routine=%request.Get("R")
@@ -124,7 +132,7 @@ ClassMethod GetTitle() As %String
 }
 
 /// Write out extra javascript here, the SCRIPT tags are already in place
-ClassMethod WriteScripts() As %Status
+ClassMethod WriteScripts()
 {
 	Write "var hiliterun=1;"
 	Write "function HiliteSets(id) {",!
@@ -200,27 +208,8 @@ ClassMethod WriteScripts() As %Status
 }
 
 /// Write out extra styles here, the STYLE tags are already in place
-ClassMethod WriteStyles() As %Status
+ClassMethod WriteStyles()
 {
-	;.block { background-color:#f0f0f0; }
-	;.comment { color:green; }
- 	;.comment .typo { background:none; }
- 	;.description { border:1px dotted green; color:black; margin-left:50px; }
-	;.description .html { color:black; }
-	;.description .typo { background-color:#FFEECC; }
-	;.error { background-color:red; color:white; }
-	;.endofsection { border-bottom:1px dotted silver; width:100%; }
-	;.external { font-weight:bold; }
-	;.fetch { cursor:pointer; }
-	;PRE.formattedtext { white-space: pre-wrap;       /* css-3 */
-	;				white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
- 	;				white-space: -pre-wrap;      /* Opera 4-6 */
- 	;				white-space: -o-pre-wrap;    /* Opera 7 */
- 	;				word-wrap: break-word;       /* Internet Explorer 5.5+ */
-	;			}
-	;A.global:visited { color:red; }
-	;.global { color:red; }
-	;.hiddennew { display:none; }
 	&html<
 	.hiliteSET { background-color:lightgreen; }
 	.hiliteSET1 { background-color:#EFEF00; } /* don't like this (numbers on each class) but cant get .parameters .parameters selector to work */
@@ -240,61 +229,6 @@ ClassMethod WriteStyles() As %Status
 	.hiliteGET7 { background-color:#FEFFBF; }
 	.hiliteGET8 { background-color:#FFBFFE; }
 	>
-	;.html { color:darkgreen; }
-	;.html .tag { color:purple; }
-	;.html .comment { color:darkgreen; font-style:italic;}
-	;.html .cos { color:black; }
-	;.html .typo { background-color:#FFEECC; }
-	;.KILL { font-weight:bold; }
-	;.known { cursor:hand; }
-	;.label { color:blue; }
-	;.line { }
-	;.macro { color:darkblue; }
-	;.MERGE { font-weight:bold; }
-	;.method { border-top:1px dotted silver; margin-top:20px; }
-	;.method .description { color:#006000; margin-left:50px; }
-	;.notcalled { color:#8080ff; }
-	;.pattern { color:darkorange; }
-	;.postconditional { background-color:#e8e8e8; }
-	;.SET { font-weight:bold; }
-	;.sql { color:darkcyan; }
-	;.string { color:purple; }
-	;.string .typo { background-color:#FFEECC; }
-	;.subscript { }
-	;.unknownclass { background-color:#FFDDDD; }
-	;.unnewed { /* background-color:cyan;*/ }
-	;.unset { /* background-color:cyan;*/ }
-	
-	;.formalspectable { width:100%; font-size:0.75em; }
-	;.formalspectable td { border-bottom:1px solid black; width:33%; white-space:pre; }
-
-	/*.parameters:hover { border:1px dotted black; }*/
-	/* these need to be here (rather than in my preferred alphabetical order) because the .typo thing
-	   has to come after the typo one above */
-	;.parameters1:hover { background-color:#EFEFFF; } /* don't like this but cant get .parameters .parameters selector to work */
-	;.parameters1:hover .typo { background-color:transparent; }
-	;.parameters2:hover { background-color:#DFFFDF; }
-	;.parameters3:hover { background-color:#FFCFCF; }
-	;.parameters4:hover { background-color:#BFBFFF; }
-	;.parameters5:hover { background-color:#AFFFAF; }
-	;.parameters6:hover { background-color:#FF9F9F; }
-	;.parameters7:hover { background-color:#8F8FFF; }
-	;.parameters8:hover { background-color:#7FFF7F; }
-	
-	;pre.example {
-    ;	border: 1px solid black;
-    ;	font-family: courier new,courier,monospace;
-    ;	text-align: left;
-    ;	margin-top: 5px;
-    ;	margin-bottom: 5px;
-    ;	padding-left: 10px; padding-top: 0px; padding-bottom: 0px;
-	;	background: #F0F0F0; 
-	;	overflow-x: auto;
-    ;}
-
- 	;.tabledescription { }
-	;.tabledescription .html { color:black; }
-	;.tabledescription .typo { background-color:#FFEECC; }
 }
 
 }

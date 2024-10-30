@@ -134,89 +134,12 @@ Method writeElement(element As PXW.DEV.Element)
     $$$DEBUGMethodBegin
     ;w !,element.type
     /* CDEF */
-    
-    If element.%IsA("PXW.DEV.BNF.Elements.ClassDefinition") {
-        Do ..writeElementClassDefinition(element)
-    } ElseIf element.%IsA("PXW.DEV.BNF.Elements.COS") {
-        Do ..writeElementCOS(element)
-    } ElseIf element.%IsA("PXW.DEV.BNF.Elements.SQL") {
-        Do ..writeElementSQL(element)
-    } ElseIf element.%IsA("PXW.DEV.BNF.Elements.Python") {
-        Do ..writeElementPython(element)
-    }
 
-    /* JS */
-    If element.type="JsBody" {
-        Do ..wrapElementHTML(element,"<span class='EmbeddedJS'>","</span>")
-    }
+    Set oldXMLPath=..XMLPath
 
-    /* SQL */
+    Do ..GenericRedirect(element)
 
-    If element.type="SqlBody" {
-        Do ..wrapElementHTML(element,"<span class='EmbeddedSQL'>","</span>")
-    }
-
-
-    If element.type="ClassQueryBody" {
-       Do ..wrapElementHTML(element,"<span class='EmbeddedSQL'>","</span>")
-    }
-
-    /* XML including Storage */
-    If element.type="ClassXdata" {
-        ;w ! d element.write()
-    }
-
-    If element.type="XdataName" {
-        Set oldXMLPath=..XMLPath
-        Set ..XMLPath=..XMLPath_"/"_element.ToString(0)
-    }
-
-    If element.type="XmlData" {
-        Set tagnameE=element.findFirstElementByType("XmlTagName",1)
-        If $ISOBJECT(tagnameE) {
-            Set oldXMLPath=..XMLPath
-            Set ..XMLPath=..XMLPath_"/"_tagnameE.ToString(0)
-        }
-    }
-    If element.type="XmlTagName" {
-        Do ..wrapElementHTML(element,"<span class='XMLTag' title='"_..XMLPath_"'>","</span>")
-    }
-
-    If element.type="XmlAttribute" {
-        Set attnameE=element.findFirstElementByType("XmlAttributeName")
-        If $ISOBJECT(attnameE) {
-            Set oldXMLPath=..XMLPath
-            Set ..XMLPath=..XMLPath_"/"_attnameE.ToString(0)
-            Do ..wrapElementHTML(attnameE,"<span class='XMLAttribute'>","</span>")
-        }
-    }
-
-    If element.type="XmlAttributeValue" {
-        If ..XMLPath="/UrlMap/Routes/Route/Call" {
-            Set callname=element.ToString(0)
-            Set callname=$TRANSLATE(callname,"'""","") ; get rid of quotes
-            Do ..wrapElementHTML(element,"<a class='COSObjectMember' href='"_..HREFToClass(..This,callname)_"'>","</a>")
-        } Else {
-            Do ..wrapElementHTML(element,"<span class='XMLTag' title='"_..XMLPath_"'>","</span>")
-        }
-    }
-    
-    If element.type="XmlCdataText" {
-        If ..XMLPath="/file/bnf/data" {
-            Do ..writeElementBNF1(element)
-        }
-
-    }
-
-    /* HTML */
-    If element.type="HtmlBody" {
-        Do ..wrapElementHTML(element,"<span class='EmbeddedXML'>","</span>")
-    }
-    ;if element.type="StorageXmlData" {
-    ;    w "<pre>" d element.write() w "</pre>"
-    ;}
-
-	For  {
+    For  {
 		Set a=element.partsGetNext(.akey)
 		Quit:akey=""
 
@@ -284,9 +207,8 @@ Method writeElement(element As PXW.DEV.Element)
 	}
 
     Do ##super(element)
-    If $GET(oldXMLPath)'="" {
-        Set ..XMLPath=oldXMLPath
-    }
+    Set ..XMLPath=oldXMLPath
+    
     $$$DEBUGMethodEnd
 }
 
@@ -345,597 +267,203 @@ Method wrapElementBNF1Loop(element As PXW.DEV.Element)
     }
 }
 
-Method writeElementSQL(element As PXW.DEV.BNF.Elements.SQL)
+Method writeCDEFIncludeName(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="IncludeName")
 {
-    /*If element.type="StoredProcCall" {
-        Set spNameE=element.findFirstElementByType("StoredProcName",0)
-        If $ISOBJECT(spNameE) {
-            Set spname=spNameE.ToString(0)
-            Do ..wrapElementHTML(spNameE,"<a class='COSObjectMember' href='"_..HREFToClass(spname)_"'>","</a>")
-        }
-    }
-    */
-    If element.type="StoredProcName" {
-            Set spname=element.ToString(0)
-            Do ..wrapElementHTML(element,"<a class='COSObjectMember' href='"_..HREFToClass(spname)_"'>","</a>")
-    }
-
-    If element.type="QuerySpecification" {
-		#dim WithCommandE as PXW.DEV.Element
-		Set WithCommandE=element.findFirstElementByType("WithCommand")
-		If $ISOBJECT(WithCommandE) {
-			Set withAnalyser=##class(PXW.DEV.BNF.Analyse.SQL).%New()
-			Set withAnalyser.ClassServer=..ClassServer
-			Do withAnalyser.WithCommand(WithCommandE)
-			Set ..WithAnalyser=withAnalyser
-		}
-	}
-
-    If element.type="WithCommand" {
-	    Do element.findElementsByType("WithClause",.withlist)
-	    For i=1:1:withlist.Count() {
-		    Set withE=withlist.GetAt(i)
-			Set aliasE=withE.findFirstElementByType("AliasName")	    
-		    If $ISOBJECT(aliasE) {
-			    Set aliasname="alias"_aliasE.ToString(0)
-			    Do ..wrapElementHTML(aliasE,"<span class='SQLTableAliasSet' title='show alias usage' varid='"_aliasname_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
-		    }	    
-        }
-    }
-
-
-    If element.type="DerivedColumn" {
-        ; work out what this column is called
-        ; either from the AS clause or if its just referencing 
-        ; a single column, that column is the name
-        ; then create an ID for it so it can be highlighted
-        #dim col as PXW.DEV.Element
-		Set col=element
-		Set classtxt="class='SQLColumn'"
-        Set colname="colxxxx"
-
-        Set asclause=col.findFirstElementByType("AsClause",0)
-        If $ISOBJECT(asclause) {
-            Set colnameE=asclause.findFirstElementByType("ColumnName",0)
-            If $ISOBJECT(colnameE) {
-                Set colname="col"_$$$UPPER(colnameE.ToString(0))
-            }
-        } Else {
-            Kill colrefs
-            ; if the column is just a reference to another column
-            Do col.findElementsByType("ColumnReference",.colrefs,2)
-            If $ISOBJECT($GET(colrefs)),colrefs.Count()=1 {
-                Set colnameE=colrefs.GetAt(1).findFirstElementByType("ColumnName",0)
-                If $ISOBJECT(colnameE) {
-                    Set colname="col"_$$$UPPER(colnameE.ToString(0))
-                }
-            }
-        }
-        If ..BookMark'="",$$$UPPER(colname)=$$$UPPER("col"_..BookMark) {
-            Set classtxt="class='hilite'"
-        }
-		Do ..wrapElementHTML(col,"<span "_classtxt_" fetchid='"_$$$UPPER(colname)_"'>","</span>")        
-    }
-
-    If element.type="SelectCommand" {
-        #dim subAnalyser as PXW.DEV.BNF.Analyse.SQL
-        Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
-        Set sqlanalyse.This=..This
-        Do sqlanalyse.checkElement(element)
-        Set cref=""
-        While sqlanalyse.NextColumnReference(.cref,.fulltable,.fieldname) {
-            Set aliasNameE=cref.findFirstElementByType("AliasName",1) ; hmm, in a group, can we promote in bnf?
-            Set columnNameE=cref.findFirstElementByType("ColumnName",0)
-            ;zw cref,fulltable,fieldname
-            If fulltable'="" {
-                Do ..FollowImplicitJoins(cref,fulltable)
-            } Else {
-                Set colname="col"_$$$UPPER(fieldname)
-                Set withAnalyser="",subAnalyser=""
-                If $ISOBJECT(..WithAnalyser) {
-                    If $ISOBJECT(aliasNameE) {
-                        Set aliasname=aliasNameE.ToString(0)
-                        
-                        Set subAnalyser=$GET(..WithAnalyser.WithClauseAnalysis(aliasname))
-                        If $ISOBJECT(subAnalyser) {
-                            ; how to deal with a with select that has select * from multiple tables...?
-                            Set fulltable=$GET(subAnalyser.SelectedColumnsByName(fieldname))
-                            If fulltable="" Set fulltable=$GET(subAnalyser.SelectedColumnsByName("*"))
-                        } Else {
-                            ; not a with reference,
-                        }
-                    } Else {
-                        ; no table alias, what to do?
-                    }
-                }
-                If fulltable'="" {
-	                Do ..FollowImplicitJoins(cref,fulltable)
-                } Else {
-	                Do ..wrapElementHTML(columnNameE,"<span class='COSObjectMember' title='still unable to determine class, possibly because of subquery' fetchid='"_$$$UPPER(colname)_"' onclick=""HiliteSets('"_$$$UPPER(colname)_"');"">","</span>")
-                }
-            }
-            If $ISOBJECT(aliasNameE) {
-                Set aliasname="alias"_aliasNameE.ToString(0)
-                Do ..wrapElementHTML(aliasNameE,"<span class='SQLTableAlias' title='show alias usage' fetchid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
-            }
-        }
-    }
-
-    If element.type="InsertCommand" {
-        Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
-        Set sqlanalyse.This=..This
-        Do sqlanalyse.checkElement(element)
-        Set columnNameE=""
-        While sqlanalyse.NextColumnReference(.columnNameE,.fulltable,.fieldname) {
-            ;s aliasNameE=cref.findFirstElementByType("AliasName",1) ; hmm, in a group, can we promote in bnf?
-            ;s columnNameE=cref.findFirstElementByType("ColumnName",0)
-            If fulltable'="" {
-                Do ..wrapElementHTML(columnNameE,"<a class='COSObjectMember' href='"_..HREFToClass(fulltable,columnNameE.ToString(0))_"'>","</a>")            
-            } Else {
-                ; should always be a name
-              ;  s colname="col"_$$$UPPER(fieldname),aname=""
-               ; d ..wrapElementHTML(columnNameE,"<span class='COSObjectMember' title='unable to determine class, possibly because of subquery' fetchid='"_$$$UPPER(colname)_"' onclick=""HiliteSets('"_$$$UPPER(colname)_"');"">","</span>")
-            }
-            ;i $ISOBJECT(aliasNameE) {
-            ;    s aliasname="alias"_aliasNameE.ToString(0)
-            ;    d ..wrapElementHTML(aliasNameE,"<span class='COSObjectMember' title='show alias usage' fetchid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
-            ;}
-        }
-    }
-    
-    If element.type="DeleteCommand" {
-        Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
-        Set sqlanalyse.This=..This
-        Do sqlanalyse.checkElement(element)
-        Set columnNameE=""
-        While sqlanalyse.NextColumnReference(.columnNameE,.fulltable,.fieldname) {
-            ;s aliasNameE=cref.findFirstElementByType("AliasName",1) ; hmm, in a group, can we promote in bnf?
-            ;s columnNameE=cref.findFirstElementByType("ColumnName",0)
-            If fulltable'="" {
-                Do ..wrapElementHTML(columnNameE,"<a class='COSObjectMember' href='"_..HREFToClass(fulltable,columnNameE.ToString(0))_"'>","</a>")            
-            } Else {
-                ; should always be a name
-              ;  s colname="col"_$$$UPPER(fieldname),aname=""
-               ; d ..wrapElementHTML(columnNameE,"<span class='COSObjectMember' title='unable to determine class, possibly because of subquery' fetchid='"_$$$UPPER(colname)_"' onclick=""HiliteSets('"_$$$UPPER(colname)_"');"">","</span>")
-            }
-            ;i $ISOBJECT(aliasNameE) {
-            ;    s aliasname="alias"_aliasNameE.ToString(0)
-            ;    d ..wrapElementHTML(aliasNameE,"<span class='COSObjectMember' title='show alias usage' fetchid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
-            ;}
-        }
-    }
-
-    If element.type="DirectTable" {
-        Set direct=element
-        If $ISOBJECT(direct) {
-            Set tablenameE=direct.findFirstElementByType("TableName",0)
-            If $ISOBJECT(tablenameE) {
-                Set tablename=tablenameE.ToString(0)
-                ; is it a reference to a WITH?
-                ;zw tablename,..WithAnalyser
-                If tablename'="", tablename'[".", $ISOBJECT(..WithAnalyser), $GET(..WithAnalyser.WithClauseAnalysis(tablename))'="" {
-	                Set aliasname="alias"_tablename
-             	   Do ..wrapElementHTML(tablenameE,"<span class='SQLTableAlias' title='show alias usage' varid='"_aliasname_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
-                } Else {
-	                Do ..wrapAtomHTML(tablenameE,"<a class='CDEFClassName' href='"_..HREFToClass(tablename)_"'>","</a>")
-                }
-            }
-        }
-    }
-
-    If element.type="TableAlias" {
-            ;s aliasname="alias"_element.ToString(0)
-            ;d ..wrapElementHTML(element,"<span class='SQLTableAliasSet' title='show alias usage' fetchid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
-    }
-
-    If element.type="TableAsClause" {
-        Set aliasE=element.findFirstElementByType("AliasName")
-        If $ISOBJECT(aliasE) {
-            Set aliasname="alias"_aliasE.ToString(0)
-            Do ..wrapElementHTML(aliasE,"<span class='SQLTableAliasSet' title='show alias usage' varid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
-        }
-    }
+    Do ..wrapElementHTML(element,"<a href='"_..HREFToInclude(element.ToString(0))_"'>","</a>")
+    Quit ""
 }
 
-Method writeElementCOS(element As PXW.DEV.BNF.Elements.COS)
+Method writeCDEFOneClassMember(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="OneClassmember")
 {
-    ;#define
-    If element.type="CosDirective" {
-        Set keywordatom=element.FirstAtom()
-        Set defineE=element.findFirstElementByType("CosDirectiveDefine",0)
-        If '$ISOBJECT(defineE) Set defineE=element.findFirstElementByType("CosDirectiveDefonearg",0)
-        If $ISOBJECT(defineE) {
-            If ..ThisType="INC" {
-                Set nameE=defineE.findFirstElementByType("CosDirectiveDefineName",0)
-                If $ISOBJECT(nameE) {
-                    Set name=nameE.ToString(0)
-                    Set count=##class(PXW.Xref.Queries).GetCount(%NS,"INC",..This,name)
-                    Set anchor="anchor"_name_nameE.type
-                    ;Set ..ThisMethod=name
-                    If ..BookMark'="",$$$UPPER(name)=$$$UPPER(..BookMark) {
-                        ;d ..wrapElementHTML(element,"<a name='bookmark'>","</a>")
-                        Set anchor="bookmark" ;
-                        Do ..wrapElementHTML(nameE,"<span class='hilite'>","</span>")
-                    }
-                    Do ..AddToIndex(name,"MAC",anchor)
-                    Do ..wrapElementHTML(element,"<a name='"_anchor_"'>","</a>") ; anchor goes before the member (ie before the comment)
-
-                    Set menu="<div class='CDEFItemMenu  nocopy'>"
-                    Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("INC",..This,name)_"'>Xref ("_count_") </a>"
-                    Set menu=menu_"</div>"
-                    Do ..wrapAtomHTML(keywordatom,menu,"")
-                }
-            }
-        }
-    }
-    
-    ; ##class()
-    If element.type="ClassExpression" {
-        Set classnameele=element.findFirstElementByType("ClassReference",0)
-        Set classname=classnameele.ToString(0)
-		Do ..FollowObjectChainForType(element,classname)
-    }
-
-    If $LISTFIND($LISTBUILD("ThisObject","ThisObjectDirectProperty","ThisObjectSet","ThisObjectDirectPropertySet"),element.type) {
-        If ..This'="" {
-            Set classname=..This
-            If classname'="" Do ..FollowObjectChainForType(element,classname)
-        }
-    }
-    ; known variable
-    If ",Variable,VariableSet,ObjectVariable,"[(","_element.type_","),$ISOBJECT(..Analyser) {
-        Set variablename=element.ToStringAtomsOnly(0)
-        ; variable could be something like {*} or {field}  so the name above (using atoms only) will not find anything
-        ; don't worry about that at the moment!
-        If variablename'="" {
-            ; when working out a type use the #DIM type if there is one
-            Set classname=$GET(..Analyser.DimmedTypes(variablename))
-            If classname="" Set classname=$GET(..Analyser.VariablesTypes(variablename))
-            If classname'="" Do ..FollowObjectChainForType(element,classname)
-        }
-    }
-    
-    If element.type="LabelDefinition" {
-        Set labatom=element.FirstAtom()
-        Set lab=labatom.value
-        Set ..ThisLabel=lab
-        If lab=..HiliteLabel {
-            ;d ..wrapAtomHTML(labatom,"<span class='hilite'>","</span>")
-            ;d ..wrapAtomHTML(labatom,"<a name='bookmark'>","</a>")
-            Do ..wrapAtomHTML(labatom,"<a name='Bookmark' class='hilite'>","</a>")
-            If ..HilitePlus'="" Set ..HiLiteLine=labatom.line+..HilitePlus
+    ; a class memeber element is like this:
+    ; Element=OneClassmember PXW.DEV.BNF.Element @1835 
+    ; .Element=ClassMethod PXW.DEV.BNF.Element @1893
+    ; ..type=keyword:/UdlStatement/ClassDefinition/ClassMemberSection/ClassMemberList/OneClassmember/ClassMethod
+    ; .. Method
+    ; ..Element=MethodName PXW.DEV.BNF.Element @1910
+    ; ...Element=ClassItemIdentifier PXW.DEV.BNF.Element @1946
+    Set item=element.partsGetAt(1)
+    Set typeE=item.partsGetAt(1)
+    Set ..ThisItemType=typeE.ToString(0)
+    Set nameE=item.partsGetAt(2)
+    If $LISTFIND($LISTBUILD("PropertyName","MethodName","ClassParameterName","IndexName","TriggerName","ForeignkeyName","StorageName","QueryName","XdataName"),nameE.type) {
+        Set name=nameE.ToString(0)
+        Set anchor="anchor"_name_nameE.type
+        Set ..ThisMethod=name
+        If ..BookMark'="",$$$UPPER(name)=$$$UPPER(..BookMark) {
+            ;d ..wrapElementHTML(element,"<a name='bookmark'>","</a>")
+            Do ..wrapElementHTML(nameE,"<span id='"_anchor_"SPAN' class='hilite'>","</span>") 
+            Set anchor="bookmark" ;
         } Else {
-            Set labname=$TRANSLATE("LAB"_..ThisMethod_lab,"$^%_","")
-            Do ..wrapAtomHTML(labatom,"<a class='COSLabelDef' name='"_labname_"'>","</a>")
+            Do ..wrapElementHTML(nameE,"<span id='"_anchor_"SPAN'>","</span>")
         }
+        
+        Do ..AddToIndex(name,nameE.type,anchor)
+        Do ..wrapElementHTML(element,"<a name='"_anchor_"'></a>","") ; anchor goes before the member (ie before the comment)
     }
-
-   If element.type="LabelReference" {
-        Set lab=element.ToString(0)
-        If lab["^" {
-            Do ..wrapElementHTML(element,"<a class='COSLabel' href='"_..HREFToClass(lab)_"'>","</a>")
-        } Else {
-            Set labname=$TRANSLATE("LAB"_..ThisMethod_lab,"$^%_","")
-            Do ..wrapElementHTML(element,"<a class='COSLabel' href='#"_labname_"'>","</a>")
-        }
-    }
-
-
-    If element.type="CosCodeBlock" {
-        Do ..wrapElementHTML(element,"<span class='EmbeddedCOS'>","</span>")
-    }
-
-    If element.type="PythonImport" {
-        ;d element.write()
-        Set stringE=element.findFirstElementByType("String")
-        If $ISOBJECT(stringE) {
-            Set atom=stringE.FirstAtom()
-            If $ISOBJECT(atom) {
-                Do ..wrapAtomHTML(atom,"<a class='CDEFClassName' href='"_..HREFToPython(atom.value)_"'>","</a>")
-                Set atom.type="pythonimport"
-            }
-        }       
-    }
-
-    If (element.type="GlobalRef") || (element.type="GlobalRefSet") {
-        Set setting=0
-        If element.type="GlobalRefSet" Set setting=1
-        Set fullrefE=element.findFirstElementByType("GlobalRefFull",0)
-        If $ISOBJECT(fullrefE) {
-            ; On a global clicking on the ^ will take directly to the XREF since we don't
-            ; have any other details about the global at the moment.
-            ; Clicking on the name of the global highlights it like a regular variable
-            Set globalElement=fullrefE.findFirstElementByType("GlobalName",0)
-            Set upa=fullrefE.FirstAtom() ; ^ is always at the start
-            Set namea=globalElement ;.ToStringAtomsOnly()
-            ;d ..wrapAtomHTML(upa,"<a class='COSGlobalSet' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("GBL",globalElement.Name.ToString(0),globalElement.KeysForXref())_"'>","</a>")
-            Set subsE=fullrefE.findFirstElementByType("SubscriptParameterList",0),subs=""
-            If $ISOBJECT(subsE),$ISOBJECT(..Analyser) Set subs=..Analyser.SimplifySubscripts(subsE)
-            If $ISOBJECT(namea) {
-                Do ..wrapAtomHTML(upa,"<a class='COSGlobalSet' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("GBL",namea.ToStringAtomsOnly(0),subs)_"'>","</a>")
-                Set varname="GLOBAL"_namea.ToStringAtomsOnly(0)
-                If setting {
-                    Do ..wrapAtomHTML(namea,"<span class='COSGlobalSet' varid='"_varname_"' onclick=""HiliteSets('"_varname_"');"">","</span>")
-                        } Else {
-                    Do ..wrapAtomHTML(namea,"<span class='COSGlobal' fetchid='"_varname_"' onclick=""HiliteSets('"_varname_"');"">","</span>")
-                }
-            }
-        } Else {
-            ; not sure what we can do with naked refs here (other than make them stand out as a bad thing)
-        }
-	}
-
-    If element.type="Macrocall" {
-        Set atom=element.partsGetAt(2)
-        If $ISOBJECT(atom) {
-            Set name=atom.ToString(0)
-            If name'="" {
-                If $ISOBJECT(..Analyser) {
-                    ;zw ..Analyser,name
-                    If '$DATA(..Analyser.DefinedMacros(name)) {
-                        Do ..wrapAtomHTML(atom,"<a href='"_..HREFToInclude(,element.ToString(0))_"'>","</a>")
-                    } Else {
-                        Do ..wrapAtomHTML(atom,"<span title'Local macro'>","</span>")
-                    }
-                } Else {
-                    Do ..wrapAtomHTML(atom,"<a href='"_..HREFToInclude(,element.ToString(0))_"'>","</a>")
-                }
-            }
-        }
-    }
-
-    If element.type="CosDirectiveIncludeName" {
-        Do ..wrapElementHTML(element,"<a href='"_..HREFToInclude(element.ToString(0))_"'>","</a>")
-    }
+    Quit ""
 }
 
-/// Note that all the elements in here are being wrapped by CDEF and COS style spans, it gives nice colours 
-/// but its a bit confusing, really we need some common styles that work for any language.
-Method writeElementPython(element As PXW.DEV.BNF.Elements.Python)
+Method writeCDEFClassDefinition(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassDefinition")
 {
-    If element.type="File" {
-       Do ..wrapElementHTML(element,"<span class='EmbeddedPython'>","</span>")
+    Set keywordatom=element.FirstAtom()
+    Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This)
+    Set menu="<div class='CDEFItemMenu nocopy'>"
+    Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,)_"'>Xref ("_count_") </a>"
+    Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,"_class","_Extends")
+    If overriddenby>0 {
+        Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,"","_Extends")_"'>Extended "_overriddenby_" </a>"
     }
-
-    If element.type="ClassDefRaw" {
-        Set nameatom=element.partsGetAt(2) ; should be 2
-        If $ISOBJECT(nameatom) {
-            Set aname="pyClassName"_nameatom.value
-            Do ..AddToIndex(nameatom.value,"Class",aname)
-            Do ..wrapAtomHTML(nameatom,"<span id='"_aname_"' class='CDEFClassName'>","</span>")
-        }
-	}
-
-    If element.type="FunctionDef" {
-		Set ..PythonAnalyser=##class(PXW.DEV.BNF.Analyse.Python).%New()
-        Set ..PythonAnalyser.This=..This
-        Do ..PythonAnalyser.middle(element)
-
-        Set nameatom=element.partsGetAt(2) ; should be 2
-        If $ISOBJECT(nameatom) {
-           Do ..wrapAtomHTML(nameatom,"<span class='CDEFMember'>","</span>")
-        }
-	}
-
-    If element.type="FunctionDefRaw" {
-        Set nameatom=element.partsGetAt(2) ; should be 2
-        If $ISOBJECT(nameatom) {
-            Set aname="pyDefName"_nameatom.value
-            Do ..AddToIndex(nameatom.value,"MethodName",aname)
-             Do ..wrapAtomHTML(nameatom,"<span id='"_aname_"' class='CDEFMember'>","</span>")
-        }
-	}
-
-    If element.type="ImportStmt" {
-        Set nameE=element.findFirstElementByType("DottedName")
-        If $ISOBJECT(nameE) {
-            Set name=nameE.ToString(0)
-            Do ..wrapElementHTML(nameE,"<a class='CDEFClassName' href='"_..HREFToPython(name)_"'>","</a>")
-        }
-    }
-
-    If element.type="ImportFrom" {
-        Set nameE=element.findFirstElementByType("DottedAsNames")
-        If $ISOBJECT(nameE) {
-            Set name=nameE.ToString(0)
-            Do ..wrapElementHTML(nameE,"<a class='CDEFClassName' href='"_..HREFToPython(name)_"'>","</a>")
-        }
-    }
-
-    If element.type="StarTarget" {
-        Set varname=element.ToString(0)
-        Set cssclass="COSVariable"
-        If $ISOBJECT(..PythonAnalyser),..PythonAnalyser.IsParameterVariable(varname) Set cssclass="COSVariableParameter"
-        Do ..wrapElementHTML(element,"<span class='"_cssclass_"' varid='"_varname_"' onclick=""HiliteSets('"_varname_"');"">","</span>")
-    }
-
-    If element.type="Param" {
-        Set varname=element.ToString(0)
-        Set cssclass="COSVariable"
-        If $ISOBJECT(..PythonAnalyser),..PythonAnalyser.IsParameterVariable(varname) Set cssclass="COSVariableParameter"
-        Do ..wrapElementHTML(element,"<span class='"_cssclass_"' varid='"_varname_"' onclick=""HiliteSets('"_varname_"');"">","</span>")
-    }
-
-    If element.type="Atom" {
-        For  {
-            Set a=element.partsGetNext(.akey)
-            Quit:akey=""
-
-            If a.%IsA("PXW.DEV.Atom") {
-                Set type=$PIECE(a.type,":",1)
-                If type="Identifier" {
-                    Set varname=a.value
-                    Set cssclass="COSVariable"
-                    If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(varname) Set cssclass="COSVariableParameter"
-                    If $ISOBJECT(..PythonAnalyser),..PythonAnalyser.IsParameterVariable(varname) Set cssclass="COSVariableParameter"
-                    Do ..wrapAtomHTML(a,"<span class='"_cssclass_"' fetchid='"_varname_"' onclick=""HiliteSets('"_varname_"');"">","</span>")
-                } 
-            }
-        }
-	}
+    Set menu=menu_"</div>"
+    Do ..wrapAtomHTML(keywordatom,menu,"")
+    Quit ""
 }
 
-Method writeElementClassDefinition(element As PXW.DEV.BNF.Elements.ClassDefinition)
+Method writeCDEFAttributeViewQuery(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="AttributeViewquery")
 {
-    If element.type="IncludeName" {
-        Do ..wrapElementHTML(element,"<a href='"_..HREFToInclude(element.ToString(0))_"'>","</a>")
+    Set queryE=element.findFirstElementByType("ClassQueryBody")
+    ;s formatter=##class(PXW.DEV.BNF.Format.SQL).%New()
+    ;d formatter.formatElement(queryE)
+    If $ISOBJECT(queryE) {
+        Do ..wrapElementHTML(queryE,"<div>","</div>")
     }
+    Quit ""
+}
 
-    If element.type="OneClassmember" {
-        ; a class memeber element is like this:
-        ; Element=OneClassmember PXW.DEV.BNF.Element @1835 
-        ; .Element=ClassMethod PXW.DEV.BNF.Element @1893
-        ; ..type=keyword:/UdlStatement/ClassDefinition/ClassMemberSection/ClassMemberList/OneClassmember/ClassMethod
-        ; .. Method
-        ; ..Element=MethodName PXW.DEV.BNF.Element @1910
-        ; ...Element=ClassItemIdentifier PXW.DEV.BNF.Element @1946
-        Set item=element.partsGetAt(1)
-        Set typeE=item.partsGetAt(1)
-        Set ..ThisItemType=typeE.ToString(0)
-        Set nameE=item.partsGetAt(2)
-        If $LISTFIND($LISTBUILD("PropertyName","MethodName","ClassParameterName","IndexName","TriggerName","ForeignkeyName","StorageName","QueryName","XdataName"),nameE.type) {
-            Set name=nameE.ToString(0)
-            Set anchor="anchor"_name_nameE.type
-            Set ..ThisMethod=name
-            If ..BookMark'="",$$$UPPER(name)=$$$UPPER(..BookMark) {
-                ;d ..wrapElementHTML(element,"<a name='bookmark'>","</a>")
-                Do ..wrapElementHTML(nameE,"<span id='"_anchor_"SPAN' class='hilite'>","</span>") 
-                Set anchor="bookmark" ;
-            } Else {
-                Do ..wrapElementHTML(nameE,"<span id='"_anchor_"SPAN'>","</span>")
-            }
-            
-            Do ..AddToIndex(name,nameE.type,anchor)
-            Do ..wrapElementHTML(element,"<a name='"_anchor_"'></a>","") ; anchor goes before the member (ie before the comment)
-        }
-    }
-    If element.type="ClassDefinition" {
-        Set keywordatom=element.FirstAtom()
-        Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This)
+Method writeCDEFClassProperty(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassProperty")
+{
+    Set keywordatom=element.FirstAtom()
+    Set nameelement=element.findFirstElementByType("PropertyName")
+    If $ISOBJECT(nameelement) {
+        Set name=nameelement.ToString(0)
+        Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
         Set menu="<div class='CDEFItemMenu nocopy'>"
-        Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,)_"'>Xref ("_count_") </a>"
-        Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,"_class","_Extends")
+        Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
+        Set overrides=..ClassServer.GetPropertyOverrides(..This_"||"_name)
+        If overrides'="" {
+            Set menu=menu_"<a class='CDEFOption' href='"_..HREFToClass(overrides,name)_"'>Override </a>"
+        }
+        Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name,"_Override")
         If overriddenby>0 {
-            Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,"","_Extends")_"'>Extended "_overriddenby_" </a>"
+            Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_"'>Overridden "_overriddenby_" </a>"
         }
         Set menu=menu_"</div>"
         Do ..wrapAtomHTML(keywordatom,menu,"")
+    }
+    Quit ""
+}
 
-        ;}
-    }
-
-    If element.type="AttributeViewquery" {
-        Set queryE=element.findFirstElementByType("ClassQueryBody")
-        ;s formatter=##class(PXW.DEV.BNF.Format.SQL).%New()
-        ;d formatter.formatElement(queryE)
-        If $ISOBJECT(queryE) {
-            Do ..wrapElementHTML(queryE,"<div>","</div>")
+Method writeCDEFClassParameter(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassParameter")
+{
+    Set keywordatom=element.FirstAtom()
+    Set nameelement=element.findFirstElementByType("ClassParameterName")
+    If $ISOBJECT(nameelement) {
+        Set name=nameelement.ToString(0)
+        Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
+        Set menu="<div class='CDEFItemMenu  nocopy'>"
+        Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
+        Set overrides=..ClassServer.GetParameterOverrides(..This_"||"_name)
+        If overrides'="" {
+            Set menu=menu_"<a class='CDEFOption' href='"_..HREFToClass(overrides,name)_"'>Override </a>"
         }
-    }
-    If element.type="ClassProperty" {
-        Set keywordatom=element.FirstAtom()
-        Set nameelement=element.findFirstElementByType("PropertyName")
-        If $ISOBJECT(nameelement) {
-            Set name=nameelement.ToString(0)
-            Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
-            Set menu="<div class='CDEFItemMenu nocopy'>"
-            Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
-            Set overrides=..ClassServer.GetPropertyOverrides(..This_"||"_name)
-            If overrides'="" {
-                Set menu=menu_"<a class='CDEFOption' href='"_..HREFToClass(overrides,name)_"'>Override </a>"
-            }
-            Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name,"_Override")
-            If overriddenby>0 {
-                Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_"'>Overridden "_overriddenby_" </a>"
-            }
-            Set menu=menu_"</div>"
-            Do ..wrapAtomHTML(keywordatom,menu,"")
+        Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name,"_Override")
+        If overriddenby>0 {
+            Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_"'>Overridden "_overriddenby_" </a>"
         }
-    }
-    If element.type="ClassParameter" {
-        Set keywordatom=element.FirstAtom()
-        Set nameelement=element.findFirstElementByType("ClassParameterName")
-        If $ISOBJECT(nameelement) {
-            Set name=nameelement.ToString(0)
-            Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
-            Set menu="<div class='CDEFItemMenu  nocopy'>"
-            Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
-            Set overrides=..ClassServer.GetParameterOverrides(..This_"||"_name)
-            If overrides'="" {
-                Set menu=menu_"<a class='CDEFOption' href='"_..HREFToClass(overrides,name)_"'>Override </a>"
-            }
-            Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name,"_Override")
-            If overriddenby>0 {
-                Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_"'>Overridden "_overriddenby_" </a>"
-            }
-            Set menu=menu_"</div>"
-            Do ..wrapAtomHTML(keywordatom,menu,"")
-        }
-    }
-    If $LISTFIND($LISTBUILD("ClassMethod","ClassClassMethod"),element.type) {
-        Set keywordatom=element.FirstAtom()
-        Set nameelement=element.findFirstElementByType("MethodName")
-        If $ISOBJECT(nameelement) {
-            Set name=nameelement.ToString(0)
-            Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
-            Set menu="<div class='CDEFItemMenu  nocopy'>"
-            Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
-            Set overrides=..ClassServer.GetMethodOverrides(..This_"||"_name)
-            If overrides'="" {
-                Set menu=menu_"<a class='CDEFOption' href='"_..HREFToClass(overrides,name)_"'>Override </a>"
-            }
-            Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name,"_Override")
-            If overriddenby>0 {
-                ;d ..wrapElementHTML(keywordatom,"<a class='CDEFOption nocopy' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Overridden "_overriddenby_" </a>","")
-                Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_"'>Overridden "_overriddenby_" </a>"
-            }
-            Set menu=menu_"</div>"
-            Do ..wrapAtomHTML(keywordatom,menu,"")
-        }
-    }
-    If element.type="ClassQuery" {
-        Set keywordatom=element.FirstAtom()
-        Set nameelement=element.findFirstElementByType("QueryName")
-        If $ISOBJECT(nameelement) {
-            Set name=nameelement.ToString(0)
-            Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
-            Set menu="<div class='CDEFItemMenu nocopy'>"
-            Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
-            ; not sure if/how I recognise overridden QUERIES
-            /*Set overrides=..ClassServer.GetPropertyOverrides(..This_"||"_name)
-            If overrides'="" {
-                Set menu=menu_"<a class='CDEFOption' href='"_..HREFToClass(overrides,name)_"'>Override </a>"
-            }*/
-            Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name,"_Override")
-            If overriddenby>0 {
-                Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_"'>Overridden "_overriddenby_" </a>"
-            }
-            Set menu=menu_"</div>"
-            Do ..wrapAtomHTML(keywordatom,menu,"")
-        }
-    }
-    If element.type="ClassIndex" {
-        Set keywordatom=element.FirstAtom()
-        Set nameelement=element.findFirstElementByType("IndexName")
-        If $ISOBJECT(nameelement) {
-            Set name=nameelement.ToString(0)
-            Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
-            Set menu="<div class='CDEFItemMenu nocopy'>"
-            Set menu=menu_"<a title='This does NOT show where its used as a index in SQL, only where its used as Unique Open method' class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
-            ; not sure if indices even can be overridden
-            /*Set overrides=..ClassServer.GetPropertyOverrides(..This_"||"_name)
-            If overrides'="" {
-                Set menu=menu_"<a class='CDEFOption' href='"_..HREFToClass(overrides,name)_"'>Override </a>"
-            }*/
-            Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name,"_Override")
-            If overriddenby>0 {
-                Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_"'>Overridden "_overriddenby_" </a>"
-            }
-            Set menu=menu_"</div>"
-            Do ..wrapAtomHTML(keywordatom,menu,"")
-        }
+        Set menu=menu_"</div>"
+        Do ..wrapAtomHTML(keywordatom,menu,"")
     }
 
+    Quit ""
+}
+
+Method writeCDEFClassMethod(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassClassMethod")
+{
+    Set keywordatom=element.FirstAtom()
+    Set nameelement=element.findFirstElementByType("MethodName")
+    If $ISOBJECT(nameelement) {
+        Set name=nameelement.ToString(0)
+        Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
+        Set menu="<div class='CDEFItemMenu  nocopy'>"
+        Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
+        Set overrides=..ClassServer.GetMethodOverrides(..This_"||"_name)
+        If overrides'="" {
+            Set menu=menu_"<a class='CDEFOption' href='"_..HREFToClass(overrides,name)_"'>Override </a>"
+        }
+        Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name,"_Override")
+        If overriddenby>0 {
+            ;d ..wrapElementHTML(keywordatom,"<a class='CDEFOption nocopy' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Overridden "_overriddenby_" </a>","")
+            Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_"'>Overridden "_overriddenby_" </a>"
+        }
+        Set menu=menu_"</div>"
+        Do ..wrapAtomHTML(keywordatom,menu,"")
+    }
+    Quit ""
+}
+
+Method writeCDEFMethod(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassMethod")
+{
+    Do ..writeCDEFClassMethod(element)
+    Quit ""
+}
+
+Method writeCDEFClassQuery(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassQuery")
+{
+    Set keywordatom=element.FirstAtom()
+    Set nameelement=element.findFirstElementByType("QueryName")
+    If $ISOBJECT(nameelement) {
+        Set name=nameelement.ToString(0)
+        Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
+        Set menu="<div class='CDEFItemMenu nocopy'>"
+        Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
+        ; not sure if/how I recognise overridden QUERIES
+        /*Set overrides=..ClassServer.GetPropertyOverrides(..This_"||"_name)
+        If overrides'="" {
+            Set menu=menu_"<a class='CDEFOption' href='"_..HREFToClass(overrides,name)_"'>Override </a>"
+        }*/
+        Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name,"_Override")
+        If overriddenby>0 {
+            Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_"'>Overridden "_overriddenby_" </a>"
+        }
+        Set menu=menu_"</div>"
+        Do ..wrapAtomHTML(keywordatom,menu,"")
+    }
+
+    Quit ""
+}
+
+Method writeCDEFClassQueryBody(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassQueryBody")
+{
+    Do ..wrapElementHTML(element,"<span class='EmbeddedSQL'>","</span>")
+    Quit ""
+}
+
+Method writeCDEFIndex(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassIndex")
+{
+    Set keywordatom=element.FirstAtom()
+    Set nameelement=element.findFirstElementByType("IndexName")
+    If $ISOBJECT(nameelement) {
+        Set name=nameelement.ToString(0)
+        Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
+        Set menu="<div class='CDEFItemMenu nocopy'>"
+        Set menu=menu_"<a title='This does NOT show where its used as a index in SQL, only where its used as Unique Open method' class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
+        ; not sure if indices even can be overridden
+        /*Set overrides=..ClassServer.GetPropertyOverrides(..This_"||"_name)
+        If overrides'="" {
+            Set menu=menu_"<a class='CDEFOption' href='"_..HREFToClass(overrides,name)_"'>Override </a>"
+        }*/
+        Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name,"_Override")
+        If overriddenby>0 {
+            Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_"'>Overridden "_overriddenby_" </a>"
+        }
+        Set menu=menu_"</div>"
+        Do ..wrapAtomHTML(keywordatom,menu,"")
+    }
+    Quit ""
+}
+
+Method writeCDEFTypeClassReference(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="TypeClassReference")
+{
     /*
     Element=TypeClassReference PXW.DEV.BNF.Element @134
     .Element=ClassReference PXW.DEV.BNF.Element @310
@@ -957,47 +485,634 @@ Method writeElementClassDefinition(element As PXW.DEV.BNF.Elements.ClassDefiniti
     ..type=punctuation:
     .. )
     */
-    If element.type="TypeClassReference" {
-        Set crefE=element.findFirstElementByType("ClassReference",0)
-        If $ISOBJECT(crefE) {
-            Set class=crefE.ToString(0)
-        
-            Set paramE=element.findFirstElementByType("TypeParameters",0)
-            If $ISOBJECT(paramE) {
-                Set list=##class(%ListOfObjects).%New()
-                Do paramE.findElementsByType("ClassItemIdentifier",list,2)
-                For i=1:1:list.Count() {
-                    Set itemE=list.GetAt(i)
-                    If $LISTFIND($LISTFROMSTRING("Property","Relationship"),..ThisItemType) {
-                        Do ..wrapElementHTML(itemE,"<a href='"_..HREFToClass(..This,..ThisMethod,itemE.ToString(0))_"'>","</a>")
-                    } Else {
-                        Do ..wrapElementHTML(itemE,"<a href='"_..HREFToClass(class,itemE.ToString(0))_"'>","</a>")
-                    }
+
+    Set crefE=element.findFirstElementByType("ClassReference",0)
+    If $ISOBJECT(crefE) {
+        Set class=crefE.ToString(0)
+    
+        Set paramE=element.findFirstElementByType("TypeParameters",0)
+        If $ISOBJECT(paramE) {
+            Set list=##class(%ListOfObjects).%New()
+            Do paramE.findElementsByType("ClassItemIdentifier",list,2)
+            For i=1:1:list.Count() {
+                Set itemE=list.GetAt(i)
+                If $LISTFIND($LISTFROMSTRING("Property","Relationship"),..ThisItemType) {
+                    Do ..wrapElementHTML(itemE,"<a href='"_..HREFToClass(..This,..ThisMethod,itemE.ToString(0))_"'>","</a>")
+                } Else {
+                    Do ..wrapElementHTML(itemE,"<a href='"_..HREFToClass(class,itemE.ToString(0))_"'>","</a>")
                 }
             }
         }
     }
 
-
-    If element.type="ClassItemIdentifier" {
-        Do ..wrapElementHTML(element,"<span class='CDEFMember'>","</span>")
-    }
-
-    If element.type="FormalSpecList" {
-        Do ..wrapElementHTML(element,"<span class='CDEFFormalSpecList'>","</span>")
-    }
-    If element.type="FormalSpecItem" {
-        Do ..wrapElementHTML(element," <span class='CDEFFormalSpecItem'>","</span>") ; note the space BEFORE the span starts, ensures the new item wraps onto next line if necessary
-    }
-
-
-    If element.type="OneClassmember" {
-	    Set ..Analyser=##class(PXW.DEV.BNF.Analyse.COS).%New(..ClassServer)
-        Set ..Analyser.This=..This
-        Do ..Analyser.middle(element)
-	}
+    Quit ""
 }
 
+Method writeCDEFOneClassMember2(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="OneClassmember")
+{
+    Set ..Analyser=##class(PXW.DEV.BNF.Analyse.COS).%New(..ClassServer)
+    Set ..Analyser.This=..This
+    Do ..Analyser.checkElement(element)
+    Quit ""
+}
+
+Method writeCDEFClassItemIdentifier(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassItemIdentifier")
+{
+    Do ..wrapElementHTML(element,"<span class='CDEFMember'>","</span>")
+    Quit ""
+}
+
+Method writeCDEFFormalSpecList(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="FormalSpecList")
+{
+    Do ..wrapElementHTML(element,"<span class='CDEFFormalSpecList'>","</span>")
+    Quit ""
+}
+
+Method writeCDEFFormalSpecItem(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="FormalSpecItem")
+{
+    Do ..wrapElementHTML(element," <span class='CDEFFormalSpecItem'>","</span>") ; note the space BEFORE the span starts, ensures the new item wraps onto next line if necessary
+    Quit ""
+}
+
+Method writeCDEFClassXdata(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassXdata")
+{
+    Set nameE=element.findFirstElementByType("XdataName")
+    If $ISOBJECT(nameE) {
+        Set name=nameE.ToString(0)
+        Set ..XMLPath=..XMLPath_"/"_name
+    }
+    Quit ""
+}
+
+/*
+method writeCDEFXdataName(element As PXW.DEV.BNF.Elements.ClassDefinition) AS PXW.DEV.BNF.Compilers.elementHandler(Type="XdataName")
+{
+    Set ..XMLPath=..XMLPath_"/"_element.ToString(0)
+    q ""
+}
+*/
+Method writeCDEFXmlData(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="XmlData")
+{
+    Set tagnameE=element.findFirstElementByType("XmlTagName",1)
+    If $ISOBJECT(tagnameE) {
+        Set ..XMLPath=..XMLPath_"/"_tagnameE.ToString(0)
+    }
+    Quit ""
+}
+
+Method writeCDEFXmlTagName(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="XmlTagName")
+{
+    Do ..wrapElementHTML(element,"<span class='XMLTag' title='"_..XMLPath_"'>","</span>")
+    Quit ""
+}
+
+Method writeCDEFXmlAttribute(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="XmlAttribute")
+{
+    Set attnameE=element.findFirstElementByType("XmlAttributeName")
+    If $ISOBJECT(attnameE) {
+        Set ..XMLPath=..XMLPath_"/"_attnameE.ToString(0)
+        Do ..wrapElementHTML(attnameE,"<span class='XMLAttribute'>","</span>")
+    }
+    Quit ""
+}
+
+Method writeCDEFXmlAttributeValue(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="XmlAttributeValue")
+{
+    If ..XMLPath="/UrlMap/Routes/Route/Call" {
+        Set callname=element.ToString(0)
+        Set callname=$TRANSLATE(callname,"'""","") ; get rid of quotes
+        Do ..wrapElementHTML(element,"<a class='COSObjectMember' href='"_..HREFToClass(..This,callname)_"'>","</a>")
+    } Else {
+        Do ..wrapElementHTML(element,"<span class='XMLTag' title='"_..XMLPath_"'>","</span>")
+    }
+    Quit ""
+}
+
+Method writeCDEFXmlCdataText(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="XmlCdataText")
+{
+    If ..XMLPath="/file/bnf/data" {
+        Do ..writeElementBNF1(element)
+    }
+    Quit ""
+}
+
+/*
+method writeCDEF(element As PXW.DEV.BNF.Elements.ClassDefinition) AS PXW.DEV.BNF.Compilers.elementHandler(Type="")
+{
+
+    q ""
+}
+*/
+Method writeCOSCosDirective(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosDirective")
+{
+    ;#define
+    Set keywordatom=element.FirstAtom()
+    Set defineE=element.findFirstElementByType("CosDirectiveDefine",0)
+    If '$ISOBJECT(defineE) {
+        Set defineE=element.findFirstElementByType("CosDirectiveDefonearg",0)
+    }
+    If $ISOBJECT(defineE) {
+        If ..ThisType="INC" {
+            Set nameE=defineE.findFirstElementByType("CosDirectiveDefineName",0)
+            If $ISOBJECT(nameE) {
+                Set name=nameE.ToString(0)
+                Set count=##class(PXW.Xref.Queries).GetCount(%NS,"INC",..This,name)
+                Set anchor="anchor"_name_nameE.type
+                ;Set ..ThisMethod=name
+                If ..BookMark'="",$$$UPPER(name)=$$$UPPER(..BookMark) {
+                    ;d ..wrapElementHTML(element,"<a name='bookmark'>","</a>")
+                    Set anchor="bookmark" ;
+                    Do ..wrapElementHTML(nameE,"<span class='hilite'>","</span>")
+                }
+                Do ..AddToIndex(name,"MAC",anchor)
+                Do ..wrapElementHTML(element,"<a name='"_anchor_"'>","</a>") ; anchor goes before the member (ie before the comment)
+
+                Set menu="<div class='CDEFItemMenu  nocopy'>"
+                Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("INC",..This,name)_"'>Xref ("_count_") </a>"
+                Set menu=menu_"</div>"
+                Do ..wrapAtomHTML(keywordatom,menu,"")
+            }
+        }
+    }
+    Quit ""
+}
+
+Method writeCOSClassExpression(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassExpression")
+{
+    ; ##class()
+    Set classnameele=element.findFirstElementByType("ClassReference",0)
+    Set classname=classnameele.ToString(0)
+    Do ..FollowObjectChainForType(element,classname)
+    Quit ""
+}
+
+Method writeCOSThisThing(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ThisObject,ThisObjectDirectProperty,ThisObjectSet,ThisObjectDirectPropertySet")
+{
+    If ..This'="" {
+        Set classname=..This
+        If classname'="" Do ..FollowObjectChainForType(element,classname)
+    }
+    Quit ""
+}
+
+Method writeCOSVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="Variable,VariableSet,ObjectVariable")
+{
+    ; known variable
+   
+    Set variablename=element.ToStringAtomsOnly(0)
+    ; variable could be something like {*} or {field}  so the name above (using atoms only) will not find anything
+    ; don't worry about that at the moment!
+    If variablename'="" {
+        ; when working out a type use the #DIM type if there is one
+        Set classname=$GET(..Analyser.DimmedTypes(variablename))
+        If classname="" Set classname=$GET(..Analyser.VariablesTypes(variablename))
+        If classname'="" Do ..FollowObjectChainForType(element,classname)
+    }
+    Quit ""
+}
+
+Method writeCOSLabelDefinition(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="LabelDefinition")
+{
+    Set labatom=element.FirstAtom()
+    Set lab=labatom.value
+    Set ..ThisLabel=lab
+    If lab=..HiliteLabel {
+        ;d ..wrapAtomHTML(labatom,"<span class='hilite'>","</span>")
+        ;d ..wrapAtomHTML(labatom,"<a name='bookmark'>","</a>")
+        Do ..wrapAtomHTML(labatom,"<a name='Bookmark' class='hilite'>","</a>")
+        If ..HilitePlus'="" Set ..HiLiteLine=labatom.line+..HilitePlus
+    } Else {
+        Set labname=$TRANSLATE("LAB"_..ThisMethod_lab,"$^%_","")
+        Do ..wrapAtomHTML(labatom,"<a class='COSLabelDef' name='"_labname_"'>","</a>")
+    }
+    Quit ""
+}
+
+Method writeCOSLabelReference(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="LabelReference")
+{
+    Set lab=element.ToString(0)
+    If lab["^" {
+        Do ..wrapElementHTML(element,"<a class='COSLabel' href='"_..HREFToClass(lab)_"'>","</a>")
+    } Else {
+        Set labname=$TRANSLATE("LAB"_..ThisMethod_lab,"$^%_","")
+        Do ..wrapElementHTML(element,"<a class='COSLabel' href='#"_labname_"'>","</a>")
+    }
+    Quit ""
+}
+
+Method writeCOSCosCodeBlock(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosCodeBlock")
+{
+    Do ..wrapElementHTML(element,"<span class='EmbeddedCOS'>","</span>")
+    Quit ""
+}
+
+Method writeCOSPythonImport(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="PythonImport")
+{
+    Set stringE=element.findFirstElementByType("String")
+    If $ISOBJECT(stringE) {
+        Set atom=stringE.FirstAtom()
+        If $ISOBJECT(atom) {
+            Do ..wrapAtomHTML(atom,"<a class='CDEFClassName' href='"_..HREFToPython(atom.value)_"'>","</a>")
+            Set atom.type="pythonimport"
+        }
+    }       
+    Quit ""
+}
+
+Method writeCOSMacrocall(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="Macrocall")
+{
+    Set macroatom=element.partsGetAt(2)
+    If $ISOBJECT(macroatom) {
+        Set name=macroatom.ToString(0)
+        If name'="" {
+            If $ISOBJECT(..Analyser) {
+                ;zw ..Analyser,name
+                If '$DATA(..Analyser.DefinedMacros(name)) {
+                    Do ..wrapAtomHTML(macroatom,"<a href='"_..HREFToInclude(,element.ToString(0))_"'>","</a>")
+                } Else {
+                    Do ..wrapAtomHTML(macroatom,"<span title'Local macro'>","</span>")
+                }
+            } Else {
+                Do ..wrapAtomHTML(macroatom,"<a href='"_..HREFToInclude(,element.ToString(0))_"'>","</a>")
+            }
+        }
+    }
+    Quit ""
+}
+
+Method writeCOSCosDirectiveIncludeName(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosDirectiveIncludeName")
+{
+    Do ..wrapElementHTML(element,"<a href='"_..HREFToInclude(element.ToString(0))_"'>","</a>")
+    Quit ""
+}
+
+Method writeCOSGlobals(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="GlobalRef,GlobalRefSet")
+{
+    Set setting=0
+    If element.type="GlobalRefSet" Set setting=1
+    Set fullrefE=element.findFirstElementByType("GlobalRefFull",0)
+    If $ISOBJECT(fullrefE) {
+        ; On a global clicking on the ^ will take directly to the XREF since we don't
+        ; have any other details about the global at the moment.
+        ; Clicking on the name of the global highlights it like a regular variable
+        Set globalElement=fullrefE.findFirstElementByType("GlobalName",0)
+        Set upa=fullrefE.FirstAtom() ; ^ is always at the start
+        Set namea=globalElement ;.ToStringAtomsOnly()
+        ;d ..wrapAtomHTML(upa,"<a class='COSGlobalSet' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("GBL",globalElement.Name.ToString(0),globalElement.KeysForXref())_"'>","</a>")
+        Set subsE=fullrefE.findFirstElementByType("SubscriptParameterList",0),subs=""
+        If $ISOBJECT(subsE),$ISOBJECT(..Analyser) Set subs=..Analyser.SimplifySubscripts(subsE)
+        If $ISOBJECT(namea) {
+            Do ..wrapAtomHTML(upa,"<a class='COSGlobalSet' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("GBL",namea.ToStringAtomsOnly(0),subs)_"'>","</a>")
+            Set varname="GLOBAL"_namea.ToStringAtomsOnly(0)
+            If setting {
+                Do ..wrapAtomHTML(namea,"<span class='COSGlobalSet' varid='"_varname_"' onclick=""HiliteSets('"_varname_"');"">","</span>")
+                    } Else {
+                Do ..wrapAtomHTML(namea,"<span class='COSGlobal' fetchid='"_varname_"' onclick=""HiliteSets('"_varname_"');"">","</span>")
+            }
+        }
+    } Else {
+        ; not sure what we can do with naked refs here (other than make them stand out as a bad thing)
+    }
+    Quit ""
+}
+
+Method writeCOSHtmlBody(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="HtmlBody")
+{
+    Do ..wrapElementHTML(element,"<span class='EmbeddedXML'>","</span>")
+    Quit ""
+}
+
+Method writeCOSJsBody(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="JsBody")
+{
+    Do ..wrapElementHTML(element,"<span class='EmbeddedJS'>","</span>")
+    Quit ""
+}
+
+Method writeCOSSqlBody(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="SqlBody")
+{
+    Do ..wrapElementHTML(element,"<span class='EmbeddedSQL'>","</span>")
+    Quit ""
+}
+
+/*method writeCOS(element As PXW.DEV.BNF.Elements.COS) AS PXW.DEV.BNF.Compilers.elementHandler(Type="")
+{
+    q ""
+}
+*/
+Method writeSQLStoredProcName(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="StoredProcName")
+{
+    Set spname=element.ToString(0)
+    Do ..wrapElementHTML(element,"<a class='COSObjectMember' href='"_..HREFToClass(spname)_"'>","</a>") 
+    Quit ""
+}
+
+Method writeSQLQuerySpecification(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="QuerySpecification")
+{
+    #dim WithCommandE as PXW.DEV.Element
+    Set WithCommandE=element.findFirstElementByType("WithCommand")
+    If $ISOBJECT(WithCommandE) {
+        Set withAnalyser=##class(PXW.DEV.BNF.Analyse.SQL).%New()
+        Set withAnalyser.ClassServer=..ClassServer
+        Do withAnalyser.WithCommand(WithCommandE)
+        Set ..WithAnalyser=withAnalyser
+    }    
+    Quit ""
+}
+
+Method writeSQLWithCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="WithCommand")
+{
+    Do element.findElementsByType("WithClause",.withlist)
+    For i=1:1:withlist.Count() {
+        Set withE=withlist.GetAt(i)
+        Set aliasE=withE.findFirstElementByType("AliasName")	    
+        If $ISOBJECT(aliasE) {
+            Set aliasname="alias"_aliasE.ToString(0)
+            Do ..wrapElementHTML(aliasE,"<span class='SQLTableAliasSet' title='show alias usage' varid='"_aliasname_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
+        }	    
+    }    
+    Quit ""
+}
+
+Method writeSQLDerivedColumn(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="DerivedColumn")
+{
+    ; work out what this column is called
+    ; either from the AS clause or if its just referencing 
+    ; a single column, that column is the name
+    ; then create an ID for it so it can be highlighted
+    #dim col as PXW.DEV.Element
+    Set col=element
+    Set classtxt="class='SQLColumn'"
+    Set colname="colxxxx"
+
+    Set asclause=col.findFirstElementByType("AsClause",0)
+    If $ISOBJECT(asclause) {
+        Set colnameE=asclause.findFirstElementByType("ColumnName",0)
+        If $ISOBJECT(colnameE) {
+            Set colname="col"_$$$UPPER(colnameE.ToString(0))
+        }
+    } Else {
+        Kill colrefs
+        ; if the column is just a reference to another column
+        Do col.findElementsByType("ColumnReference",.colrefs,2)
+        If $ISOBJECT($GET(colrefs)),colrefs.Count()=1 {
+            Set colnameE=colrefs.GetAt(1).findFirstElementByType("ColumnName",0)
+            If $ISOBJECT(colnameE) {
+                Set colname="col"_$$$UPPER(colnameE.ToString(0))
+            }
+        }
+    }
+    If ..BookMark'="",$$$UPPER(colname)=$$$UPPER("col"_..BookMark) {
+        Set classtxt="class='hilite'"
+    }
+    Do ..wrapElementHTML(col,"<span "_classtxt_" fetchid='"_$$$UPPER(colname)_"'>","</span>")        
+    
+    Quit ""
+}
+
+Method writeSQLSelectCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="SelectCommand")
+{
+    #dim subAnalyser as PXW.DEV.BNF.Analyse.SQL
+    Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
+    Set sqlanalyse.This=..This
+    Do sqlanalyse.checkElement(element)
+    Set cref=""
+    While sqlanalyse.NextColumnReference(.cref,.fulltable,.fieldname) {
+        Set aliasNameE=cref.findFirstElementByType("AliasName",1) ; hmm, in a group, can we promote in bnf?
+        Set columnNameE=cref.findFirstElementByType("ColumnName",0)
+        ;zw cref,fulltable,fieldname
+        If fulltable'="" {
+            Do ..FollowImplicitJoins(cref,fulltable)
+        } Else {
+            Set colname="col"_$$$UPPER(fieldname)
+            Set withAnalyser="",subAnalyser=""
+            If $ISOBJECT(..WithAnalyser) {
+                If $ISOBJECT(aliasNameE) {
+                    Set aliasname=aliasNameE.ToString(0)
+                    
+                    Set subAnalyser=$GET(..WithAnalyser.WithClauseAnalysis(aliasname))
+                    If $ISOBJECT(subAnalyser) {
+                        ; how to deal with a with select that has select * from multiple tables...?
+                        Set fulltable=$GET(subAnalyser.SelectedColumnsByName(fieldname))
+                        If fulltable="" Set fulltable=$GET(subAnalyser.SelectedColumnsByName("*"))
+                    } Else {
+                        ; not a with reference,
+                    }
+                } Else {
+                    ; no table alias, what to do?
+                }
+            }
+            If fulltable'="" {
+                Do ..FollowImplicitJoins(cref,fulltable)
+            } Else {
+                Do ..wrapElementHTML(columnNameE,"<span class='COSObjectMember' title='still unable to determine class, possibly because of subquery' fetchid='"_$$$UPPER(colname)_"' onclick=""HiliteSets('"_$$$UPPER(colname)_"');"">","</span>")
+            }
+        }
+        If $ISOBJECT(aliasNameE) {
+            Set aliasname="alias"_aliasNameE.ToString(0)
+            Do ..wrapElementHTML(aliasNameE,"<span class='SQLTableAlias' title='show alias usage' fetchid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
+        }
+    }    
+    Quit ""
+}
+
+Method writeSQLInsertCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="InsertCommand")
+{
+    Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
+    Set sqlanalyse.This=..This
+    Do sqlanalyse.checkElement(element)
+    Set columnNameE=""
+    While sqlanalyse.NextColumnReference(.columnNameE,.fulltable,.fieldname) {
+        ;s aliasNameE=cref.findFirstElementByType("AliasName",1) ; hmm, in a group, can we promote in bnf?
+        ;s columnNameE=cref.findFirstElementByType("ColumnName",0)
+        If fulltable'="" {
+            Do ..wrapElementHTML(columnNameE,"<a class='COSObjectMember' href='"_..HREFToClass(fulltable,columnNameE.ToString(0))_"'>","</a>")            
+        } Else {
+            ; should always be a name
+            ;  s colname="col"_$$$UPPER(fieldname),aname=""
+            ; d ..wrapElementHTML(columnNameE,"<span class='COSObjectMember' title='unable to determine class, possibly because of subquery' fetchid='"_$$$UPPER(colname)_"' onclick=""HiliteSets('"_$$$UPPER(colname)_"');"">","</span>")
+        }
+        ;i $ISOBJECT(aliasNameE) {
+        ;    s aliasname="alias"_aliasNameE.ToString(0)
+        ;    d ..wrapElementHTML(aliasNameE,"<span class='COSObjectMember' title='show alias usage' fetchid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
+        ;}
+    }    
+    Quit ""
+}
+
+Method writeSQL(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="")
+{
+    Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
+    Set sqlanalyse.This=..This
+    Do sqlanalyse.checkElement(element)
+    Set columnNameE=""
+    While sqlanalyse.NextColumnReference(.columnNameE,.fulltable,.fieldname) {
+        ;s aliasNameE=cref.findFirstElementByType("AliasName",1) ; hmm, in a group, can we promote in bnf?
+        ;s columnNameE=cref.findFirstElementByType("ColumnName",0)
+        If fulltable'="" {
+            Do ..wrapElementHTML(columnNameE,"<a class='COSObjectMember' href='"_..HREFToClass(fulltable,columnNameE.ToString(0))_"'>","</a>")            
+        } Else {
+            ; should always be a name
+            ;  s colname="col"_$$$UPPER(fieldname),aname=""
+            ; d ..wrapElementHTML(columnNameE,"<span class='COSObjectMember' title='unable to determine class, possibly because of subquery' fetchid='"_$$$UPPER(colname)_"' onclick=""HiliteSets('"_$$$UPPER(colname)_"');"">","</span>")
+        }
+        ;i $ISOBJECT(aliasNameE) {
+        ;    s aliasname="alias"_aliasNameE.ToString(0)
+        ;    d ..wrapElementHTML(aliasNameE,"<span class='COSObjectMember' title='show alias usage' fetchid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
+        ;}
+    }    
+    Quit ""
+}
+
+Method writeSQLDirectTable(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="DirectTable")
+{
+    Set direct=element
+    If $ISOBJECT(direct) {
+        Set tablenameE=direct.findFirstElementByType("TableName",0)
+        If $ISOBJECT(tablenameE) {
+            Set tablename=tablenameE.ToString(0)
+            ; is it a reference to a WITH?
+            ;zw tablename,..WithAnalyser
+            If tablename'="", tablename'[".", $ISOBJECT(..WithAnalyser), $GET(..WithAnalyser.WithClauseAnalysis(tablename))'="" {
+                Set aliasname="alias"_tablename
+                Do ..wrapElementHTML(tablenameE,"<span class='SQLTableAlias' title='show alias usage' varid='"_aliasname_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
+            } Else {
+                Do ..wrapAtomHTML(tablenameE,"<a class='CDEFClassName' href='"_..HREFToClass(tablename)_"'>","</a>")
+            }
+        }
+    }    
+    Quit ""
+}
+
+Method writeSQLTableAlias(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="TableAlias")
+{
+    ;s aliasname="alias"_element.ToString(0)
+    ;d ..wrapElementHTML(element,"<span class='SQLTableAliasSet' title='show alias usage' fetchid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
+    Quit ""
+}
+
+Method writeSQLTableAsClause(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="TableAsClause")
+{
+    Set aliasE=element.findFirstElementByType("AliasName")
+    If $ISOBJECT(aliasE) {
+        Set aliasname="alias"_aliasE.ToString(0)
+        Do ..wrapElementHTML(aliasE,"<span class='SQLTableAliasSet' title='show alias usage' varid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
+    }    
+    Quit ""
+}
+
+/*
+method writeSQL(element As PXW.DEV.BNF.Elements.SQL) AS PXW.DEV.BNF.Compilers.elementHandler(Type="")
+{
+    
+    q ""
+}
+*/
+Method writePYFile(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="File")
+{
+    Do ..wrapElementHTML(element,"<span class='EmbeddedPython'>","</span>") 
+    Quit ""
+}
+
+Method writePYClassDefRaw(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassDefRaw")
+{
+    Set nameatom=element.partsGetAt(2) ; should be 2
+    If $ISOBJECT(nameatom) {
+        Set aname="pyClassName"_nameatom.value
+        Do ..AddToIndex(nameatom.value,"Class",aname)
+        Do ..wrapAtomHTML(nameatom,"<span id='"_aname_"' class='CDEFClassName'>","</span>")
+    }    
+    Quit ""
+}
+
+Method writePYFunctionDef(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="FunctionDef")
+{
+    Set ..PythonAnalyser=##class(PXW.DEV.BNF.Analyse.Python).%New()
+    Set ..PythonAnalyser.This=..This
+    Do ..PythonAnalyser.middle(element)
+
+    Set nameatom=element.partsGetAt(2) ; should be 2
+    If $ISOBJECT(nameatom) {
+        Do ..wrapAtomHTML(nameatom,"<span class='CDEFMember'>","</span>")
+    }    
+    Quit ""
+}
+
+Method writePYFunctionDefRaw(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="FunctionDefRaw")
+{
+    Set nameatom=element.partsGetAt(2) ; should be 2
+    If $ISOBJECT(nameatom) {
+        Set aname="pyDefName"_nameatom.value
+        Do ..AddToIndex(nameatom.value,"MethodName",aname)
+            Do ..wrapAtomHTML(nameatom,"<span id='"_aname_"' class='CDEFMember'>","</span>")
+    }    
+    Quit ""
+}
+
+Method writePYImportStmt(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="ImportStmt")
+{
+    Set nameE=element.findFirstElementByType("DottedName")
+    If $ISOBJECT(nameE) {
+        Set name=nameE.ToString(0)
+        Do ..wrapElementHTML(nameE,"<a class='CDEFClassName' href='"_..HREFToPython(name)_"'>","</a>")
+    }    
+    Quit ""
+}
+
+Method writePYImportFrom(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="ImportFrom")
+{
+    Set nameE=element.findFirstElementByType("DottedAsNames")
+    If $ISOBJECT(nameE) {
+        Set name=nameE.ToString(0)
+        Do ..wrapElementHTML(nameE,"<a class='CDEFClassName' href='"_..HREFToPython(name)_"'>","</a>")
+    }   
+    Quit ""
+}
+
+Method writePYStarTarget(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="StarTarget")
+{
+    Set varname=element.ToString(0)
+    Set cssclass="COSVariable"
+    If $ISOBJECT(..PythonAnalyser),..PythonAnalyser.IsParameterVariable(varname) Set cssclass="COSVariableParameter"
+    Do ..wrapElementHTML(element,"<span class='"_cssclass_"' varid='"_varname_"' onclick=""HiliteSets('"_varname_"');"">","</span>")
+    Quit ""
+}
+
+Method writePYParam(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="Param")
+{
+    Set varname=element.ToString(0)
+    Set cssclass="COSVariable"
+    If $ISOBJECT(..PythonAnalyser),..PythonAnalyser.IsParameterVariable(varname) Set cssclass="COSVariableParameter"
+    Do ..wrapElementHTML(element,"<span class='"_cssclass_"' varid='"_varname_"' onclick=""HiliteSets('"_varname_"');"">","</span>")  
+    Quit ""
+}
+
+Method writePYAtom(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="Atom")
+{
+    For  {
+        Set a=element.partsGetNext(.akey)
+        Quit:akey=""
+
+        If a.%IsA("PXW.DEV.Atom") {
+            Set type=$PIECE(a.type,":",1)
+            If type="Identifier" {
+                Set varname=a.value
+                Set cssclass="COSVariable"
+                If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(varname) Set cssclass="COSVariableParameter"
+                If $ISOBJECT(..PythonAnalyser),..PythonAnalyser.IsParameterVariable(varname) Set cssclass="COSVariableParameter"
+                Do ..wrapAtomHTML(a,"<span class='"_cssclass_"' fetchid='"_varname_"' onclick=""HiliteSets('"_varname_"');"">","</span>")
+            } 
+        }
+    }    
+    Quit ""
+}
+
+/*
+method writePY(element As PXW.DEV.BNF.Elements.Python) AS PXW.DEV.BNF.Compilers.elementHandler(Type="")
+{
+    
+    q ""
+}
+*/
 Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName As %String)
 {
     $$$DEBUGMethodBegin
@@ -1017,7 +1132,7 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName
         Set objectchain=ParentElement.findFirstElementByType("ObjectChain",1) ; var.property
     }
     Set path=""
-    While $IsObject(objectchain) {
+    While $ISOBJECT(objectchain) {
         
         Set propertyatom=""
         ; the objectchain has the "." and the name

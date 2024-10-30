@@ -1,4 +1,4 @@
-/// Created: 2024-10-20 14:41:35 PXW.DEV.BNF.Compilers.Compiler1
+/// Created: 2024-10-26 12:15:30 PXW.DEV.BNF.Compilers.Compiler1
 Class PXW.DEV.BNF.GEN.CSP Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 
@@ -7,9 +7,10 @@ Parameter KeywordPattern = "1.A";
 Parameter Keywords = "JAVASCRIPT,LANGUAGE,PUBLIC,SCRIPT,STYLESHEET,TYPE";
 
 ///  cos_expression ::= cos_expression_compiletime | cos_expression_runtime | cos_expression_other
+/// summary=C|C|C
 Method CosExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?
+	; rules summary C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -24,17 +25,18 @@ Method CosExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  cos_expression_body ::= 'NEEDS COS EXPRESSION BODY'
 /// summary values:NEEDS COS EXPRESSION BODY
+/// summary=P
 Method CosExpressionBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -49,20 +51,21 @@ Method CosExpressionBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  cos_expression_compiletime ::= '##(' cos_expression_body ')##'
 /// summary values:##(
+/// summary=P&C&P
 Method CosExpressionCompiletime(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&P
+	; rules summary P&C&P
 	; first rule summary P
 	if '(..isStringSingle("##(",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -79,20 +82,21 @@ Method CosExpressionCompiletime(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  cos_expression_other ::= '<%=' cos_expression_body '%>'
 /// summary values:<%=
+/// summary=P&C&P
 Method CosExpressionOther(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&P
+	; rules summary P&C&P
 	; first rule summary P
 	if '(..isStringSingle("<%=",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -109,20 +113,21 @@ Method CosExpressionOther(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  cos_expression_runtime ::= '#(' cos_expression_body ')#'
 /// summary values:#(
+/// summary=P&C&P
 Method CosExpressionRuntime(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&P
+	; rules summary P&C&P
 	; first rule summary P
 	if '(..isStringSingle("#(",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -139,19 +144,20 @@ Method CosExpressionRuntime(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  csp_attribute ::= ( [ csp_schema ':' ] csp_identifier ['=' ( string | ( number ['%'] )| cos_expression | ('#' [text_no_space] ) | csp_identifier | text_no_space) ] ) | cos_expression
+/// summary=[C&P]&C&[P&C|C&[P]|C|P&[C]|C|C]|C
 Method CspAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
+	; rules summary [C&P]&C&[P&C|C&[P]|C|P&[C]|C|C]|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -164,19 +170,20 @@ Method CspAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  [ csp_schema ':' ] csp_identifier ['=' ( string | ( number ['%'] )| cos_expression | ('#' [text_no_space] ) | csp_identifier | text_no_space) ]
+/// summary=[C&P]&C&[P&C|C&[P]|C|P&[C]|C|C]
 Method CspAttribute11Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?&?1Rule?&?4?
+	; rules summary [C&P]&C&[P&C|C&[P]|C|P&[C]|C|C]
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -190,18 +197,20 @@ Method CspAttribute11Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
+/// 
+/// summary=C&P
 Method CspAttribute12OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&P
+	; rules summary C&P
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -213,20 +222,21 @@ Method CspAttribute12OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:=
+/// summary=P&C|C&[P]|C|P&[C]|C|C
 Method CspAttribute13OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?
+	; rules summary P&C|C&[P]|C|P&[C]|C|C
 	; first rule summary P
 	if '(..isStringSingle("=",.value)) { quit 1 /* not found is OK */ }
 	$$$DEBUGMethodBegin
@@ -240,19 +250,20 @@ Method CspAttribute13OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  string | ( number ['%'] )| cos_expression | ('#' [text_no_space] ) | csp_identifier | text_no_space
+/// summary=C|C&[P]|C|P&[C]|C|C
 Method CspAttribute14Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?
+	; rules summary C|C&[P]|C|P&[C]|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -272,19 +283,20 @@ Method CspAttribute14Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  number ['%']
+/// summary=C&[P]
 Method CspAttribute15Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&?4?
+	; rules summary C&[P]
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -296,20 +308,21 @@ Method CspAttribute15Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// '#' [text_no_space]
 /// summary values:#
+/// summary=P&[C]
 Method CspAttribute16Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?4?
+	; rules summary P&[C]
 	; first rule summary P
 	if '(..isStringSingle("#",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -323,19 +336,20 @@ Method CspAttribute16Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  csp_content ::= text
+/// summary=C
 Method CspContent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -346,20 +360,21 @@ Method CspContent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  csp_doctype ::= '<!DOCTYPE' csp_attribute ['PUBLIC' string string]'>'
 /// summary values:<!DOCTYPE
+/// summary=P&C&[K&C&C]&P
 Method CspDoctype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?1Rule?&?4?&P
+	; rules summary P&C&[K&C&C]&P
 	; first rule summary P
 	if '(..isStringSingle("<!DOCTYPE",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
@@ -378,20 +393,21 @@ Method CspDoctype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:PUBLIC
+/// summary=K&C&C
 Method CspDoctype20OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&?1Rule?&?1Rule?
+	; rules summary K&C&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("PUBLIC"),.value)) { quit 1 /* not found is OK */ }
 	$$$DEBUGMethodBegin
@@ -407,19 +423,20 @@ Method CspDoctype20OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  csp_element ::= csp_special_tag | (csp_start_tag ( csp_element | csp_content)* [csp_end_tag]) | csp_empty_tag
+/// summary=C|C&(?4punctuation:4?)*&[C]|C
 Method CspElement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?
+	; rules summary C|C&(?4punctuation:4?)*&[C]|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -434,19 +451,20 @@ Method CspElement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// csp_start_tag ( csp_element | csp_content)* [csp_end_tag]
+/// summary=C&(?4punctuation:4?)*&[C]
 Method CspElement3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&(?4?)*&?4?
+	; rules summary C&(?4punctuation:4?)*&[C]
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -460,39 +478,40 @@ Method CspElement3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  ( csp_element | csp_content)*
 Method CspElement4RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..CspElement5Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 ///  csp_element | csp_content
+/// summary=C|C
 Method CspElement5Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..CspElement(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..CspContent(subElement,.addedElement)  {
@@ -500,20 +519,18 @@ Method CspElement5Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  csp_empty_tag ::= csp_tag_s_a csp_tag_ns_name (csp_attribute )* csp_tag_s_c
+/// summary=C&C&(?4punctuation:4?)*&C
 Method CspEmptyTag(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&?1Rule?&(?4?)*&?1Rule?
+	; rules summary C&C&(?4punctuation:4?)*&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -530,58 +547,57 @@ Method CspEmptyTag(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  (csp_attribute )*
 Method CspEmptyTag8RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..CspEmptyTag9Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 /// csp_attribute
+/// summary=C
 Method CspEmptyTag9Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..CspAttribute(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  csp_end_tag ::= csp_tag_e_a csp_tag_ns_name csp_tag_e_b
+/// summary=C&C&C
 Method CspEndTag(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&?1Rule?&?1Rule?
+	; rules summary C&C&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -596,19 +612,20 @@ Method CspEndTag(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  csp_identifier ::= identifier
+/// summary=C
 Method CspIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
+	; rules summary C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -619,19 +636,20 @@ Method CspIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  csp_javascript ::= csp_tag_s_a 'script' 'language' '=' ('javascript' | '"javascript"' ) csp_tag_s_b javascript_body csp_tag_e_a 'script' csp_tag_e_b
+/// summary=C&K&K&P&K|P&C&C&C&K&C
 Method CspJavascript(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&K&P&?1Rule?&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&K&P&K|P&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -660,16 +678,17 @@ Method CspJavascript(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 'javascript' | '"javascript"'
+/// summary=K|P
 Method CspJavascript21Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|P
@@ -684,19 +703,20 @@ Method CspJavascript21Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  csp_javascript_both ::= csp_tag_s_a 'script' 'language' '=' ('javascript' | '"javascript"' ) 'type' '=' ('"text/javascript"') csp_tag_s_b javascript_body csp_tag_e_a 'script' csp_tag_e_b
+/// summary=C&K&K&P&K|P&K&P&P&C&C&C&K&C
 Method CspJavascriptBoth(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&K&P&?1Rule?&K&P&?1Rule?&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&K&P&K|P&K&P&P&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -731,16 +751,17 @@ Method CspJavascriptBoth(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 'javascript' | '"javascript"'
+/// summary=K|P
 Method CspJavascriptBoth23Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|P
@@ -755,17 +776,18 @@ Method CspJavascriptBoth23Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// '"text/javascript"'
 /// summary values:""TEXT/JAVASCRIPT""
+/// summary=P
 Method CspJavascriptBoth24Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -778,17 +800,18 @@ Method CspJavascriptBoth24Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	}
 
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	quit ret
+	quit ok
 }
 
 ///  csp_javascript_bothopp ::= csp_tag_s_a 'script' 'type' '=' ('"text/javascript"') 'language' '=' ('javascript' | '"javascript"' ) csp_tag_s_b javascript_body csp_tag_e_a 'script' csp_tag_e_b
+/// summary=C&K&K&P&P&K&P&K|P&C&C&C&K&C
 Method CspJavascriptBothopp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&K&P&?1Rule?&K&P&?1Rule?&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&K&P&P&K&P&K|P&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -823,17 +846,18 @@ Method CspJavascriptBothopp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// '"text/javascript"'
 /// summary values:""TEXT/JAVASCRIPT""
+/// summary=P
 Method CspJavascriptBothopp25Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -846,14 +870,15 @@ Method CspJavascriptBothopp25Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 	}
 
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	quit ret
+	quit ok
 }
 
 /// 'javascript' | '"javascript"'
+/// summary=K|P
 Method CspJavascriptBothopp26Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|P
@@ -868,19 +893,20 @@ Method CspJavascriptBothopp26Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  csp_javascript_text ::= csp_tag_s_a 'script' 'type' '=' ('"text/javascript"') csp_tag_s_b javascript_body csp_tag_e_a 'script' csp_tag_e_b
+/// summary=C&K&K&P&P&C&C&C&K&C
 Method CspJavascriptText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&K&K&P&?1Rule?&?1Rule?&?1Rule?&?1Rule?&K&?1Rule?
+	; rules summary C&K&K&P&P&C&C&C&K&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -909,17 +935,18 @@ Method CspJavascriptText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// '"text/javascript"'
 /// summary values:""TEXT/JAVASCRIPT""
+/// summary=P
 Method CspJavascriptText22Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -932,17 +959,18 @@ Method CspJavascriptText22Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	}
 
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	quit ret
+	quit ok
 }
 
 ///  csp_page ::= (csp_xml | csp_element | csp_end_tag | csp_content )*
+/// summary=(?4punctuation:4?)*
 Method CspPage(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary (?4?)*
+	; rules summary (?4punctuation:4?)*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -953,39 +981,40 @@ Method CspPage(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  (csp_xml | csp_element | csp_end_tag | csp_content )*
 Method CspPage1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..CspPage2Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 /// csp_xml | csp_element | csp_end_tag | csp_content
+/// summary=C|C|C|C
 Method CspPage2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?|?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C|C|C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..CspXml(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..CspElement(subElement,.addedElement)  {
@@ -997,20 +1026,18 @@ Method CspPage2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  csp_schema ::= csp_identifier | cos_expression
+/// summary=C|C
 Method CspSchema(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
+	; rules summary C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1023,19 +1050,20 @@ Method CspSchema(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  csp_special_tag ::= csp_doctype | csp_javascript | csp_javascript_text | csp_javascript_both | csp_javascript_bothopp | cos_expression
+/// summary=C|C|C|C|C|C
 Method CspSpecialTag(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?|?1Rule?
+	; rules summary C|C|C|C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1056,19 +1084,20 @@ Method CspSpecialTag(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  csp_start_tag ::= csp_tag_s_a csp_tag_ns_name (csp_attribute )* csp_tag_s_b
+/// summary=C&C&(?4punctuation:4?)*&C
 Method CspStartTag(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&?1Rule?&(?4?)*&?1Rule?
+	; rules summary C&C&(?4punctuation:4?)*&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1085,56 +1114,55 @@ Method CspStartTag(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  (csp_attribute )*
 Method CspStartTag6RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..CspStartTag7Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 /// csp_attribute
+/// summary=C
 Method CspStartTag7Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..CspAttribute(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  csp_tag_e_a ::= '</'
 /// summary values:</
+/// summary=P
 Method CspTagEA(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -1149,17 +1177,18 @@ Method CspTagEA(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  csp_tag_e_b ::= '>'
 /// summary values:>
+/// summary=P
 Method CspTagEB(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -1174,19 +1203,20 @@ Method CspTagEB(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  csp_tag_name ::= csp_identifier | cos_expression
+/// summary=C|C
 Method CspTagName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?|?1Rule?
+	; rules summary C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1199,19 +1229,20 @@ Method CspTagName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  csp_tag_ns_name ::= [ csp_schema ':'] csp_tag_name
+/// summary=[C&P]&C
 Method CspTagNsName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?&?1Rule?
+	; rules summary [C&P]&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1224,18 +1255,20 @@ Method CspTagNsName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
+/// 
+/// summary=C&P
 Method CspTagNsName10OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&P
+	; rules summary C&P
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -1247,17 +1280,18 @@ Method CspTagNsName10OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  csp_tag_s_a ::= '<'
 /// summary values:<
+/// summary=P
 Method CspTagSA(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -1272,17 +1306,18 @@ Method CspTagSA(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  csp_tag_s_b ::= '>'
 /// summary values:>
+/// summary=P
 Method CspTagSB(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -1297,17 +1332,18 @@ Method CspTagSB(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  csp_tag_s_c ::= '/>'
 /// summary values:/>
+/// summary=P
 Method CspTagSC(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -1322,19 +1358,20 @@ Method CspTagSC(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  csp_xml ::= csp_tag_s_a '?xml' ['-' 'stylesheet'] (csp_attribute)* '?' csp_tag_s_b
+/// summary=C&P&[P&K]&(?4punctuation:4?)*&P&C
 Method CspXml(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?&P&?4?&(?4?)*&P&?1Rule?
+	; rules summary C&P&[P&K]&(?4punctuation:4?)*&P&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1355,17 +1392,18 @@ Method CspXml(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 /// 
 /// summary values:-
+/// summary=P&K
 Method CspXml17OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&K
@@ -1382,56 +1420,55 @@ Method CspXml17OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=1 /* failure rollsback but returns OK */
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  (csp_attribute)*
 Method CspXml18RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?4?
+	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
 	while ..CspXml19Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
-		set ret=1
+		set ok=1
 	} else {
-		set ret=1 /* nothing found is ok in RZ */
+		set ok=1 /* nothing found is ok in RZ */
 	}
-	quit ret
+	quit ok
 }
 
 /// csp_attribute
+/// summary=C
 Method CspXml19Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary ?1Rule?
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C
+	set subElement=ParentElement
 	set done=0 ; method start
+	Set subElement=ParentElement
 	if ..CspAttribute(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  identifier ::= 'NEEDS IDENTIFIER'
 /// summary values:NEEDS IDENTIFIER
+/// summary=P
 Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -1446,17 +1483,18 @@ Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  javascript_body ::= 'NEEDS JS BODY'
 /// summary values:NEEDS JS BODY
+/// summary=P
 Method JavascriptBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -1471,17 +1509,18 @@ Method JavascriptBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  number ::= 'NEEDS NUMBER'
 /// summary values:NEEDS NUMBER
+/// summary=P
 Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -1496,17 +1535,18 @@ Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  string ::= 'NEEDS STRING'
 /// summary values:NEEDS STRING
+/// summary=P
 Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -1521,17 +1561,18 @@ Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  text ::= 'NEEDS TEXT'
 /// summary values:NEEDS TEXT
+/// summary=P
 Method Text(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -1546,17 +1587,18 @@ Method Text(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 ///  text_no_space ::= 'NEEDS TEXT'
 /// summary values:NEEDS TEXT
+/// summary=P
 Method TextNoSpace(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
@@ -1571,13 +1613,13 @@ Method TextNoSpace(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ret=1
+		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ret=0 ; normal rollback
+		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ret
+	quit ok
 }
 
 Method newElement(Type As %String) As PXW.DEV.BNF.Element

@@ -20,7 +20,7 @@ ClassMethod GetIncludeFileName(Output macroname) As %String
 {
 	Do ..HREFFrom(.inc,.cc,.macroname)
     If inc="",cc'="" {
-        Set cs=##class(PXW.DEV.Dictionary.ClassDefinitionObject).%OpenId(%NS)
+        Set cs=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)
 		Set macroname=$PIECE(macroname,"(",1)
 		If macroname?1"$$$" Set macroname=$PIECE(macroname,"$$$",2)
         If cs.GetMacroLocation(cc,macroname,.inc,.line) {
@@ -60,8 +60,7 @@ ClassMethod WriteInclude(Include As %String, MacroToHilite As %Integer = "", Deb
 			If 'ok $$$ThrowStatus($$$ERROR(5001,"Could not parse"))
 			Set x.element=element
 
-			; can this be moved back into the output.middle method?
-			Do output.Analyser.middle(element)
+			Do output.Analyser.checkElement(element)
 
 			Do output.middle(element)
 	

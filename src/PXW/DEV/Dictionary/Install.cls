@@ -4,39 +4,39 @@ Class PXW.DEV.Dictionary.Install Extends %RegisteredObject
 ClassMethod Setup() As %Status
 {
     ; This is the default namespace, if anything goes wrong this is where we count as safe
-    set sc=..SetupCLS("LOCAL_USER","LOCAL_USER","localhost",52773,"IRISAPP","_SYSTEM","SYS")
-    if $$$ISERR(sc) do $SYSTEM.Status.DisplayError(sc)
-    quit sc
+    Set sc=..SetupCLS("LOCAL_USER","LOCAL_USER","localhost",52773,"IRISAPP","_SYSTEM","SYS")
+    If $$$ISERR(sc) Do $SYSTEM.Status.DisplayError(sc)
+    Quit sc
 }
 
 ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, AtelierServer As %String, AtelierPort As %String, AtelierNamespace As %String, Ausername As %String, Apassword As %String) As %Status
 {
  
-    set sc=$$$OK
+    Set sc=$$$OK
     ; code interfaces
-    set:$$$ISOK(sc) sc=##class(PXW.DEV.Dictionary.ClassDefinitionObject).RegisterType()
-    set:$$$ISOK(sc) sc=##class(PXW.DEV.Dictionary.Include).RegisterType()
-    set:$$$ISOK(sc) sc=##class(PXW.DEV.Dictionary.Routine).RegisterType()
+    Set:$$$ISOK(sc) sc=##class(PXW.DEV.Dictionary.ClassDefinitionObject).RegisterType()
+    Set:$$$ISOK(sc) sc=##class(PXW.DEV.Dictionary.Include).RegisterType()
+    Set:$$$ISOK(sc) sc=##class(PXW.DEV.Dictionary.Routine).RegisterType()
     ; html display pages
-    set:$$$ISOK(sc) sc=##class(PXW.Tools.DEV.Class).RegisterType()
-    set:$$$ISOK(sc) sc=##class(PXW.Tools.DEV.Include).RegisterType()
-    set:$$$ISOK(sc) sc=##class(PXW.Tools.DEV.Routine).RegisterType()
+    Set:$$$ISOK(sc) sc=##class(PXW.Tools.DEV.Class).RegisterType()
+    Set:$$$ISOK(sc) sc=##class(PXW.Tools.DEV.Include).RegisterType()
+    Set:$$$ISOK(sc) sc=##class(PXW.Tools.DEV.Routine).RegisterType()
     ; cross reference builders
-    set:$$$ISOK(sc) sc=##class(PXW.Xref.Builders.Class).RegisterType()
+    Set:$$$ISOK(sc) sc=##class(PXW.Xref.Builders.Class).RegisterType()
 
     
-    if $$$ISOK(sc) {
-        set namespace=##class(PXW.DEV.Dictionary.Namespace).%OpenId(NamespaceName)
-        if '$isobject(namespace) {
-            s namespace=##class(PXW.DEV.Dictionary.Namespace).%New()
-            s namespace.Name=NamespaceName
-            set sc=namespace.%Save()
+    If $$$ISOK(sc) {
+        Set namespace=##class(PXW.DEV.Dictionary.Namespace).%OpenId(NamespaceName)
+        If '$ISOBJECT(namespace) {
+            Set namespace=##class(PXW.DEV.Dictionary.Namespace).%New()
+            Set namespace.Name=NamespaceName
+            Set sc=namespace.%Save()
         }
     }
 
-    if $$$ISOK(sc) {    
-        set atelier=##class(PXW.DEV.Dictionary.AtelierSettings).%OpenId(AtelierServerName)
-        if '$ISOBJECT(atelier) {
+    If $$$ISOK(sc) {    
+        Set atelier=##class(PXW.DEV.Dictionary.AtelierSettings).%OpenId(AtelierServerName)
+        If '$ISOBJECT(atelier) {
             Set atelier=##class(PXW.DEV.Dictionary.AtelierSettings).%New()
             Set atelier.ServerName=AtelierServerName
         }
@@ -47,10 +47,10 @@ ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, Ate
         Set atelier.Username=Ausername
         Set atelier.Password=Apassword
         Set atelier.ContentType="application/json"
-        set sc=atelier.%Save()
+        Set sc=atelier.%Save()
     }
 
-    if $$$ISOK(sc) {
+    If $$$ISOK(sc) {
         Set cls=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(NamespaceName)
         If '$ISOBJECT(cls) {
             Set cls=##class(PXW.DEV.Dictionary.ClassDefinitionObject).%New()
@@ -62,7 +62,7 @@ ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, Ate
         Set sc=cls.%Save()
     }
 
-    if $$$ISOK(sc) {
+    If $$$ISOK(sc) {
         Set INC=##class(PXW.DEV.Dictionary.Include).OpenNamespace(NamespaceName)
         If '$ISOBJECT(INC) {
             Set INC=##class(PXW.DEV.Dictionary.Include).%New()
@@ -72,7 +72,7 @@ ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, Ate
         Set sc=INC.%Save()
     }
 
-    if $$$ISOK(sc) {
+    If $$$ISOK(sc) {
         Set INT=##class(PXW.DEV.Dictionary.Routine).OpenNamespace(NamespaceName)
         If '$ISOBJECT(INT) {
             Set INT=##class(PXW.DEV.Dictionary.Routine).%New()
@@ -85,17 +85,32 @@ ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, Ate
     Quit sc
 }
 
+/// d ##class(PXW.DEV.Dictionary.Install).GenAll()
 ClassMethod GenAll()
 {
+    
     ;Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.Compilers.BNF1","PXW.DEV.BNF.GEN.BNF1") 
     ;Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.Compilers.BNF2","PXW.DEV.BNF.GEN.BNF2") 
     ;Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.Compilers.BNF3","PXW.DEV.BNF.GEN.BNF3") 
     Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.DEF.COS","PXW.DEV.BNF.GEN.COS") 
+    If $$$ISERR(sc) Do $SYSTEM.Status.DisplayError(sc)
     Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.DEF.CSP","PXW.DEV.BNF.GEN.CSP") 
+    If $$$ISERR(sc) Do $SYSTEM.Status.DisplayError(sc)
     Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.DEF.ClassDefinition","PXW.DEV.BNF.GEN.ClassDefinition") 
+    If $$$ISERR(sc) Do $SYSTEM.Status.DisplayError(sc)
     Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.DEF.JS","PXW.DEV.BNF.GEN.JS") 
+    If $$$ISERR(sc) Do $SYSTEM.Status.DisplayError(sc)
     Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.DEF.Python","PXW.DEV.BNF.GEN.Python") 
+    If $$$ISERR(sc) Do $SYSTEM.Status.DisplayError(sc)
     Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.DEF.SQL","PXW.DEV.BNF.GEN.SQL")
+    If $$$ISERR(sc) Do $SYSTEM.Status.DisplayError(sc)
+}
+
+/// d ##class(PXW.DEV.Dictionary.Install).ExportAll()
+ClassMethod ExportAll()
+{
+    s dt=$tr($zdt($h,3),":- ","")
+    d $System.OBJ.Export("PXW.*.CLS,PXW.*.INC","/home/irisowner/dev/debug/PXWALLINC_"_dt_".xml")
 }
 
 }

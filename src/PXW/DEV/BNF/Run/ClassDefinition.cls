@@ -18,88 +18,6 @@ Property nextStage As %Integer [ InitialExpression = 0 ];
 
 Parameter keywordAtomType = "CDEFKeyword";
 
-/// d ##class(PXW.DEV.BNF.Run.ClassDefinition).test2("%Library.RegisteredObject",.x)
-ClassMethod test2(ClassName, x)
-{
- 
-    ;$$$DEBUGNew("")
-    ;$$$DEBUGNew(##class(PXW.Debuggers.Timing).%ClassName(1))
-
-    $$$DEBUG("Testing Class="_ClassName)
-    ;$$$DEBUG("method="_method)
-    Set zh=$ZHOROLOG
-    Set %NS="LOCAL_USER"
-    Set ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).%OpenId(%NS)
-    Set sc=ClassServer.GetClassStudioText(ClassName,.text,.linesOfCode)
-    Write !,"load "_($ZHOROLOG-zh) Set zh=$ZHOROLOG
-    ; make crlf just cr so that its 1 char, I am sure it will make things simpler
-	;s flat=Code 
-	Set flat=$REPLACE(text,$CHAR(13,10),$CHAR(13))
-
-    ;$$$DEBUG("main element:"_element)
-    Set x=..%New() 
-    Set x.stream=##class(PXW.DEV.InputStream).NewString(flat)
-    Set element=##class(PXW.DEV.Element).%New()
-    While x.cheese(element) {
-        Set element=##class(PXW.DEV.Element).%New()
-        Set ok=1
-    }
-
-    Write !,"cheesed "_($ZHOROLOG-zh) Set zh=$ZHOROLOG
-
-    If $$$debugIsON Do element.write() ; this is silly if debugging is not going to screen!
-    $$$DEBUG("Testing complete")
-    $$$DEBUG("")
-    $$$DEBUG("ok="_ok)
-    If ok {
-        $$$DEBUG("x.element.ToString()="_$REPLACE(element.ToString(),$CHAR(13),$CHAR(13,10)))
-    } Else {
-        $$$DEBUG("decoded up to:"_$REPLACE($EXTRACT(x.stream.input,1,x.stream.lastStartOfLinePos),$CHAR(13),$CHAR(13,10)))
-        $$$DEBUG("**************")
-        $$$DEBUG("stuck at     :"_$REPLACE($EXTRACT(x.stream.input,x.stream.lastStartOfLinePos,x.stream.lastPos),$CHAR(13),$CHAR(13,10)))
-        $$$DEBUG("**************")
-        $$$DEBUG("rest of line: "_$REPLACE($EXTRACT(x.stream.input,x.stream.lastStartOfLinePos,*),$CHAR(13),$CHAR(13,10)) )
-    }
-}
-
-ClassMethod test3(ClassName, x)
-{
-    ;$$$DEBUGNew("")
-    ;$$$DEBUGNew(##class(PXW.Debuggers.Timing).%ClassName(1))
-
-    $$$DEBUG("Testing Class="_ClassName)
-    ;$$$DEBUG("method="_method)
-
-    Set %NS="LOCAL_USER"
-    Set ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).%OpenId(%NS)
-    Set sc=ClassServer.GetClassStudioText(ClassName,.text,.linesOfCode)
-	
-    ; make crlf just cr so that its 1 char, I am sure it will make things simpler
-	;s flat=Code 
-	Set flat=$REPLACE(text,$CHAR(13,10),$CHAR(13))
-
-    Set element=##class(PXW.DEV.Element).%New()
-    Set %section=element
-    $$$DEBUG("main element:"_element)
-    Set x=..%New()
-    Set x.stream=##class(PXW.DEV.InputStream).NewString(flat)
-    Set ok=$METHOD(x,"ClassDefinition",element)
-    Set x.element=element
-    If $$$debugIsON Do element.write() ; this is silly if debugging is not going to screen!
-    $$$DEBUG("Testing complete")
-    $$$DEBUG("")
-    $$$DEBUG("ok="_ok)
-    If ok {
-        $$$DEBUG("x.element.ToString()="_$REPLACE(element.ToString(),$CHAR(13),$CHAR(13,10)))
-    } Else {
-        $$$DEBUG("decoded up to:"_$REPLACE($EXTRACT(x.stream.input,1,x.stream.lastStartOfLinePos),$CHAR(13),$CHAR(13,10)))
-        $$$DEBUG("**************")
-        $$$DEBUG("stuck at     :"_$REPLACE($EXTRACT(x.stream.input,x.stream.lastStartOfLinePos,x.stream.lastPos),$CHAR(13),$CHAR(13,10)))
-        $$$DEBUG("**************")
-        $$$DEBUG("rest of line: "_$REPLACE($EXTRACT(x.stream.input,x.stream.lastStartOfLinePos,*),$CHAR(13),$CHAR(13,10)) )
-    }
-}
-
 Method cheese(element As PXW.DEV.Element) As %Boolean
 {
 
@@ -149,13 +67,13 @@ Method ClassMemberSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
     }
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0
+		Set ok=0
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 /// one_classMember ::= class_class_method
@@ -180,17 +98,17 @@ Method OneClassmember(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
     Set ..language="objectscript"
     Set ..codemode=""
 
-	Set ret=##super(ParentElement,.subElement)
+	Set ok=##super(ParentElement,.subElement)
 
-    If ret=0 {
+    If ok=0 {
         Set peek=..peek(1)
         ; not eol or end of block
         If peek'=$CHAR(13),peek'="}" {
-            Set ret=..recover(ParentElement,.recSub,"{}",$LISTBUILD($CHAR(13)))
+            Set ok=..recover(ParentElement,.recSub,"{}",$LISTBUILD($CHAR(13)))
         }
     }
 
-    Quit ret
+    Quit ok
 }
 
 /// xdata_json ::= xdata_json_object | xdata_json_array | xdata_json_prim
@@ -199,13 +117,13 @@ Method OneClassmember(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 ///  not=0
 Method XdataJson(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
-    Set ret=##super(ParentElement,.subElement)
+    Set ok=##super(ParentElement,.subElement)
    
-    If ret=0 {
-        Set ret=..recover(ParentElement,.recSub,"{}","")
+    If ok=0 {
+        Set ok=..recover(ParentElement,.recSub,"{}","")
     }
 
-    Quit ret
+    Quit ok
 }
 
 /// xdata_json_array_items ::= xdata_json (',' xdata_json)*
@@ -217,8 +135,8 @@ Method XdataJsonArrayItems(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
     ; if empty array just quit (OK)
     If ..isStringSingle("]") Quit 1
 
-	Set ret=##super(ParentElement,.subElement)
-    Quit ret
+	Set ok=##super(ParentElement,.subElement)
+    Quit ok
 }
 
 /// class_language_name ::= 'cache' | 'basic' |  'javascript' | 'java' | 'mvbasic' | 'tsql' | 'cpp'
@@ -227,11 +145,11 @@ Method XdataJsonArrayItems(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 ///  not=0
 Method ClassLanguageName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
-	Set ret=##super(ParentElement,.subElement)
-    If ret=1 {
+	Set ok=##super(ParentElement,.subElement)
+    If ok=1 {
         Set ..language=subElement.ToString(0)
     }
-    Quit ret
+    Quit ok
 }
 
 /// attribute_CodeModeType ::= 'call' | 'code' | 'expression' | 'objectgenerator' | 'generator'
@@ -240,20 +158,20 @@ Method ClassLanguageName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 ///  not=0
 Method AttributeCodemodetype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
-	Set ret=##super(ParentElement,.subElement)
-    If ret=1 {
+	Set ok=##super(ParentElement,.subElement)
+    If ok=1 {
         Set ..codemode=subElement.ToString(0)
     }
-    Quit ret
+    Quit ok
 }
 
 Method AttributeMimetype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
-	Set ret=##super(ParentElement,.subElement)
-    If ret=1 {
+	Set ok=##super(ParentElement,.subElement)
+    If ok=1 {
         Set ..mimetype=$PIECE(subElement.ToString(0),"=",2,*)
     }
-    Quit ret
+    Quit ok
 }
 
 /// cos_code_block ::= 'NEEDS COS CODE BLOCK'
@@ -268,26 +186,26 @@ Method CosCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
     If $$$UPPER(..language)="PYTHON" {
         ;$$$DEBUGNew("")
         Set subElement.type="PythonBody"
-        Set parser=##class(PXW.DEV.BNF.Run.Python).%New()
-        Set parser.stream=..stream
-        Do parser.skipWhiteSpaceAndComments()
-        If parser.peek(1)="}" {
+        Set pyparser=##class(PXW.DEV.BNF.Run.Python).%New()
+        Set pyparser.stream=..stream
+        Do pyparser.skipWhiteSpaceAndComments()
+        If pyparser.peek(1)="}" {
             ; its empty 
-            Set ..whitespace=parser.whitespace
-            Set ..comment=parser.comment
+            Set ..whitespace=pyparser.whitespace
+            Set ..comment=pyparser.comment
             Set atom=..newAtom("CosCodeBlock Empty","")
             Do ParentElement.AddPart(atom)
             Quit 1
         }
-        If parser.File(subElement) {
+        If pyparser.File(subElement) {
              $$$BNFCOMMIT(subElement,ParentElement)
-            Set ..whitespace=parser.whitespace
-            Set ..comment=parser.comment
+            Set ..whitespace=pyparser.whitespace
+            Set ..comment=pyparser.comment
             Set atom=..newAtom("CosCodeBlock End","")
             Do ParentElement.AddPart(atom)
 		    Quit 1
         } Else {
-            Set ret=..recover(ParentElement,.subElement,"{}","") ; NOT WORKING AS EXPECTED!
+            Do ..recover(ParentElement,.subElement,"{}","") ; NOT WORKING AS EXPECTED!
             ;;$$$BNFROLLBACK(subElement)
             ;Quit 1
         }
@@ -536,7 +454,7 @@ Method Expression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	#dim atom as PXW.DEV.Atom
 	;$$$BNFPATH
  	$$$BNFSTART(subElement)
-    Set ret=0
+    Set ok=0
     
     ;s atom=..newAtom("Expression Begin","")
     ; d subElement.AddPart(atom)
@@ -552,11 +470,11 @@ Method Expression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
         ;s atom=..newAtom("CosCodeBlock Empty","")
         ;d ParentElement.AddPart(atom)
 
-        Set ret=1
+        Set ok=1
     } ElseIf parser.Expression(subElement) {
-        Set ret=1
+        Set ok=1
     } 
-    If ret=1 {
+    If ok=1 {
 		Set ..whitespace=parser.whitespace
 		Set ..comment=parser.comment
 		Set atom=..newAtom("CosCodeBlock End","")
@@ -565,7 +483,7 @@ Method Expression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	} Else {
 		$$$BNFROLLBACK(subElement)
 	}
-    Quit ret
+    Quit ok
 }
 
 Method CosExpressionSql(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
@@ -574,7 +492,7 @@ Method CosExpressionSql(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	#dim atom as PXW.DEV.Atom
 	;$$$BNFPATH
  	$$$BNFSTART(subElement)
-    Set ret=0
+    Set ok=0
     
     ;s atom=..newAtom("Expression Begin","")
     ; d subElement.AddPart(atom)
@@ -591,11 +509,11 @@ Method CosExpressionSql(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
         ;s atom=..newAtom("CosCodeBlock Empty","")
         ;d ParentElement.AddPart(atom)
 
-        Set ret=1
+        Set ok=1
     } ElseIf parser.Expression(subElement) {
-        Set ret=1
+        Set ok=1
     } 
-    If ret=1 {
+    If ok=1 {
 		Set ..whitespace=parser.whitespace
 		Set ..comment=parser.comment
 		Set atom=..newAtom("CosCodeBlock End","")
@@ -605,7 +523,7 @@ Method CosExpressionSql(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 		$$$BNFROLLBACK(subElement)
 	}
     $$$DEBUGMethodEnd
-    Quit ret
+    Quit ok
 }
 
 /// filename ::= 'NEEDS FILE NAME'
@@ -668,12 +586,12 @@ Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 ///  not=0
 Method ClassItemIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
-	Set ret=##super(ParentElement,.subElement)
-    If ret {
+	Set ok=##super(ParentElement,.subElement)
+    If ok {
         Set atom=subElement.FirstAtom()
         If $PIECE(atom.type,":",1)="String" Set atom.type="ClassItemIdentifier"
     }
-    Quit ret
+    Quit ok
 }
 
 /// identifier ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)'
@@ -987,16 +905,16 @@ Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 
         If done {
             $$$BNFCOMMIT(subElement,ParentElement)
-            Set ret=1
+            Set ok=1
         } Else {
             $$$BNFROLLBACK(subElement)
-            Set ret=0
+            Set ok=0
         }
     } Else {
-        Set ret=0
+        Set ok=0
     }
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
@@ -1007,8 +925,8 @@ Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 	;$$$BNFPATH
 	;;$$$DEBUG("%path="_%path)
     Set ok=1
-    Set open=..peek(1)
-    If open'="""",open'="'" {
+    Set openquote=..peek(1)
+    If openquote'="""",openquote'="'" {
         Set ok=0
     }
 
@@ -1022,8 +940,8 @@ Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
             Set ch=$EXTRACT(chs,1),ch2=$EXTRACT(chs,2)
             ; embedded quotes or end of string?
             ; I am not sure how these get encoded so sticking with COS "" for quotes in quotes
-            If ch=open {
-                If ch2=open {
+            If ch=openquote {
+                If ch2=openquote {
                     Set n=n_..next()_..next()
                 } Else {
                     Set instring=0
@@ -1049,8 +967,8 @@ Method JsonString(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	;$$$BNFPATH
 	;;$$$DEBUG("%path="_%path)
     Set ok=1
-    Set open=..peek(1)
-    If open'="""" {
+    Set openquote=..peek(1)
+    If openquote'="""" {
         Set ok=0
     }
 
@@ -1113,12 +1031,11 @@ Method ClassQueryBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		Set atom=..newAtom("SQLCodeBlock End","")
 		Do ParentElement.AddPart(atom)
         If ..peek(1)'="}" {
-            Set recret=..recover(ParentElement,.recsub,"{}","")
+            Do ..recover(ParentElement,.recsub,"{}","")
         }
  
 		Quit 1
 	} Else {
-        ;s recret=..recover(ParentElement,.recsub,"{}","")
         $$$BNFROLLBACK(subElement)
         Quit 0
     }
@@ -1133,8 +1050,6 @@ Method XmlContent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
     $$$BNFSTART(subElement)
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
     
-	;$$$BNFPATH
-	;;$$$DEBUG("%path="_%path)
     Set ok=0,n=""
     While ('..eof()) && (..peek(1)'="<") {
         Set n=n_..next()
@@ -1153,7 +1068,6 @@ Method XmlContent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 ///  type=group
 Method XdataText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
-
     ; is this really XML or JSON?
     ; the recovery in json means that we need to do the check twice and since this is overridden anyway its simple to plug in here
     If ..isPunctuationInList($LISTBUILD("<","{","["),1)'=0 Quit 0
@@ -1163,12 +1077,14 @@ Method XdataText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
     $$$BNFSTART(subElement)
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 
-	;$$$BNFPATH
-	;;$$$DEBUG("%path="_%path)
     Set ok=0,n="",curly=0
     While ('..eof()) && ((curly>0)||(..peek(1)'="}")) {
-        If ..peek(1)="{" Set curly=curly+1
-        If ..peek(1)="}" Set curly=curly-1
+        If ..peek(1)="{" {
+            Set curly=curly+1
+        }
+        If ..peek(1)="}" {
+            Set curly=curly-1
+        }
         Set n=n_..next()
         Set ok=1
     }
@@ -1194,8 +1110,6 @@ Method XmlCdataText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
     $$$DEBUGMethodBegin
     $$$BNFSTART(subElement)
     
-	;$$$BNFPATH
-	;;$$$DEBUG("%path="_%path)
     Set ok=1,n=""
     While ('..eof()) && (..peek(3)'="]]>") {
         Set n=n_..next()
@@ -1217,9 +1131,9 @@ Method XmlData(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 {
 	Set oldmode=..commentMode
     Set ..commentMode="XML"
-    Set ret=##super(ParentElement,.subElement)
+    Set ok=##super(ParentElement,.subElement)
     Set ..commentMode=oldmode
-    Quit ret
+    Quit ok
 }
 
 Method TextInCurly(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
@@ -1249,7 +1163,6 @@ Method skipComments(ch10 As %String) As %Boolean
         If $EXTRACT(ch10,1,3)="///" Set ..comment=..readLineComment("///") Quit 1
         If $EXTRACT(ch10,1,2)="//" Set ..comment=..readLineComment("//") Quit 1
         If $EXTRACT(ch10,1,2)="/*" Set ..comment=..readBlockComment() Quit 1
-
     }
     Quit 0
 }

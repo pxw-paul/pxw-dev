@@ -45,7 +45,7 @@ ClassMethod Now() As %TimeStamp
 
 Method Load(Name As %String, Output Text As %String, Output LastUpdateTime As %TimeStamp) As %Status
 {
-	q ..GetClassStudioText(Name,.Text,,.LastUpdateTime)
+	Quit ..GetClassStudioText(Name,.Text,,.LastUpdateTime)
 }
 
 Method GetClassStudioText(ClassName As %String, Output Text As %String, Output linesOfCode As %String, Output LastUpdateTime As %TimeStamp) As %Status
@@ -615,7 +615,7 @@ ClassMethod FullClassName(Class As %String, CurrentPackage As %String = "") As %
 
 Method List(Name As %String) As PXW.DEV.Dictionary.AtelierRS
 {
-    q ..ListClassDetailsWild(Name)
+    Quit ..ListClassDetailsWild(Name)
 }
 
 Method ListClassDetails(ClassName As %String = "", SQLTableName As %String = "") As PXW.DEV.Dictionary.AtelierRS
@@ -747,10 +747,6 @@ Method GetClassNameFromStoredProc(SQLProcName As %String, Output method As %Stri
     Set mn=$PIECE(SQLProcName,"_",*)
     Set method=mn
 	Quit classname
-}
-
-Method GetClassLastUpdatedNoCache(ClassName As %String) As %TimeStamp
-{
 }
 
 Method GetParameterDetails(ClassName As %String, Name As %String, Output Type As %String, Output Origin As %String) As %Boolean

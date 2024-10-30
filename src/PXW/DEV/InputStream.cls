@@ -54,16 +54,16 @@ Method Next() As %String
 Method NextMany(number As %Integer = 1) As %String
 {
 	Set pos=..pos
-	Set ret=$EXTRACT(..input,pos,pos+number-1)
+	Set found=$EXTRACT(..input,pos,pos+number-1)
 	Set ..pos=pos+number
 	Set ..col=..col+number
-	If $FIND(ret,..eolChar) {
-		Set crcount=$LENGTH(ret,..eolChar)
+	If $FIND(found,..eolChar) {
+		Set crcount=$LENGTH(found,..eolChar)
 		Set ..line=..line+crcount-1
-		Set ..col=$LENGTH($PIECE(ret,..eolChar,*))
+		Set ..col=$LENGTH($PIECE(found,..eolChar,*))
 	}
 	Set:..pos>..lastPos ..lastPos=..pos
-	Quit ret
+	Quit found
 }
 
 /// Read a single char, the next char is NOT checked to see if it is an EOL
@@ -83,17 +83,17 @@ Method NextToEol() As %String
 	; no eol so read whole string
 	If eolpos=0 {
 		Set len=..length-..pos
-		Set ret=$EXTRACT(..input,..pos,..pos+len)
+		Set found=$EXTRACT(..input,..pos,..pos+len)
 		Set ..pos=..pos+len+1
 		Set ..col=..col+len+1
 	} Else {
 		Set len=eolpos-..pos-2
-		Set ret=$EXTRACT(..input,..pos,..pos+len)
+		Set found=$EXTRACT(..input,..pos,..pos+len)
 		Set ..pos=..pos+len+1
 		Set ..col=..col+len+1
 	}
 	Set:..pos>..lastPos ..lastPos=..pos
-	Quit ret
+	Quit found
 }
 
 /// returns the string that contains only the given characters
@@ -106,12 +106,12 @@ Method NextChars(ValidChars As %String) As %String
 		Set peek=$EXTRACT(..input,pos)
     }
 	If pos>..pos {
-		Set ret=..NextMany(pos-..pos)
+		Set found=..NextMany(pos-..pos)
 	} Else {
-		Set ret=""
+		Set found=""
 	}
 	Set:..pos>..lastPos ..lastPos=..pos
-	Quit ret
+	Quit found
 }
 
 Method Peek(offsetStart As %Integer = 0, offsetEnd As %Integer = {offsetStart}) As %String
@@ -127,12 +127,12 @@ Method PeekToEol() As %String
 	; no eol so read whole string
 	If eolpos=0 {
 		Set len=..length-..pos
-		Set ret=$EXTRACT(..input,..pos,..pos+len)
+		Set found=$EXTRACT(..input,..pos,..pos+len)
 	} Else {
 		Set len=eolpos-..pos-2
-		Set ret=$EXTRACT(..input,..pos,..pos+len)
+		Set found=$EXTRACT(..input,..pos,..pos+len)
 	}
-	Quit ret
+	Quit found
 }
 
 Method EOF() As %Boolean

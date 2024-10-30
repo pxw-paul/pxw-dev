@@ -7,7 +7,7 @@ ClassMethod WriteMainBody(ByRef scratch)
 
     Do ..HREFFrom(.CodeReference,.utype,.name)
 
-    if name'="" {
+    If name'="" {
         ; no type so do lookup
         If utype="" {
             Do ..WriteCodeList(utype,name)
@@ -17,11 +17,11 @@ ClassMethod WriteMainBody(ByRef scratch)
                 Do ..WriteCodeList(utype,name)
             } Else {
                 ;Do ..WriteCode(utype,name)
-                w "No direct link yet"
+                Write "No direct link yet"
             }
         }
-    } else {
-        w "Nothing to search for"
+    } Else {
+        Write "Nothing to search for"
     }
 }
 
@@ -32,12 +32,12 @@ ClassMethod WriteCodeList(Type As %String, Name As %String)
     Write "<tr><th>Type</th><th>SubType</th><th>Name</th><th>Modified</th></tr>"
     Write "</thead><tbody>"
     
-
     Set rs=##class(%Library.ResultSet).%New(..%ClassName(1)_":"_"SelectTypes")
-    Set sc=rs.Execute(%NS,Type)
+    $$$ThrowOnError(rs.Execute(%NS,Type))
+
     While rs.%Next() {
-        set typ=rs.%Get("Type")
-        set page=rs.%Get("Page")
+        Set typ=rs.%Get("Type")
+        Set page=rs.%Get("Page")
         Set interface=##class(PXW.DEV.Dictionary.CodeInterface).%OpenId(rs.%Get("ID"))
         Set rs2=interface.List(Name)
         While rs2.%Next() {
@@ -45,12 +45,12 @@ ClassMethod WriteCodeList(Type As %String, Name As %String)
             Write "<td>"_..EscapeHTML(typ)_"</td>"
             Write "<td>"_..EscapeHTML(rs2.%Get("SubType"))_"</td>"
             Write "<td>"
-            if page="" {
+            If page="" {
                 Write "<span title='CodeType ("_typ_") has no display page defined'>"
                 Write ..EscapeHTML(rs2.%Get("Name")) 
-                write "</span>"
+                Write "</span>"
                 
-            } else {
+            } Else {
                 Write "<a class='CDEFClassName' href='"_$CLASSMETHOD(page,"HREFToK123",rs2.%Get("Name"))_"'>"
                 Write ..EscapeHTML(rs2.%Get("Name")) 
                 Write "</a>"
@@ -78,7 +78,8 @@ ClassMethod WriteNav(ByRef scratch)
         Set utype=""
     }
     Set rs=##class(%Library.ResultSet).%New(..%ClassName(1)_":"_"SelectTypes")
-    Set sc=rs.Execute(%NS,"")
+    $$$ThrowOnError(rs.Execute(%NS,""))
+
     While rs.%Next() {
         Set cref=name_"."_rs.%Get("Type")
         Write "<a href='"_..HREFTo(cref)_"'>"_..EscapeHTML(cref)_"</a>"
@@ -171,8 +172,8 @@ ClassMethod HREFFrom(Output CodeReference As %String, Output CodeType As %String
         Set nam=CodeReference
         Set utype=""
     }
-    set CodeType=utype
-    set Name=nam
+    Set CodeType=utype
+    Set Name=nam
 }
 
 ClassMethod HREFTo(CodeReference As %String) As %String

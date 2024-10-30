@@ -42,14 +42,14 @@ Method Call(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0 ; normal rollback
+		Set ok=0 ; normal rollback
 	}
  
     $$$DEBUGMethodEnd
-    Quit ret
+    Quit ok
 }
 
 Method Keyword(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
@@ -62,15 +62,15 @@ Method Keyword(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 	;$$$BNFPATH
 	;;$$$DEBUG("%path="_%path)
     Set ok=1
-    Set open=..peek(1)
-    If open'="""",open'="'" {
+    Set openquote=..peek(1)
+    If openquote'="""",openquote'="'" {
         Set ok=0
     }
 
     If ok {
         $$$BNFSTART(subElement)
 
-        Set dummy=..next()
+        Set start=..next()
         Set n=""
         Set instring=1
         While '..eof() && instring {
@@ -78,20 +78,19 @@ Method Keyword(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
             Set ch=$EXTRACT(chs,1),ch2=$EXTRACT(chs,2)
             ; embedded quotes or end of string?
             ; I am not sure how these get encoded so sticking with COS "" for quotes in quotes
-            If ch=open {
-                If ch2=open {
+            If ch=openquote {
+                If ch2=openquote {
                     Set n=n_..next()_..next()
                 } Else {
                     Set instring=0
-                    ;Set n=n_..next()
-                    Set dummy=..next()
+                    Set end=..next()
                 }
             } Else {
                 Set n=n_..next()
             }
         }
         Set o=..newAtom("String",n)
-        Set o.start=open,o.end=open
+        Set o.start=start,o.end=end
         Do subElement.AddPart(o)
         $$$BNFCOMMIT(subElement,ParentElement)
     }
@@ -136,7 +135,6 @@ Method Equals(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	Set done=0 ; t1 
-	Set ownerElement=subElement
 	; type=group, check=if, skip=1, skipall=1
 	Set getVal=..nextNotEOL($LENGTH(value)),atom=..newAtom(..#keywordAtomType,getVal) ; k1 
 	Do subElement.AddPart(atom) ; t3 
@@ -146,13 +144,13 @@ Method Equals(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 	}
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0
+		Set ok=0
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 /// definition ::= IDENTIFIER EQUALS rules
@@ -176,18 +174,18 @@ Method Definition(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0 ; normal rollback
+		Set ok=0 ; normal rollback
 	}
 	
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;   
-    If ret=0 {
-        Set ret=..recover(ParentElement,.recSub,"",$LISTBUILD($CHAR(13)))
+    If ok=0 {
+        Set ok=..recover(ParentElement,.recSub,"",$LISTBUILD($CHAR(13)))
     }
 
-    Quit ret
+    Quit ok
 }
 
 /// Skip over the next set of comments, return 1 if something was done or 0
@@ -219,13 +217,13 @@ Method File(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0 ; normal rollback
+		Set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 ///  definition*
@@ -238,11 +236,11 @@ Method File1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		Set done=1
 	}
 	If done {
-		Set ret=1
+		Set ok=1
 	} Else {
-		Set ret=1 /* nothing found is ok in RZ */
+		Set ok=1 /* nothing found is ok in RZ */
 	}
-	Quit ret
+	Quit ok
 }
 
 ///  force ::= "~"
@@ -261,13 +259,13 @@ Method Force(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0 ; normal rollback
+		Set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 ///  look_ahead ::= '&' look_ahead_rule
@@ -289,13 +287,13 @@ Method LookAhead(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0 ; normal rollback
+		Set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 ///  look_ahead_rule ::= KEYWORD | subrule | call
@@ -316,13 +314,13 @@ Method LookAheadRule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0 ; normal rollback
+		Set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 ///  not_rule ::= '!' notable_rule
@@ -344,13 +342,13 @@ Method NotRule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0 ; normal rollback
+		Set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 ///  notable_rule ::= KEYWORD | subrule | call
@@ -371,13 +369,13 @@ Method NotableRule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0 ; normal rollback
+		Set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 ///  optional_group ::= '[' rules ']'
@@ -401,13 +399,13 @@ Method OptionalGroup(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0 ; normal rollback
+		Set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 ///  optional_single ::= optionalable_rule '?'
@@ -426,13 +424,13 @@ Method OptionalSingle(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0 ; normal rollback
+		Set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 ///  optionalable_rule ::= KEYWORD | subrule | call
@@ -453,13 +451,13 @@ Method OptionalableRule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0 ; normal rollback
+		Set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 ///  or_rules ::= '|' rule*
@@ -481,13 +479,13 @@ Method OrRules(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0 ; normal rollback
+		Set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 ///  rule*
@@ -500,11 +498,11 @@ Method OrRules4RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 		Set done=1
 	}
 	If done {
-		Set ret=1
+		Set ok=1
 	} Else {
-		Set ret=1 /* nothing found is ok in RZ */
+		Set ok=1 /* nothing found is ok in RZ */
 	}
-	Quit ret
+	Quit ok
 }
 
 ///  repeat ::= repeat_zero | repeat_one
@@ -523,13 +521,13 @@ Method Repeat(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0 ; normal rollback
+		Set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 ///  repeat_one ::= repeatable_rule '+'
@@ -548,13 +546,13 @@ Method RepeatOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0 ; normal rollback
+		Set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 ///  repeat_sep ::= repeat_sep_separator '.' repeat_sep_rule '+'
@@ -577,13 +575,13 @@ Method RepeatSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0 ; normal rollback
+		Set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 ///  repeat_sep_rule ::= KEYWORD | subrule | call
@@ -604,13 +602,13 @@ Method RepeatSepRule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0 ; normal rollback
+		Set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 ///  repeat_sep_separator ::= KEYWORD | subrule | call
@@ -631,13 +629,13 @@ Method RepeatSepSeparator(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0 ; normal rollback
+		Set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 ///  repeat_zero ::= repeatable_rule '*'
@@ -656,13 +654,13 @@ Method RepeatZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0 ; normal rollback
+		Set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 ///  repeatable_rule ::= KEYWORD | subrule | call
@@ -683,13 +681,13 @@ Method RepeatableRule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0 ; normal rollback
+		Set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 ///  rule ::= repeat_sep | repeat_zero | repeat_one | optional_single | KEYWORD | subrule | optional_group | call | look_ahead | not_rule | force
@@ -726,13 +724,13 @@ Method Rule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0 ; normal rollback
+		Set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 ///  rules ::= rule* or_rules*
@@ -751,13 +749,13 @@ Method Rules(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0 ; normal rollback
+		Set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 ///  rule*
@@ -770,11 +768,11 @@ Method Rules2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		Set done=1
 	}
 	If done {
-		Set ret=1
+		Set ok=1
 	} Else {
-		Set ret=1 /* nothing found is ok in RZ */
+		Set ok=1 /* nothing found is ok in RZ */
 	}
-	Quit ret
+	Quit ok
 }
 
 ///  or_rules*
@@ -787,11 +785,11 @@ Method Rules3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		Set done=1
 	}
 	If done {
-		Set ret=1
+		Set ok=1
 	} Else {
-		Set ret=1 /* nothing found is ok in RZ */
+		Set ok=1 /* nothing found is ok in RZ */
 	}
-	Quit ret
+	Quit ok
 }
 
 ///  subrule ::= '(' rules ')'
@@ -815,13 +813,13 @@ Method Subrule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0 ; normal rollback
+		Set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 Method newElement(Type As %String) As PXW.DEV.BNF.Element

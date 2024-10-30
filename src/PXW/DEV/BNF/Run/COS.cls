@@ -23,13 +23,13 @@ Method Dyadicop(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	}
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set retok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0
+		Set retok=0
 	}
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit retok
 }
 
 Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
@@ -85,16 +85,16 @@ Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 
         If done {
             $$$BNFCOMMIT(subElement,ParentElement)
-            Set ret=1
+            Set retok=1
         } Else {
             $$$BNFROLLBACK(subElement)
-            Set ret=0
+            Set retok=0
         }
     } Else {
-        Set ret=0
+        Set retok=0
     }
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit retok
 }
 
 /// identifier ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)'
@@ -173,7 +173,7 @@ Method ClassIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
     If ..peek(13)="{%%CLASSNAME}" {
         Set atom=..newAtom(ParentElement.type,..next(13))
         Do ParentElement.AddPart(atom)
-        Set ret=1
+        Set retok=1
     } ElseIf ..peek(1)="""" {
         Set quote1=..nextNotEOL(1)
         Set value=""
@@ -185,9 +185,9 @@ Method ClassIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
         Set atom.start=quote1
         Set atom.end=quote2
         Do ParentElement.AddPart(atom)
-        Set ret=1
+        Set retok=1
     } Else {
-        Set ret=1
+        Set retok=1
         Set value=""
         If ..peek(1)="%" Set value=..nextNotEOL(1)
         ; not a letter (or number)
@@ -197,10 +197,10 @@ Method ClassIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
         
         If value="" {
             ;$$$DEBUG("checking identifier, ok=0")
-            Set ret=0
+            Set retok=0
         }
         
-        If ret {
+        If retok {
 
             Set ch=..peek(1)
             While (ch?1A) || (ch?1N) || (ch=".")  {
@@ -213,7 +213,7 @@ Method ClassIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
         }
     }
     $$$DEBUGMethodEnd
-    Quit ret
+    Quit retok
 }
 
 /// label_definition ::= label [ label_formal_specification ] [ label_scope ]
@@ -314,7 +314,7 @@ Method PatternMatch(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
         Set pat=pat_..nextNotEOL(1)
     }
     	
-	Set ok=1,bracket=0,patternN=0,instring=0,indirection=0,ret=1
+	Set ok=1,bracket=0,patternN=0,instring=0,indirection=0,retok=1
 
     ; ?@indirect is special case
     If ..peek(1)="@" Set ok=0,indirection=1
@@ -403,12 +403,12 @@ Method PatternMatch(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
     Do ParentElement.AddPart(atom)
   
     If indirection {
-        Set ret=..SimpleIndirection(ParentElement,.indirectSubElement)
-        $$$DEBUG("pattern indirection result="_ret)
+        Set retok=..SimpleIndirection(ParentElement,.indirectSubElement)
+        $$$DEBUG("pattern indirection result="_retok)
     }
 
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit retok
 }
 
 /// whitespace ::= ( [ comment ] [ ( ' ' | '\t' | '\r') ] )*
@@ -459,14 +459,14 @@ Method OneCosStatement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
     }
     If label || dots || directive || command {
         $$$BNFCOMMIT(subElement,ParentElement)
-        Set ret=1
+        Set retok=1
     } Else {
         $$$BNFROLLBACK(subElement)
-        Set ret=0
+        Set retok=0
     }
 
     $$$DEBUGMethodEnd
-    Quit ret
+    Quit retok
 }
 
 /// object_chain ::= '.' object_chain_item ( '.' object_chain_item )*
@@ -484,13 +484,13 @@ Method ObjectChainOLD(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		..ObjectChainItem(subElement) && 
 		$$REP298(subElement)) {
 		$$$BNFCOMMIT(subElement,ParentElement)
- 		Set ret=1
+ 		Set retok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0
+		Set retok=0
 	}
     $$$DEBUGMethodEnd
-    Quit ret
+    Quit retok
 REP298(ParentElement) New %done 
 	$$$BNFSTART(subElement)
 	While (..isString(subElement,".") && 
@@ -523,29 +523,29 @@ Method Naked(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
     ; eg: f x=1:1:10 d
     ; and therefore IS naked
     If ..stopAtEOL,'$ISOBJECT(..whitespace) {
-        Set ret=1 
+        Set retok=1 
     } ElseIf ..peek(1)="{" {
         ; code block does not count as naked
-        Set ret=0
+        Set retok=0
     } ElseIf ..peek(1)="}" {
         ; immediate end to code block does count as naked
-        Set ret=1
+        Set retok=1
     } Else {
        ;d ..skipWhiteSpaceAndComments()
         Set ch=$EXTRACT(..whitespace.value,1,2)
         Set chspc=$TRANSLATE(ch,$CHAR(9)," ") ; turn tabs into spaces for checking
-        Set ret=0
+        Set retok=0
         If chspc="  " {
-            Set ret=1 ; is naked
+            Set retok=1 ; is naked
         } ElseIf chspc=(" "_$CHAR(13)) {
-            Set ret=1 ; is naked
+            Set retok=1 ; is naked
         } Else {
-            If $EXTRACT(ch,1)=$CHAR(13) Set ret=1 ; naked
+            If $EXTRACT(ch,1)=$CHAR(13) Set retok=1 ; naked
         }
     }
-    $$$DEBUG("Naked="_ret)
+    $$$DEBUG("Naked="_retok)
     $$$DEBUGMethodEnd
-    Quit ret
+    Quit retok
 }
 
 /// string ::= '""' | ('"' 'regexp:[^\"\r\n]*' '"')
@@ -602,8 +602,8 @@ Method JsonString(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	;$$$BNFPATH
 	;;$$$DEBUG("%path="_%path)
     Set ok=1
-    Set open=..peek(1)
-    If open'="""" {
+    Set openquote=..peek(1)
+    If openquote'="""" {
         Set ok=0
     }
 
@@ -694,11 +694,11 @@ Method VariableIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 ///  not=0
 Method zzzIntrinsicfncall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
-    Set ret=0
+    Set retok=0
 	If ..peek(1)="$" {
-     ;   s ret=##super(ParentElement,.subElement)
+     ;   s retok=##super(ParentElement,.subElement)
     }
-    Quit ret
+    Quit retok
 }
 
 /// identifier ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)'
@@ -747,9 +747,9 @@ Method ArrayParameterList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 {
 	; make sure there is NO leading space
     Set ..needsWScheck=0
-    Set ret=##super(ParentElement,.subElement)
+    Set retok=##super(ParentElement,.subElement)
     Set ..needsWScheck=1
-    Quit ret
+    Quit retok
 }
 
 /// This is more complicated that the normal variable SQL, putting in a separate routine so that we can optimize them separately 
@@ -1032,13 +1032,13 @@ Method CosDirective(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
     
     Set oldmode=..stopAtEOL
     Set ..stopAtEOL=1
-    Set ret=##super(ParentElement,.subElement)
-    If ret=0 {
-        Set ret=..recover(ParentElement,.recsub,"{}",$LISTBUILD($CHAR(13)))
+    Set retok=##super(ParentElement,.subElement)
+    If retok=0 {
+        Set retok=..recover(ParentElement,.recsub,"{}",$LISTBUILD($CHAR(13)))
     }
     Set ..stopAtEOL=oldmode
     Set ..needsWScheck=1
-    Quit ret
+    Quit retok
 }
 
 /// command_list_eol ::= cos_command ( cos_command )* /* needs to stop at end of line */
@@ -1049,10 +1049,10 @@ Method CommandListEol(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 {
     Set oldmode=..stopAtEOL
     Set ..stopAtEOL=1
-    Set ret=##super(ParentElement,.subElement)
+    Set retok=##super(ParentElement,.subElement)
     Set ..stopAtEOL=oldmode
     Set ..needsWScheck=1
-    Quit ret
+    Quit retok
 }
 
 /// sub_expression ::= '(' expression ')'
@@ -1063,10 +1063,10 @@ Method SubExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 {
     Set oldmode=..stopAtWhitespace
     Set ..stopAtWhitespace=0
-    Set ret=##super(ParentElement,.subElement)
+    Set retok=##super(ParentElement,.subElement)
     Set ..stopAtWhitespace=oldmode
     Set ..needsWScheck=1
-    Quit ret
+    Quit retok
 }
 
 /// close_bracket ::= ')'
@@ -1115,10 +1115,10 @@ Method PostConditional(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 {
     Set oldmode=..stopAtWhitespace
     Set ..stopAtWhitespace=1
-    Set ret=##super(ParentElement,.subElement)
+    Set retok=##super(ParentElement,.subElement)
     Set ..stopAtWhitespace=oldmode
     Set ..needsWScheck=1
-    Quit ret
+    Quit retok
 }
 
 /// write_format_expression ::= write_bang_expression
@@ -1133,10 +1133,10 @@ Method WriteFormatExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
     Set oldmode=..stopAtWhitespace
     Set ..stopAtWhitespace=1
     Set ..needsWScheck=0
-    Set ret=##super(ParentElement,.subElement)
+    Set retok=##super(ParentElement,.subElement)
     Set ..stopAtWhitespace=oldmode
     Set ..needsWScheck=1
-    Quit ret
+    Quit retok
 }
 
 /// This is used by SQL compute, it does NOT allow line labels, it does allow {*} variables
@@ -1144,9 +1144,9 @@ Method CosCodeBlockSql(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 {
     Set oldmode=..codemode
     Set ..codemode="COSSQL"
-    Set ret=##super(ParentElement,.subElement)
+    Set retok=##super(ParentElement,.subElement)
     Set ..codemode=oldmode
-    Quit ret
+    Quit retok
 }
 
 /// This is used by SQL compute, it does NOT allow line labels, it does allow {*} variables
@@ -1154,9 +1154,9 @@ Method CosCodeBlockSqlStorage(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 {
     Set oldmode=..codemode
     Set ..codemode="COSSQLSTORAGE"
-    Set ret=##super(ParentElement,.subElement)
+    Set retok=##super(ParentElement,.subElement)
     Set ..codemode=oldmode
-    Quit ret
+    Quit retok
 }
 
 /// This is used by SQL compute, it does allow line labels, it does allow {*} variables
@@ -1164,9 +1164,9 @@ Method CosCodeBlockTrigger(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 {
     Set oldmode=..codemode
     Set ..codemode="COSSQL"
-    Set ret=##super(ParentElement,.subElement)
+    Set retok=##super(ParentElement,.subElement)
     Set ..codemode=oldmode
-    Quit ret
+    Quit retok
 }
 
 /// html_body ::= 'NEED HTML BODY'
@@ -1194,13 +1194,13 @@ Method HtmlBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 		Set ..comment=parser.comment
     	Set atom=..newAtom("CSPCodeBlock End","")
 		Do ParentElement.AddPart(atom)
-		Set ret=1
+		Set retok=1
 	} Else {
         $$$BNFROLLBACK(subElement)
-        Set ret=0
+        Set retok=0
     }
     $$$DEBUGMethodEnd
-    Quit ret
+    Quit retok
 }
 
 /// js_body ::= 'NEED JS BODY'
@@ -1226,13 +1226,13 @@ Method JsBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
         Set ..comment=parser.comment
         Set atom=..newAtom("JavascriptCodeBlock End","")
         Do ParentElement.AddPart(atom)
-        Set ret=1
+        Set retok=1
     } Else {
         $$$BNFROLLBACK(subElement)
-        Set ret=0
+        Set retok=0
     }
     $$$DEBUGMethodBegin
-    Quit ret
+    Quit retok
 }
 
 Method SqlBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
@@ -1256,18 +1256,18 @@ Method SqlBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 		Set ..comment=parser.comment
     	Set atom=..newAtom("SQLCodeBlock End","")
 		Do ParentElement.AddPart(atom)
-		Set ret=1
+		Set retok=1
 	} Else {
-        Set recret=..recover(ParentElement,.recsub,"()","")
-        If recret=0 {
+        Set recretok=..recover(ParentElement,.recsub,"()","")
+        If recretok=0 {
             $$$BNFROLLBACK(subElement)
-            Set ret=0
+            Set retok=0
         } Else {
-            Set ret=1
+            Set retok=1
         }
     }
     $$$DEBUGMethodEnd
-    Quit ret
+    Quit retok
 }
 
 /// cos_directive_define_subst ::= [cos_command | expression ] text_to_eol_continue
@@ -1278,28 +1278,28 @@ Method CosDirectiveDefineSubst(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 {
 	Set oldmode=..codemode
     Set ..codemode="DEFINE" 
-    Set ret=##super(ParentElement,.subElement)
+    Set retok=##super(ParentElement,.subElement)
     Set ..codemode=oldmode
-    Quit ret
+    Quit retok
 }
 
 Method CosCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
-	Set ret=##super(ParentElement,.subElement)
+	Set retok=##super(ParentElement,.subElement)
     
-    If ret=0 {
+    If retok=0 {
         If ..codemode="DEFINE" {
             ; in DEFINE mode, just let it fail, do not attempt recovery
         } ElseIf ..codemode["STORAGE" {
             ; in storge we want to stop at the end tag (<) or if in a cdata:]]> 
             ; we can only allow 1 letter in each item in the list
-            Set ret=..recover(ParentElement,.recSub,"{}",$LISTBUILD($CHAR(13),"<","]"))
+            Set retok=..recover(ParentElement,.recSub,"{}",$LISTBUILD($CHAR(13),"<","]"))
         } Else {
-            Set ret=..recover(ParentElement,.recSub,"{}",$LISTBUILD($CHAR(9)," ",$CHAR(13)))
+            Set retok=..recover(ParentElement,.recSub,"{}",$LISTBUILD($CHAR(9)," ",$CHAR(13)))
         }
     }
-    ;i ret=0 break
-    Quit ret
+    ;i retok=0 break
+    Quit retok
 }
 
 /// text_to_eol_continue ::= 'regexp:[^\r\n]*'
@@ -1354,11 +1354,11 @@ Method AnyKeyword(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
     If keyword'="" {
         Set next=..nextNotEOL($LENGTH(keyword))
         Do ParentElement.AddPart(..newAtom("keyword",next))
-        Set ret=1
+        Set retok=1
     } Else {
-        Set ret=0
+        Set retok=0
     }
-    Quit ret
+    Quit retok
 }
 
 /// Skip over the next set of comments, return 1 if something was done or 0

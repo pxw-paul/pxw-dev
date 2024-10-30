@@ -150,9 +150,6 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 
 		Set zh(5,"render end")=$ZHOROLOG-zh,zh=$ZHOROLOG
 
-		;Set xref=##class(PXW.Xref.Build).%New()
-		;zw ClassName,timestamp
-		;Do xref.xrefClassIfNecessary(%NS,ClassName,timestamp,0,text)
 		do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName)
 
 		Set zh(6,"xref")=$ZHOROLOG-zh,zh=$ZHOROLOG
@@ -160,9 +157,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 
 	} Else {
 		Do ..WriteStatus(sc)
-		Set xref=##class(PXW.Xref.Build).%New()
-		Do xref.xrefClassIfNecessary(ClassName,"",0)
-
+		do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName)
 	}
 	If Debug["$TIME" {
 		
@@ -315,7 +310,7 @@ ClassMethod WriteClassDir(Class As %String)
 }
 
 /// Write out extra javascript here, the SCRIPT tags are already in place
-ClassMethod WriteScripts() As %Status
+ClassMethod WriteScripts()
 {
 	Write "function edit(clsname) {"
 	Write " 	var editor=window.frames['editor'];",!
@@ -371,7 +366,7 @@ ClassMethod WriteScripts() As %Status
 	Write "}",!
 
 
- /*
+  /*
 	write "function showUndefs() {",!
 	write "		for (var s=0; s<document.styleSheets.length; s++) {",!
 	write "			var ss=document.styleSheets[s];",!

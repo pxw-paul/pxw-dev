@@ -30,13 +30,13 @@ Method Eos(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF
 	}  
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ret=1
+		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
-		Set ret=0
+		Set ok=0
 	} 
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 /*
@@ -151,16 +151,16 @@ Method DecimalLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
         }
         If done {
             $$$BNFCOMMIT(subElement,ParentElement)
-            Set ret=1
+            Set ok=1
         } Else {
             $$$BNFROLLBACK(subElement)
-            Set ret=0
+            Set ok=0
         }
     } Else {
-        Set ret=0
+        Set ok=0
     }
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 /// HEX_INTEGER_LITERAL ::= 'NEED HEX INTEGER LITERAL'
@@ -190,16 +190,16 @@ Method HexIntegerLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
         If done {
             $$$BNFCOMMIT(subElement,ParentElement)
-            Set ret=1
+            Set ok=1
         } Else {
             $$$BNFROLLBACK(subElement)
-            Set ret=0
+            Set ok=0
         }
     } Else {
-        Set ret=0
+        Set ok=0
     }
 	$$$DEBUGMethodEnd
-	Quit ret
+	Quit ok
 }
 
 /// STRING_LITERAL ::= 'NEED STRING LITERAL'

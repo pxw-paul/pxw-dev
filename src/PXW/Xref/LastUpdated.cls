@@ -17,7 +17,7 @@ Property CheckedAt As %TimeStamp;
 
 Property BuildProcessTime As %Numeric;
 
-Index PK On (NameSpace, ItemType, ItemKey1) [ IdKey, PrimaryKey, Unique ];
+Index PK On (NameSpace, ItemType, ItemKey1) [ Unique ];
 
 Index iCheckedAtNS On (CheckedAt, NameSpace);
 
@@ -63,6 +63,15 @@ Storage Default
 </Value>
 <Value name="6">
 <Value>BuildProcessTime</Value>
+</Value>
+<Value name="7">
+<Value>NameSpace</Value>
+</Value>
+<Value name="8">
+<Value>ItemType</Value>
+</Value>
+<Value name="9">
+<Value>ItemKey1</Value>
 </Value>
 </Data>
 <DataLocation>^PXW.Xref.LastUpdatedD</DataLocation>
