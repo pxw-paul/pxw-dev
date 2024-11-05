@@ -206,7 +206,7 @@ Method HexIntegerLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 ///  summary=S
 ///  type=group
 ///  not=0
-Method StringLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+Method oldStringLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
 		#dim o as PXW.DEV.Atom
 
@@ -258,6 +258,161 @@ Method skipComments(ch10 As %String) As %Boolean
     If $EXTRACT(ch10,1,2)="//" Set ..comment=..readLineComment("//") Quit 1
     If $EXTRACT(ch10,1,2)="/*" Set ..comment=..readBlockComment() Quit 1
     Quit 0
+}
+
+Method StringLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+    $$$DEBUGMethodBegin
+    $$$BNFSTART(subElement)
+    $$$BNFPATH
+	;$$$DEBUG("%path="_%path)
+
+    ;d ..skipWhiteSpaceAndComments()
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+    Set ok=0
+    Set char=..peek(1)
+    If char="""" Set ok=1
+    If char="'" Set ok=1
+
+    Set instring=1 ; 1 means started, 2=continuation (after code expression)
+    If ok {
+        While '..eof() && instring {
+            Set o=..newAtom("String")
+            If instring=1 {
+                Set o.start=..next()
+                Set n=""
+                Set marker=o.start
+                Set instring=2
+            }
+            Set cos=0
+            While '..eof() && instring && 'cos {
+                Set ch=..peek(1),ch2=$EXTRACT(..peek(2),2)
+                
+                If ch="\" {
+                    ; escaped marker (' or ")
+                    If ch2=marker {
+                        Set n=n_..next(2) ; \"
+                    } ElseIf ch2="\" {
+                        Set n=n_..next(2) ; \\
+                    } Else {
+                        Set n=n_..next()
+                    }
+                } ElseIf ch="#",ch2="(" { 
+                    Set cos=1                
+                } ElseIf ch=marker {
+                    Set instring=0
+                    Set o.end=..next()
+                } Else {
+                    Set n=n_..next()
+                }
+            }
+            Set o.value=n
+            Do subElement.AddPart(o)
+            If cos {
+                Do ..CosExpression(subElement,.cosSubElement) 
+            }
+        }
+    }
+    If ok {
+ 
+        Do ParentElement.AddPart(subElement)
+    }
+    
+    ;$$$DEBUG("checking identifier, ok=1")
+    ;zw atom
+    $$$DEBUGMethodEnd
+    Quit ok
+}
+
+/// cos_expression_body ::= 'NEEDS COS EXPRESSION BODY'
+///  summary=S
+///  type=group
+///  not=0
+Method CosExpressionBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+{
+		#dim atom as PXW.DEV.Atom
+	$$$DEBUGMethodBegin
+    $$$BNFPATH
+	$$$BNFSTART(subElement)
+    Set atom=..newAtom("CosCodeExpression Begin","")
+    Do ParentElement.AddPart(atom)
+
+	Set parser=##class(PXW.DEV.BNF.Run.COS).%New()
+	Set parser.stream=..stream
+    Do parser.skipWhiteSpaceAndComments()
+    ;$$$DEBUG("COS CODE BLOCK peeked "_parser.peek(1))
+	Set done=0
+    If parser.peek(2)=")#" {
+		; its empty 
+		Set ..whitespace=parser.whitespace
+		Set ..comment=parser.comment
+		Set atom=..newAtom("CosCodeExpression Empty","")
+		Do ParentElement.AddPart(atom)
+        Set done=1
+	} ElseIf parser.Expression(subElement) {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		Set ..whitespace=parser.whitespace
+		Set ..comment=parser.comment
+		Set atom=..newAtom("CosCodeBlock End","")
+		Do ParentElement.AddPart(atom)
+		Set done=1
+	} Else {
+        $$$BNFROLLBACK(subElement)
+        Set done=0
+    }
+    $$$DEBUGMethodEnd
+    Quit done
+}
+
+///  regular_expression_literal ::= 'NEED regex literal'
+/// summary values:NEED REGEX LITERAL
+/// summary=P
+Method RegularExpressionLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	#dim o as PXW.DEV.Atom
+
+    $$$DEBUGMethodBegin
+	;$$$BNFPATH
+	;;$$$DEBUG("%path="_%path)
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+
+    Set ok=0
+    If ..peek(1)'="","/"[..peek(1) {
+        Set ok=1
+    }
+
+    If ok {
+        $$$BNFSTART(subElement)
+
+        Set q1="/"
+        Set n=..nextNotEOL(1)
+        Set instring=1
+        While '..eof() && instring {
+            Set chs=..peek(2)
+            Set ch=$EXTRACT(chs,1),ch2=$EXTRACT(chs,2)
+            ; embedded quotes
+            If ch="/" {
+                If ch2=q1 {
+                    Set n=n_..nextNotEOL(2)
+                } Else {
+                    set instring=0
+                    Set n=n_..nextNotEOL(1)
+                }      
+            } Else {
+                Set n=n_..nextNotEOL(1)
+            }
+        }
+        ; reg ex can end with an extra letter on the end "/abc/i"
+        i ..peek(1)?1a {
+            set n=n_..nextNotEOL(1)
+        }
+        Set o=..newAtom("RegEx",n)
+
+        Do subElement.AddPart(o)
+        $$$BNFCOMMIT(subElement,ParentElement)
+    }
+    $$$DEBUGMethodEnd
+    Quit ok
 }
 
 }

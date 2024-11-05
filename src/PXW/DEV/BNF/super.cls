@@ -66,15 +66,18 @@ Method streamSet(val As PXW.DEV.InputStream) As %Status
     Quit $$$OK
 }
 
-ClassMethod test1(text As %String, method As %String, ByRef element As PXW.DEV.Element, debugToFile As %Boolean = 0)
+ClassMethod test1(text As %String, method As %String, ByRef element As PXW.DEV.Element, debugToFile As %Boolean = 0, debuggerObject As PXW.Debuggers.Basic = "")
 {
     New %path Set %path=""
-    Set debugger="PXW.Debuggers.Basic"
-    If debugToFile {
-        Set debugger="PXW.Debuggers.BasicToFile"
+    i debuggerObject="" {
+        Set debugger="PXW.Debuggers.Basic"
+        If debugToFile {
+            Set debugger="PXW.Debuggers.BasicToFile"
+        }
+    } else {
+        s debugger=debuggerObject
     }
     $$$DEBUGNew(debugger)
-
     $$$DEBUG("Testing="_text)
     $$$DEBUG("method="_method)
     Set element=##class(PXW.DEV.Element).%New()
@@ -297,7 +300,7 @@ Method isString(ParentElement As PXW.DEV.Element = "", StringToCheck As %String)
 Method isPunctuation(StringToCheck As %String, Output foundString As %String) As %Boolean
 {
     //#define UPPER(%x) $zconvert(%x,"U")
-    $$$DEBUGMethodBegin
+    ;$$$DEBUGMethodBegin
     ;d ..skipWhiteSpaceAndComments()
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
  
@@ -310,7 +313,7 @@ Method isPunctuation(StringToCheck As %String, Output foundString As %String) As
         Set foundString=peeked
     }
     ;$$$DEBUG("checking punctuation'"_StringToCheck_"' ok="_ok)
-    $$$DEBUGMethodEnd
+    ;$$$DEBUGMethodEnd
     Quit ok
 }
 
@@ -393,7 +396,7 @@ Method addKeyword(ParentElement As PXW.DEV.Element, Keyword As %String, Output f
 
 Method addPunctuation(ParentElement As PXW.DEV.Element, Punctuation As %String, Output foundString As %String) As %Boolean
 {
-    $$$DEBUGMethodBegin
+    ;$$$DEBUGMethodBegin
     Set ok=0
     If ..isPunctuation(Punctuation,.value) {
         Set foundString=..next($LENGTH(value))
@@ -402,7 +405,7 @@ Method addPunctuation(ParentElement As PXW.DEV.Element, Punctuation As %String, 
         Set ..lastElement=ParentElement
         Set ok=1
     }
-    $$$DEBUGMethodEnd
+    ;$$$DEBUGMethodEnd
     Quit ok
 }
 

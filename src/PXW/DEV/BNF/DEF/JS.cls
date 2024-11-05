@@ -4,6 +4,8 @@ Class PXW.DEV.BNF.DEF.JS Extends PXW.DEV.BNF.Compilers.loader
 /// This BNF is incomplete so do not project
 Projection GEN As PXW.DEV.BNF.Compilers.projection(GenerateTo = "PXW.DEV.BNF.GEN.JS");
 
+Parameter SubElementType = "PXW.DEV.BNF.Elements.JS";
+
 /// https://github.com/antlr/grammars-v4/blob/master/javascript/javascript/JavaScriptParser.g4
 /// with major fixes to make it work for me
 XData file
@@ -155,7 +157,7 @@ iteration_Statement ::= ("Do" statement "While" '(' expression_Sequence ')' eos)
     | ("While" '(' expression_Sequence ')' statement )                                                                           /*# WhileStatement*/
     | ( "for" "(" "var" Variable_Declaration ";" [ single_Expression ] ";" [ single_Expression ] ")" Statement )
     | ("For" '(' [expression_Sequence | variable_Declaration_List] ';' [expression_Sequence] ';' [expression_Sequence] ')' statement ) /*# ForStatement*/
-    | ("For" '(' (single_Expression | variable_Declaration_List) "In" expression_Sequence ')' statement )                              /*# ForInStatement*/
+    | ("For" '(' (variable_Declaration_List | single_Expression ) "In" expression_Sequence ')' statement )                              /*# ForInStatement*/
     | ("For" ["Await"] '(' (single_Expression | variable_Declaration_List) "Of" expression_Sequence ')' statement )                       /*# ForOfStatement*/
     
 var_Modifier     ::= "Var"
@@ -310,13 +312,15 @@ oldsingle_Expression    ::= anonymous_Function                                /*
     | ('(' expression_Sequence ')')                                           /* ParenthesizedExpression */
  
 
-single_expression                  ::= factor ( dyadicop factor )*
+single_expression                  ::= (factor ( dyadicop factor )* ) [ '--' | '++']
 
 factor                              ::= ( monadicop )* primary /* can be any number of +- or ' */
 monadicop                           ::= "++" | "--" | "+" | "-" | "~" | "!"
 
-dyadicop                            ::= ('?' primary ':') | '++' | '--' | '**' | '*' | '/' | '%' | '+' | '-' |'??' | '<<' | '>>' | '>>>' | '<' | '>' | '<=' | '>=' | '==' | '!=' | '===' | '!==' | '&' | '^' | '|' | '&&' | '||' | '='
-                                        | "InstanceOf" | "In"
+dyadicop                            ::= ('?' primary ':') | '===' | '>>>' | '!==' 
+                                        | '++' | '--' | '**' |'??' | '<<' | '>>' | '<=' | '>=' | '==' | '!=' | '&&' | '||' | '+=' | '-='
+                                        | '*' | '/' | '%' | '+' | '-'  | '&' | '^' | '|' | '=' | '<' | '>' 
+                                        | "InstanceOf" /* | "In" */
 
 primary ::= anonymous_Function 
     | ('[' expression_sequence ']')
@@ -346,7 +350,7 @@ Member_Expression_Part	::=	( "[" single_Expression "]" )
 
 macro   ::= '$$$' identifier ['(' expression_sequence ')']
 
-function ::= identifier '(' expression_sequence ')'
+function ::= identifier '(' [expression_sequence] ')'
 
 initializer    ::= '=' single_Expression
     /* TODO: must be `= AssignmentExpression` and we have such label alredy but it doesn't respect the specification.
@@ -360,7 +364,7 @@ assignable    ::= identifier
 object_Literal ::= '{' [property_Assignment (',' property_Assignment)* ] '}'
 
 anonymous_Function    ::= (["Async"] "Function" ['*'] '(' [formal_Parameter_List] ')' function_Body) /*# AnonymousFunctionDecl*/
-    | (["Async"] arrow_Function_Parameters '=>' arrow_Function_Body )           /*# ArrowFunction*/
+  /* NOT SUPPORTING THIS FOR NOW => is confusing FOR statements a bit */  | (["Async"] arrow_Function_Parameters '=>' arrow_Function_Body )           /*# ArrowFunction*/
 
 arrow_Function_Parameters    ::= identifier
     | ('(' [formal_Parameter_List] ')')
@@ -503,6 +507,14 @@ decimal_integer_literal ::= 'NEED decimal_integer_literal'
 end_of_file ::= 'NEED end_of_file'
 string_literal ::= 'NEED string literal'
 regular_expression_literal ::= 'NEED regex literal'
+
+
+cos_expression                      ::= cos_expression_compiletime | cos_expression_runtime | cos_expression_other
+cos_expression_compiletime          ::= '##(' cos_expression_body ')##'
+cos_expression_runtime              ::= '#(' cos_expression_body ')#'
+cos_expression_other                ::= '<%=' cos_expression_body '%>'
+cos_expression_body                 ::= 'NEEDS COS EXPRESSION BODY'
+
 
     ]]></data>
 }

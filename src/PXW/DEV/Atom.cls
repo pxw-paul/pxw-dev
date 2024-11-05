@@ -64,4 +64,12 @@ Method writeFull(indent As %String)
 	Write indent_" "_..start_..value_..end,!
 }
 
+/// write out basic info of the atom
+Method writeDebug(indent As %String)
+{
+	$$$DEBUG(indent_"type="_..type)
+	;i $isobject(..whitespace) d ..whitespace.display(indent_"  ")
+	$$$DEBUG(indent_" "_..start_..value_..end)
+}
+
 }

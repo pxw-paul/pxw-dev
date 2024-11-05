@@ -147,7 +147,7 @@ Method GenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator 
     Do %code.WriteLine($CHAR(9)_"Set etype=$$$UPPER(element.type)")
 
     For  {
-        Set meth=%class.Methods.GetNext(.mkey)
+        Set meth=%compiledclass.Methods.GetNext(.mkey)
         Quit:mkey=""
 
         If meth.ReturnType="PXW.DEV.BNF.Compilers.elementHandler" {

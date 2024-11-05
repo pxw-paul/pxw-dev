@@ -342,7 +342,11 @@ Method checkOneClassMemeberFINAL(element As PXW.DEV.Element)
 
 	/// Non abstract method where there is a return type but no quit to match it
 	IF $$$LOWER(..CodeMode)'="expression",'..MethodIsAbstract,..ReturnType'="",..QuitFound=0 {
-		do ..AddElementWarning(..ReturnTypeElement,"No Quit for method that has a ReturnType")
+		if $$$LOWER(..CodeMode)["generator" {
+			do ..AddElementWarning(..ReturnTypeElement,"GeneratOR method should return %Status, even if the generatED code doesn't.")
+		} else {
+			do ..AddElementWarning(..ReturnTypeElement,"No Quit for method that has a ReturnType")
+		}
 	}
 }
 
@@ -353,8 +357,10 @@ Method checkAttributeCodeModeType(element As PXW.DEV.Element) As PXW.DEV.BNF.Com
 	Set ..CodeMode=codemode
 	If codemode="OBJECTGENERATOR" {
 		Set ..ReturnType="%Library.Status"
+		Set ..ReturnTypeElement=element
 	} elseIf codemode="GENERATOR" {
 		Set ..ReturnType="%Library.Status"
+		Set ..ReturnTypeElement=element
 		Set ..VariablesUsed("%code")="" ; % vars are not checked anyway, but leaving here in case this changes in the future
 	}
 	Quit ""

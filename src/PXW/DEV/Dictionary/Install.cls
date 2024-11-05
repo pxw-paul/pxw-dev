@@ -109,8 +109,8 @@ ClassMethod GenAll()
 /// d ##class(PXW.DEV.Dictionary.Install).ExportAll()
 ClassMethod ExportAll()
 {
-    s dt=$tr($zdt($h,3),":- ","")
-    d $System.OBJ.Export("PXW.*.CLS,PXW.*.INC","/home/irisowner/dev/debug/PXWALLINC_"_dt_".xml")
+    Set dt=$TRANSLATE($ZDATETIME($HOROLOG,3),":- ","")
+    Do $SYSTEM.OBJ.Export("PXW.*.CLS,PXW.*.INC","/home/irisowner/dev/debug/PXWALLINC_"_dt_".xml")
 }
 
 }

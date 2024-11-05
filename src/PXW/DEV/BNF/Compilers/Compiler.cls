@@ -469,7 +469,7 @@ Method compileRepeatSep(Method As %Dictionary.MethodDefinition, Element As PXW.D
             Do ..compileRule(Method,ruleE,indent,"repElement")
             $$$WRITECR(")")
             $$$WRITECR($$$Tab(indent)_"if ok "_$$$OpenCurly)
-            $$$WRITECR($$$Tab(indent+1)_"$$$BNFCOMMIT(repElement,subElement)")
+            $$$WRITECR($$$Tab(indent+1)_"$$$BNFCOMMITCOPY(repElement,subElement)")
             $$$WRITECR($$$Tab(indent)_$$$CloseCurly_" else "_$$$OpenCurly)
             $$$WRITECR($$$Tab(indent+1)_"$$$BNFROLLBACK(repElement)")
             $$$WRITECR($$$Tab(indent)_$$$CloseCurly)

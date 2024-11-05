@@ -14,7 +14,7 @@ Property type As %String [ InitialExpression = {$ZCONVERT($CLASSNAME(),"U")} ];
 /// Property parts As list Of PXW.DEV.Particle [ Private ];
 Method AddPart(Part As PXW.DEV.Particle)
 {
-	$$$DEBUG("Adding "_Part.%ClassName(1)_":"_Part.type_":"_$zconvert(Part.ToString(),"O","JSON")_":")
+	$$$DEBUG("Adding "_Part.%ClassName(1)_":"_Part.type_":"_$zconvert(Part.ToString(),"O","JSON")_":"_$s(Part.%IsA("PXW.DEV.Atom"):Part.line_","_Part.col,1:""))
 	;d ..parts.Insert(Part)
 	; this is faster than the list of objects - not much, 20%, but on dealing with millions of things its something
 	Set i=$INCREMENT(%PXWparts(+$THIS))
@@ -124,6 +124,18 @@ Method writeFull(indent As %String = "")
 		Quit:akey=""
 		
 		Do a.writeFull(indent_".")
+	}
+}
+
+Method writeDebug(indent As %String = "")
+{
+	Set akey=""
+	$$$DEBUG(indent_"Element="_..type_" "_..%ClassName(1)_" @"_+$THIS)
+	For  {
+		Set a=..partsGetNext(.akey)
+		Quit:akey=""
+		
+		Do a.writeDebug(indent_".")
 	}
 }
 

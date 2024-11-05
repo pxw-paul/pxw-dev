@@ -426,10 +426,11 @@ break_extend                        ::= expression
 break_flag                          ::= expression
 
 close_command                       ::= ('close' | 'c') [ post_conditional ]  close_item (',' close_item)*
-close_item                          ::= open_device [ ':' device_parameters ]
-device_parameters                   ::= ( '(' device_parameter_list ')' ) | one_device_parameter
-device_parameter_list               ::= ( one_device_parameter ( ':' one_device_parameter )* )
-one_device_parameter                ::= text // to next : or ) or space
+close_item                          ::= open_device [ ':' close_device_parameters ]
+close_device                        ::= expression
+close_device_parameters             ::= ( '(' close_device_parameter_list ')' ) | one_close_device_parameter
+close_device_parameter_list         ::= ( one_close_device_parameter ( ':' one_close_device_parameter )* )
+one_close_device_parameter          ::= expression
 
 continue_command                    ::= 'continue' [ post_conditional ] 
 
