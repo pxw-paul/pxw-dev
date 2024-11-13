@@ -21,6 +21,11 @@ Property length As %Integer;
 
 Property eolChar As %String [ InitialExpression = {$CHAR(13)} ];
 
+/// see if we are stuck
+Property nextCount As %Integer [ InitialExpression = 0 ];
+
+Parameter nextCountLimit = 10000;
+
 ClassMethod NewString(Code As %String) As PXW.DEV.InputStream
 {
 	Set reader=..%New()
@@ -47,7 +52,14 @@ Method Next() As %String
 		Set ..col=..col+1
 	}
     ;s:..startOfLinePos>..lastStartOfLinePos ..lastStartOfLinePos=..startOfLinePos
-    Set:..pos>..lastPos ..lastPos=..pos
+    i ..pos>..lastPos {
+		s ..lastPos=..pos,..nextCount=0
+	} else {
+		s ..nextCount=..nextCount+1
+		i ..nextCount>..#nextCountLimit {
+			$$$ThrowStatus($$$ERROR(5001,"Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
+		}
+	}
 	Quit ch
 }
 
@@ -62,7 +74,14 @@ Method NextMany(number As %Integer = 1) As %String
 		Set ..line=..line+crcount-1
 		Set ..col=$LENGTH($PIECE(found,..eolChar,*))
 	}
-	Set:..pos>..lastPos ..lastPos=..pos
+    i ..pos>..lastPos {
+		s ..lastPos=..pos,..nextCount=0
+	} else {
+		s ..nextCount=..nextCount+1
+		i ..nextCount>..#nextCountLimit {
+			$$$ThrowStatus($$$ERROR(5001,"Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
+		}
+	}
 	Quit found
 }
 
@@ -72,7 +91,14 @@ Method NextNOTEol(number As %Integer) As %String
 	Set ch=$EXTRACT(..input,..pos,..pos+number-1)
 	Set ..pos=..pos+number
 	Set ..col=..col+number
-    Set:..pos>..lastPos ..lastPos=..pos
+    i ..pos>..lastPos {
+		s ..lastPos=..pos,..nextCount=0
+	} else {
+		s ..nextCount=..nextCount+1
+		i ..nextCount>..#nextCountLimit {
+			$$$ThrowStatus($$$ERROR(5001,"Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
+		}
+	}
 	Quit ch
 }
 
@@ -92,7 +118,14 @@ Method NextToEol() As %String
 		Set ..pos=..pos+len+1
 		Set ..col=..col+len+1
 	}
-	Set:..pos>..lastPos ..lastPos=..pos
+    i ..pos>..lastPos {
+		s ..lastPos=..pos,..nextCount=0
+	} else {
+		s ..nextCount=..nextCount+1
+		i ..nextCount>..#nextCountLimit {
+			$$$ThrowStatus($$$ERROR(5001,"Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
+		}
+	}
 	Quit found
 }
 
@@ -110,7 +143,16 @@ Method NextChars(ValidChars As %String) As %String
 	} Else {
 		Set found=""
 	}
-	Set:..pos>..lastPos ..lastPos=..pos
+	;Set:..pos>..lastPos ..lastPos=..pos
+    i ..pos>..lastPos {
+		s ..lastPos=..pos,..nextCount=0
+	} else {
+		s ..nextCount=..nextCount+1
+		i ..nextCount>..#nextCountLimit {
+			$$$ThrowStatus($$$ERROR(5001,"Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
+		}
+	}
+
 	Quit found
 }
 

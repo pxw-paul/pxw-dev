@@ -69,6 +69,7 @@ Method Build(Namespace As %String, ItemKey1 As %String, PreLoadedText As %String
    				If ..ERROR'="" $$$ThrowStatus($$$ERROR(5001,..ERROR))
 				Set element=##class(PXW.DEV.Element).%New()
 			}
+			if 'x.stream.EOF() set sc=$$$ERROR(5001,"Not at end:"_x.stream.line_":"_x.stream.pos_":"_x.stream.length_":"_$e(x.stream.input,x.stream.lastPos,x.stream.lastPos+20))
 		} Catch e {
 			Set sc=e.AsStatus()
 		}
@@ -247,6 +248,14 @@ Method xrefElement(element As PXW.DEV.Element)
 	}
 
 	Set ..InView=oldInView
+}
+
+Method xrefCDEFAttributeViewquery(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="AttributeViewquery")
+{
+		
+	Set ..InView=1	
+	Set ..CalledByItemName="" ; no name until we hit columns
+	Quit ""
 }
 
 Method xrefCDEFClassDefinition(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassDefinition")
@@ -448,14 +457,6 @@ Method xrefCOS(element as PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.ele
 	quit ""
 }
 */
-Method xrefSQLAttributeViewquery(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="AttributeViewquery")
-{
-		
-	Set ..InView=1	
-	Set ..CalledByItemName="" ; no name until we hit columns
-	Quit ""
-}
-
 Method xrefSQLSelectCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="SelectCommand")
 {
 	Do ..SQLInternalXREF(element)

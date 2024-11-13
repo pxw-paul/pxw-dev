@@ -4,6 +4,18 @@ Class PXW.DEV.BNF.Run.JS Extends PXW.DEV.BNF.GEN.JS
 /// Set to CDEF, COS
 Property commentMode As %String [ InitialExpression = "JS" ];
 
+///  statement_List ::= statement*
+/// summary=(?4Call:4?)*
+Method StatementList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+    set ok=##super(ParentElement,.subElement)
+    if 'ok {
+        Set ok=..recover(ParentElement,.recsub,"{}","")
+    }
+
+	q ok
+}
+
 /// eos ::= SemiColon
 /// | end_of_file
 /// /*| {this.lineTerminatorAhead()}?
@@ -15,9 +27,17 @@ Property commentMode As %String [ InitialExpression = "JS" ];
 Method Eos(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
     If ..needsWScheck Do ..skipWhiteSpaceAndComments()
+    If $ISOBJECT(..whitespace),..whitespace.ToString(0)[$CHAR(13) {
+        Quit 1
+    }
+    If ..peek(1)="}" {
+        Quit 1 ; do not consume
+    }
 
-    If $ISOBJECT(..whitespace),..whitespace[$CHAR(13) Quit 1
-    If ..peek(1)="}" Quit 1 ; do not consume
+    ; > counts as end of file if embedded
+    if ..peek(1)=">" {
+        quit 1
+    }
 
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -56,7 +76,7 @@ Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 ///  not=0
 Method IdentifierName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
-	    $$$DEBUGMethodBegin
+    $$$DEBUGMethodBegin
     ;$$$BNFPATH
 	;;$$$DEBUG("%path="_%path)
 
@@ -64,31 +84,31 @@ Method IdentifierName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 
     Set value=""
-    Set ok=0
+    ;Set ok=0
   
-    ;i ..peek(1)="%" s value=..nextNotEOL(1)
-    If ..peek(1)="_" Set value=..nextNotEOL(1)
-    ; not a letter (or number)
+    ;If ..peek(1)="_" Set value=..nextNotEOL(1)
+    ;Set ch=..peek(1)
+    ;If value="",ch?1A Set value=..nextNotEOL(1)
+
+    ;Set ok=1    
+    ;If value="" {
+    ;    $$$DEBUG("checking identifier, ok=0")
+    ;    Set ok=0
+    ;}
+
+    set ok=0
+
     Set ch=..peek(1)
-    ; no % so must start with a letter
-    If value="",ch?1A Set value=..nextNotEOL(1)
-
-    Set ok=1    
-    If value="" {
-        $$$DEBUG("checking identifier, ok=0")
-        Set ok=0
-    }
-    If ok {
-
+    While (ch?1A) || (ch?1N) || (ch="_") || (ch="$") {
+        Set value=value_..nextNotEOL(1)
         Set ch=..peek(1)
-        While (ch?1A) || (ch?1N)  {
-            Set value=value_..nextNotEOL(1)
-            Set ch=..peek(1)
-        }
-    
+    }
+    i value'="" {
+        set ok=1
         Set atom=..newAtom("identifier",value)
         Do ParentElement.AddPart(atom)
     }
+    
     ;$$$DEBUG("checking identifier, ok=1")
     ;zw atom
     $$$DEBUGMethodEnd
@@ -278,9 +298,10 @@ Method StringLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
     If ok {
         While '..eof() && instring {
             Set o=..newAtom("String")
+            set n=""
             If instring=1 {
                 Set o.start=..next()
-                Set n=""
+                ;Set n=""
                 Set marker=o.start
                 Set instring=2
             }
@@ -298,7 +319,13 @@ Method StringLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
                         Set n=n_..next()
                     }
                 } ElseIf ch="#",ch2="(" { 
-                    Set cos=1                
+                    ; what if we have '#(' ? thats annoying
+                    if $e(..peek(3),3)=marker {
+                        ; not in cos!
+                        set n=n_..next(2)
+                    } else {
+                        Set cos=1
+                    }
                 } ElseIf ch=marker {
                     Set instring=0
                     Set o.end=..next()
@@ -397,13 +424,17 @@ Method RegularExpressionLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subE
                 } Else {
                     set instring=0
                     Set n=n_..nextNotEOL(1)
-                }      
+                } 
+            }  elseif ch="\",ch2="\" {
+                set n=n_..nextNotEOL(2)   
+            } elseif ch="\",ch2="/" {
+                set n=n_..nextNotEOL(2)   
             } Else {
                 Set n=n_..nextNotEOL(1)
             }
         }
         ; reg ex can end with an extra letter on the end "/abc/i"
-        i ..peek(1)?1a {
+        while ..peek(1)?1a {
             set n=n_..nextNotEOL(1)
         }
         Set o=..newAtom("RegEx",n)
@@ -413,6 +444,21 @@ Method RegularExpressionLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subE
     }
     $$$DEBUGMethodEnd
     Quit ok
+}
+
+///  is_not_Line_Terminator ::= 'NEEDS is_not_Line_Terminator'
+/// summary values:NEEDS IS_NOT_LINE_TERMINATOR
+/// summary=P
+Method IsNotLineTerminator(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+    #dim x as %DeepSee.Component.Widget.widget
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+
+    s isTerminator=0
+    If $ISOBJECT(..whitespace),..whitespace.ToString(0)[$CHAR(13) {
+        s isTerminator=1
+    }
+    q 'isTerminator
 }
 
 }

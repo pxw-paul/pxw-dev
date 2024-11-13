@@ -30,9 +30,10 @@ Method cheese(element As PXW.DEV.Element) As %Boolean
         If ok=0 {
             Set ok=..addPunctuation(element,"}")
             If ok {
+                do:..needsWScheck ..skipWhiteSpaceAndComments()
                 Set ..nextStage=2
             }
-        }  
+        } 
     } Else {
         Set ok=0
     }

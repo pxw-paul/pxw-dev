@@ -1,6 +1,22 @@
 Class PXW.DEV.UnitTests.BNF.TestPython Extends %UnitTest.TestCase
 {
 
+Method TestFString()
+{
+    do $$$AssertEquals(..parseAndFlat("str=f""{var1}"""),"Assignment:{Identifier:str,=,Fstring:{FstringStart:f"",FstringReplacementField:{{,Identifier:var1,}},FstringEnd:""}}")
+
+    do $$$AssertEquals(..parseAndFlat("str=f"" before \""{var1}\"" after"""),"Assignment:{Identifier:str,=,Fstring:{FstringStart:f"",String:before \"",FstringReplacementField:{{,Identifier:var1,}},String:\"" after,FstringEnd:""}}")
+
+    do $$$AssertEquals(..parseAndFlat("str=f' before \'{var1}\' after'"),"Assignment:{Identifier:str,=,Fstring:{FstringStart:f',String:before \',FstringReplacementField:{{,Identifier:var1,}},String:\' after,FstringEnd:'}}")
+}
+
+ClassMethod parseAndFlat(text As %String, method As %String = "Statements", class As %String = "PXW.DEV.BNF.Run.Python") As %String
+{
+    s a=..parse(text,method,class)
+    s str=..flatten(a)
+    q str
+}
+
 /// s a=##class(PXW.DEV.UnitTests.BNF.TestPython).parse("var=1*2+3","Statements")
 ClassMethod parse(text As %String, method As %String = "Statements", class As %String = "PXW.DEV.BNF.Run.Python") As PXW.DEV.Element
 {
@@ -15,6 +31,7 @@ ClassMethod parse(text As %String, method As %String = "Statements", class As %S
 
 /// s a=##class(PXW.DEV.UnitTests.BNF.TestPython).parse("var=1*2+3","Statements")
 /// w ##class(PXW.DEV.UnitTests.BNF.TestPython).flatten(a)
+/// Get skip over all the junk levels and just report on atom content and elements that contain more than 1 part.
 ClassMethod flatten(Element As PXW.DEV.Element) As %String
 {
 	#dim a as PXW.DEV.Atom
@@ -49,10 +66,6 @@ ClassMethod flatten(Element As PXW.DEV.Element) As %String
         set str=str_"}"
     }
 	Quit str
-}
-
-Method TestFString()
-{
 }
 
 }

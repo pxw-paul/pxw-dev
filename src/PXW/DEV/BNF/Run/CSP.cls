@@ -347,6 +347,34 @@ Method JavascriptBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
     }*/
 }
 
+///  js_expression ::= 'NEEDS JS EXPRESSION'
+/// summary values:NEEDS JS EXPRESSION
+/// summary=P
+Method JsExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+    #dim atom as PXW.DEV.Atom
+    $$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+
+	Set parser=##class(PXW.DEV.BNF.Run.JS).%New()
+	Set parser.stream=..stream
+    Do parser.skipWhiteSpaceAndComments()
+
+    $$$DEBUG("Javascript Expression:"_parser.peek(50))
+    If parser.SingleExpression(subElement) {
+        $$$BNFCOMMIT(subElement,ParentElement)
+        Set ..whitespace=parser.whitespace
+        Set ..comment=parser.comment
+        Set ok=1
+    } Else {
+        $$$BNFROLLBACK(subElement)
+        Set ok=0
+    }
+    $$$DEBUGMethodBegin
+    Quit ok
+}
+
 /// Skip over the next set of comments, return 1 if something was done or 0
 Method skipComments(ch10 As %String) As %Boolean
 {

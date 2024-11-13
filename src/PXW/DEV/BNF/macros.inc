@@ -4,7 +4,7 @@ ROUTINE PXW.DEV.BNF.macros [Type=INC]
 #define BNFSTART(%sub) set %sub=..newElement(##Expression(""""_%methodname_"""")) d ..getBookmark(.##SAFEExpression("%sub"_"BM")) /* $$$DEBUG("BNFSTART:"_%subElement)*/
 
 /// commit the transaction to the parent
-#define BNFCOMMIT(%sub,%parent) do %parent.AddPart(%sub) 
+#define BNFCOMMIT(%sub,%parent) do:%sub.partsCount()>0 %parent.AddPart(%sub) 
 
 /// commit the transaction to the parent, by copying the data rather than creating a new node
 #define BNFCOMMITCOPY(%sub,%parent) do %parent.partsCopy(%sub) 

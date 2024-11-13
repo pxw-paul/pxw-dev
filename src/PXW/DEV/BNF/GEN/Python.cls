@@ -1,4 +1,4 @@
-/// Created: 2024-10-26 12:15:46 PXW.DEV.BNF.Compilers.Compiler2
+/// Created: 2024-11-06 18:05:09 PXW.DEV.BNF.Compilers.Compiler2
 Class PXW.DEV.BNF.GEN.Python Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 
@@ -144,7 +144,7 @@ Method Args325RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..Args332Sub(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -2832,7 +2832,7 @@ Method DelTargets385RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..DelTarget(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -3173,7 +3173,7 @@ Method DottedAsNames42RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..DottedAsName(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -3425,7 +3425,7 @@ Method DoubleStarredKvpairs306RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..DoubleStarredKvpair(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -5483,7 +5483,7 @@ Method GlobalStmt24RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..Name(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -6118,7 +6118,7 @@ Method ImportFromAsNames39RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..ImportFromAsName(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -6622,7 +6622,7 @@ Method ItemsPattern166RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..KeyValuePattern(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -6817,7 +6817,7 @@ Method KeywordPatterns175RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..KeywordPattern(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -7072,7 +7072,7 @@ Method Kwargs340RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..KwargOrStarred(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -7103,7 +7103,7 @@ Method Kwargs341RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..KwargOrDoubleStarred(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -7134,7 +7134,7 @@ Method Kwargs342RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..KwargOrStarred(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -7165,7 +7165,7 @@ Method Kwargs343RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..KwargOrDoubleStarred(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -8984,7 +8984,7 @@ Method MaybeSequencePattern159RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..MaybeStarPattern(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -9257,7 +9257,7 @@ Method NonlocalStmt25RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..Name(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -9513,7 +9513,7 @@ Method OrPattern135RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,"|")  && ..ClosedPattern(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -10478,7 +10478,7 @@ Method PositionalPatterns174RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef s
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..Pattern(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -11406,7 +11406,7 @@ Method SimpleStmts8RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,";")  && ..SimpleStmt(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -12097,7 +12097,7 @@ Method Slices244RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..Slices246Sub(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -12722,7 +12722,7 @@ Method StarNamedExpressions195RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..StarNamedExpression(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -13088,7 +13088,7 @@ Method StarTargetsListSeq353RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef s
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..StarTarget(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -14678,7 +14678,7 @@ Method TypeExpressions394RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..Expression(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -14730,7 +14730,7 @@ Method TypeExpressions396RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..Expression(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -14782,7 +14782,7 @@ Method TypeExpressions398RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..Expression(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -14876,7 +14876,7 @@ Method TypeExpressions402RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..Expression(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -15073,7 +15073,7 @@ Method TypeParamSeq178RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..TypeParam(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -15483,7 +15483,7 @@ Method WithStmt109RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..WithItem(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -15535,7 +15535,7 @@ Method WithStmt111RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..WithItem(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -15587,7 +15587,7 @@ Method WithStmt113RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..WithItem(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}
@@ -15639,7 +15639,7 @@ Method WithStmt115RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 			$$$BNFSTART(repElement)
 			set ok=(..addPunctuation(repElement,",")  && ..WithItem(repElement,.addedElement) )
 			if ok {
-				$$$BNFCOMMIT(repElement,subElement)
+				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
 				$$$BNFROLLBACK(repElement)
 			}

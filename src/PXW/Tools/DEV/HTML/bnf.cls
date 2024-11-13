@@ -662,7 +662,7 @@ Method writeCOSVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Comp
     Set variablename=element.ToStringAtomsOnly(0)
     ; variable could be something like {*} or {field}  so the name above (using atoms only) will not find anything
     ; don't worry about that at the moment!
-    If variablename'="" {
+    If variablename'="",$ISOBJECT(..Analyser) {
         ; when working out a type use the #DIM type if there is one
         Set classname=$GET(..Analyser.DimmedTypes(variablename))
         If classname="" Set classname=$GET(..Analyser.VariablesTypes(variablename))

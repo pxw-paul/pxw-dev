@@ -162,6 +162,7 @@ attribute_Not                       ::= 'not' ( attribute_Abstract
                                         | attribute_SQLComputed
                                         | attribute_Transient
                                         | attribute_Unique
+                                        | attribute_SQLRowidPrivate
                                         )
 
 class_class_method                  ::= 'classmethod' method_name '(' [ formal_spec_list ] ')' [ 'as' return_type_class_reference ] [ method_attribute_list ] '{' method_body '}'
@@ -604,7 +605,7 @@ attribute_SOAPRequestMessage        ::= 'soaprequestmessage' '=' ( string | soap
 
 attribute_SOAPTypeNamespace         ::= 'soaptypenamespace' '=' ( string | soap_identifier ) 
 
-attribute_SQLCategory               ::= 'sqlcategory' '=' ( 'date' | 'double' | 'fmdate' | 'fmtimestamp' | 'integer' | 'mvdate' | 'name' | 'numeric' | 'string' | 'time' | 'timestamp' | 'POSIXTS' )
+attribute_SQLCategory               ::= 'sqlcategory' '=' ( 'date' | 'double' | 'fmdate' | 'fmtimestamp' | 'integer' | 'mvdate' | 'name' | 'numeric' | 'string' | 'time' | 'timestamp' | 'POSIXTS' | 'VECTOR' )
 
 attribute_SQLColumnNumber           ::= 'SqlColumnNumber' '=' number
 

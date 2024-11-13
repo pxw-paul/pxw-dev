@@ -1228,6 +1228,8 @@ Method JsBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
         Do ParentElement.AddPart(atom)
         Set retok=1
     } Else {
+        ;Set recok=..recover(ParentElement,.recsub,"{}","")
+
         $$$BNFROLLBACK(subElement)
         Set retok=0
     }

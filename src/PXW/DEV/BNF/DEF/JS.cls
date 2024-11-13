@@ -83,7 +83,6 @@ statement         ::= block
     | empty_Statement
     | class_Declaration
     | function_Declaration
-    | expression_Statement
     | if_Statement
     | iteration_Statement
     | continue_Statement
@@ -96,6 +95,7 @@ statement         ::= block
     | throw_Statement
     | try_Statement
     | debugger_Statement
+    | expression_Statement
     
 block    ::= '{' [statement_List] '}'
     
@@ -156,9 +156,9 @@ if_Statement ::= "If" '(' expression_Sequence ')' statement [("Else" statement)]
 iteration_Statement ::= ("Do" statement "While" '(' expression_Sequence ')' eos)                                             /*# DoStatement*/
     | ("While" '(' expression_Sequence ')' statement )                                                                           /*# WhileStatement*/
     | ( "for" "(" "var" Variable_Declaration ";" [ single_Expression ] ";" [ single_Expression ] ")" Statement )
-    | ("For" '(' [expression_Sequence | variable_Declaration_List] ';' [expression_Sequence] ';' [expression_Sequence] ')' statement ) /*# ForStatement*/
+    | ("For" '(' [variable_Declaration_List | expression_Sequence ] ';' [expression_Sequence] ';' [expression_Sequence] ')' statement ) /*# ForStatement*/
     | ("For" '(' (variable_Declaration_List | single_Expression ) "In" expression_Sequence ')' statement )                              /*# ForInStatement*/
-    | ("For" ["Await"] '(' (single_Expression | variable_Declaration_List) "Of" expression_Sequence ')' statement )                       /*# ForOfStatement*/
+    | ("For" ["Await"] '(' (variable_Declaration_List | single_Expression  ) "Of" expression_Sequence ')' statement )                       /*# ForOfStatement*/
     
 var_Modifier     ::= "Var"
     | "let"
@@ -166,7 +166,7 @@ var_Modifier     ::= "Var"
     
 continue_Statement    ::= "Continue" [/*{this.notLineTerminator()}?*/ identifier] eos
     
-break_Statement ::= "Break" [/*{this.notLineTerminator()}*/ identifier] eos
+break_Statement ::= "Break" [is_not_Line_Terminator identifier] eos
     
 return_Statement    ::= "Return" [/*{this.notLineTerminator()}?*/ expression_Sequence] eos
 
@@ -237,7 +237,7 @@ source_Elements    ::= source_Element*
     
 array_Literal    ::= '[' element_List ']'
     
-element_List    ::= [array_Element] (',' array_Element)*  /* Yes, everything is optional */
+element_List    ::= [array_Element] (',' [array_Element])*  /* Yes, everything is optional */
 
 array_Element    ::= [Ellipsis] single_Expression
  
@@ -314,18 +314,21 @@ oldsingle_Expression    ::= anonymous_Function                                /*
 
 single_expression                  ::= (factor ( dyadicop factor )* ) [ '--' | '++']
 
-factor                              ::= ( monadicop )* primary /* can be any number of +- or ' */
+factor                              ::= ( monadicop )* primary [ '++' | '--'] /* can be any number of +- or ' */
 monadicop                           ::= "++" | "--" | "+" | "-" | "~" | "!"
 
-dyadicop                            ::= ('?' primary ':') | '===' | '>>>' | '!==' 
-                                        | '++' | '--' | '**' |'??' | '<<' | '>>' | '<=' | '>=' | '==' | '!=' | '&&' | '||' | '+=' | '-='
-                                        | '*' | '/' | '%' | '+' | '-'  | '&' | '^' | '|' | '=' | '<' | '>' 
+dyadicop                            ::= ('?' single_expression ':') | '===' | '>>>' | '!==' 
+                                        | '**' |'??' | '<<' | '>>' | '<=' | '>=' | '==' | '!=' | '&&' | '||' | '+=' | '-=' | '*='
+                                        | '*' | '/' | '%' | '+' | '-'  | '&' | '^' | '|' | '=' | '<' 
+                                        | ('>' is_not_Line_Terminator) /* checking for > on its own at the end of embedded js */
+                                        | cos_expression_runtime /* sometimes there is an expression for a operator, in particular < or >, EnsPortal.StartStopFrame */
                                         | "InstanceOf" /* | "In" */
 
 primary ::= anonymous_Function 
-    | ('[' expression_sequence ']')
+    | cos_expression
+    | ('[' expression_sequence ']'  (member_expression_part)*)
     | ( 'Class' identifier? class_Tail )                     /* ClassExpression */
-    | ( "New" identifier arguments)                                             /* NewExpression */
+    | ( "New" identifier arguments (member_expression_part)* )                                             /* NewExpression */
     | ( "New" single_Expression arguments)                                       /* NewExpression */
     | ( "New" single_Expression)                                                 /* NewExpression */
     | ( "New" '.' identifier )                                                    /* MetaExpression // new.target */
@@ -342,15 +345,15 @@ primary ::= anonymous_Function
     | "Super"                                                                /* SuperExpression */
     | literal                                                              /* LiteralExpression */
     | (array_Literal (member_expression_part)*)                                                        /* ArrayLiteralExpression */
-    | object_Literal                                                        /* ObjectLiteralExpression */
-    | ('(' expression_Sequence ')')                                           /* ParenthesizedExpression */
+    | object_Literal                                                       /* ObjectLiteralExpression */
+    | ('(' expression_Sequence ')' (member_expression_part)*)                                           /* ParenthesizedExpression */
 
 Member_Expression_Part	::=	( "[" single_Expression "]" )
    |	( "." Identifier [( "(" [ expression_Sequence ] ")" )] )
 
 macro   ::= '$$$' identifier ['(' expression_sequence ')']
 
-function ::= identifier '(' [expression_sequence] ')'
+function ::= identifier ['[' single_expression ']'] '(' [expression_sequence] ')'
 
 initializer    ::= '=' single_Expression
     /* TODO: must be `= AssignmentExpression` and we have such label alredy but it doesn't respect the specification.
@@ -361,9 +364,9 @@ assignable    ::= identifier
     | array_Literal
     | object_Literal
     
-object_Literal ::= '{' [property_Assignment (',' property_Assignment)* ] '}'
+object_Literal ::= '{' [property_Assignment (',' [property_Assignment])* ] '}' /* sometimes these are missing, is this valid or just poor coding? */
 
-anonymous_Function    ::= (["Async"] "Function" ['*'] '(' [formal_Parameter_List] ')' function_Body) /*# AnonymousFunctionDecl*/
+anonymous_Function    ::= (["Async"] "Function" ['*'] [ identifier ] /* optional identifier on anonymous?! */ '(' [formal_Parameter_List] ')' function_Body) /*# AnonymousFunctionDecl*/
   /* NOT SUPPORTING THIS FOR NOW => is confusing FOR statements a bit */  | (["Async"] arrow_Function_Parameters '=>' arrow_Function_Body )           /*# ArrowFunction*/
 
 arrow_Function_Parameters    ::= identifier
@@ -388,8 +391,8 @@ assignment_Operator    ::= '*='
 
 literal    ::= Null_Literal
     | Boolean_Literal
-    | String_Literal
-    | Regular_Expression_Literal
+    | (String_Literal (member_expression_part)*)
+    | (Regular_Expression_Literal (member_expression_part)*)
     | numeric_Literal
     | bigint_Literal
 
@@ -509,12 +512,14 @@ string_literal ::= 'NEED string literal'
 regular_expression_literal ::= 'NEED regex literal'
 
 
-cos_expression                      ::= cos_expression_compiletime | cos_expression_runtime | cos_expression_other
+cos_expression                      ::= cos_expression_compiletime | cos_expression_runtime | cos_expression_other | cos_expression_server
 cos_expression_compiletime          ::= '##(' cos_expression_body ')##'
 cos_expression_runtime              ::= '#(' cos_expression_body ')#'
+cos_expression_server               ::= '#server(' '..' identifier '(' [ expression_sequence ]  ')' ')#'
 cos_expression_other                ::= '<%=' cos_expression_body '%>'
 cos_expression_body                 ::= 'NEEDS COS EXPRESSION BODY'
 
+is_not_Line_Terminator              ::= 'NEEDS is_not_Line_Terminator'
 
     ]]></data>
 }

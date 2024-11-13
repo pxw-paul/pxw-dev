@@ -452,8 +452,16 @@ Method FstringMiddleText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
     ;$$$BNFPATH
     ;;$$$DEBUG("%path="_%path)
     Set n=""
-    While ..peek(1)'="{",..peek($LENGTH(..fStringEndChar))'=..fStringEndChar {
-        Set n=n_..next(1)
+    set endf=..fStringEndChar
+    set endfLen=$l(endf)
+    set embeddedf="\"_..fStringEndChar
+    set embeddedfLen=$l(embeddedf)
+    While ..peek(1)'="{",..peek(endfLen)'=endf {
+        if ..peek(embeddedfLen)=embeddedf {
+            set n=n_..next(embeddedfLen)
+        } else {
+            Set n=n_..next(1)
+        }
     }
     If n'="" {
         Set o=..newAtom("String",n)

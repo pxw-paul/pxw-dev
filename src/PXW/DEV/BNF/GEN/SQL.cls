@@ -1,4 +1,4 @@
-/// Created: 2024-10-26 12:15:58 PXW.DEV.BNF.Compilers.Compiler1
+/// Created: 2024-11-06 18:05:22 PXW.DEV.BNF.Compilers.Compiler1
 Class PXW.DEV.BNF.GEN.SQL Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 

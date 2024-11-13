@@ -87,6 +87,7 @@ ClassMethod GetClassToLoad(cls As %String, path As %String, Output bookmark As %
 	Quit ocls
 }
 
+/// s %NS="LOCAL_USER" d ##class(PXW.Tools.DEV.Class).WriteClass("%iKnow.Classification.UI.ClassifierBuilder",1,"",0,.s)
 ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %String = "", hiliteLineNo As %Integer, ByRef scratch)
 {
 	New %path
@@ -146,6 +147,14 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 			;zw output.Analyser
 			Set element=##class(PXW.DEV.Element).%New()
 		}
+		if 'x.stream.EOF() {
+			w "<span id='unfinishedParse'>"
+			do ..WriteStatus($$$ERROR(5001,"Not at end:line="_x.stream.line_":pos="_x.stream.pos_":lastPos="_x.stream.lastPos_":length="_x.stream.length_":"_$e(x.stream.input,x.stream.pos,x.stream.lastPos)_"."))
+			w "</span>"
+			do output.AddToIndex(" Unfinished parse","ERROR","unfinishedParse")
+			do output.AddToIndexError(" Unfinished parse","Unfinished parsing")
+		}
+
 		Do output.end()
 
 		Set zh(5,"render end")=$ZHOROLOG-zh,zh=$ZHOROLOG
