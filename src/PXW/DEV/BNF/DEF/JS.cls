@@ -95,11 +95,19 @@ statement         ::= block
     | throw_Statement
     | try_Statement
     | debugger_Statement
+    /*| assignment_statement*/
     | expression_Statement
-    
+
+/*
+assignment_statement ::= identifier (member_expression_part)* '=' (function_Declaration | single_expression)
+*/
+
 block    ::= '{' [statement_List] '}'
     
-statement_List ::= statement*
+statement_List           ::= statement*
+
+/* mandatory statement list is used when we KNOW there is some js so if none is returned then its a problem */
+statement_List_mandatory ::= statement+
     
 import_Statement ::= "Import" import_From_Block
     
@@ -151,7 +159,7 @@ empty_Statement ::= ';'
     
 expression_Statement ::= /*{this.notOpenBraceAndNotFunction()}?*/ expression_Sequence eos
     
-if_Statement ::= "If" '(' expression_Sequence ')' statement [("Else" statement)]
+if_Statement ::= "If" '(' expression_Sequence ['in' expression_sequence] ')' statement [("Else" statement)]
     
 iteration_Statement ::= ("Do" statement "While" '(' expression_Sequence ')' eos)                                             /*# DoStatement*/
     | ("While" '(' expression_Sequence ')' statement )                                                                           /*# WhileStatement*/
@@ -180,9 +188,9 @@ case_Block  ::= '{' [case_Clauses] [default_Clause [case_Clauses]] '}'
 
 case_Clauses  ::= case_Clause*
     
-case_Clause  ::= "Case" expression_Sequence ':' [statement_List]
+case_Clause  ::= "Case" expression_Sequence ':' ( !'case' statement )* /* keep looping through statements while NOT a case */    /* [statement_List] */ 
     
-default_Clause   ::= "Default" ':' [ statement_List ]
+default_Clause   ::= "Default" ':' ( !'case' statement )* /* keep looping through statements while NOT a case */    /* [statement_List] */ 
 
 labelled_Statement ::= identifier ':' statement
 
@@ -516,6 +524,7 @@ cos_expression                      ::= cos_expression_compiletime | cos_express
 cos_expression_compiletime          ::= '##(' cos_expression_body ')##'
 cos_expression_runtime              ::= '#(' cos_expression_body ')#'
 cos_expression_server               ::= '#server(' '..' identifier '(' [ expression_sequence ]  ')' ')#'
+cos_expression_call                 ::= '#call(' '..' identifier '(' [ expression_sequence ]  ')' ')#'
 cos_expression_other                ::= '<%=' cos_expression_body '%>'
 cos_expression_body                 ::= 'NEEDS COS EXPRESSION BODY'
 

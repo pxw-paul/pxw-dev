@@ -81,6 +81,7 @@ Method CspElement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
     Set ..commentMode="XML"
     Set ok=##super(ParentElement,.subElement)
     Set ..commentMode=oldmode
+  
     Quit ok
 }
 

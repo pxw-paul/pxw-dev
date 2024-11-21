@@ -24,13 +24,14 @@ ClassMethod WriteMainBody()
 		Write "<tr>"
 		Write "<td class=''>"_..EscapeHTML(rs.ItemType)_"</td>"
 		Write "<td>"
-			If rs.ItemType="CLS" {
-				Write "<a class='CDEFClassName' href='"_##class(PXW.Tools.DEV.Class).HREFTo(rs.ItemKey1,,,)_"'>"
+			set page=##class(PXW.Tools.DEV.CodeDisplayPage).GetPageClass(rs.ItemType)
+			If page'="" {
+				Write "<a class='CDEFMember' href='"_$CLASSMETHOD(page,"HREFToK123",rs.ItemKey1)_"'>"
 				Write ..EscapeHTML(rs.ItemKey1)
 				Write "</a>"
-			} Else {
+			}  Else {
 				Write ..EscapeHTML(rs.ItemKey1)
-			}
+			} 
 		Write "</td>"
 		Write "<td>"_..EscapeHTML(rs.LastUpdate)_"</td>"
 		Set txt=$SYSTEM.Status.GetErrorText(rs.BuildStatus)

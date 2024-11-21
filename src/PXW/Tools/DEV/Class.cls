@@ -147,26 +147,26 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 			;zw output.Analyser
 			Set element=##class(PXW.DEV.Element).%New()
 		}
-		if 'x.stream.EOF() {
-			w "<span id='unfinishedParse'>"
-			do ..WriteStatus($$$ERROR(5001,"Not at end:line="_x.stream.line_":pos="_x.stream.pos_":lastPos="_x.stream.lastPos_":length="_x.stream.length_":"_$e(x.stream.input,x.stream.pos,x.stream.lastPos)_"."))
-			w "</span>"
-			do output.AddToIndex(" Unfinished parse","ERROR","unfinishedParse")
-			do output.AddToIndexError(" Unfinished parse","Unfinished parsing")
+		If 'x.stream.EOF() {
+			Write "<span id='unfinishedParse'>"
+			Do ..WriteStatus($$$ERROR(5001,"Not at end:line="_x.stream.line_":pos="_x.stream.pos_":lastPos="_x.stream.lastPos_":length="_x.stream.length_":"_$EXTRACT(x.stream.input,x.stream.pos,x.stream.lastPos)_"."))
+			Write "</span>"
+			Do output.AddToIndex(" Unfinished parse","ERROR","unfinishedParse")
+			Do output.AddToIndexError(" Unfinished parse","Unfinished parsing")
 		}
 
 		Do output.end()
 
 		Set zh(5,"render end")=$ZHOROLOG-zh,zh=$ZHOROLOG
 
-		do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName)
+		Do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName)
 
 		Set zh(6,"xref")=$ZHOROLOG-zh,zh=$ZHOROLOG
 		Kill element,x,output
 
 	} Else {
 		Do ..WriteStatus(sc)
-		do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName)
+		Do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName)
 	}
 	If Debug["$TIME" {
 		

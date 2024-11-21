@@ -415,7 +415,7 @@ Method CosCodeBlockTrigger(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 Method JavascriptCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean [ ProcedureBlock = 1 ]
 {
  	#dim atom as PXW.DEV.Atom
-	;$$$BNFPATH
+ 	;$$$BNFPATH
 	$$$BNFSTART(subElement)
     Set atom=..newAtom("JavascriptCodeBlock Begin","")
     Do ParentElement.AddPart(atom)
@@ -430,23 +430,23 @@ Method JavascriptCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 		Set ..comment=parser.comment
 		Set atom=..newAtom("JavascriptCodeBlock Empty","")
 		Do ParentElement.AddPart(atom)
-		Quit 1
-	}
-    ; the only example of a call I have seen looked like an expression and not what was documented
-    ; 
-
-    $$$DEBUG("Javascript language normal")
-    If parser.StatementList(subElement) {
-        $$$BNFCOMMIT(subElement,ParentElement)
-        Set ..whitespace=parser.whitespace
-        Set ..comment=parser.comment
-        Set atom=..newAtom("JavascriptCodeBlock End","")
-        Do ParentElement.AddPart(atom)
-        Quit 1
-    } Else {
-        $$$BNFROLLBACK(subElement)
-        Quit 0
+		set retok=1
+	} else {
+        $$$DEBUG("Javascript language normal")
+       If parser.StatementListMandatory(subElement) {
+            $$$BNFCOMMIT(subElement,ParentElement)
+            Set ..whitespace=parser.whitespace
+            Set ..comment=parser.comment
+            Set atom=..newAtom("JavascriptCodeBlock End","")
+            Do ParentElement.AddPart(atom)
+            set retok=1
+        } Else {
+ 
+            do ..recover(ParentElement,.recElement,"{}","")
+            set retok=1
+        }
     }
+    quit retok
 }
 
 /// expression ::= 'NEEDS EXPRESSION'

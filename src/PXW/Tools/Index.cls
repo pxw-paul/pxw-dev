@@ -69,13 +69,13 @@ ClassMethod WriteForm(ClassName As %String) As %Status
 						; if I find one thats not I will deal with this later
 						Set VNAME=$TRANSLATE(VAR,"abcdefghijklmnopqrstuvwxyz")
 						Set DEF=$TRANSLATE(DEF,"""")
-						&html<<tr><td class=prompt>#(VAR)#</td>>
+						&html<<tr><td width=25% class=prompt>#(VAR)#</td>>
 						If TYP="%Boolean" {
-							&html<<td><input type=checkbox name=#(VNAME)# value=1 #($SELECT(DEF=1:"checked",1:""))#></td>>
+							&html<<td width=25%><input type=checkbox name=#(VNAME)# value=1 #($SELECT(DEF=1:"checked",1:""))#></td>>
 						} Else {
-							&html<<td><input type=text name=#(VNAME)# value='#(DEF)#'></td>>
+							&html<<td width=25%><input type=text name=#(VNAME)# value='#(DEF)#'></td>>
 						}
-						&html<<td>#(TYP)#</td>
+						&html<<td width=25%>#(TYP)#</td>
 							</tr>>
 					}
 				}

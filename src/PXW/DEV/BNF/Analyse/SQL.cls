@@ -294,7 +294,7 @@ Method FindTable(cref As PXW.DEV.Element, ByRef tables) As %String
             Quit:a2=""
             ;s class=$g(tables($$$UPPER(a2)))
             Set table=$GET(tables(a2))
-            If table'="" {
+            If table'="",$ISOBJECT(..ClassServer) {
                 Set class=..ClassServer.GetClassNameFromTableName(table,..This)   
                 Set pname=..ClassServer.GetPropertyNameSQL(class,columnname)
                 If pname'="" {
@@ -312,7 +312,7 @@ Method FindTable(cref As PXW.DEV.Element, ByRef tables) As %String
         ;    s tablealias=$o(tables(""))
         ;    i tablealias'="" s fulltable=$g(tables(tablealias))
         } Else {
-            Set fulltable=..ClassServer.GetFullTableName(fulltable,..This)
+            Set:$ISOBJECT(..ClassServer) fulltable=..ClassServer.GetFullTableName(fulltable,..This)
         }
     }
     Quit fulltable

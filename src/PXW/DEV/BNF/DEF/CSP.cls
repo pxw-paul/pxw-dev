@@ -13,7 +13,11 @@ csp_tag_s_c                         ::= '/>'
 csp_tag_e_a                         ::= '</'
 csp_tag_e_b                         ::= '>'
 
-csp_page                            ::= (csp_xml | csp_element | csp_end_tag | csp_content )*                                                /* <tag> or </tag> could be the START! in a &html */
+csp_page                            ::= (csp_xml | csp_element | csp_end_tag | csp_content )*      /* <tag> or </tag> could be the START! in a &html */
+/* mandatory page is where we KNOW there is some code to parse so if this returns 0 elements there is a problem to recover */
+csp_page_mandatory                  ::= (csp_xml | csp_element | csp_end_tag | csp_content )+      /* + means there must be one or more */
+
+
 csp_element                         ::= csp_special_tag | (csp_start_tag ( csp_element | csp_content)* [csp_end_tag]) | csp_empty_tag /* end tag is optional  */
 csp_start_tag                       ::= csp_tag_s_a csp_tag_ns_name (csp_attribute )* csp_tag_s_b                    /* <tag attributes> */
 csp_end_tag                         ::= csp_tag_e_a csp_tag_ns_name csp_tag_e_b

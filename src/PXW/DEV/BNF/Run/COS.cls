@@ -1174,6 +1174,10 @@ Method CosCodeBlockTrigger(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 ///  type=group
 Method HtmlBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
+    ; make sure there is something on the page
+    d:..needsWScheck ..skipWhiteSpaceAndComments()
+    i ..peek(1)=">" q 1
+
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	;$$$DEBUG("%path="_%path)
@@ -1188,16 +1192,17 @@ Method HtmlBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	Set parser.stream=..stream
     Do parser.skipWhiteSpaceAndComments()
     ;$$$DEBUG("COS CODE BLOCK peeked "_parser.peek(1))
-	If parser.CspPage(subElement) {
-		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ..whitespace=parser.whitespace
-		Set ..comment=parser.comment
-    	Set atom=..newAtom("CSPCodeBlock End","")
-		Do ParentElement.AddPart(atom)
-		Set retok=1
+	If parser.CspPageMandatory(subElement) {
+        $$$BNFCOMMIT(subElement,ParentElement)
+        Set ..whitespace=parser.whitespace
+        Set ..comment=parser.comment
+        Set atom=..newAtom("CSPCodeBlock End","")
+        Do ParentElement.AddPart(atom)
+        Set retok=1
 	} Else {
-        $$$BNFROLLBACK(subElement)
-        Set retok=0
+         Set recretok=..recover(ParentElement,.recsub,"<>","")
+        $$$DEBUG("RECOVERED htmlbody:"_recretok)
+        Set retok=1
     }
     $$$DEBUGMethodEnd
     Quit retok
@@ -1208,7 +1213,12 @@ Method HtmlBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 ///  type=group
 Method JsBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
- 	#dim atom as PXW.DEV.Atom
+    #dim atom as PXW.DEV.Atom
+
+   ; make sure there is something on the page
+    d:..needsWScheck ..skipWhiteSpaceAndComments()
+    i ..peek(1)=">" q 1
+    
     $$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1228,10 +1238,8 @@ Method JsBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
         Do ParentElement.AddPart(atom)
         Set retok=1
     } Else {
-        ;Set recok=..recover(ParentElement,.recsub,"{}","")
-
-        $$$BNFROLLBACK(subElement)
-        Set retok=0
+        Set recok=..recover(ParentElement,.recsub,"<>","")
+        Set retok=1
     }
     $$$DEBUGMethodBegin
     Quit retok

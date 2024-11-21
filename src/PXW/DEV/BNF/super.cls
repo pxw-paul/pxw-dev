@@ -69,13 +69,13 @@ Method streamSet(val As PXW.DEV.InputStream) As %Status
 ClassMethod test1(text As %String, method As %String, ByRef element As PXW.DEV.Element, debugToFile As %Boolean = 0, debuggerObject As PXW.Debuggers.Basic = "")
 {
     New %path Set %path=""
-    i debuggerObject="" {
+    If debuggerObject="" {
         Set debugger="PXW.Debuggers.Basic"
         If debugToFile {
             Set debugger="PXW.Debuggers.BasicToFile"
         }
-    } else {
-        s debugger=debuggerObject
+    } Else {
+        Set debugger=debuggerObject
     }
     $$$DEBUGNew(debugger)
     $$$DEBUG("Testing="_text)
@@ -91,7 +91,7 @@ ClassMethod test1(text As %String, method As %String, ByRef element As PXW.DEV.E
     $$$DEBUG("Testing complete")
     $$$DEBUG("")
     If debugToFile {
-        set debug=$$$debugObject
+        Set debug=$$$debugObject
         Write !,"Debug file "_debug.file
     }
 }
@@ -112,7 +112,7 @@ Method gotoBookmark(ByRef bookmark As %String)
     ;quit
     ;$$$DEBUGMethodBegin
     Set forward=(..stream.pos<$LISTGET(bookmark,1))
-    $$$DEBUG("Going "_$SELECT(forward:"forward",1:"back")_" from:"_$zconvert(..peek(20),"O","JSON"))
+    $$$DEBUG("Going "_$SELECT(forward:"forward",1:"back")_" from:"_$ZCONVERT(..peek(20),"O","JSON"))
     
     Set $LISTBUILD(pos,col,line,startOfLinePos,needsWScheck,stopeol,stopws)=bookmark
     Set ..stream.pos=pos,..stream.col=col,..stream.line=line,..stream.startOfLinePos=startOfLinePos
@@ -128,7 +128,7 @@ Method gotoBookmark(ByRef bookmark As %String)
     Set ..keyword="",..peekedlen=0
     Set ..stopAtEOL=stopeol
     Set ..stopAtWhitespace=stopws
-    $$$DEBUG("Going "_$SELECT(forward:"forward",1:"back")_"   to:"_$zconvert(..peek(20),"O","JSON"))
+    $$$DEBUG("Going "_$SELECT(forward:"forward",1:"back")_"   to:"_$ZCONVERT(..peek(20),"O","JSON"))
     ;$$$DEBUGMethodEnd
 }
 
@@ -694,6 +694,7 @@ Method recover(ParentElement As PXW.DEV.Element, ByRef subElement As PXW.DEV.Ele
 		Do ParentElement.AddPart(subElement)
 	}	
 	$$$DEBUGMethodEnd
+    ; recover always is true?
 	Quit ok
 }
 

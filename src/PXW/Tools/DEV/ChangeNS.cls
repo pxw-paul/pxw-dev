@@ -22,16 +22,15 @@ ClassMethod WriteMainBody()
 	$$$THROWONERROR(sc,rs.Execute())
 
     Write "<table>"
-    Write "<thead><tr><th>Name</th><th>Address</th><th>NameSpace</th></thead>"
+    Write "<thead><tr><th>Name</th><th>Description</th></thead>"
     Write "<tbody>"
 	While rs.Next() {
-		Set name=rs.Data("ServerName")
-        Set address=rs.Data("ServerAddress")
-        Set ns=rs.Data("Namespace")
-        Write "<tr>"
-        Write "<td><a href='"_..HREFTo(name)_"'>"_..EscapeHTML(name)_$SELECT(name=%NS:"*",1:"")_"</a></td>"
-        Write "<td>"_..EscapeHTML(address)_"</td>"
-        Write "<td>"_..EscapeHTML(ns)_"</td>"
+		Set name=rs.Data("Name")
+        Set desc=rs.Data("Description")
+        set selected=$SELECT(name=%NS:1,1:0)
+        Write "<tr"_$s(selected:" class=hiliterow",1:"")_">"
+        Write "<td><a href='"_..HREFTo(name)_"'>"_..EscapeHTML(name)_$s(selected:"*",1:"")_"</a></td>"
+        Write "<td>"_..EscapeHTML(desc)_"</td>"
         Write "</tr>"
 	}
     Write "</tbody></table>"
@@ -45,7 +44,7 @@ ClassMethod HREFTo(NewServer As %String) As %String
 
 Query SelectNS() As %SQLQuery
 {
-    SELECT ServerName,ServerAddress,NameSpace FROM PXW_DEV_Dictionary.AtelierSettings
+    SELECT Name,Description FROM PXW_DEV_Dictionary.Namespace
 }
 
 }

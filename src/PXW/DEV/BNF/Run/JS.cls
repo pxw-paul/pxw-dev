@@ -6,14 +6,20 @@ Property commentMode As %String [ InitialExpression = "JS" ];
 
 ///  statement_List ::= statement*
 /// summary=(?4Call:4?)*
-Method StatementList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Statement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-    set ok=##super(ParentElement,.subElement)
-    if 'ok {
-        Set ok=..recover(ParentElement,.recsub,"{}","")
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+    ; if the code is embedded then we need to stop at:
+    If ..peek(1)="<" Quit 0 ; </script>?
+    If ..peek(1)=">" Quit 0 ; &js<  >
+    If ..peek(1)="}" Quit 0 ; } end of method
+    Set ok=##super(ParentElement,.subElement)
+    If 'ok {
+        Set retok=..recover(ParentElement,.recsub,"{}",$LISTBUILD($CHAR(13)))
+        Set ok=1
     }
 
-	q ok
+	Quit ok
 }
 
 /// eos ::= SemiColon
@@ -35,8 +41,8 @@ Method Eos(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF
     }
 
     ; > counts as end of file if embedded
-    if ..peek(1)=">" {
-        quit 1
+    If ..peek(1)=">" {
+        Quit 1
     }
 
 	$$$DEBUGMethodBegin
@@ -96,15 +102,15 @@ Method IdentifierName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
     ;    Set ok=0
     ;}
 
-    set ok=0
+    Set ok=0
 
     Set ch=..peek(1)
     While (ch?1A) || (ch?1N) || (ch="_") || (ch="$") {
         Set value=value_..nextNotEOL(1)
         Set ch=..peek(1)
     }
-    i value'="" {
-        set ok=1
+    If value'="" {
+        Set ok=1
         Set atom=..newAtom("identifier",value)
         Do ParentElement.AddPart(atom)
     }
@@ -298,7 +304,7 @@ Method StringLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
     If ok {
         While '..eof() && instring {
             Set o=..newAtom("String")
-            set n=""
+            Set n=""
             If instring=1 {
                 Set o.start=..next()
                 ;Set n=""
@@ -320,10 +326,10 @@ Method StringLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
                     }
                 } ElseIf ch="#",ch2="(" { 
                     ; what if we have '#(' ? thats annoying
-                    if $e(..peek(3),3)=marker {
+                    If $EXTRACT(..peek(3),3)=marker {
                         ; not in cos!
-                        set n=n_..next(2)
-                    } else {
+                        Set n=n_..next(2)
+                    } Else {
                         Set cos=1
                     }
                 } ElseIf ch=marker {
@@ -357,7 +363,7 @@ Method StringLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 ///  not=0
 Method CosExpressionBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
-		#dim atom as PXW.DEV.Atom
+	#dim atom as PXW.DEV.Atom
 	$$$DEBUGMethodBegin
     $$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -422,20 +428,20 @@ Method RegularExpressionLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subE
                 If ch2=q1 {
                     Set n=n_..nextNotEOL(2)
                 } Else {
-                    set instring=0
+                    Set instring=0
                     Set n=n_..nextNotEOL(1)
                 } 
-            }  elseif ch="\",ch2="\" {
-                set n=n_..nextNotEOL(2)   
-            } elseif ch="\",ch2="/" {
-                set n=n_..nextNotEOL(2)   
+            }  ElseIf ch="\",ch2="\" {
+                Set n=n_..nextNotEOL(2)   
+            } ElseIf ch="\",ch2="/" {
+                Set n=n_..nextNotEOL(2)   
             } Else {
                 Set n=n_..nextNotEOL(1)
             }
         }
         ; reg ex can end with an extra letter on the end "/abc/i"
-        while ..peek(1)?1a {
-            set n=n_..nextNotEOL(1)
+        While ..peek(1)?1a {
+            Set n=n_..nextNotEOL(1)
         }
         Set o=..newAtom("RegEx",n)
 
@@ -454,11 +460,11 @@ Method IsNotLineTerminator(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
     #dim x as %DeepSee.Component.Widget.widget
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 
-    s isTerminator=0
+    Set isTerminator=0
     If $ISOBJECT(..whitespace),..whitespace.ToString(0)[$CHAR(13) {
-        s isTerminator=1
+        Set isTerminator=1
     }
-    q 'isTerminator
+    Quit 'isTerminator
 }
 
 }
