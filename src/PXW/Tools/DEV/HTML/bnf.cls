@@ -673,18 +673,29 @@ Method writeCOSVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Comp
 
 Method writeCOSLabelDefinition(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="LabelDefinition")
 {
+    #dim labatom,anchorAtom as PXW.DEV.Atom
+
     Set labatom=element.FirstAtom()
     Set lab=labatom.value
     Set ..ThisLabel=lab
+    ;Set anchorAtom=labatom.getComment()
+    ;if anchorAtom="" s anchorAtom=labatom
+
     If lab=..HiliteLabel {
-        ;d ..wrapAtomHTML(labatom,"<span class='hilite'>","</span>")
-        ;d ..wrapAtomHTML(labatom,"<a name='bookmark'>","</a>")
-        Do ..wrapAtomHTML(labatom,"<a name='Bookmark' class='hilite'>","</a>")
+        Do ..wrapAtomHTML(element,"<a name='Bookmark'></a>","")
+        Do ..wrapAtomHTML(labatom,"<span class='hilite'>","</span>")
+        Set anchor="Bookmark"
         If ..HilitePlus'="" Set ..HiLiteLine=labatom.line+..HilitePlus
     } Else {
         Set labname=$TRANSLATE("LAB"_..ThisMethod_lab,"$^%_","")
-        Do ..wrapAtomHTML(labatom,"<a class='COSLabelDef' name='"_labname_"'>","</a>")
+        ; put the anchor before the comment
+        Do ..wrapAtomHTML(element,"<a name='"_labname_"'></a>","")
+        Do ..wrapAtomHTML(labatom,"<span id='"_labname_"SPAN' class='COSLabelDef'>","</span>")
+        Set anchor=labname
     }
+    Do ..AddToIndex(lab,"label",anchor)
+
+
     Quit ""
 }
 
@@ -692,7 +703,7 @@ Method writeCOSLabelReference(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BN
 {
     Set lab=element.ToString(0)
     If lab["^" {
-        Do ..wrapElementHTML(element,"<a class='COSLabel' href='"_..HREFToClass(lab)_"'>","</a>")
+        Do ..wrapElementHTML(element,"<a class='COSLabel' href='"_..HREFToRoutine(lab)_"'>","</a>")
     } Else {
         Set labname=$TRANSLATE("LAB"_..ThisMethod_lab,"$^%_","")
         Do ..wrapElementHTML(element,"<a class='COSLabel' href='#"_labname_"'>","</a>")
@@ -1043,7 +1054,7 @@ Method writePYFunctionDefRaw(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.
     If $ISOBJECT(nameatom) {
         Set aname="pyDefName"_nameatom.value
         Do ..AddToIndex(nameatom.value,"MethodName",aname)
-            Do ..wrapAtomHTML(nameatom,"<span id='"_aname_"' class='CDEFMember'>","</span>")
+        Do ..wrapAtomHTML(nameatom,"<span id='"_aname_"' class='CDEFMember'>","</span>")
     }    
     Quit ""
 }
@@ -1269,6 +1280,11 @@ Method HREFToInclude(Include As %String = "", MacroName As %String = "") As %Str
 Method HREFToPython(Module As %String) As %String
 {
     Quit ##class(PXW.Tools.DEV.PythonModule).HREFTo(Module)
+}
+
+Method HREFToRoutine(LabelRef As %String) As %String
+{
+    Quit ##class(PXW.Tools.DEV.Routine).HREFTo(LabelRef)
 }
 
 }

@@ -3,16 +3,16 @@ Class PXW.Tools.DEV.Routine Extends PXW.Tools.DEV.CodeDisplayPage
 
 Parameter CodeType = "INT";
 
-ClassMethod WriteMainBody()
+ClassMethod WriteMainBody(ByRef scratch)
 {
 	Do ..HREFFrom(.rtn,.lbl,.plus,.debug)
 	If rtn["*" Do ..WriteRoutineDir(rtn) Quit
 
 	
-	Do ..WriteRoutine(rtn,lbl,plus,.debug)
+	Do ..WriteRoutine(rtn,lbl,plus,.debug,.scratch)
 }
 
-ClassMethod WriteRoutine(Routine As %String, Label As %String = "", Plus As %String = "", Debug As %String = "")
+ClassMethod WriteRoutine(Routine As %String, Label As %String = "", Plus As %String = "", Debug As %String = "", Output scratch)
 {
 	If $PIECE(Routine,".",*)="INT" Set Routine=$PIECE(Routine,".",1,*-1)
 
@@ -26,7 +26,7 @@ ClassMethod WriteRoutine(Routine As %String, Label As %String = "", Plus As %Str
 		Set output=##class(PXW.Tools.DEV.HTML.bnf).%New()
 		Set output.HiliteLabel=Label
 		Set output.HilitePlus=Plus
-
+		Set scratch=output
 		If Debug="$PATHS" Set output.showPaths=1
 
 		Set element=##class(PXW.DEV.Element).%New()
@@ -42,11 +42,18 @@ ClassMethod WriteRoutine(Routine As %String, Label As %String = "", Plus As %Str
 			Set zh(4)=$ZHOROLOG-zh,zh=$ZHOROLOG
 			Do output.middle(element)
 			Set zh(5)=$ZHOROLOG-zh,zh=$ZHOROLOG
+			If 'x.stream.EOF() {
+				Write "<span id='unfinishedParse'>"
+				Do ..WriteStatus($$$ERROR(5001,"Not at end:line="_x.stream.line_":pos="_x.stream.pos_":lastPos="_x.stream.lastPos_":length="_x.stream.length_":"_$EXTRACT(x.stream.input,x.stream.pos,x.stream.lastPos)_"."))
+				Write "</span>"
+				Do output.AddToIndex(" Unfinished parse","ERROR","unfinishedParse")
+				Do output.AddToIndexError(" Unfinished parse","Unfinished parsing")
+			}
 
 		} Catch e {
 			Do ..WriteStatus(e.AsStatus())
 		}
-		ZWrite zh
+		;ZWrite zh
 		Write "</pre>"
 	} Else {
 		Do ..WriteStatus(sc)
@@ -208,7 +215,7 @@ ClassMethod WriteScripts()
 }
 
 /// Write out extra styles here, the STYLE tags are already in place
-ClassMethod WriteStyles()
+ClassMethod xxWriteStyles()
 {
 	&html<
 	.hiliteSET { background-color:lightgreen; }
@@ -229,6 +236,23 @@ ClassMethod WriteStyles()
 	.hiliteGET7 { background-color:#FEFFBF; }
 	.hiliteGET8 { background-color:#FFBFFE; }
 	>
+}
+
+ClassMethod WriteNav(ByRef scratch)
+{
+	
+	If $ISOBJECT($GET(scratch)) {
+		Set output=scratch
+		While output.NextIndexItemByName(.name,.type,.anchor,.error) {
+				If error="" {
+					Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_"CDEF"_type_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
+				} Else {
+					Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_output.#ErrorClass_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
+				}
+		}
+		Write "<hr>"
+	}
+    Write "<a href=# onclick='MakeStringsInteresting(); '>Strings</a>"
 }
 
 }

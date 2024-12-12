@@ -72,4 +72,12 @@ Method writeDebug(indent As %String)
 	$$$DEBUG(indent_" "_..start_..value_..end)
 }
 
+/// Find the left-most comment which could be before some whitespace.
+Method getComment()
+{
+	If $ISOBJECT(..comment) Quit ..comment
+	If $ISOBJECT(..whitespace) Quit ..whitespace.getComment()
+	Quit ""
+}
+
 }
