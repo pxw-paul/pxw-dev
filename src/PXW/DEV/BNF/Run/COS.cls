@@ -1193,11 +1193,11 @@ Method HtmlBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
     Do parser.skipWhiteSpaceAndComments()
     ;$$$DEBUG("COS CODE BLOCK peeked "_parser.peek(1))
 	If parser.CspPageMandatory(subElement) {
-        $$$BNFCOMMIT(subElement,ParentElement)
         Set ..whitespace=parser.whitespace
         Set ..comment=parser.comment
         Set atom=..newAtom("CSPCodeBlock End","")
-        Do ParentElement.AddPart(atom)
+        Do subElement.AddPart(atom)
+        $$$BNFCOMMIT(subElement,ParentElement)
         Set retok=1
 	} Else {
          Set recretok=..recover(ParentElement,.recsub,"<>","")
@@ -1231,11 +1231,11 @@ Method JsBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 
     $$$DEBUG("Javascript language normal")
     If parser.StatementList(subElement) {
-        $$$BNFCOMMIT(subElement,ParentElement)
         Set ..whitespace=parser.whitespace
         Set ..comment=parser.comment
         Set atom=..newAtom("JavascriptCodeBlock End","")
-        Do ParentElement.AddPart(atom)
+        Do subElement.AddPart(atom)
+        $$$BNFCOMMIT(subElement,ParentElement)
         Set retok=1
     } Else {
         Set recok=..recover(ParentElement,.recsub,"<>","")
@@ -1261,11 +1261,11 @@ Method SqlBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
     Do parser.skipWhiteSpaceAndComments()
     ;$$$DEBUG("COS CODE BLOCK peeked "_parser.peek(1))
 	If parser.SqlProgram(subElement) {
-		$$$BNFCOMMIT(subElement,ParentElement)
 		Set ..whitespace=parser.whitespace
 		Set ..comment=parser.comment
     	Set atom=..newAtom("SQLCodeBlock End","")
-		Do ParentElement.AddPart(atom)
+		Do subElement.AddPart(atom)
+		$$$BNFCOMMIT(subElement,ParentElement)
 		Set retok=1
 	} Else {
         Set recretok=..recover(ParentElement,.recsub,"()","")

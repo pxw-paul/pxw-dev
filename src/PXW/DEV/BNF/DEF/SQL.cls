@@ -212,6 +212,7 @@ any_text_upto_close_bracket         ::= 'code this'
 
 sql_function						::= ('$' identifier '(' [ sql_expression ( ',' sql_expression)* ] ')')
 										| ('%exact' sql_expression )
+										| ('count' '(' ')' [ sql_window ] ) 
 										| ('count' '(' ['distinct' | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ] ) 
 										| ('min' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ] ) 
 										| ('max' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ] ) 
@@ -253,12 +254,14 @@ sql_function_datepart_part_word ::= 'year' | 'yy' | 'yyyy'
 									| 'millisecond' | 'ms'
 									| 'sqltimestamp' | 'sts'
 									
-sql_case_expression					::= 'CASE' ( sql_case_expression1 | sql_case_expression2 ) ['ELSE' sql_expression ] 'END'
-sql_case_expression1				::= 'WHEN' sql_expression 'THEN' sql_expression  ('WHEN' sql_expression 'THEN' sql_expression )* /* glitch in generated code where (x)* always returns true because * means 0 or more we need a way of saying at least 1 */
-sql_case_expression2				::= sql_expression ('WHEN' sql_expression 'THEN' sql_expression )* 
+sql_case_expression					::= 'CASE' ( sql_case_expression1 | sql_case_expression2 ) [ sql_case_else ] sql_case_end
+sql_case_expression1				::= sql_case_when  ( sql_case_when )* 
+sql_case_expression2				::= sql_expression ( sql_case_when )* 
+sql_case_when						::= 'WHEN' sql_expression 'THEN' sql_expression
+sql_case_else						::= 'ELSE' sql_expression
+sql_case_end						::= 'END'
 
 col_list							::= column_reference ( ',' column_reference )*
-
 
 column_reference 					::= [ alias_name '.' ] column_name [column_reference_implicit]
 column_reference_implicit 			::= ('->' column_name)*

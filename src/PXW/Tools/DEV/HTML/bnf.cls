@@ -434,6 +434,9 @@ Method writeCDEFClassQuery(element As PXW.DEV.BNF.Elements.ClassDefinition) As P
 
 Method writeCDEFClassQueryBody(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassQueryBody")
 {
+    ; not working
+    ;Set formatter=##class(PXW.DEV.BNF.Format.SQL).%New()
+    ;Do formatter.formatElement(element)
     Do ..wrapElementHTML(element,"<span class='EmbeddedSQL'>","</span>")
     Quit ""
 }
@@ -830,6 +833,7 @@ Method writeSQLQuerySpecification(element As PXW.DEV.BNF.Elements.SQL) As PXW.DE
     Quit ""
 }
 
+/// WHY IS THIS HERE and not just in a WithClause section?
 Method writeSQLWithCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="WithCommand")
 {
     Do element.findElementsByType("WithClause",.withlist)
@@ -844,6 +848,16 @@ Method writeSQLWithCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.C
     Quit ""
 }
 
+Method writeSQLWithClause(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="WithClause")
+{
+    Do ..wrapElementHTML(element,"<span class='SQLSection'>","</span>")
+}
+
+Method writeSQLWhereClause(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="WhereClause")
+{
+    Do ..wrapElementHTML(element,"<span class='SQLSection'>","</span>")
+}
+
 Method writeSQLDerivedColumn(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="DerivedColumn")
 {
     ; work out what this column is called
@@ -852,7 +866,7 @@ Method writeSQLDerivedColumn(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
     ; then create an ID for it so it can be highlighted
     #dim col as PXW.DEV.Element
     Set col=element
-    Set classtxt="class='SQLColumn'"
+    Set classtxt="class='SQLSection'"
     Set colname="colxxxx"
 
     Set asclause=col.findFirstElementByType("AsClause",0)
@@ -878,6 +892,11 @@ Method writeSQLDerivedColumn(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
     Do ..wrapElementHTML(col,"<span "_classtxt_" fetchid='"_$$$UPPER(colname)_"'>","</span>")        
     
     Quit ""
+}
+
+Method writeSQLJoin(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="Join")
+{
+    Do ..wrapElementHTML(element,"<span class='SQLSection'>","</span>")
 }
 
 Method writeSQLSelectCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="SelectCommand")

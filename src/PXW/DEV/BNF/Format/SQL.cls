@@ -23,7 +23,7 @@ Method formatElement(element As PXW.DEV.Element)
 
 Method resetAll(element As PXW.DEV.Element)
 {
-	For  {
+ 	For  {
 		Set a=element.partsGetNext(.akey)
 		Quit:akey=""
 		
@@ -40,11 +40,13 @@ Method resetAll(element As PXW.DEV.Element)
 }
 
 /// If there is NO whitespace leave alone, otherwise make it a single space.
-/// Whitespace on Comments is untouched.
+/// Whitespace on Comments is untouched. - WHICH IS NOT QUITE RIGHT FOR LINECOMMENTS (--)
 Method resetWhitespace(Atom As PXW.DEV.Atom)
 {
     If $ISOBJECT(Atom.whitespace) {
-        If Atom.whitespace.value'="" Set Atom.whitespace.value=" "
+        If Atom.whitespace.value'="" {
+            Set Atom.whitespace.value=" "
+        }
         Do ..resetWhitespace(Atom.whitespace)
     }
 }
@@ -55,6 +57,20 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0)
         Do ..setWhitespaceNewLineElement(element,indent)
         ; need to do the froms and joins to the same indent?
         Set indent=indent+1 
+    }
+
+    If element.type="SqlCaseExpression" {
+        Set indent=indent+1
+    }
+
+    If element.type="SqlCaseWhen" {
+        Do ..setWhitespaceNewLineElement(element,indent)
+    }
+    If element.type="SqlCaseElse" {
+        Do ..setWhitespaceNewLineElement(element,indent)
+    }
+    If element.type="SqlCaseEnd" {
+        Do ..setWhitespaceNewLineElement(element,indent-1)
     }
 
     If element.type="FromClause" {

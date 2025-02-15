@@ -21,6 +21,8 @@ ClassMethod WriteMainBody(ByRef scratch)
 /// If this class does not have the definition of what we are looking at then this returns the name of the class it might be inherited from, otherwise it returns null
 ClassMethod GetClassToLoad(cls As %String, path As %String, Output bookmark As %String, Output method As %String, PropertyParameter As %String = "") As %String
 {
+	#dim ClassServer as PXW.DEV.Dictionary.ClassDefinitionObject
+
 	Set ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)
 	; table name?
 	Set method=""
@@ -56,6 +58,14 @@ ClassMethod GetClassToLoad(cls As %String, path As %String, Output bookmark As %
 		} Else {
 			Set ocls=cls
 			Set (bookmark,method)=$PIECE(path,".",*)
+		}
+		if ocls'="" {
+			; try as a direct class, or as a table
+			set classname=ClassServer.GetClassName(ocls)
+			if classname="" {
+				set classname=ClassServer.GetClassNameFromTableName(ocls)
+			}
+			set ocls=classname
 		}
 		Set bookmark=$TRANSLATE(bookmark,"#","") ; remove # from parameter
 	}
@@ -122,14 +132,8 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 		}
 		Set zh(2,"display")=$ZHOROLOG-zh,zh=$ZHOROLOG
 
-        Set element=##class(PXW.DEV.Element).%New()
-		If Debug["$NEW" {
-			Write "running in new mode"
-        	;s x=##class(PXW.DEV.BNF.Run.ClassDefinitionAuto).%New()
-		} Else {
-			Set x=##class(PXW.DEV.BNF.Run.ClassDefinition).%New()
-		}
-        Set x.stream=##class(PXW.DEV.InputStream).NewString(text)
+   		Set x=##class(PXW.DEV.BNF.Run.ClassDefinition).%New()
+		Set x.stream=##class(PXW.DEV.InputStream).NewString(text)
 		Set zh=$ZHOROLOG
 
 		Set output.This=ClassName

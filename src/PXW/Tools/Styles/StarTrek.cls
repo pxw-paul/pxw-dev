@@ -389,7 +389,7 @@ Method WriteStyles()
 	.XMLAttribute { color:#ade2ff; }
 	.XMLString { color:#d4b57c; }
 
-	.SQLColumn:hover { background-color: #585858;}
+	.SQLSection:hover { background-color: #585858;}
 	.SQLTableAlias { color:#ade2ff;}
 	.SQLTableAliasSet { color:#ade2ff; font-weight:bold;}
 

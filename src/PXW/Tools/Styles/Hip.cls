@@ -202,7 +202,7 @@ Method WriteStyles()
 	.XMLAttribute { color:var(--fgCodeVariable); }
 	.XMLString { color: var(--fgCodeString); }
 
-	.SQLColumn:hover { background-color: var(--bgAlternate2);}
+	.SQLSection:hover { background-color: var(--bgAlternate2);}
 	.SQLTableAlias { color: var(--fgCodeVariable);}
 	.SQLTableAliasSet { color: var(--fgCodeVariable); font-weight:bold;}
 

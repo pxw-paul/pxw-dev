@@ -1026,11 +1026,11 @@ Method ClassQueryBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		Quit 1
 	}
 	If parser.QuerySpecification(subElement) {
-		$$$BNFCOMMIT(subElement,ParentElement)
 		Set ..whitespace=parser.whitespace
 		Set ..comment=parser.comment
 		Set atom=..newAtom("SQLCodeBlock End","")
-		Do ParentElement.AddPart(atom)
+		Do subElement.AddPart(atom)
+		$$$BNFCOMMIT(subElement,ParentElement)
         If ..peek(1)'="}" {
             Do ..recover(ParentElement,.recsub,"{}","")
         }

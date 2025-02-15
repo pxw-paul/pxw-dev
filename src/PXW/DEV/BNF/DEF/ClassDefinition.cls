@@ -247,7 +247,8 @@ class_parameter_attribute           ::=  attribute_Abstract
 class_storage                       ::= 'storage' storage_name '{' storage_xml '}'
 storage_name                        ::= class_item_identifier
 storage_xml                         ::= (xml_data)*
-
+ 
+/* a good idea at the time, but ended up being WAY too complex. It may be better to leave it as xml and deal with it by the caller */
 storage_xml_complex                         ::= ( storage_xml_data 
                                             | storage_xml_data_location 
                                             | storage_xml_default_data 
