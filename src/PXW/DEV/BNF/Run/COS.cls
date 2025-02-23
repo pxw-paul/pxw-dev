@@ -1175,8 +1175,8 @@ Method CosCodeBlockTrigger(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 Method HtmlBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
     ; make sure there is something on the page
-    d:..needsWScheck ..skipWhiteSpaceAndComments()
-    i ..peek(1)=">" q 1
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+    If ..peek(1)=">" Quit 1
 
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -1216,8 +1216,8 @@ Method JsBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
     #dim atom as PXW.DEV.Atom
 
    ; make sure there is something on the page
-    d:..needsWScheck ..skipWhiteSpaceAndComments()
-    i ..peek(1)=">" q 1
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+    If ..peek(1)=">" Quit 1
     
     $$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -1238,7 +1238,7 @@ Method JsBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
         $$$BNFCOMMIT(subElement,ParentElement)
         Set retok=1
     } Else {
-        Set recok=..recover(ParentElement,.recsub,"<>","")
+        Do ..recover(ParentElement,.recsub,"<>","")
         Set retok=1
     }
     $$$DEBUGMethodBegin

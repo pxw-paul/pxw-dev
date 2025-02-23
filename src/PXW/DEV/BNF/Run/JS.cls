@@ -15,7 +15,7 @@ Method Statement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
     If ..peek(1)="}" Quit 0 ; } end of method
     Set ok=##super(ParentElement,.subElement)
     If 'ok {
-        Set retok=..recover(ParentElement,.recsub,"{}",$LISTBUILD($CHAR(13)))
+        Do ..recover(ParentElement,.recsub,"{}",$LISTBUILD($CHAR(13)))
         Set ok=1
     }
 

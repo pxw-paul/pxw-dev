@@ -6,6 +6,8 @@ Property This As %String;
 
 Property ClassServer As PXW.DEV.Dictionary.ClassDefinitionObject;
 
+Property SqlProgram As %Boolean;
+
 /// Keyed by column reference element
 /// the data is $lb(fulltablereference,fullfieldname)
 /// where fullfieldname is all the implicit joins strung together
@@ -16,9 +18,16 @@ Property columnReferencesElement [ MultiDimensional ];
 /// SelectedColumnsByName(colname)=table
 Property SelectedColumnsByName [ MultiDimensional ];
 
-Property WithCommandAnalysis As PXW.DEV.BNF.Analyse.SQL;
-
 Property WithClauseAnalysis As PXW.DEV.BNF.Analyse.SQL [ MultiDimensional ];
+
+/// Keyed by alias
+Property tableReferences As PXW.DEV.Element [ MultiDimensional ];
+
+/// keyed by alias
+Property withReferences As PXW.DEV.Element [ MultiDimensional ];
+
+/// keyed by element
+Property SelectCommandAnalysis As PXW.DEV.BNF.Analyse.SQL [ MultiDimensional ];
 
 Method %OnNew(ClassServer As PXW.DEV.Dictionary.ClassDefinitionObject = "") As %Status
 {
@@ -55,6 +64,9 @@ Method NextColumnReference(ByRef element As PXW.DEV.Element, Output fulltable As
 
 Method checkElement(element As PXW.DEV.Element)
 {
+    If element.type="QuerySpecification" {
+        Do ..SqlProgramCheck(element)
+    }
     If element.type="WithCommand" {
         Do ..WithCommand(element)
     }
@@ -69,23 +81,48 @@ Method checkElement(element As PXW.DEV.Element)
     }
 }
 
+Method SqlProgramCheck(element As PXW.DEV.Element)
+{
+    #dim a as PXW.DEV.Atom
+    If element.type="WithCommand" {
+        Do ..WithCommand(element)
+    }
+    If element.type="SelectCommand" {
+        Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
+        Set sqlanalyse.This=..This
+        Merge sqlanalyse.withReferences=..withReferences
+        Do sqlanalyse.checkElement(element)
+        Set ..SelectCommandAnalysis(+element)=sqlanalyse
+    }
+	For  {
+		Set part=element.partsGetNext(.akey)
+		Quit:akey=""
+		
+	    If part.%IsA("PXW.DEV.Element") {
+			Do ..SqlProgramCheck(part)
+		} ElseIf part.%IsA("PXW.DEV.Atom") {
+            ;
+		}
+	}
+}
+
 Method WithCommand(element As PXW.DEV.Element)
 {
-    #dim withClauseList as %ListOfObjects
+   #dim withClauseList as %ListOfObjects
 	Do element.findElementsByType("WithClause",.withClauseList)
 	;zw element,withClauseList
 	For i=1:1:withClauseList.Count() {
 		#dim withE as PXW.DEV.Element
 		Set withE=withClauseList.GetAt(i)
-		Set aliasE=withE.findFirstElementByType("AliasName")	    
-	    If $ISOBJECT(aliasE) {
-		    Set aliasname=aliasE.ToString(0)
+		Set aliasE=withE.findFirstElementByType("AliasName")
+ 	    If $ISOBJECT(aliasE) {
+ 		    Set aliasname=aliasE.ToString(0)
 			Set selectE=withE.findFirstElementByType("SelectCommand")
 			Set analyser=..%New()
 			Set analyser.ClassServer=..ClassServer
-			Set analyser.WithCommandAnalysis=$THIS
 			Do analyser.SelectCommand(selectE)
 			Set ..WithClauseAnalysis(aliasname)=analyser
+            Set ..withReferences(aliasname)=withE
 	    }
 	}
 }
@@ -119,6 +156,7 @@ Method SelectCommand(element As PXW.DEV.Element)
                 Set tablealiasE=tref.findFirstElementByType("AliasName")
                 If $ISOBJECT(tablealiasE) Set tablealias=tablealiasE.ToString(0)
                 Set tables(tablealias)=tablename
+                Set ..tableReferences(tablealias)=tref
             }
         }
 
@@ -139,6 +177,7 @@ Method SelectCommand(element As PXW.DEV.Element)
 
                 ; wrap the entire column up as a single thing and work out later what 
                 ; it refers to if its clicked on. EG Race->Circuit->Name
+                ;if fulltable="x" zw fulltable,columnname,columnjoin
                 If fulltable'="" {
                     Do ..SetColumnReference(cref,fulltable,columnname_columnjoin)
                 } Else {
@@ -163,6 +202,7 @@ Method SelectCommand(element As PXW.DEV.Element)
             }
         }
     }
+    ;w "<pre>" zw $this w "</pre>"
 }
 
 /// Pass in an element of type DerivedColumn and a default name. 
@@ -312,8 +352,10 @@ Method FindTable(cref As PXW.DEV.Element, ByRef tables) As %String
         ;    s tablealias=$o(tables(""))
         ;    i tablealias'="" s fulltable=$g(tables(tablealias))
         } Else {
-            Set:$ISOBJECT(..ClassServer) fulltable=..ClassServer.GetFullTableName(fulltable,..This)
-        }
+             If '$DATA(..withReferences(fulltable)) {
+                Set:$ISOBJECT(..ClassServer) fulltable=..ClassServer.GetFullTableName(fulltable,..This)
+            }
+         }
     }
     Quit fulltable
 }

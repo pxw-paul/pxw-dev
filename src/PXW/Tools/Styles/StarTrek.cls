@@ -76,7 +76,7 @@ Method WriteStyles()
 		border-radius: 0px 0px 0px 50px; 
 		padding: 0px;
 		background-color: black;
-		
+		position:relative		
 	  }
 	
 	/* trying to get the border to overlap the container border so we get the curve on the inside */
@@ -86,6 +86,7 @@ Method WriteStyles()
 		padding: 20px;
 		background-color: black;
 	}
+	#toolsForms::after  { font-family: monospace; display:inline-block; position:absolute; right:10px; height:75%; max-width:50%;text-align: right; padding:0px; white-space: wrap; content: "#(..RandomNumbers())#"; color:var(--lcars5); overflow:hidden;}
 
 	#toolsHead form { display:inline; margin: 0px; padding:0px; border:0px; }
 	/*#toolsHead form fieldset { display:inline;  }
@@ -126,7 +127,8 @@ Method WriteStyles()
 		border-radius: 100pt 0px 0px 0px;
 		background-color: var(--lcars2);
 		padding: 0px; 
-		text-align: right;
+		text-align: right; 
+				/*transform:scale(1,1.5);*/
 	  }
 	#toolsTitle h1 {
 		margin:0px 10px 0px 10px;
@@ -135,7 +137,7 @@ Method WriteStyles()
 		text-align: right;
 		text-transform: uppercase;
 		background-color:black;
-		display:inline;		
+		display:inline;	
 	}
 
 
@@ -442,6 +444,20 @@ Method WriteStyles()
 
 	</style>
 	>
+}
+
+ClassMethod RandomNumbers() As %String
+{
+	s s=""
+	f i=1:1:10 {
+		f j=1:1:20 {
+			f k=1:1:4 {
+				s s=s_$CHAR($RANDOM(10)+$a("0"))
+			}
+			s s=s_" "
+		}
+	}
+	q s
 }
 
 }

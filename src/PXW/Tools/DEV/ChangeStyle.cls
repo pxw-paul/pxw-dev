@@ -174,7 +174,7 @@ ClassMethod WriteExampleTable() As %String
 				</tr>
 				<tr class=hiliterow>
 					<td>3</td>
-					<td>This row is higlighted by putting tr class=hiliterow</td>
+					<td>This row is highlighted by putting tr class=hiliterow</td>
 					<td><a href="#">Link data</a></td>
 					<td><div class=comment>Comment in a div</span></td>
 					<td>
@@ -200,7 +200,7 @@ ClassMethod WriteExampleTable() As %String
 				</tr>
 				<tr class=warningrow>
 					<td>4</td>
-					<td>This row is higlighted by putting tr class=warningrow</td>
+					<td>This row is highlighted by putting tr class=warningrow</td>
 					<td><a href="#">Link data</a></td>
 					<td><div class=comment>Comment about why the row has a warning</span></td>
 					<td>
@@ -222,7 +222,7 @@ ClassMethod WriteExampleTable() As %String
 					</td>
 				<tr class=errorrow>
 					<td>5</td>
-					<td>This row is higlighted by putting tr class=errorrow</td>
+					<td>This row is highlighted by putting tr class=errorrow</td>
 					<td><a href="#">Link data</a></td>
 					<td><div class=comment>Comment about why the row is in error</span></td>
 					<td>
@@ -230,7 +230,7 @@ ClassMethod WriteExampleTable() As %String
 				</tr>
 				<tr class=goodrow>
 					<td>6</td>
-					<td>This row is higlighted by putting tr class=goodrow</td>
+					<td>This row is highlighted by putting tr class=goodrow</td>
 					<td><a href="#">Link data</a></td>
 					<td><div class=comment>Comment about why the row is good</span></td>
 					<td>

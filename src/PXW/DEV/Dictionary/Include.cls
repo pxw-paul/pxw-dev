@@ -50,9 +50,12 @@ Method List(Routines As %String) As PXW.DEV.Dictionary.AtelierRS
 
 	Set server=..AtelierSettings.ServerName 
 	Set sql=""
-	Set sql=sql_"select Name,""Date"" as TimeChanged,null as SubType from  %Library.Routine_RoutineList('"_Routines_".INC"_"')"
 
-    Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj)
+    kill parameters
+	Set sql=sql_"select Name,""Date"" as TimeChanged,null as SubType from  %Library.Routine_RoutineList(?)"
+    set parameters($i(parameters))=Routines_".INC"
+    
+    Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj,parameters...)
   	If $$$ISERR(qsc) $$$ThrowStatus(qsc)
 	Set rs=##class(PXW.DEV.Dictionary.AtelierRS).%New(obj)
     $$$DEBUGMethodEnd

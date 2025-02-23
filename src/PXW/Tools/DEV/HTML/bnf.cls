@@ -48,8 +48,9 @@ Property ClassServer As PXW.DEV.Dictionary.ClassDefinitionObject;
 /// maintained by xml elements
 Property XMLPath As %String;
 
-/// THIS FEELS WRONG, COME BACK 
-Property WithAnalyser As PXW.DEV.BNF.Analyse.SQL;
+/// Reset this when starting a completely new SQL 
+/// It will end up containing all the analysis of the sql, including sub-queries and "WITH"s
+Property SqlProgramAnalyser As PXW.DEV.BNF.Analyse.SQL;
 
 Property PythonAnalyser As PXW.DEV.BNF.Analyse.Python;
 
@@ -201,7 +202,7 @@ Method writeElement(element As PXW.DEV.Element)
                 Do ..AddToIndexError(..ThisMethod,a.value)
             }
 
-            Do:..showPaths ..wrapAtomHTML(a,"<span title='"_a.type_"'>","</span>")
+            Do:..showPaths ..wrapAtomHTML(a,"<span title='"_+a_":"_a.type_"'>","</span>")
  
 		}
 	}
@@ -321,6 +322,7 @@ Method writeCDEFClassDefinition(element As PXW.DEV.BNF.Elements.ClassDefinition)
 
 Method writeCDEFAttributeViewQuery(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="AttributeViewquery")
 {
+    Set ..SqlProgramAnalyser=""
     Set queryE=element.findFirstElementByType("ClassQueryBody")
     ;s formatter=##class(PXW.DEV.BNF.Format.SQL).%New()
     ;d formatter.formatElement(queryE)
@@ -409,6 +411,7 @@ Method writeCDEFMethod(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.D
 
 Method writeCDEFClassQuery(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassQuery")
 {
+    Set ..SqlProgramAnalyser=""
     Set keywordatom=element.FirstAtom()
     Set nameelement=element.findFirstElementByType("QueryName")
     If $ISOBJECT(nameelement) {
@@ -681,24 +684,20 @@ Method writeCOSLabelDefinition(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.B
     Set labatom=element.FirstAtom()
     Set lab=labatom.value
     Set ..ThisLabel=lab
-    ;Set anchorAtom=labatom.getComment()
-    ;if anchorAtom="" s anchorAtom=labatom
-
+    Set anchorAtom=labatom.getComment()
+    If anchorAtom="" Set anchorAtom=labatom
     If lab=..HiliteLabel {
-        Do ..wrapAtomHTML(element,"<a name='Bookmark'></a>","")
-        Do ..wrapAtomHTML(labatom,"<span class='hilite'>","</span>")
-        Set anchor="Bookmark"
+        If anchorAtom=labatom {
+               Do ..wrapAtomHTML(anchorAtom,"<a name='Bookmark' class='hilite'>","</a>")
+        } Else {
+                       Do ..wrapAtomHTML(anchorAtom,"<a name='Bookmark'>","</a>")
+                       Do ..wrapAtomHTML(labatom,"<a class='hilite'>","</a>")
+        }
         If ..HilitePlus'="" Set ..HiLiteLine=labatom.line+..HilitePlus
     } Else {
         Set labname=$TRANSLATE("LAB"_..ThisMethod_lab,"$^%_","")
-        ; put the anchor before the comment
-        Do ..wrapAtomHTML(element,"<a name='"_labname_"'></a>","")
-        Do ..wrapAtomHTML(labatom,"<span id='"_labname_"SPAN' class='COSLabelDef'>","</span>")
-        Set anchor=labname
+        Do ..wrapAtomHTML(anchorAtom,"<a class='COSLabelDef' name='"_labname_"'>","</a>")
     }
-    Do ..AddToIndex(lab,"label",anchor)
-
-
     Quit ""
 }
 
@@ -804,6 +803,7 @@ Method writeCOSJsBody(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compil
 
 Method writeCOSSqlBody(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="SqlBody")
 {
+    Set ..SqlProgramAnalyser=""
     Do ..wrapElementHTML(element,"<span class='EmbeddedSQL'>","</span>")
     Quit ""
 }
@@ -820,19 +820,6 @@ Method writeSQLStoredProcName(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BN
     Quit ""
 }
 
-Method writeSQLQuerySpecification(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="QuerySpecification")
-{
-    #dim WithCommandE as PXW.DEV.Element
-    Set WithCommandE=element.findFirstElementByType("WithCommand")
-    If $ISOBJECT(WithCommandE) {
-        Set withAnalyser=##class(PXW.DEV.BNF.Analyse.SQL).%New()
-        Set withAnalyser.ClassServer=..ClassServer
-        Do withAnalyser.WithCommand(WithCommandE)
-        Set ..WithAnalyser=withAnalyser
-    }    
-    Quit ""
-}
-
 /// WHY IS THIS HERE and not just in a WithClause section?
 Method writeSQLWithCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="WithCommand")
 {
@@ -842,7 +829,7 @@ Method writeSQLWithCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.C
         Set aliasE=withE.findFirstElementByType("AliasName")	    
         If $ISOBJECT(aliasE) {
             Set aliasname="alias"_aliasE.ToString(0)
-            Do ..wrapElementHTML(aliasE,"<span class='SQLTableAliasSet' title='show alias usage' varid='"_aliasname_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
+            Do ..wrapElementHTML(aliasE,"<span class='SQLTableAliasSet' title='show alias usage' varid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
         }	    
     }    
     Quit ""
@@ -851,11 +838,13 @@ Method writeSQLWithCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.C
 Method writeSQLWithClause(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="WithClause")
 {
     Do ..wrapElementHTML(element,"<span class='SQLSection'>","</span>")
+    Quit ""
 }
 
 Method writeSQLWhereClause(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="WhereClause")
 {
     Do ..wrapElementHTML(element,"<span class='SQLSection'>","</span>")
+    Quit ""
 }
 
 Method writeSQLDerivedColumn(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="DerivedColumn")
@@ -897,40 +886,46 @@ Method writeSQLDerivedColumn(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
 Method writeSQLJoin(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="Join")
 {
     Do ..wrapElementHTML(element,"<span class='SQLSection'>","</span>")
+    Quit ""
+}
+
+Method writeSQLProgram(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="QuerySpecification")
+{
+    If ..SqlProgramAnalyser="" {
+        Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
+        Set sqlanalyse.This=..This
+        Set sqlanalyse.SqlProgram=1
+        Do sqlanalyse.checkElement(element)
+        Set ..SqlProgramAnalyser=sqlanalyse
+    }
+    Quit ""
 }
 
 Method writeSQLSelectCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="SelectCommand")
 {
     #dim subAnalyser as PXW.DEV.BNF.Analyse.SQL
-    Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
-    Set sqlanalyse.This=..This
-    Do sqlanalyse.checkElement(element)
+    If $ISOBJECT(..SqlProgramAnalyser) {
+        Set sqlanalyse=$GET(..SqlProgramAnalyser.SelectCommandAnalysis(+element))
+    } Else {
+        ; certain types of subquery are not being coverded by the program analyse yet, so treat separately for now
+        Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
+        Set sqlanalyse.This=..This
+        Do sqlanalyse.checkElement(element)
+    }
     Set cref=""
     While sqlanalyse.NextColumnReference(.cref,.fulltable,.fieldname) {
         Set aliasNameE=cref.findFirstElementByType("AliasName",1) ; hmm, in a group, can we promote in bnf?
         Set columnNameE=cref.findFirstElementByType("ColumnName",0)
         ;zw cref,fulltable,fieldname
+        If $ISOBJECT(..SqlProgramAnalyser) {
+            If fulltable'="",$DATA(..SqlProgramAnalyser.withReferences(fulltable)) {
+                Set fulltable=""
+            }
+        }
         If fulltable'="" {
             Do ..FollowImplicitJoins(cref,fulltable)
         } Else {
             Set colname="col"_$$$UPPER(fieldname)
-            Set withAnalyser="",subAnalyser=""
-            If $ISOBJECT(..WithAnalyser) {
-                If $ISOBJECT(aliasNameE) {
-                    Set aliasname=aliasNameE.ToString(0)
-                    
-                    Set subAnalyser=$GET(..WithAnalyser.WithClauseAnalysis(aliasname))
-                    If $ISOBJECT(subAnalyser) {
-                        ; how to deal with a with select that has select * from multiple tables...?
-                        Set fulltable=$GET(subAnalyser.SelectedColumnsByName(fieldname))
-                        If fulltable="" Set fulltable=$GET(subAnalyser.SelectedColumnsByName("*"))
-                    } Else {
-                        ; not a with reference,
-                    }
-                } Else {
-                    ; no table alias, what to do?
-                }
-            }
             If fulltable'="" {
                 Do ..FollowImplicitJoins(cref,fulltable)
             } Else {
@@ -1001,10 +996,9 @@ Method writeSQLDirectTable(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.C
         If $ISOBJECT(tablenameE) {
             Set tablename=tablenameE.ToString(0)
             ; is it a reference to a WITH?
-            ;zw tablename,..WithAnalyser
-            If tablename'="", tablename'[".", $ISOBJECT(..WithAnalyser), $GET(..WithAnalyser.WithClauseAnalysis(tablename))'="" {
+            If tablename'="", tablename'[".", $ISOBJECT(..SqlProgramAnalyser), $GET(..SqlProgramAnalyser.withReferences(tablename))'="" {
                 Set aliasname="alias"_tablename
-                Do ..wrapElementHTML(tablenameE,"<span class='SQLTableAlias' title='show alias usage' varid='"_aliasname_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
+                Do ..wrapElementHTML(tablenameE,"<span class='SQLTableAlias' title='show alias usage' varid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
             } Else {
                 Do ..wrapAtomHTML(tablenameE,"<a class='CDEFClassName' href='"_..HREFToClass(tablename)_"'>","</a>")
             }

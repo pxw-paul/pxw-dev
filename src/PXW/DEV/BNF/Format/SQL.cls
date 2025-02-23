@@ -3,6 +3,8 @@ Class PXW.DEV.BNF.Format.SQL Extends %RegisteredObject
 
 Property indent As %Integer [ InitialExpression = 2 ];
 
+Property currentLine As %Integer [ InitialExpression = 1 ];
+
 /// d ##class(PXW.DEV.BNF.Format.SQL).writetest(a)
 ClassMethod writetest(element As PXW.DEV.Element)
 {
@@ -89,6 +91,16 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0)
         Do ..setWhitespaceNewLineElement(element,indent)
     }
 
+    If element.type="WithCommand" {
+        Do ..setWhitespaceNewLineElement(element,indent)
+        Set indent=indent+1
+    }
+
+    If element.type="WithClause" {
+        Do ..setWhitespaceNewLineElement(element,indent)
+        Set indent=indent+1
+    }
+
     If element.type="SelectSublist" {
         Do ..setWhitespaceNewLineElement(element,indent)
     }
@@ -99,7 +111,9 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0)
 		
 	    If a.%IsA("PXW.DEV.Element") {
 			Do ..setAll(a,indent)
-		} 
+		} else {
+            set a.line=..currentLine
+        }
 	}
 
     ;i element.type="SelectCommand" {
@@ -119,8 +133,10 @@ Method setWhitespaceNewLine(Atom As PXW.DEV.Atom, indent As %Integer)
     Set cr=$CHAR(13,10)
     Set tabs=$CHAR(9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9)
     ;s tabs="..................."
+    Set ..currentLine=..currentLine+1
     Set Atom.whitespace=##class(PXW.DEV.Atom).%New()
     Set Atom.whitespace.value=cr_$EXTRACT(tabs,1,indent)
+    Set Atom.line=..currentLine
 }
 
 }

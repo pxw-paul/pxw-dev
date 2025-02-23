@@ -83,7 +83,8 @@ Method WriteStyles()
 	#toolsMainTop { }
 	#toolsHead { }
 	#toolsHead form { display:inline; margin: 0px; padding:0px; border:0px; }
-	#toolsHead form fieldset { display:inline;  }
+	#toolsHead form fieldset { display:inline; border:none; }
+	#toolsHead form fieldset input {  background-color: var(--bgHilite); color: var(--fgInverse);}
 	#toolsMenu {}
 	#toolsTitle {}
 	#toolsMainBody { flex-grow: 1;overflow:auto;}

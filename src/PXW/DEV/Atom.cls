@@ -73,7 +73,7 @@ Method writeDebug(indent As %String)
 }
 
 /// Find the left-most comment which could be before some whitespace.
-Method getComment()
+Method getComment() As PXW.DEV.Atom
 {
 	If $ISOBJECT(..comment) Quit ..comment
 	If $ISOBJECT(..whitespace) Quit ..whitespace.getComment()

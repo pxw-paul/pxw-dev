@@ -92,7 +92,7 @@ Method ListClassDetailsWild(ClassWild As %String, listHidden As %Boolean = 0, li
 Method ListClassDetailsLike(ClassLike As %String, escape As %String = "", listHidden As %Boolean = 0, listGenerated As %Boolean = 0) As PXW.DEV.Dictionary.AtelierRS
 {
     $$$DEBUGMethodBegin
-
+    Kill parameters
 	Set server=..AtelierSettings.ServerName 
 	Set sql=""
 	Set sql=sql_"SELECT cc.ClassType,cc.Name,to_char($piece(cd.TimeChanged,'.',1),'YYYY-MM-DD HH24:MI:SS') as TimeChanged"
@@ -101,9 +101,11 @@ Method ListClassDetailsLike(ClassLike As %String, escape As %String = "", listHi
     Set sql=sql_" INNER JOIN %Dictionary.ClassDefinition AS cd ON cd.ID=cc.ID"
 	Set sql=sql_"	WHERE 1=1"
 	If $DATA(ClassLike) {
-        Set sql=sql_"	  AND cc.name LIKE '"_ClassLike_"'"
+        Set sql=sql_"	  AND cc.name LIKE ?"
+        Set parameters($i(parameters))=ClassLike
 	    If escape'="" {
-		    Set sql=sql_" ESCAPE '"_escape_"'"
+            Set sql=sql_" ESCAPE ?"
+            Set parameters($i(parameters))=escape
 	    }
     }
     If listHidden {
@@ -121,7 +123,8 @@ Method ListClassDetailsLike(ClassLike As %String, escape As %String = "", listHi
     For i=1:1:$LISTLENGTH(..ExcludeClassesLike) {
         Set exlike=$LISTGET(..ExcludeClassesLike,i)
         If exlike'="" {
-            Set sql=sql_" AND (cc.name NOT LIKE '"_exlike_"'"
+            Set sql=sql_" AND (cc.name NOT LIKE ?"
+            Set parameters($i(parameters))=exlike
        	    If exlike["\" {
     		    Set sql=sql_" ESCAPE '\'"
             }
@@ -129,7 +132,7 @@ Method ListClassDetailsLike(ClassLike As %String, escape As %String = "", listHi
         }
     }
    
-    Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj)
+    Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj,parameters...)
 	If $$$ISERR(qsc) $$$ThrowStatus(qsc)
 	Set rs=##class(PXW.DEV.Dictionary.AtelierRS).%New(obj)
     $$$DEBUGMethodEnd
@@ -284,8 +287,9 @@ Method ListProperyDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierRS
 	Set sql=""
     Set sql=sql_"SELECT parent,Name,RuntimeType,SQLFieldName,Collection,Type,Origin "
     Set sql=sql_"FROM %Dictionary.CompiledProperty "
-    Set sql=sql_"WHERE parent='"_ClassName_"'"
-	Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj)
+    Set sql=sql_"WHERE parent=?"
+    Set parameters($i(parameters))=ClassName
+	Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj,parameters...)
 	If $$$ISERR(qsc) $$$ThrowStatus(qsc)
  	Set rs=##class(PXW.DEV.Dictionary.AtelierRS).%New(obj)
     $$$DEBUGMethodEnd
@@ -314,8 +318,9 @@ Method ListParameterDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierR
 	Set sql=""
     Set sql=sql_"SELECT parent,Name,Type,Origin "
     Set sql=sql_"FROM %Dictionary.CompiledParameter "
-    Set sql=sql_"WHERE parent='"_ClassName_"'"
-	Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj)
+    Set sql=sql_"WHERE parent= ? "
+    Set parameters($i(parameters))=ClassName
+	Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj,parameters...)
 	If $$$ISERR(qsc) $$$ThrowStatus(qsc)
  	Set rs=##class(PXW.DEV.Dictionary.AtelierRS).%New(obj)
     $$$DEBUGMethodEnd
@@ -341,12 +346,9 @@ Method ListMethodDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierRS
 	Set sql=""
     Set sql=sql_"SELECT parent,Name,ReturnType,Origin,Stub " ; stub is undocumented but it seems to be "source name.method name.source type (i=index,a=property)
     Set sql=sql_"FROM %Dictionary.CompiledMethod "
-    Set sql=sql_"WHERE parent='"_ClassName_"'"
-    ;s sql=sql_"UNION "
-    ;s sql=sql_"SELECT parent,Name || 'Open',parent,null "
-    ;s sql=sql_"FROM %Dictionary.CompiledIndex "
-    ;s sql=sql_"WHERE parent='"_ClassName_"' and _Unique=1"
-    Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj)
+    Set sql=sql_"WHERE parent=?"
+    Set parameters($i(parameters))=ClassName
+    Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj,parameters...)
 	If $$$ISERR(qsc) $$$ThrowStatus(qsc)
  	Set rs=##class(PXW.DEV.Dictionary.AtelierRS).%New(obj)
     $$$DEBUGMethodEnd
@@ -373,8 +375,9 @@ Method ListIndexDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierRS
 	Set sql=""
     Set sql=sql_"SELECT parent,Name,TypeClass,Origin " ; stub is undocumented but it seems to be "source name.method name.source type (i=index,a=property)
     Set sql=sql_"FROM %Dictionary.CompiledIndex "
-    Set sql=sql_"WHERE parent='"_ClassName_"'"
-    Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj)
+    Set sql=sql_"WHERE parent=?"
+    Set parameters($i(parameters))=ClassName
+    Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj,parameters...)
 	If $$$ISERR(qsc) $$$ThrowStatus(qsc)
  	Set rs=##class(PXW.DEV.Dictionary.AtelierRS).%New(obj)
     $$$DEBUGMethodEnd
@@ -400,8 +403,9 @@ Method ListQueryDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierRS
 	Set sql=""
     Set sql=sql_"SELECT parent,Name,Type,Origin " ; stub is undocumented but it seems to be "source name.method name.source type (i=index,a=property)
     Set sql=sql_"FROM %Dictionary.CompiledQuery "
-    Set sql=sql_"WHERE parent='"_ClassName_"'"
-    Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj)
+    Set sql=sql_"WHERE parent=?"
+    Set parameters($i(parameters))=ClassName
+    Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj,parameters...)
 	If $$$ISERR(qsc) $$$ThrowStatus(qsc)
  	Set rs=##class(PXW.DEV.Dictionary.AtelierRS).%New(obj)
     $$$DEBUGMethodEnd
@@ -621,16 +625,22 @@ Method List(Name As %String) As PXW.DEV.Dictionary.AtelierRS
 Method ListClassDetails(ClassName As %String = "", SQLTableName As %String = "") As PXW.DEV.Dictionary.AtelierRS
 {
     $$$DEBUGMethodBegin
-
+    Kill parameters
 	Set server=..AtelierSettings.ServerName
 	Set sql=""
     Set sql=sql_"SELECT Name,ClassType,Super,PrimarySuper,to_char($piece(TimeChanged,'.',1),'YYYY-MM-DD HH24:MI:SS') as TimeChanged"
     Set sql=sql_",SqlQualifiedNameQ,IncludeCodeAll,IncludeMGenAll,PropertyClass,ClassType as SubType"
     Set sql=sql_" FROM %Dictionary.CompiledClass "
     Set sql=sql_" WHERE "
-    If ClassName'="" Set sql=sql_" Name ='"_ClassName_"'"
-    If SQLTableName'="" Set sql=sql_" UPPER(SqlQualifiedNameQ) =UPPER('"_SQLTableName_"')"
-	Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj)
+    If ClassName'="" {
+        Set sql=sql_" Name = ?"
+        Set parameters($i(parameters))=ClassName
+    }
+    If SQLTableName'="" {
+        Set sql=sql_" UPPER(SqlQualifiedNameQ) =UPPER(?)"
+        Set parameters($i(parameters))=SQLTableName
+    }
+	Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj,parameters...)
 	If $$$ISERR(qsc) $$$ThrowStatus(qsc)
  	Set rs=##class(PXW.DEV.Dictionary.AtelierRS).%New(obj)
     Set rs.SQL=sql
