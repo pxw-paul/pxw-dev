@@ -176,6 +176,13 @@ ClassMethod OnPage() As %Status
 						<input type=submit value='Home'>
 					</fieldset>
 				</form>
+				<form target=_blank id=toolsFormHome action='PXW.Tools.Index.cls'>
+					<fieldset id=toolsHome>
+					<legend>Home</legend>
+						<input type=hidden name=%NS value='#(%NS)#'>
+						<input type=submit value='+'>
+					</fieldset>
+				</form>
 				#(..WriteHeadForms())#
 			</div>
 		</div>

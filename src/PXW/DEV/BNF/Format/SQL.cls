@@ -53,7 +53,7 @@ Method resetWhitespace(Atom As PXW.DEV.Atom)
     }
 }
 
-Method setAll(element As PXW.DEV.Element, indent As %Integer = 0)
+Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %String = "")
 {
     If element.type="SelectCommand" {
         Do ..setWhitespaceNewLineElement(element,indent)
@@ -83,12 +83,23 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0)
         Do ..setWhitespaceNewLineElement(element,indent)
         Set indent=indent+1
     }
+
     If element.type="JoinOn" {
         Do ..setWhitespaceNewLineElement(element,indent)
+        set flags="CONDITION"
     }
 
     If element.type="WhereClause" {
         Do ..setWhitespaceNewLineElement(element,indent)
+        set flags="CONDITION"
+        Set indent=indent+1
+    }
+
+    ; put each AND on a new line, only applies to certain types of conditions (eg JOIN ON, WHERE)
+    if flags["CONDITION" {
+        if element.type="SqlDyadicop",$$$UPPER(element.ToString(0))="AND" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+        }
     }
 
     If element.type="WithCommand" {
@@ -110,7 +121,7 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0)
 		Quit:akey=""
 		
 	    If a.%IsA("PXW.DEV.Element") {
-			Do ..setAll(a,indent)
+			Do ..setAll(a,indent,flags)
 		} else {
             set a.line=..currentLine
         }

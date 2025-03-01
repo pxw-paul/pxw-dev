@@ -55,6 +55,7 @@ from_optimise				::= ('%firsttable' [alias_name])
 								| '%NOTOPOPT'
 								| '%NOUNIONOROPT'
 								| '%PARALLEL'
+								| '%NOPARALLEL'
 								| ('%IGNOREINDEX' index_reference_list )
 								| ('%IGNOREINDICES' index_reference_list )
 
@@ -167,7 +168,7 @@ checkpriv_objpriv			::= '%ALTER' | 'DELETE' | 'SELECT' | 'INSERT' | 'UPDATE' | '
 
 call_command				::= 'CALL' stored_proc_call
 
-sql_special_variable					::= 'NULL' | '?' | '$H'  | '$ZNSPACE'
+sql_special_variable					::= 'NULL' | '?' | '$H'  | '$ZNSPACE' | '$NAMESPACE'
 										  
 /* expression */
 sql_expression                       ::= sql_factor ( sql_dyadicop sql_factor )*  /* using star as an expression on its own not strictly correct but good enough?*/

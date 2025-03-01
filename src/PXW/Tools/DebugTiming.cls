@@ -18,7 +18,7 @@ Method %OnNew() As %Status
     Quit $$$OK
 }
 
-Method DEBUG(message As %Binary, name As %String)
+Method DEBUG(message As %String)
 {
 
     If $DATA(message) {

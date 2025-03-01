@@ -54,6 +54,37 @@ Property SqlProgramAnalyser As PXW.DEV.BNF.Analyse.SQL;
 
 Property PythonAnalyser As PXW.DEV.BNF.Analyse.Python;
 
+Property commentid As %Integer;
+
+Method OutputKeywordCommentAsDocumentation(Element As PXW.DEV.Element, Output commentid As %String)
+{
+    set commentid=""
+    /*Set keywordatom=Element.FirstAtom()
+    set textA=keywordatom.getComment()
+    i textA'="" {
+        s text=textA.ToString()
+        s text=$replace(text,"///","")
+        set ..commentid=..commentid+1
+        set commentid="comment"_..commentid
+        write "<div class='CDEFdocHTML nocopy' id='"_commentid_"HTML'>"
+        write text
+        write "</div>"
+
+        write "<div class='CDEFdocText' style='display:none;' id='"_commentid_"Text'>"
+        If $ISOBJECT(keywordatom.whitespace) {
+            Do ..writeAtom(keywordatom.whitespace,"<span class=whitespace>","</span>",1)
+        }
+        If $ISOBJECT(keywordatom.comment) {
+            Do ..writeAtom(keywordatom.comment,"<span class='"_..#CommentClass_"'>","</span>")
+        }
+        write "</div>"
+        do keywordatom.clearComment()
+        set keywordatom.whitespace=""
+    } else {
+        s commentid=""
+    }*/
+}
+
 Method AddToIndex(Name As %String, Type As %String, Anchor As %String) As %Status
 {
     Set data=$LISTBUILD(Name,Type,Anchor)
@@ -308,6 +339,7 @@ Method writeCDEFOneClassMember(element As PXW.DEV.BNF.Elements.ClassDefinition) 
 Method writeCDEFClassDefinition(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassDefinition")
 {
     Set keywordatom=element.FirstAtom()
+    do ..OutputKeywordCommentAsDocumentation(element,.commentid)
     Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This)
     Set menu="<div class='CDEFItemMenu nocopy'>"
     Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,)_"'>Xref ("_count_") </a>"
@@ -335,11 +367,13 @@ Method writeCDEFAttributeViewQuery(element As PXW.DEV.BNF.Elements.ClassDefiniti
 Method writeCDEFClassProperty(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassProperty")
 {
     Set keywordatom=element.FirstAtom()
+    do ..OutputKeywordCommentAsDocumentation(element,.commentid)
     Set nameelement=element.findFirstElementByType("PropertyName")
     If $ISOBJECT(nameelement) {
         Set name=nameelement.ToString(0)
         Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
         Set menu="<div class='CDEFItemMenu nocopy'>"
+        Set:commentid'="" menu=menu_"<a class='CDEFOption' href=# onclick='flipComments("""_commentid_""");'>+ </a>"
         Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
         Set overrides=..ClassServer.GetPropertyOverrides(..This_"||"_name)
         If overrides'="" {
@@ -358,11 +392,13 @@ Method writeCDEFClassProperty(element As PXW.DEV.BNF.Elements.ClassDefinition) A
 Method writeCDEFClassParameter(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassParameter")
 {
     Set keywordatom=element.FirstAtom()
+    do ..OutputKeywordCommentAsDocumentation(element,.commentid)
     Set nameelement=element.findFirstElementByType("ClassParameterName")
     If $ISOBJECT(nameelement) {
         Set name=nameelement.ToString(0)
         Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
         Set menu="<div class='CDEFItemMenu  nocopy'>"
+        Set:commentid'="" menu=menu_"<a class='CDEFOption' href=# onclick='flipComments("""_commentid_""");'>+ </a>"
         Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
         Set overrides=..ClassServer.GetParameterOverrides(..This_"||"_name)
         If overrides'="" {
@@ -382,11 +418,13 @@ Method writeCDEFClassParameter(element As PXW.DEV.BNF.Elements.ClassDefinition) 
 Method writeCDEFClassMethod(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassClassMethod")
 {
     Set keywordatom=element.FirstAtom()
+    do ..OutputKeywordCommentAsDocumentation(element,.commentid)
     Set nameelement=element.findFirstElementByType("MethodName")
     If $ISOBJECT(nameelement) {
         Set name=nameelement.ToString(0)
         Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
         Set menu="<div class='CDEFItemMenu  nocopy'>"
+        Set:commentid'="" menu=menu_"<a class='CDEFOption' href=# onclick='flipComments("""_commentid_""");'>+ </a>"
         Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
         Set overrides=..ClassServer.GetMethodOverrides(..This_"||"_name)
         If overrides'="" {
@@ -413,11 +451,13 @@ Method writeCDEFClassQuery(element As PXW.DEV.BNF.Elements.ClassDefinition) As P
 {
     Set ..SqlProgramAnalyser=""
     Set keywordatom=element.FirstAtom()
+    do ..OutputKeywordCommentAsDocumentation(element,.commentid)
     Set nameelement=element.findFirstElementByType("QueryName")
     If $ISOBJECT(nameelement) {
         Set name=nameelement.ToString(0)
         Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
         Set menu="<div class='CDEFItemMenu nocopy'>"
+        Set:commentid'="" menu=menu_"<a class='CDEFOption' href=# onclick='flipComments("""_commentid_""");'>+ </a>"
         Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
         ; not sure if/how I recognise overridden QUERIES
         /*Set overrides=..ClassServer.GetPropertyOverrides(..This_"||"_name)
@@ -447,11 +487,14 @@ Method writeCDEFClassQueryBody(element As PXW.DEV.BNF.Elements.ClassDefinition) 
 Method writeCDEFIndex(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassIndex")
 {
     Set keywordatom=element.FirstAtom()
+    do ..OutputKeywordCommentAsDocumentation(element,.commentid)
+    do ..OutputKeywordCommentAsDocumentation(element,.commentid)
     Set nameelement=element.findFirstElementByType("IndexName")
     If $ISOBJECT(nameelement) {
         Set name=nameelement.ToString(0)
         Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
         Set menu="<div class='CDEFItemMenu nocopy'>"
+        Set:commentid'="" menu=menu_"<a class='CDEFOption' href=# onclick='flipComments("""_commentid_""");'>+ </a>"
         Set menu=menu_"<a title='This does NOT show where its used as a index in SQL, only where its used as Unique Open method' class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
         ; not sure if indices even can be overridden
         /*Set overrides=..ClassServer.GetPropertyOverrides(..This_"||"_name)

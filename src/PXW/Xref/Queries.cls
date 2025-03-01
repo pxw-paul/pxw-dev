@@ -132,7 +132,7 @@ ClassMethod GetCode(%NS As %String, CodeType As %String, CodeKey1 As %String, Co
 {
 	#dim e as %Exception.SystemException
 
-	Set ClassServer=$GET(%PXWClassServer(%NS))
+	Set ClassServer=$GET(%PXWClassServer(%NS,CodeType))
 
 	If WindowSize=0 Quit ""
 	Set ws=WindowSize-1
@@ -140,25 +140,25 @@ ClassMethod GetCode(%NS As %String, CodeType As %String, CodeKey1 As %String, Co
 		If CodeType'="" {
 			If '$ISOBJECT(ClassServer) {
 				Set ClassServer=##class(PXW.DEV.Dictionary.CodeInterface).OpenForType(%NS,CodeType)
-				Set %PXWClassServer(%NS)=ClassServer
+				Set %PXWClassServer(%NS,CodeType)=ClassServer
 			}
-			If '$DATA(%PXWCacheCode(CodeKey1)) {
+			If '$DATA(%PXWCacheCode(%NS,CodeType,CodeKey1)) {
 				Set sc=ClassServer.LoadAsArray(CodeKey1,.lines)
 				If $$$ISOK(sc) {
-					Merge %PXWCacheCode(CodeKey1)=lines
+					Merge %PXWCacheCode(%NS,CodeType,CodeKey1)=lines
 				} Else {
-					Set %PXWCacheCode(CodeKey1,"ERROR")=$SYSTEM.Status.GetErrorText(sc)
+					Set %PXWCacheCode(%NS,CodeType,CodeKey1,"ERROR")=$SYSTEM.Status.GetErrorText(sc)
 				}
 			}
-			If '$DATA(%PXWCacheCode(CodeKey1,"ERROR")) {
+			If '$DATA(%PXWCacheCode(%NS,CodeType,CodeKey1,"ERROR")) {
 				Set code="",sep=""
 				Set from=LineNumber-ws
 				If from<1 Set from=1
 				Set to=LineNumber+ws
-				If to>%PXWCacheCode(CodeKey1) Set to=%PXWCacheCode(CodeKey1)
-				For i=from:1:to Set code=code_sep_%PXWCacheCode(CodeKey1,i),sep=$CHAR(13,10)
+				If to>%PXWCacheCode(%NS,CodeType,CodeKey1) Set to=%PXWCacheCode(%NS,CodeType,CodeKey1)
+				For i=from:1:to Set code=code_sep_%PXWCacheCode(%NS,CodeType,CodeKey1,i),sep=$CHAR(13,10)
 			} Else {
-				Set code=%PXWCacheCodeCode(CodeKey1,"ERROR")
+				Set code=%PXWCacheCode(%NS,CodeType,CodeKey1,"ERROR")
 			}
 		}
 	} Catch e {
@@ -167,6 +167,7 @@ ClassMethod GetCode(%NS As %String, CodeType As %String, CodeKey1 As %String, Co
 	Quit code
 }
 
+/*
 /// Summary of where a class calls something not in the same package
 Query PackageSummary(NameSpace As %String, Package As %String) As PXW.LIB.SQL.Query [ SqlProc ]
 {
@@ -211,13 +212,6 @@ WHERE (ItemType = 'CLS')
     --ENDIF
 }
 
-Query BuildProblems(NameSpace As %String) As PXW.LIB.SQL.Query [ SqlProc ]
-{
-	SELECT ID, BuildStatus, ItemKey1, ItemType, LastUpdate, NameSpace
-	  FROM LastUpdated
-	 WHERE NameSpace=:NameSpace
-	   AND BuildStatus!=1
-}
 
 ClassMethod PackageName(NameSpace As %String, ClassName As %String) As %String [ SqlProc ]
 {
@@ -230,6 +224,14 @@ ClassMethod PackageName(NameSpace As %String, ClassName As %String) As %String [
     Set full=ClassServer.FullClassName(ClassName)
     Set package=$PIECE(full,".",1,*-1)
     Quit package
+}
+*/
+Query BuildProblems(NameSpace As %String) As PXW.LIB.SQL.Query [ SqlProc ]
+{
+	SELECT ID, BuildStatus, ItemKey1, ItemType, LastUpdate, NameSpace
+	  FROM LastUpdated
+	 WHERE NameSpace=:NameSpace
+	   AND BuildStatus!=1
 }
 
 Query GetOverrideTree(NameSpace As %String, ItemKey1 As %String, ITemKey2 As %String) As %Query(ROWSPEC = "NameSpace:%String,ItemKey1:%String,ItemKey2:%String") [ SqlProc ]

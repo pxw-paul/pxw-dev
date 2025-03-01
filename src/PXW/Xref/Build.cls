@@ -126,11 +126,17 @@ ClassMethod BuildIfNecessary(CodeInterface As PXW.DEV.Dictionary.CodeInterface, 
 	Set builder=$SYSTEM.OBJ.New(BuilderClass)
 	Set LastUpdate=##class(PXW.Xref.LastUpdated).OpenOrNew(Namespace,Type,Name)
 	If Force || LastUpdate.NeedsUpdate(TimeChanged) {
-		Set sc=CodeInterface.Load(Name,.text)
 		Set zh=$ZHOROLOG
-		Do ..DeleteAnalysisCalledByTypeKey1(Namespace,Type,Name)
- 		Do ..DeleteCalledByTypeKey1(Namespace,Type,Name)
-		Set sc=builder.Build(Namespace,Name,text)
+		try {
+			Set sc=CodeInterface.Load(Name,.text)
+		} catch e {
+			Set sc=e.AsStatus()
+		}
+		if $$$ISOK(sc) {
+			Do ..DeleteAnalysisCalledByTypeKey1(Namespace,Type,Name)
+			Do ..DeleteCalledByTypeKey1(Namespace,Type,Name)
+			Set sc=builder.Build(Namespace,Name,text)
+		}
 		If $$$ISOK(sc) {
 			Do LastUpdate.%SetModified(1) ; because the lastupdate table is cleared via SQL as part of the build so ensure it saves again
 			Set LastUpdate.LastUpdate=TimeChanged

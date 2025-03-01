@@ -55,6 +55,8 @@ Index Calls2 On (NameSpace, CalledByKey1, CalledByKey2, ItemType, ItemKey1, Item
 
 Index Calls3 On (NameSpace, CalledByKey2, CalledByKey1, ItemType, ItemKey1, ItemKey2);
 
+Index NS On NameSpace [ Type = bitmap ];
+
 Method AlreadyExists() As %Boolean
 {
 	Quit ..CalledByExists(..NameSpace,..ItemType, ..ItemKey1, ..ItemKey2, ..CalledByType, ..CalledByCommand, ..CalledByKey1, ..CalledByKey2, ..CalledByKey3)

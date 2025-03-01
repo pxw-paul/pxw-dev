@@ -309,7 +309,6 @@ Method xrefCDEFItemName(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.
 
 Method xrefCDEFMethodReference(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="MethodReference")
 {
-	Do element.write()
 	Set name=element.ToString(0)
 	Set a=element.FirstAtom()
 	Do ..SaveCDEFCref(..CalledByClassName,a.line,name)

@@ -80,4 +80,10 @@ Method getComment() As PXW.DEV.Atom
 	Quit ""
 }
 
+Method clearComment()
+{
+	If $ISOBJECT(..comment) set ..comment=""
+	If $ISOBJECT(..whitespace) Do ..whitespace.clearComment()
+}
+
 }

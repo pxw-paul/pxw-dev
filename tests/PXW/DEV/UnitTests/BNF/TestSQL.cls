@@ -10,6 +10,22 @@ Method TestSelect()
     Do $$$AssertEquals(..parseAndFlat("SELECT t1.cola,t1.colb FROM schema.table AS t1"),"SelectCommand:{Keyword:SELECT,SelectList:{ColumnReference:{AliasName:t1,.,ColumnName:cola},,,ColumnReference:{AliasName:t1,.,ColumnName:colb}},FromClause:{Keyword:FROM,DirectTable:{TableName:{SchemaName:schema,.,QualifiedIdentifier:table},TableAsClause:{Keyword:AS,AliasName:t1}}}}")
 }
 
+Method TestSubSelect()
+{
+    Do $$$AssertEquals(..parseAndFlat("SELECT cola,colb FROM (SELECT * FROM schema.table)"),"SelectCommand:{Keyword:SELECT,SelectList:{ColumnName:cola,,,ColumnName:colb},FromClause:{Keyword:FROM,Subquery:{(,SelectCommand:{Keyword:SELECT,*,FromClause:{Keyword:FROM,TableName:{SchemaName:schema,.,QualifiedIdentifier:table}}},)}}}")
+
+    Do $$$AssertEquals(..parseAndFlat("SELECT t1.cola,t1.colb FROM (SELECT * FROM schema.table) AS t1"),"SelectCommand:{Keyword:SELECT,SelectList:{ColumnReference:{AliasName:t1,.,ColumnName:cola},,,ColumnReference:{AliasName:t1,.,ColumnName:colb}},FromClause:{Keyword:FROM,DerivedTable:{Subquery:{(,SelectCommand:{Keyword:SELECT,*,FromClause:{Keyword:FROM,TableName:{SchemaName:schema,.,QualifiedIdentifier:table}}},)},TableAsClause:{Keyword:AS,AliasName:t1}}}}")
+}
+
+Method TestWith()
+{
+    do $$$AssertEquals(..parseAndFlat("WITH main AS (SELECT * FROM schema.table) SELECT * from main"),"QuerySpecification:{WithCommand:{Keyword:WITH,WithClause:{AliasName:main,Keyword:AS,(,SelectCommand:{Keyword:SELECT,*,FromClause:{Keyword:FROM,TableName:{SchemaName:schema,.,QualifiedIdentifier:table}}},)}},SelectCommand:{Keyword:SELECT,*,FromClause:{Keyword:from,QualifiedIdentifier:main}}}")
+
+    do $$$AssertEquals(..parseAndFlat("WITH main AS (SELECT * FROM schema.table),second AS (SELECT cola,colb from main) SELECT colb FROM second"),"QuerySpecification:{WithCommand:{Keyword:WITH,WithClause:{AliasName:main,Keyword:AS,(,SelectCommand:{Keyword:SELECT,*,FromClause:{Keyword:FROM,TableName:{SchemaName:schema,.,QualifiedIdentifier:table}}},)},,,WithClause:{AliasName:second,Keyword:AS,(,SelectCommand:{Keyword:SELECT,SelectList:{ColumnName:cola,,,ColumnName:colb},FromClause:{Keyword:from,QualifiedIdentifier:main}},)}},SelectCommand:{Keyword:SELECT,ColumnName:colb,FromClause:{Keyword:FROM,QualifiedIdentifier:second}}}")
+}
+
+/// s str=##class(PXW.DEV.UnitTests.BNF.TestSQL).parseAndFlat("WITH main AS (SELECT * FROM schema.table) SELECT * from main","SqlProgram") w str
+/// r "enter sql",!,sql s str=##class(PXW.DEV.UnitTests.BNF.TestSQL).parseAndFlat(sql,"SqlProgram") w !,str
 ClassMethod parseAndFlat(text As %String, method As %String = "SqlProgram", class As %String = "PXW.DEV.BNF.Run.SQL") As %String
 {
     Set a=..parse(text,method,class)

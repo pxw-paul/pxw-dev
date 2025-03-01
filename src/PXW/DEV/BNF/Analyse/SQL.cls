@@ -349,8 +349,18 @@ Method FindTable(cref As PXW.DEV.Element, ByRef tables) As %String
     If tablealias'="" {
         Set fulltable=$GET(tables(tablealias))
         If fulltable="" {
-        ;    s tablealias=$o(tables(""))
-        ;    i tablealias'="" s fulltable=$g(tables(tablealias))
+            ; table not found by looking up the alias so maybe the alias is the table name:
+            ; SELECT race.* FROM f1_data.race
+            s ta=""
+            f  {
+                s ta=$o(tables(ta),1,ft)
+                q:ta=""
+
+                i $p(ft,".",*)=tablealias {
+                    s fulltable=ft
+                    Set:$ISOBJECT(..ClassServer) fulltable=..ClassServer.GetFullTableName(fulltable,..This)
+                }
+            }
         } Else {
              If '$DATA(..withReferences(fulltable)) {
                 Set:$ISOBJECT(..ClassServer) fulltable=..ClassServer.GetFullTableName(fulltable,..This)

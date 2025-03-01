@@ -13,6 +13,10 @@ Property LineNumber As %Integer;
 
 Property Description As %String(MAXLEN = 1024, TRUNCATE = 1);
 
+Index iAll On (NameSpace, ItemType, ItemKey1, ItemKey2);
+
+Index iNameSpace On NameSpace [ Type = bitmap ];
+
 Storage Default
 {
 <Data name="AnalysisDataDefaultData">
