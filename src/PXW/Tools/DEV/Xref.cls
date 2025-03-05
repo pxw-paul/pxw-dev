@@ -89,7 +89,7 @@ ClassMethod WriteNav()
 	Write "<a href='"_##class(PXW.Tools.DEV.XrefBuild).HREFTo()_"'>Build Xref</a>"
 	Write "<a href='"_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize+1,flags)_"'>Window +</a>"
 	If windowSize>0 Write "<a href='"_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize-1,flags)_"'>Window -</a>"
-	If itemk2'="" Write "<a href='"_..HREFTo(itemtype,itemk1,"","","",windowSize,flags)_"'>All "_itemk1_"</a>"
+	If itemk2'="" Write "<a href='"_..HREFTo(itemtype,itemk1,"","","","",windowSize,flags)_"'>All "_itemk1_"</a>"
 	If flags'["EXTERNAL" Write "<a href='"_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,flags_",EXTERNAL")_"'>External Only</a>"
 	If flags["EXTERNAL" Write "<a href='"_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,$REPLACE(flags,",EXTERNAL",""))_"'>Include Internal</a>"
 	If flags'["SUPER" Write "<a href='"_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,flags_",SUPER")_"'>Include Super</a>"
@@ -133,7 +133,9 @@ ClassMethod WriteNav()
 			</fieldset>
 		</form>
 	>
-	Write "<a title='To get an idea of what the parameters can do' href='"_##class(PXW.Tools.DEV.Class).HREFTo("PXW.Xref.Queries","Get")_"'>Show query</a>",!
+	s ons=%NS,%NS="LOCAL_USER"
+	Write "<a target=_blank title='To get an idea of what the parameters can do' href='"_##class(PXW.Tools.DEV.Class).HREFTo("PXW.Xref.Queries","Get")_"'>Show query</a>",!
+	s %NS=ons
 }
 
 /// This shoud output some variables, getting the data from %request

@@ -158,6 +158,8 @@ Method WriteStyles()
 	.EmbeddedXML { background-color: var(--bgAlternate1); display:inline-block;}
 	.EmbeddedPython { background-color: var(--bgAlternate1); display:inline-block;}
 
+	
+
 	.CDEFComment { color: var(--fgComment); }
    	.CDEFClassName, a.CDEFClassName  { color: var(--fgProgramName);}
 	.CDEFMember, a.CDEFMember, a.CDEFMember:visited {color: var(--fgProgramLabel);}
@@ -173,6 +175,8 @@ Method WriteStyles()
 
     .CDEFFormalSpecList { display: inline-block; white-space: wrap; max-width: 75%;  vertical-align:top;}
     .CDEFFormalSpecItem {  white-space:nowrap; background-color: var(--bgAlternate1); }
+
+	.CDEFOneClassMember { display:block; margin:0px 0px 0px 20px;  }
 
 	.COSGlobal, a.COSGlobal, a.COSGlobal:Visited {color: var(--fgCodeVariableGlobal);}
 	.COSGlobalSet, a.COSGlobalSet, a.COSGlobalSet:visited {color: var(--fgCodeVariableGlobal); font-weight:bold;}

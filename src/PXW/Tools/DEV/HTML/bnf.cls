@@ -59,30 +59,37 @@ Property commentid As %Integer;
 Method OutputKeywordCommentAsDocumentation(Element As PXW.DEV.Element, Output commentid As %String)
 {
     set commentid=""
-    /*Set keywordatom=Element.FirstAtom()
+    /* This does not work how I want yet, it needs to do all the stuff that documatic does, can I just call that or do I need to write my own? */
+    Set keywordatom=Element.FirstAtom()
     set textA=keywordatom.getComment()
     i textA'="" {
         s text=textA.ToString()
         s text=$replace(text,"///","")
         set ..commentid=..commentid+1
         set commentid="comment"_..commentid
-        write "<div class='CDEFdocHTML nocopy' id='"_commentid_"HTML'>"
-        write text
-        write "</div>"
+        ;do ..output("<div style='position:relative;' class='CDEFdocHTML nocopy' id='"_commentid_"HTML'>")
+        ;do ..output("<span style='position:absolute;  top:0px; left:0px;' onmouseover='flipComments("""_commentid_""");'>X</span>")
+        do ..output("<div style='position:relative; display:none;' class='CDEFdocHTML nocopy' id='"_commentid_"HTML'>")
+        do ..output(text)
+        ;do ##class(%CSP.Documatic).RenderDescription(..This,text,"","")
+        do ..output("</div>")
 
-        write "<div class='CDEFdocText' style='display:none;' id='"_commentid_"Text'>"
+        ;do ..output("<div style='position:relative; display:none;' class='CDEFdocText' id='"_commentid_"Text'>")
+        ;do ..output("<span style='position:absolute; top:0px; left:0px;' onmouseout='flipComments("""_commentid_""");'>X</span>")
+        do ..output("<div style='position:relative;' class='CDEFdocText'  id='"_commentid_"Text'>")
         If $ISOBJECT(keywordatom.whitespace) {
             Do ..writeAtom(keywordatom.whitespace,"<span class=whitespace>","</span>",1)
         }
         If $ISOBJECT(keywordatom.comment) {
             Do ..writeAtom(keywordatom.comment,"<span class='"_..#CommentClass_"'>","</span>")
         }
-        write "</div>"
+        do ..output("</div>")
         do keywordatom.clearComment()
         set keywordatom.whitespace=""
     } else {
         s commentid=""
-    }*/
+    }
+    ;*/
 }
 
 Method AddToIndex(Name As %String, Type As %String, Anchor As %String) As %Status
@@ -308,22 +315,21 @@ Method writeCDEFIncludeName(element As PXW.DEV.BNF.Elements.ClassDefinition) As 
 Method writeCDEFOneClassMember(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="OneClassmember")
 {
     ; a class memeber element is like this:
-    ; Element=OneClassmember PXW.DEV.BNF.Element @1835 
-    ; .Element=ClassMethod PXW.DEV.BNF.Element @1893
-    ; ..type=keyword:/UdlStatement/ClassDefinition/ClassMemberSection/ClassMemberList/OneClassmember/ClassMethod
-    ; .. Method
-    ; ..Element=MethodName PXW.DEV.BNF.Element @1910
-    ; ...Element=ClassItemIdentifier PXW.DEV.BNF.Element @1946
+    ;         Element=OneClassmember PXW.DEV.BNF.Element @1835 
+    ; item(e)=.Element=ClassMethod PXW.DEV.BNF.Element @1893
+    ; typeA  =..type=keyword:/UdlStatement/ClassDefinition/ClassMemberSection/ClassMemberList/OneClassmember/ClassMethod
+    ;         .. Method
+    ; nameE   ..Element=MethodName PXW.DEV.BNF.Element @1910
+    ;         ...Element=ClassItemIdentifier PXW.DEV.BNF.Element @1946
     Set item=element.partsGetAt(1)
-    Set typeE=item.partsGetAt(1)
-    Set ..ThisItemType=typeE.ToString(0)
+    Set typeA=item.partsGetAt(1)
+    Set ..ThisItemType=typeA.ToString(0)
     Set nameE=item.partsGetAt(2)
     If $LISTFIND($LISTBUILD("PropertyName","MethodName","ClassParameterName","IndexName","TriggerName","ForeignkeyName","StorageName","QueryName","XdataName"),nameE.type) {
         Set name=nameE.ToString(0)
         Set anchor="anchor"_name_nameE.type
         Set ..ThisMethod=name
         If ..BookMark'="",$$$UPPER(name)=$$$UPPER(..BookMark) {
-            ;d ..wrapElementHTML(element,"<a name='bookmark'>","</a>")
             Do ..wrapElementHTML(nameE,"<span id='"_anchor_"SPAN' class='hilite'>","</span>") 
             Set anchor="bookmark" ;
         } Else {
@@ -331,7 +337,12 @@ Method writeCDEFOneClassMember(element As PXW.DEV.BNF.Elements.ClassDefinition) 
         }
         
         Do ..AddToIndex(name,nameE.type,anchor)
+        
+        ; not compatible with OutputKeywordComment, which forces output so the anchor ends up going after the comment
         Do ..wrapElementHTML(element,"<a name='"_anchor_"'></a>","") ; anchor goes before the member (ie before the comment)
+        ;do ..OutputKeywordCommentAsDocumentation(element,.commentid)
+
+        do ..wrapElementHTML(element,"<span class=CDEFOneClassMember>","</span>")
     }
     Quit ""
 }
@@ -367,13 +378,11 @@ Method writeCDEFAttributeViewQuery(element As PXW.DEV.BNF.Elements.ClassDefiniti
 Method writeCDEFClassProperty(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassProperty")
 {
     Set keywordatom=element.FirstAtom()
-    do ..OutputKeywordCommentAsDocumentation(element,.commentid)
     Set nameelement=element.findFirstElementByType("PropertyName")
     If $ISOBJECT(nameelement) {
         Set name=nameelement.ToString(0)
         Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
         Set menu="<div class='CDEFItemMenu nocopy'>"
-        Set:commentid'="" menu=menu_"<a class='CDEFOption' href=# onclick='flipComments("""_commentid_""");'>+ </a>"
         Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
         Set overrides=..ClassServer.GetPropertyOverrides(..This_"||"_name)
         If overrides'="" {
@@ -392,13 +401,11 @@ Method writeCDEFClassProperty(element As PXW.DEV.BNF.Elements.ClassDefinition) A
 Method writeCDEFClassParameter(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassParameter")
 {
     Set keywordatom=element.FirstAtom()
-    do ..OutputKeywordCommentAsDocumentation(element,.commentid)
     Set nameelement=element.findFirstElementByType("ClassParameterName")
     If $ISOBJECT(nameelement) {
         Set name=nameelement.ToString(0)
         Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
         Set menu="<div class='CDEFItemMenu  nocopy'>"
-        Set:commentid'="" menu=menu_"<a class='CDEFOption' href=# onclick='flipComments("""_commentid_""");'>+ </a>"
         Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
         Set overrides=..ClassServer.GetParameterOverrides(..This_"||"_name)
         If overrides'="" {
@@ -418,13 +425,11 @@ Method writeCDEFClassParameter(element As PXW.DEV.BNF.Elements.ClassDefinition) 
 Method writeCDEFClassMethod(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassClassMethod")
 {
     Set keywordatom=element.FirstAtom()
-    do ..OutputKeywordCommentAsDocumentation(element,.commentid)
     Set nameelement=element.findFirstElementByType("MethodName")
     If $ISOBJECT(nameelement) {
         Set name=nameelement.ToString(0)
         Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
         Set menu="<div class='CDEFItemMenu  nocopy'>"
-        Set:commentid'="" menu=menu_"<a class='CDEFOption' href=# onclick='flipComments("""_commentid_""");'>+ </a>"
         Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
         Set overrides=..ClassServer.GetMethodOverrides(..This_"||"_name)
         If overrides'="" {
@@ -451,13 +456,11 @@ Method writeCDEFClassQuery(element As PXW.DEV.BNF.Elements.ClassDefinition) As P
 {
     Set ..SqlProgramAnalyser=""
     Set keywordatom=element.FirstAtom()
-    do ..OutputKeywordCommentAsDocumentation(element,.commentid)
     Set nameelement=element.findFirstElementByType("QueryName")
     If $ISOBJECT(nameelement) {
         Set name=nameelement.ToString(0)
         Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
         Set menu="<div class='CDEFItemMenu nocopy'>"
-        Set:commentid'="" menu=menu_"<a class='CDEFOption' href=# onclick='flipComments("""_commentid_""");'>+ </a>"
         Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
         ; not sure if/how I recognise overridden QUERIES
         /*Set overrides=..ClassServer.GetPropertyOverrides(..This_"||"_name)
@@ -484,17 +487,22 @@ Method writeCDEFClassQueryBody(element As PXW.DEV.BNF.Elements.ClassDefinition) 
     Quit ""
 }
 
+/// NOTE: this is a special hand coded type of Xdata (see Run.ClassDefinition)
+Method writeCDEFXdataSql(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="XdataSql")
+{
+    Set ..SqlProgramAnalyser=""
+    Do ..wrapElementHTML(element,"<span class='EmbeddedSQL'>","</span>")
+    Quit ""
+}
+
 Method writeCDEFIndex(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassIndex")
 {
     Set keywordatom=element.FirstAtom()
-    do ..OutputKeywordCommentAsDocumentation(element,.commentid)
-    do ..OutputKeywordCommentAsDocumentation(element,.commentid)
     Set nameelement=element.findFirstElementByType("IndexName")
     If $ISOBJECT(nameelement) {
         Set name=nameelement.ToString(0)
         Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
         Set menu="<div class='CDEFItemMenu nocopy'>"
-        Set:commentid'="" menu=menu_"<a class='CDEFOption' href=# onclick='flipComments("""_commentid_""");'>+ </a>"
         Set menu=menu_"<a title='This does NOT show where its used as a index in SQL, only where its used as Unique Open method' class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
         ; not sure if indices even can be overridden
         /*Set overrides=..ClassServer.GetPropertyOverrides(..This_"||"_name)

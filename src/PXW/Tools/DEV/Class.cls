@@ -378,19 +378,19 @@ ClassMethod WriteScripts()
 	Write "    }",!
 	Write "}",!
 
-	&html<
-		function flipComments(commentid) {
-			var html=document.getElementById(commentid+"HTML");
-			var text=document.getElementById(commentid+"Text");
-			if (html.style.display=='none') {
-				html.style.display='block';
-				text.style.display='none';
-			} else {
-				html.style.display='none';
-				text.style.display='block';
-			}
-		}
-	>
+	Write "",!
+	Write "function flipComments(commentid) {",!
+	Write "    var html=document.getElementById(commentid+""HTML"");",!
+	Write "    var text=document.getElementById(commentid+""Text"");",!
+	Write "    if (html.style.display=='none') {",!
+	Write "        html.style.display='block';",!
+	Write "        text.style.display='none';",!
+	Write "    } else {",!
+	Write "        html.style.display='none';",!
+	Write "        text.style.display='block';",!
+	Write "    }",!
+	Write "}",!
+	Write "",! 
 
   /*
 	write "function showUndefs() {",!

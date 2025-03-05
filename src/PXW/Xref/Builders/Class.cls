@@ -285,7 +285,7 @@ Method xrefCDEFClassDefinition(element As PXW.DEV.BNF.Elements.ClassDefinition) 
 	Quit ""
 }
 
-Method xrefCDEFItemName(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="PropertyName,MethodName,ClassParameterName,IndexName,TriggerName,ForeignkeyName,StorageName,QueryName")
+Method xrefCDEFItemName(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="PropertyName,MethodName,ClassParameterName,IndexName,TriggerName,ForeignkeyName,StorageName,QueryName,XdataName")
 {
 	Set name=element.ToString(0)
 	Set ..CalledByItemName=name        
@@ -382,6 +382,12 @@ Method xrefCDEFTypeClassReference(element As PXW.DEV.BNF.Elements.ClassDefinitio
 	}
 
 	Quit ""
+}
+
+Method xrefCDEFXdataSql(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="XdataSql")
+{
+    Set ..SqlProgramAnalyser=""
+    Quit ""
 }
 
 /*

@@ -31,60 +31,6 @@ NEWLINE         : 'code newline'
 NUMBER          : 'code number'
 TYPE_COMMENT    : 'code type_comment'
 
-# ========================= START OF THE GRAMMAR =========================
-
-# General grammatical elements and rules:
-#
-# * Strings with double quotes (") denote SOFT KEYWORDS
-# * Strings with single quotes (') denote KEYWORDS
-# * Upper case names (NAME) denote tokens in the Grammar/Tokens file
-# * Rule names starting with "invalid_" are used for specialized syntax errors
-#     - These rules are NOT used in the first pass of the parser.
-#     - Only if the first pass fails to parse, a second pass including the invalid
-#       rules will be executed.
-#     - If the parser fails in the second phase with a generic syntax error, the
-#       location of the generic failure of the first pass will be used (this avoids
-#       reporting incorrect locations due to the invalid rules).
-#     - The order of the alternatives involving invalid rules matter
-#       (like any rule in PEG).
-#
-# Grammar Syntax (see PEP 617 for more information):
-#
-# rule_name: expression
-#   Optionally, a type can be included right after the rule name, which
-#   specifies the return type of the C or Python function corresponding to the
-#   rule:
-# rule_name[return_type]: expression
-#   If the return type is omitted, then a void * is returned in C and an Any in
-#   Python.
-# e1 e2
-#   Match e1, then match e2.
-# e1 | e2
-#   Match e1 or e2.
-#   The first alternative can also appear on the line after the rule name for
-#   formatting purposes. In that case, a | must be used before the first
-#   alternative, like so:
-#       rule_name[return_type]:
-#            | first_alt
-#            | second_alt
-# ( e )
-#   Match e (allows also to use other operators in the group like '(e)*')
-# [ e ] or e?
-#   Optionally match e.
-# e*
-#   Match zero or more occurrences of e.
-# e+
-#   Match one or more occurrences of e.
-# s.e+
-#   Match one or more occurrences of e, separated by s. The generated parse tree
-#   does not include the separator. This is otherwise identical to (e (s e)*).
-# &e
-#   Succeed if e can be parsed, without consuming any input.
-# !e
-#   Fail if e can be parsed, without consuming any input.
-# ~
-#   Commit to the current alternative, even if it fails to parse.
-#
 
 # STARTING RULES
 # ==============
@@ -159,8 +105,8 @@ augassign:
     | '@=' 
     | '/=' 
     | '%=' 
-    | '&='  
-    | '|='  
+    | '&=' 
+    | '|=' 
     | '^=' 
     | '<<=' 
     | '>>=' 
@@ -244,7 +190,7 @@ function_def:
 
 function_def_raw:
     | 'def' NAME [type_params] '(' [params] ')' ['->' expression ] ':' [func_type_comment] block 
-    | ASYNC 'def' NAME [type_params] '(' [params] ')' ['->' expression ] ':' [func_type_comment] block 
+    | 'async' 'def' NAME [type_params] '(' [params] ')' ['->' expression ] ':' [func_type_comment] block 
 
 # Function parameters
 # -------------------
@@ -332,16 +278,16 @@ while_stmt:
 
 for_stmt:
     | 'for' star_targets 'in' ~ star_expressions ':' [TYPE_COMMENT] block [else_block] 
-    | ASYNC 'for' star_targets 'in' ~ star_expressions ':' [TYPE_COMMENT] block [else_block] 
+    | 'async' 'for' star_targets 'in' ~ star_expressions ':' [TYPE_COMMENT] block [else_block] 
 
 # With statement
 # --------------
 
 with_stmt:
-    | 'with' '(' ','.with_item+ ','? ')' ':' block 
+    | 'with' '(' ','.with_item+ ','? ')' ':' [TYPE_COMMENT] block 
     | 'with' ','.with_item+ ':' [TYPE_COMMENT] block 
-    | ASYNC 'with' '(' ','.with_item+ ','? ')' ':' block 
-    | ASYNC 'with' ','.with_item+ ':' [TYPE_COMMENT] block 
+    | 'async' 'with' '(' ','.with_item+ ','? ')' ':' block 
+    | 'async' 'with' ','.with_item+ ':' [TYPE_COMMENT] block 
 
 with_item:
     | expression 'as' star_target &(',' | ')' | ':') 
@@ -521,16 +467,20 @@ type_alias:
 # Type parameter declaration
 # --------------------------
 
-type_params: '[' type_param_seq  ']' 
+type_params: '[' type_param_seq ']' 
+    #| invalid_type_params
+    #| '[' type_param_seq ']' 
 
 type_param_seq: ','.type_param+ [','] 
 
 type_param:
-    | NAME [type_param_bound] 
-    | '*' NAME 
-    | '**' NAME 
+    | NAME [type_param_bound] [type_param_default] 
+    | '*' NAME [type_param_starred_default] 
+    | '**' NAME [type_param_default] 
 
 type_param_bound: ':' expression 
+type_param_default: '=' expression 
+type_param_starred_default: '=' star_expression 
 
 # EXPRESSIONS
 # -----------
@@ -666,7 +616,7 @@ power:
 # Primary elements are things like "obj.something.something", "obj[something]", "obj(something)", "obj" ...
 
 await_primary:
-    | AWAIT primary 
+    | 'await' primary 
     | primary
 
 primary:
@@ -753,7 +703,7 @@ fstring_middle:
     | fstring_replacement_field
     | FSTRING_MIDDLE 
 fstring_replacement_field:
-    | '{' (yield_expr | star_expressions) '='? [fstring_conversion] [fstring_full_format_spec] '}' 
+    | '{' annotated_rhs '='? [fstring_conversion] [fstring_full_format_spec] '}' 
 fstring_conversion:
     | "!" NAME 
 fstring_full_format_spec:
@@ -796,7 +746,7 @@ for_if_clauses:
     | for_if_clause+ 
 
 for_if_clause:
-    | ASYNC 'for' star_targets 'in' ~ disjunction ('if' disjunction )* 
+    | 'async' 'for' star_targets 'in' ~ disjunction ('if' disjunction )* 
     | 'for' star_targets 'in' ~ disjunction ('if' disjunction )* 
 
 listcomp:
@@ -925,6 +875,7 @@ func_type_comment:
 
 
 # ========================= START OF INVALID RULES =======================
+
     ]]></data></bnf>
 }
 

@@ -1089,8 +1089,24 @@ Method XdataText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
         Set n=n_..next()
         Set ok=1
     }
-    Set o=..newAtom(subElement.type,n)
-    Do subElement.AddPart(o)
+
+    if ..mimetype="application/sql" {
+        Set parser=##class(PXW.DEV.BNF.Run.SQL).%New()
+	    Set parser.stream=##class(PXW.DEV.InputStream).NewString(n)
+        Set parser.stream.line=..stream.line
+        Set parser.whitespace=..whitespace
+        set parser.comment=..comment
+        set sqlElement=..newElement("XdataSql")
+       	If parser.QuerySpecification(sqlElement) {
+            $$$BNFCOMMIT(sqlElement,subElement)
+        } 
+        set ..whitespace=parser.whitespace
+        set ..comment=parser.comment
+        ;d sqlElement.write()
+    } else {
+        Set o=..newAtom(subElement.type,n)
+        Do subElement.AddPart(o)
+    }
     $$$BNFCOMMIT(subElement,ParentElement)
     $$$DEBUGMethodEnd
     Quit ok
@@ -1103,7 +1119,9 @@ Method XdataText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 Method ClassXdata(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
 	Set ..mimetype=""
-    Quit ##super(ParentElement,.subElement)
+    set ok=##super(ParentElement,.subElement)
+    
+    q ok
 }
 
 Method XmlCdataText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean

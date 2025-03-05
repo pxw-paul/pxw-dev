@@ -82,7 +82,8 @@ Method File(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 {
 	Set ok=##super(ParentElement,.subElement)
     If ok=0 {
-        Set ok=..recover(ParentElement,.recsub,"",$LISTBUILD())
+        Set retok=..recover(ParentElement,.recsub,"{}",$LISTBUILD())
+        s ok=1 ; recovered so continue
     }
     Quit ok
 }

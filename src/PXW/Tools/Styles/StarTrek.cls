@@ -348,6 +348,7 @@ Method WriteStyles()
    	.CDEFClassName, a.CDEFClassName  { color:#4EC9B0;}
 	.CDEFMember, a.CDEFMember, a.CDEFMember:visited {color:#DCDCAA;}
 	.CDEFKeyword { color:#85A6FF;}
+	.CDEFOneClassMember { display:block; margin:0px 0px 0px 20px;  }
 
     .KeyWord { color:white;}
 	.Warning { border-style:solid; border-color:orange; border-width:1px 5px 1px 5px;}
