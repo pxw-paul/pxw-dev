@@ -107,12 +107,13 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
     Set output=##class(PXW.Tools.DEV.HTML.bnf).%New()
 	Set output.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)
 
-	Set showPaths=0
+	Set showPaths=0 
     Write "<pre>"
+	; Debug is only for the DISPLAY of the page, if you want to debug the parsing use the ParserTest page.
 	If +Debug=1 $$$DEBUGNew(##class(PXW.Tools.Debugger).%ClassName(1))
-	;If Debug["$TIME" $$$DEBUGNew(##class(PXW.Debuggers.Timing).%ClassName(1))
 	If Debug["$FILE" $$$DEBUGNew(##class(PXW.Debuggers.BasicToFile).%ClassName(1)) 
 	If Debug["$PATHS" Set showPaths=1,%path="" ; no need to set any output its just for tooltips
+	if Debug["$TIME" $$$DEBUGNew(##class(PXW.Tools.DebugTiming).%ClassName(1))
 	
 	Set sc=output.ClassServer.GetClassStudioText(ClassName,.text,.linesOfCode,.timestamp)
 	Set zh(1,"load")=$ZHOROLOG-zh,zh=$ZHOROLOG
@@ -127,7 +128,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 				Set ln=$ORDER(linesOfCode(ln))
 				Quit:ln=""
 				Write !,"<span class=nocopy>"_ln_":"_"</span>"_..EscapeHTML(linesOfCode(ln))
-			}
+			} 
 			Write "</pre>"
 		}
 		Set zh(2,"display")=$ZHOROLOG-zh,zh=$ZHOROLOG
@@ -145,12 +146,15 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 		Set zh(4,"render")=$ZHOROLOG-zh,zh=$ZHOROLOG
 
 		Set element=##class(PXW.DEV.Element).%New()
+		i Debug'="$TIME" $$$DEBUGPause
 		While x.cheese(element) {
-			;d element.write("")
+			$$$DEBUGResume
 			Do output.middle(element)
-			;zw output.Analyser
 			Set element=##class(PXW.DEV.Element).%New()
+			i Debug'="$TIME" $$$DEBUGPause
 		}
+		$$$DEBUGResume
+
 		If 'x.stream.EOF() {
 			Write "<span id='unfinishedParse'>"
 			Do ..WriteStatus($$$ERROR(5001,"Not at end:line="_x.stream.line_":pos="_x.stream.pos_":lastPos="_x.stream.lastPos_":length="_x.stream.length_":"_$EXTRACT(x.stream.input,x.stream.pos,x.stream.lastPos)_"."))
@@ -172,12 +176,14 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 		Do ..WriteStatus(sc)
 		Do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName)
 	}
+
+	
 	If Debug["$TIME" {
 		
 		Set s="" For  Set s=$ORDER(%pxwstrings(s),1,n) Quit:s=""  Set %pxwstringsX(n,s)=""
-		Write "<pre>" ZWrite %pxwstrings,%pxwstringsX,%pxw1,%RBCOUNT Write "</pre>"
+		Write "<pre>" ZWrite %pxwstrings,%pxwstringsX,%pxw1,%RBCOUNT zw $$$debugObject Write "</pre>"
 		Set totaltime=0,totalcalls=0
-		Set rs=##clasS(%Library.ResultSet).%New("PXW.Debuggers.Timing:SelectResults")
+		Set rs=##clasS(%Library.ResultSet).%New("PXW.Tools.DebugTiming:SelectResults")
 		$$$THROWONERROR(sc,rs.%Execute())
 		&html<<table filename="Timings.csv">
 			<tr><th>ClassName</th><th>MethodName</th><th>TotalTime</th><th>CountOfCalls</th><th>AverageTime</th><th>PercentageOfTime</th></tr>>

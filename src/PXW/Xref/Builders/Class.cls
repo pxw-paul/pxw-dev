@@ -90,10 +90,11 @@ Method SaveAnalysis(atom As PXW.DEV.Atom, Description As %String) As %Status
 	Set adata.ItemType="CLS"
 	Set adata.LineNumber=atom.line
 	Set adata.Description=Description
-	Set sc=adata.%Save()
-	If $$$ISERR(sc) {
-		$$$DEBUG($EXTRACT($SYSTEM.Status.GetErrorText(sc),1,100))
-	}
+	;Set sc=adata.%Save()
+	;If $$$ISERR(sc) {
+	;	$$$DEBUG($EXTRACT($SYSTEM.Status.GetErrorText(sc),1,100))
+	;}
+	$$$DEBUGSC(sc,adata.%Save())
 	Quit sc
 }
 
@@ -130,7 +131,7 @@ Method SaveCOSXref(ItemType As %String, ItemKey1 As %String, ItemKey2 As %String
 	Set xref.CalledByKey2=..CalledByItemName
 	Set xref.CalledByCommand=CalledByCommand
 	Set xref.ItemType=ItemType
-	Set xref.ItemKey1=ItemKey1
+	Set xref.ItemKey1=..ClassServer.FullClassName(ItemKey1,$PIECE(..CalledByClassName,".",1,*-1))
 	Set xref.ItemKey2=ItemKey2
 	If $ISOBJECT(Atom) {
 		Set xref.CalledByKey3=Atom.line-..ClassElementLineNumber
@@ -660,7 +661,7 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName
         }
 
         Set path=path_sep_propertyatom.value,sep="."
-		;d ..wrapAtomHTML(propertyatom,"<a class='COSObjectsProperty' href='"_##class(PXW.Tools.DEV.Class).HREFTo(StartClassName,path)_"'>","</a>")
+		Do ..xrefCOSParameterChecks(StartClassName,path,objectchain)
 
         Set objectchain=objectchain.findFirstElementByType("ObjectChain",0) 
     }
@@ -714,6 +715,136 @@ Method SQLInternalXREF(Element As PXW.DEV.Element, table As %String = "", column
 			}
 		}
 	}
+}
+
+Method xrefCOSParameterChecks(ClassName As %String, MethodPath As %String, Element As PXW.DEV.Element)
+{
+	;w !,"hello "_ClassName_" "_MethodPath
+	; NOTE that METHOD PATH HAS NO LEADING DOT HERE
+    If ClassName="%Library.ResultSet",MethodPath="%New" {
+        Set paramsE=Element.findFirstElementByType("FunctionParameterList")
+        Do paramsE.findElementsByType("FunctionParameter",.plist,0)
+        If $ISOBJECT($GET(plist)) {
+            Kill atoms
+            Set p1=plist.GetAt(1)
+            Set flat=..flattenlist(p1,.atoms)
+            ;d p1.write() zw flat,f2,atoms
+            
+            ; "%Studio.Project:ProjectList
+            ; flat=$lb($lb("String","%Studio.Project:ProjectList"))
+            If atoms.Count()=1,$PIECE(atoms.GetAt(1).type,":",1)="String" {
+                Set val=atoms.GetAt(1).value
+                Set class=$PIECE(val,":",1)
+                Set query=$PIECE(val,":",2)
+				set a=atoms.GetAt(1)
+                do ..SaveCOSXref("CLS",class,query,"ResultSet",a)
+            }
+
+            ; ..%ClassName(1)_":ProjectList"
+            ;=flat=$lb($lb("ObjectChainNoDot","%ClassName"),$lb("Number","1"),$lb("String",":ProjectList"))
+            If atoms.Count()=3,$$$UPPER(atoms.GetAt(1).value)="%CLASSNAME",$PIECE(atoms.GetAt(3).type,":",1)="String" {
+                Set class=..CalledByClassName
+                Set query=$PIECE(atoms.GetAt(3).value,":",2)
+                Set a=atoms.GetAt(3)
+                do ..SaveCOSXref("CLS",class,query,"ResultSet",a)
+            }
+            
+            ; ..%ClassName(1)_":"_"ProjectList"
+            ; flat=$lb($lb("ObjectChainNoDot","%ClassName"),$lb("Number","1"),$lb("String",":"),$lb("String","ProjectList"))
+            If atoms.Count()=4,$$$UPPER(atoms.GetAt(1).value)="%CLASSNAME",atoms.GetAt(3).value=":",$PIECE(atoms.GetAt(4).type,":",1)="String" {
+                Set class=..CalledByClassName
+                Set query=atoms.GetAt(4).value
+                Set a=atoms.GetAt(4)
+                do ..SaveCOSXref("CLS",class,query,"ResultSet",a)
+
+            }
+            
+            ; $classname($this)_":ProjectList"
+            ; flat=$lb($lb("keyword","classname"),$lb("keyword","$this"),$lb("String",":ProjectList"))
+            If atoms.Count()=3,$$$UPPER(atoms.GetAt(1).value)="CLASSNAME",$PIECE(atoms.GetAt(3).type,":",1)="String" {
+                Set class=..CalledByClassName
+                Set query=$piece(atoms.GetAt(3).value,":",2)
+                Set a=atoms.GetAt(3)
+                do ..SaveCOSXref("CLS",class,query,"ResultSet",a)
+            }
+            
+            ; $classname($this)_":"_"ProjectList"
+            ; flat=$lb($lb("keyword","classname"),$lb("keyword","$this"),$lb("String",":"),$lb("String","ProjectList"))
+            If atoms.Count()=4,$$$UPPER(atoms.GetAt(1).value)="CLASSNAME",atoms.GetAt(3).value=":",$PIECE(atoms.GetAt(4).type,":",1)="String" {
+                Set class=..CalledByClassName
+                Set query=atoms.GetAt(4).value
+                Set a=atoms.GetAt(4)
+                do ..SaveCOSXref("CLS",class,query,"ResultSet",a)
+            }
+            
+            ; $classname()_":ProjectList"
+            ; flat=$lb($lb("keyword","classname"),$lb("String",":ProjectList"))
+            If atoms.Count()=2,$$$UPPER(atoms.GetAt(1).value)="CLASSNAME",$PIECE(atoms.GetAt(2).type,":",1)="String" {
+                Set class=..CalledByClassName
+                Set query=$PIECE(atoms.GetAt(2).value,":",2)
+                Set a=atoms.GetAt(2)
+                do ..SaveCOSXref("CLS",class,query,"ResultSet",a)
+            }
+
+            ; $classname()_":"_"ProjectList"
+            ; flat=$lb($lb("keyword","classname"),$lb("String",":"),$lb("String","ProjectList"))
+            If atoms.Count()=3,$$$UPPER(atoms.GetAt(1).value)="CLASSNAME",atoms.GetAt(2).value=":",$PIECE(atoms.GetAt(3).type,":",1)="String" {
+                Set class=..CalledByClassName
+                Set query=atoms.GetAt(3).value
+                Set a=atoms.GetAt(3)
+                do ..SaveCOSXref("CLS",class,query,"ResultSet",a)
+            }
+
+        }
+    }
+}
+
+/// This method needs to be somewhere that XREF and HTML can access. Part of the analyser maybe?
+ClassMethod flattenlist(Element As PXW.DEV.Element, AtomList As %Library.ListOfObjects) As %List
+{
+	#dim a as PXW.DEV.Atom
+	#dim e as PXW.DEV.Element
+	
+    If '$ISOBJECT($GET(AtomList)) Set AtomList=##class(%Library.ListOfObjects).%New()
+    
+ 	Set list=""
+    ;if AtomList'="" w "new list" s AtomList=##class(%ListOfObjects).%New()
+	Set akey=""
+	Set sep=""
+    If Element.partsCount()=1 {
+        Set single=1
+    } Else {
+        Set single=0
+    }
+	If 'single {
+        ;Set list=list_$lb(Element.type)
+    }
+	For  {
+		Set a=Element.partsGetNext(.akey)
+		Quit:akey=""
+
+        If a.%IsA("PXW.DEV.Element") {
+            Set list=list_..flattenlist(a,.AtomList)
+        } ElseIf $PIECE(a.type,":",1)="punctuation" {
+            ; forget punctuation for the timebeing
+            ;Set list=list_$lb($lb("punctuation",a.value))
+            ;do AtomList.Insert(a)
+            
+            ; Unless the thing truely IS punctuation. Due to complexity deep in the parser $this counts as punctuation, which is wrong.
+            If a.value'?1.P {
+                Set list=list_$LISTBUILD($LISTBUILD("keyword",a.value))
+                Do AtomList.Insert(a)
+            }
+
+        } Else {
+            Set list=list_$LISTBUILD($LISTBUILD($PIECE(a.type,":",1),a.value))
+            Do AtomList.Insert(a)
+        }		
+	}
+	If 'single {
+        ;Set str=str_"}"
+    }
+	Quit list
 }
 
 }

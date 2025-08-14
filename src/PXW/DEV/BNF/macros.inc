@@ -7,7 +7,7 @@ ROUTINE PXW.DEV.BNF.macros [Type=INC]
 #define BNFCOMMIT(%sub,%parent) do:%sub.partsCount()>0 %parent.AddPart(%sub) 
 
 /// commit the transaction to the parent, by copying the data rather than creating a new node
-#define BNFCOMMITCOPY(%sub,%parent) do %parent.partsCopy(%sub) 
+#define BNFCOMMITCOPY(%sub,%parent) do %parent.partsCopy(.%sub) 
  
 /// rollback the transaction 
 ///#define BNFROLLBACK $$$DEBUG("BNFROLLBACK:"_%path)  d:%subElement.parts.Count()>0 ..gotoBookmark(.%bookmark) kill %subElement  

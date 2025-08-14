@@ -28,6 +28,10 @@ Property ExcludeClassesExtends As %List;
 /// EG. %request=%CSP.Request
 Property KnownVariables As array Of %String;
 
+/// Name of a JDBC connection defined in the system management portal.
+/// Its not used yet by I can see a case for a tool being able to just prepare sql rather than running it.
+Property JDBCName As %String;
+
 ClassMethod ClearCache() [ CodeMode = objectgenerator ]
 {
     ;
@@ -329,7 +333,6 @@ Method ListParameterDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierR
 
 Method CacheListParameterDetails(ClassName As %String, TimeStamp As %TimeStamp = "")
 {
- 
     Set rs=..ListParameterDetails(ClassName)
     While rs.%Next() {
         Set cn=rs.%Get("parent")
@@ -344,7 +347,7 @@ Method ListMethodDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierRS
     $$$DEBUGMethodBegin
  	Set server=..AtelierSettings.ServerName
 	Set sql=""
-    Set sql=sql_"SELECT parent,Name,ReturnType,Origin,Stub " ; stub is undocumented but it seems to be "source name.method name.source type (i=index,a=property)
+    Set sql=sql_"SELECT parent,Name,ReturnType,Origin,Stub,FormalSpecParsed " ; stub is undocumented but it seems to be "source name.method name.source type (i=index,a=property)
     Set sql=sql_"FROM %Dictionary.CompiledMethod "
     Set sql=sql_"WHERE parent=?"
     Set parameters($i(parameters))=ClassName
@@ -363,7 +366,8 @@ Method CacheListMethodDetails(ClassName As %String)
         Set mname=rs.%Get("Name")
         Set stub=rs.%Get("Stub")
         Set rt=rs.%Get("ReturnType")
-        Set data=$LISTBUILD(mname,rt,rs.%Get("Origin"),stub)
+        set fs=rs.%Get("FormalSpecParsed")
+        Set data=$LISTBUILD(mname,rt,rs.%Get("Origin"),stub,fs)
         Set ^PXW.Cache("CDEF",..Namespace,$$$UPPER(cn),"GMD",$$$UPPER(mname))=data
     }
 }
@@ -516,7 +520,7 @@ Method GetPropertyParameterDetails(ClassName As %String, PropertyName As %String
 
 /// Returns 1 if details were found
 /// Sets ReturnType to the defined return type, to work out more information about the return type use GetMethodReturnType 
-Method GetMethodDetails(ClassName As %String, Name As %String, Output ReturnType As %String, Output Origin As %String, Output Stub As %String) As %Boolean
+Method GetMethodDetails(ClassName As %String, Name As %String, Output ReturnType As %String, Output Origin As %String, Output Stub As %String, Output FormalSpecParsed As %List) As %Boolean
 {
     If ClassName="" Quit 0
 
@@ -532,12 +536,13 @@ Method GetMethodDetails(ClassName As %String, Name As %String, Output ReturnType
     Set ReturnType=$LISTGET(data,2)
     Set Origin=$LISTGET(data,3)
     Set Stub=$LISTGET(data,4)
+    Set FormalSpecParsed=$LISTGET(data,5)
 
     If data="" Quit 0
 	Quit 1
 }
 
-Method GetMethodReturnType(ClassName As %String, Name As %String) As %String
+Method GetMethodReturnType(ClassName As %String, Name As %String, Output FormalSpecParsed) As %String
 {
     If ClassName="" Quit 0
 
@@ -547,7 +552,7 @@ Method GetMethodReturnType(ClassName As %String, Name As %String) As %String
 	; sometimes fields have quotes around
 	If $EXTRACT(ufield,1)="""",$EXTRACT(ufield,*)="""" Set ufield=$EXTRACT(ufield,2,*-1)
 
-	Set found=..GetMethodDetails(ClassName,Name,.returntype,.origin,.stub)
+	Set found=..GetMethodDetails(ClassName,Name,.returntype,.origin,.stub,.FormalSpecParsed)
 
     ; if the return type is not set see if this was derived from some other thing
     If found,returntype="" {
@@ -874,17 +879,17 @@ Method GetMacroLocation(ClassUsingMacro As %String, MacroName As %String, Output
     If macro?1"$$$".E {
         Set macro=$PIECE(macro,"$$$",2)
     }
-    If '$DATA(%PXWMACLOC(ClassUsingMacro,macro)) {
+    If '$DATA(^||PXWMACLOC(ClassUsingMacro,macro)) {
         If ..GetClassDetails(ClassUsingMacro,,,,,.include,.includegen) {
             Set sourceDocument="",lineNumber=""
             Set sc=##class(PXW.DEV.Dictionary.AtelierClient).macroLocation(server,ClassUsingMacro_".CLS",macro,include,includegen,.obj)
             If $$$ISOK(sc) {
                 ; remove the .inc from the document name
-                Set %PXWMACLOC(ClassUsingMacro,macro)=$LISTBUILD(obj.result.content.document,obj.result.content.line)
+                Set ^||PXWMACLOC(ClassUsingMacro,macro)=$LISTBUILD(obj.result.content.document,obj.result.content.line)
             }
         }
     }
-    Set data=$GET(%PXWMACLOC(ClassUsingMacro,macro))
+    Set data=$GET(^||PXWMACLOC(ClassUsingMacro,macro))
     Set sourceDocument=$LISTGET(data,1),lineNumber=$LISTGET(data,2),found=(sourceDocument'="")
     $$$DEBUGMethodEnd
 	Quit found
@@ -902,6 +907,9 @@ Storage Default
 </Value>
 <Value name="3">
 <Value>ExcludeClassesExtends</Value>
+</Value>
+<Value name="4">
+<Value>JDBCName</Value>
 </Value>
 </Data>
 <Data name="KnownVariables">

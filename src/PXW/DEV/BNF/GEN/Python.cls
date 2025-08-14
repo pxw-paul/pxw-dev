@@ -1,4 +1,4 @@
-/// Created: 2024-11-06 18:05:09 PXW.DEV.BNF.Compilers.Compiler2
+/// Created: 2025-06-02 16:33:41 PXW.DEV.BNF.Compilers.Compiler2
 Class PXW.DEV.BNF.GEN.Python Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 
@@ -87,7 +87,7 @@ Method Args(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..Args324Or(subElement,.addedElement)  {
+		if ..Args323Or(subElement,.addedElement)  {
 			set done=1 ; or
 		} elseif ..Kwargs(subElement,.addedElement)  {
 			set done=1 ; end compileRules
@@ -111,12 +111,12 @@ Method Args(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 
 /// 
 /// summary=&?4RepeatSep4?&[P&C]
-Method Args324Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Args323Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..Args325RepSep(subElement,.addedElement)  && ..Args338OptGrp(subElement,.addedElement)  {
+		if ..Args324RepSep(subElement,.addedElement)  && ..Args337OptGrp(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -131,18 +131,18 @@ Method Args324Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 }
 
 ///  ','.(starred_expression | ( assignment_expression | expression !':=') !'=')+
-Method Args325RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Args324RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	set done=0 ; must be at least 1
-	if ..Args326Sub(subElement,.addedElement) {
+	if ..Args325Sub(subElement,.addedElement) {
 		set done=1,ok=1 ; found 1
 		do {
 			$$$BNFSTART(repElement)
-			set ok=(..addPunctuation(repElement,",")  && ..Args332Sub(repElement,.addedElement) )
+			set ok=(..addPunctuation(repElement,",")  && ..Args331Sub(repElement,.addedElement) )
 			if ok {
 				$$$BNFCOMMITCOPY(repElement,subElement)
 			} else {
@@ -163,14 +163,14 @@ Method Args325RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 /// starred_expression | ( assignment_expression | expression !':=') !'='
 /// summary=C&?4punctuation:4?
-Method Args326Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Args325Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..StarredExpression(subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..Args327Or(subElement,.addedElement)  {
+	} elseif ..Args326Or(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 	if done {
@@ -186,12 +186,12 @@ Method Args326Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 /// 
 /// summary=&C&?4punctuation:4?&?4NotRule4?
-Method Args327Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Args326Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Args328Sub(subElement,.addedElement)  && ..Args331Not(subElement,.addedElement)  {
+	if ..Args327Sub(subElement,.addedElement)  && ..Args330Not(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 	if done {
@@ -207,14 +207,14 @@ Method Args327Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 
 ///  assignment_expression | expression !':='
 /// summary=C&?4punctuation:4?
-Method Args328Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Args327Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..AssignmentExpression(subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..Args329Or(subElement,.addedElement)  {
+	} elseif ..Args328Or(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 	if done {
@@ -230,12 +230,12 @@ Method Args328Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 /// 
 /// summary=&C&?4NotRule4?
-Method Args329Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Args328Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Expression(subElement,.addedElement)  && ..Args330Not(subElement,.addedElement)  {
+	if ..Expression(subElement,.addedElement)  && ..Args329Not(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 	if done {
@@ -250,7 +250,7 @@ Method Args329Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 }
 
 /// ':='
-Method Args330Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Args329Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
@@ -267,7 +267,7 @@ Method Args330Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 }
 
 /// '='
-Method Args331Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Args330Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
@@ -285,14 +285,14 @@ Method Args331Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 /// starred_expression | ( assignment_expression | expression !':=') !'='
 /// summary=C&?4punctuation:4?
-Method Args332Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Args331Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..StarredExpression(subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..Args333Or(subElement,.addedElement)  {
+	} elseif ..Args332Or(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 	if done {
@@ -308,12 +308,12 @@ Method Args332Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 /// 
 /// summary=&C&?4punctuation:4?&?4NotRule4?
-Method Args333Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Args332Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Args334Sub(subElement,.addedElement)  && ..Args337Not(subElement,.addedElement)  {
+	if ..Args333Sub(subElement,.addedElement)  && ..Args336Not(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 	if done {
@@ -329,14 +329,14 @@ Method Args333Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 
 ///  assignment_expression | expression !':='
 /// summary=C&?4punctuation:4?
-Method Args334Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Args333Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..AssignmentExpression(subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..Args335Or(subElement,.addedElement)  {
+	} elseif ..Args334Or(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 	if done {
@@ -352,12 +352,12 @@ Method Args334Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 /// 
 /// summary=&C&?4NotRule4?
-Method Args335Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Args334Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Expression(subElement,.addedElement)  && ..Args336Not(subElement,.addedElement)  {
+	if ..Expression(subElement,.addedElement)  && ..Args335Not(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 	if done {
@@ -372,7 +372,7 @@ Method Args335Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 }
 
 /// ':='
-Method Args336Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Args335Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
@@ -389,7 +389,7 @@ Method Args336Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 }
 
 /// '='
-Method Args337Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Args336Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
@@ -407,7 +407,7 @@ Method Args337Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 /// 
 /// summary=P&C
-Method Args338OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Args337OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
@@ -439,7 +439,7 @@ Method Arguments(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..Arguments322Or(subElement,.addedElement)  {
+		if ..Arguments321Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
@@ -461,12 +461,12 @@ Method Arguments(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 
 /// 
 /// summary=&C&[P]&?4LookAhead4?
-Method Arguments322Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Arguments321Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..Args(subElement,.addedElement)  && $S(..addPunctuation(subElement,",") :1,1:1) && ..Arguments323Peek(subElement,.addedElement)  {
+		if ..Args(subElement,.addedElement)  && $S(..addPunctuation(subElement,",") :1,1:1) && ..Arguments322Peek(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -481,7 +481,7 @@ Method Arguments322Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 }
 
 ///  &')'
-Method Arguments323Peek(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Arguments322Peek(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; ruleE=LookAheadRule :')'
 	$$$DEBUGMethodBegin
@@ -1256,7 +1256,7 @@ Method Await(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 	quit ok
 }
 
-///  await_primary: | AWAIT primary | primary
+///  await_primary: | 'await' primary | primary
 /// summary=?4punctuation:4?&?4punctuation:4?
 Method AwaitPrimary(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
@@ -1292,13 +1292,13 @@ Method AwaitPrimary(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 }
 
 /// 
-/// summary=&C&C
+/// summary=&K&C
 Method AwaitPrimary235Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..Await(subElement,.addedElement)  && ..Primary(subElement,.addedElement)  {
+		if ..addKeyword(subElement,"AWAIT")  && ..Primary(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -2585,11 +2585,11 @@ Method DelTAtom(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	} else {
 		if ..Name(subElement,.addedElement)  {
 			set done=1 ; or
+		} elseif ..DelTAtom389Or(subElement,.addedElement)  {
+			set done=1 ; or
 		} elseif ..DelTAtom390Or(subElement,.addedElement)  {
 			set done=1 ; or
 		} elseif ..DelTAtom391Or(subElement,.addedElement)  {
-			set done=1 ; or
-		} elseif ..DelTAtom392Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
@@ -2611,7 +2611,7 @@ Method DelTAtom(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 
 /// 
 /// summary=&P&C&P
-Method DelTAtom390Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method DelTAtom389Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
@@ -2632,7 +2632,7 @@ Method DelTAtom390Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 /// 
 /// summary=&P&[C]&P
-Method DelTAtom391Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method DelTAtom390Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
@@ -2653,7 +2653,7 @@ Method DelTAtom391Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 /// 
 /// summary=&P&[C]&P
-Method DelTAtom392Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method DelTAtom391Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
@@ -2685,9 +2685,9 @@ Method DelTarget(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..DelTarget386Or(subElement,.addedElement)  {
+		if ..DelTarget385Or(subElement,.addedElement)  {
 			set done=1 ; or
-		} elseif ..DelTarget388Or(subElement,.addedElement)  {
+		} elseif ..DelTarget387Or(subElement,.addedElement)  {
 			set done=1 ; or
 		} elseif ..DelTAtom(subElement,.addedElement)  {
 			set done=1 ; end compileRules
@@ -2711,12 +2711,12 @@ Method DelTarget(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 
 /// 
 /// summary=&C&P&C&?4NotRule4?
-Method DelTarget386Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method DelTarget385Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..TPrimary(subElement,.addedElement)  && ..addPunctuation(subElement,".")  && ..Name(subElement,.addedElement)  && ..DelTarget387Not(subElement,.addedElement)  {
+		if ..TPrimary(subElement,.addedElement)  && ..addPunctuation(subElement,".")  && ..Name(subElement,.addedElement)  && ..DelTarget386Not(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -2731,7 +2731,7 @@ Method DelTarget386Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 }
 
 /// t_lookahead
-Method DelTarget387Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method DelTarget386Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
@@ -2749,12 +2749,12 @@ Method DelTarget387Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 /// 
 /// summary=&C&P&C&P&?4NotRule4?
-Method DelTarget388Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method DelTarget387Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..TPrimary(subElement,.addedElement)  && ..addPunctuation(subElement,"[")  && ..Slices(subElement,.addedElement)  && ..addPunctuation(subElement,"]")  && ..DelTarget389Not(subElement,.addedElement)  {
+		if ..TPrimary(subElement,.addedElement)  && ..addPunctuation(subElement,"[")  && ..Slices(subElement,.addedElement)  && ..addPunctuation(subElement,"]")  && ..DelTarget388Not(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -2769,7 +2769,7 @@ Method DelTarget388Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 }
 
 /// t_lookahead
-Method DelTarget389Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method DelTarget388Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
@@ -2798,7 +2798,7 @@ Method DelTargets(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..DelTargets385RepSep(subElement,.addedElement)  && $S(..addPunctuation(subElement,",") :1,1:1) {
+		if ..DelTargets384RepSep(subElement,.addedElement)  && $S(..addPunctuation(subElement,",") :1,1:1) {
 			set done=1 ; end compileRules
 		}
 
@@ -2819,7 +2819,7 @@ Method DelTargets(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 }
 
 ///  ','.del_target+
-Method DelTargets385RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method DelTargets384RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -2862,7 +2862,7 @@ Method Dict(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..Dict305Or(subElement,.addedElement)  {
+		if ..Dict304Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
@@ -2884,7 +2884,7 @@ Method Dict(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 
 /// 
 /// summary=&P&[C]&P
-Method Dict305Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Dict304Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
@@ -2916,7 +2916,7 @@ Method Dictcomp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..Dictcomp321Or(subElement,.addedElement)  {
+		if ..Dictcomp320Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
@@ -2938,7 +2938,7 @@ Method Dictcomp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 
 /// 
 /// summary=&P&C&C&P
-Method Dictcomp321Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Dictcomp320Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
@@ -3335,7 +3335,7 @@ Method DoubleStarredKvpair(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..DoubleStarredKvpair307Or(subElement,.addedElement)  {
+		if ..DoubleStarredKvpair306Or(subElement,.addedElement)  {
 			set done=1 ; or
 		} elseif ..Kvpair(subElement,.addedElement)  {
 			set done=1 ; end compileRules
@@ -3359,7 +3359,7 @@ Method DoubleStarredKvpair(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 /// 
 /// summary=&P&C
-Method DoubleStarredKvpair307Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method DoubleStarredKvpair306Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
@@ -3391,7 +3391,7 @@ Method DoubleStarredKvpairs(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..DoubleStarredKvpairs306RepSep(subElement,.addedElement)  && $S(..addPunctuation(subElement,",") :1,1:1) {
+		if ..DoubleStarredKvpairs305RepSep(subElement,.addedElement)  && $S(..addPunctuation(subElement,",") :1,1:1) {
 			set done=1 ; end compileRules
 		}
 
@@ -3412,7 +3412,7 @@ Method DoubleStarredKvpairs(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 }
 
 ///  ','.double_starred_kvpair+
-Method DoubleStarredKvpairs306RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method DoubleStarredKvpairs305RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -4291,7 +4291,7 @@ Method FinallyBlock129Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 		quit ok
 }
 
-///  for_if_clause: | ASYNC 'for' star_targets 'in' ~ disjunction ('if' disjunction )* | 'for' star_targets 'in' ~ disjunction ('if' disjunction )*
+///  for_if_clause: | 'async' 'for' star_targets 'in' ~ disjunction ('if' disjunction )* | 'for' star_targets 'in' ~ disjunction ('if' disjunction )*
 /// summary=?4punctuation:4?&?4punctuation:4?
 Method ForIfClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
@@ -4304,9 +4304,9 @@ Method ForIfClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..ForIfClause309Or(subElement,.addedElement)  {
+		if ..ForIfClause308Or(subElement,.addedElement)  {
 			set done=1 ; or
-		} elseif ..ForIfClause312Or(subElement,.addedElement)  {
+		} elseif ..ForIfClause311Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
@@ -4327,13 +4327,13 @@ Method ForIfClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 }
 
 /// 
-/// summary=&C&K&C&K&?4Force4?&C&(?4punctuation:4?)*
-Method ForIfClause309Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+/// summary=&K&K&C&K&?4Force4?&C&(?4punctuation:4?)*
+Method ForIfClause308Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..Async(subElement,.addedElement)  && ..addKeyword(subElement,"FOR")  && ..StarTargets(subElement,.addedElement)  && ..addKeyword(subElement,"IN")  && 1 /* force means? */ && ..Disjunction(subElement,.addedElement)  && ..ForIfClause310RepZero(subElement,.addedElement)  {
+		if ..addKeyword(subElement,"ASYNC")  && ..addKeyword(subElement,"FOR")  && ..StarTargets(subElement,.addedElement)  && ..addKeyword(subElement,"IN")  && 1 /* force means? */ && ..Disjunction(subElement,.addedElement)  && ..ForIfClause309RepZero(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -4348,11 +4348,11 @@ Method ForIfClause309Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 }
 
 ///  ('if' disjunction )*
-Method ForIfClause310RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method ForIfClause309RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..ForIfClause311Sub(subElement,.addedElement)  {
+	while ..ForIfClause310Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -4365,7 +4365,7 @@ Method ForIfClause310RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 
 /// 'if' disjunction
 /// summary=K&C
-Method ForIfClause311Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method ForIfClause310Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
@@ -4386,12 +4386,12 @@ Method ForIfClause311Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 /// 
 /// summary=&K&C&K&?4Force4?&C&(?4punctuation:4?)*
-Method ForIfClause312Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method ForIfClause311Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..addKeyword(subElement,"FOR")  && ..StarTargets(subElement,.addedElement)  && ..addKeyword(subElement,"IN")  && 1 /* force means? */ && ..Disjunction(subElement,.addedElement)  && ..ForIfClause313RepZero(subElement,.addedElement)  {
+		if ..addKeyword(subElement,"FOR")  && ..StarTargets(subElement,.addedElement)  && ..addKeyword(subElement,"IN")  && 1 /* force means? */ && ..Disjunction(subElement,.addedElement)  && ..ForIfClause312RepZero(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -4406,11 +4406,11 @@ Method ForIfClause312Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 }
 
 ///  ('if' disjunction )*
-Method ForIfClause313RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method ForIfClause312RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..ForIfClause314Sub(subElement,.addedElement)  {
+	while ..ForIfClause313Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -4423,7 +4423,7 @@ Method ForIfClause313RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 
 /// 'if' disjunction
 /// summary=K&C
-Method ForIfClause314Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method ForIfClause313Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
@@ -4455,7 +4455,7 @@ Method ForIfClauses(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..ForIfClauses308RepOne(subElement,.addedElement)  {
+		if ..ForIfClauses307RepOne(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
@@ -4476,7 +4476,7 @@ Method ForIfClauses(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 }
 
 ///  for_if_clause+
-Method ForIfClauses308RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method ForIfClauses307RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	set subElement=ParentElement
 	set done=0 ; method start
@@ -4492,7 +4492,7 @@ Method ForIfClauses308RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	quit ok
 }
 
-///  for_stmt: | 'for' star_targets 'in' ~ star_expressions ':' [TYPE_COMMENT] block [else_block] | ASYNC 'for' star_targets 'in' ~ star_expressions ':' [TYPE_COMMENT] block [else_block]
+///  for_stmt: | 'for' star_targets 'in' ~ star_expressions ':' [TYPE_COMMENT] block [else_block] | 'async' 'for' star_targets 'in' ~ star_expressions ':' [TYPE_COMMENT] block [else_block]
 /// summary=?4punctuation:4?&?4punctuation:4?
 Method ForStmt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
@@ -4549,13 +4549,13 @@ Method ForStmt106Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 }
 
 /// 
-/// summary=&C&K&C&K&?4Force4?&C&P&[C]&C&[C]
+/// summary=&K&K&C&K&?4Force4?&C&P&[C]&C&[C]
 Method ForStmt107Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..Async(subElement,.addedElement)  && ..addKeyword(subElement,"FOR")  && ..StarTargets(subElement,.addedElement)  && ..addKeyword(subElement,"IN")  && 1 /* force means? */ && ..StarExpressions(subElement,.addedElement)  && ..addPunctuation(subElement,":")  && $S(..TypeComment(subElement,.addedElement) :1,1:1) && ..Block(subElement,.addedElement)  && $S(..ElseBlock(subElement,.addedElement) :1,1:1) {
+		if ..addKeyword(subElement,"ASYNC")  && ..addKeyword(subElement,"FOR")  && ..StarTargets(subElement,.addedElement)  && ..addKeyword(subElement,"IN")  && 1 /* force means? */ && ..StarExpressions(subElement,.addedElement)  && ..addPunctuation(subElement,":")  && $S(..TypeComment(subElement,.addedElement) :1,1:1) && ..Block(subElement,.addedElement)  && $S(..ElseBlock(subElement,.addedElement) :1,1:1) {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -4582,7 +4582,7 @@ Method Fstring(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..Fstring297Or(subElement,.addedElement)  {
+		if ..Fstring296Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
@@ -4604,12 +4604,12 @@ Method Fstring(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 
 /// 
 /// summary=&C&(?4Call:4?)*&C
-Method Fstring297Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Fstring296Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..FstringStart(subElement,.addedElement)  && ..Fstring298RepZero(subElement,.addedElement)  && ..FstringEnd(subElement,.addedElement)  {
+		if ..FstringStart(subElement,.addedElement)  && ..Fstring297RepZero(subElement,.addedElement)  && ..FstringEnd(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -4624,7 +4624,7 @@ Method Fstring297Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 }
 
 ///  fstring_middle*
-Method Fstring298RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Fstring297RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	set subElement=ParentElement
 	set done=0 ; method start
@@ -4652,7 +4652,7 @@ Method FstringConversion(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..FstringConversion294Or(subElement,.addedElement)  {
+		if ..FstringConversion293Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
@@ -4674,7 +4674,7 @@ Method FstringConversion(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 /// 
 /// summary=&P&C
-Method FstringConversion294Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method FstringConversion293Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
@@ -4774,7 +4774,7 @@ Method FstringFullFormatSpec(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..FstringFullFormatSpec295Or(subElement,.addedElement)  {
+		if ..FstringFullFormatSpec294Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
@@ -4796,12 +4796,12 @@ Method FstringFullFormatSpec(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 
 /// 
 /// summary=&P&(?4Call:4?)*
-Method FstringFullFormatSpec295Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method FstringFullFormatSpec294Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..addPunctuation(subElement,":")  && ..FstringFullFormatSpec296RepZero(subElement,.addedElement)  {
+		if ..addPunctuation(subElement,":")  && ..FstringFullFormatSpec295RepZero(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -4816,7 +4816,7 @@ Method FstringFullFormatSpec295Or(ParentElement As PXW.DEV.BNF.Element, ByRef su
 }
 
 ///  fstring_format_spec*
-Method FstringFullFormatSpec296RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method FstringFullFormatSpec295RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	set subElement=ParentElement
 	set done=0 ; method start
@@ -4888,7 +4888,7 @@ Method FstringMiddle291Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	quit ok
 }
 
-///  fstring_replacement_field: | '{' (yield_expr | star_expressions) '='? [fstring_conversion] [fstring_full_format_spec] '}'
+///  fstring_replacement_field: | '{' annotated_rhs '='? [fstring_conversion] [fstring_full_format_spec] '}'
 /// summary=?4punctuation:4?
 Method FstringReplacementField(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
@@ -4922,13 +4922,13 @@ Method FstringReplacementField(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 }
 
 /// 
-/// summary=&P&C&?4punctuation:4?&?4OptionalSingle4?&[C]&[C]&P
+/// summary=&P&C&?4OptionalSingle4?&[C]&[C]&P
 Method FstringReplacementField292Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..addPunctuation(subElement,"{")  && ..FstringReplacementField293Sub(subElement,.addedElement)  && $s(..addPunctuation(subElement,"=") :1,1:1)  && $S(..FstringConversion(subElement,.addedElement) :1,1:1) && $S(..FstringFullFormatSpec(subElement,.addedElement) :1,1:1) && ..addPunctuation(subElement,"}")  {
+		if ..addPunctuation(subElement,"{")  && ..AnnotatedRhs(subElement,.addedElement)  && $s(..addPunctuation(subElement,"=") :1,1:1)  && $S(..FstringConversion(subElement,.addedElement) :1,1:1) && $S(..FstringFullFormatSpec(subElement,.addedElement) :1,1:1) && ..addPunctuation(subElement,"}")  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -4940,29 +4940,6 @@ Method FstringReplacementField292Or(ParentElement As PXW.DEV.BNF.Element, ByRef 
 		}
 		$$$DEBUGMethodEnd
 		quit ok
-}
-
-/// yield_expr | star_expressions
-/// summary=C&?4punctuation:4?
-Method FstringReplacementField293Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
-{
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..YieldExpr(subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..StarExpressions(subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	$$$DEBUGMethodEnd
-	quit ok
 }
 
 ///  FSTRING_START : 'code fstring_start'
@@ -5060,7 +5037,7 @@ Method FuncTypeComment(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..FuncTypeComment403Or(subElement,.addedElement)  {
+		if ..FuncTypeComment402Or(subElement,.addedElement)  {
 			set done=1 ; or
 		} elseif ..TypeComment(subElement,.addedElement)  {
 			set done=1 ; end compileRules
@@ -5084,12 +5061,12 @@ Method FuncTypeComment(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 /// 
 /// summary=&C&C&?4LookAhead4?
-Method FuncTypeComment403Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method FuncTypeComment402Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..Newline(subElement,.addedElement)  && ..TypeComment(subElement,.addedElement)  && ..FuncTypeComment404Peek(subElement,.addedElement)  {
+		if ..Newline(subElement,.addedElement)  && ..TypeComment(subElement,.addedElement)  && ..FuncTypeComment403Peek(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -5104,14 +5081,14 @@ Method FuncTypeComment403Or(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 }
 
 ///  &(NEWLINE INDENT)
-Method FuncTypeComment404Peek(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method FuncTypeComment403Peek(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; ruleE=LookAheadRule :(NEWLINE INDENT)
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..FuncTypeComment405Sub(subElement,.addedElement)  {
+	if ..FuncTypeComment404Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -5127,7 +5104,7 @@ Method FuncTypeComment404Peek(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 /// NEWLINE INDENT
 /// summary=C&C
-Method FuncTypeComment405Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method FuncTypeComment404Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
@@ -5202,7 +5179,7 @@ Method FunctionDef53Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 		quit ok
 }
 
-///  function_def_raw: | 'def' NAME [type_params] '(' [params] ')' ['->' expression ] ':' [func_type_comment] block | ASYNC 'def' NAME [type_params] '(' [params] ')' ['->' expression ] ':' [func_type_comment] block
+///  function_def_raw: | 'def' NAME [type_params] '(' [params] ')' ['->' expression ] ':' [func_type_comment] block | 'async' 'def' NAME [type_params] '(' [params] ')' ['->' expression ] ':' [func_type_comment] block
 /// summary=?4punctuation:4?&?4punctuation:4?
 Method FunctionDefRaw(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
@@ -5280,13 +5257,13 @@ Method FunctionDefRaw55OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 }
 
 /// 
-/// summary=&C&K&C&[C]&P&[C]&P&[P&C]&P&[C]&C
+/// summary=&K&K&C&[C]&P&[C]&P&[P&C]&P&[C]&C
 Method FunctionDefRaw56Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..Async(subElement,.addedElement)  && ..addKeyword(subElement,"DEF")  && ..Name(subElement,.addedElement)  && $S(..TypeParams(subElement,.addedElement) :1,1:1) && ..addPunctuation(subElement,"(")  && $S(..Params(subElement,.addedElement) :1,1:1) && ..addPunctuation(subElement,")")  && ..FunctionDefRaw57OptGrp(subElement,.addedElement)  && ..addPunctuation(subElement,":")  && $S(..FuncTypeComment(subElement,.addedElement) :1,1:1) && ..Block(subElement,.addedElement)  {
+		if ..addKeyword(subElement,"ASYNC")  && ..addKeyword(subElement,"DEF")  && ..Name(subElement,.addedElement)  && $S(..TypeParams(subElement,.addedElement) :1,1:1) && ..addPunctuation(subElement,"(")  && $S(..Params(subElement,.addedElement) :1,1:1) && ..addPunctuation(subElement,")")  && ..FunctionDefRaw57OptGrp(subElement,.addedElement)  && ..addPunctuation(subElement,":")  && $S(..FuncTypeComment(subElement,.addedElement) :1,1:1) && ..Block(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -5334,7 +5311,7 @@ Method Genexp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..Genexp317Or(subElement,.addedElement)  {
+		if ..Genexp316Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
@@ -5356,12 +5333,12 @@ Method Genexp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 
 /// 
 /// summary=&P&C&?4punctuation:4?&C&P
-Method Genexp317Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Genexp316Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..addPunctuation(subElement,"(")  && ..Genexp318Sub(subElement,.addedElement)  && ..ForIfClauses(subElement,.addedElement)  && ..addPunctuation(subElement,")")  {
+		if ..addPunctuation(subElement,"(")  && ..Genexp317Sub(subElement,.addedElement)  && ..ForIfClauses(subElement,.addedElement)  && ..addPunctuation(subElement,")")  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -5377,14 +5354,14 @@ Method Genexp317Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 
 ///  assignment_expression | expression !':='
 /// summary=C&?4punctuation:4?
-Method Genexp318Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Genexp317Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..AssignmentExpression(subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..Genexp319Or(subElement,.addedElement)  {
+	} elseif ..Genexp318Or(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 	if done {
@@ -5400,12 +5377,12 @@ Method Genexp318Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 
 /// 
 /// summary=&C&?4NotRule4?
-Method Genexp319Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Genexp318Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Expression(subElement,.addedElement)  && ..Genexp320Not(subElement,.addedElement)  {
+	if ..Expression(subElement,.addedElement)  && ..Genexp319Not(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 	if done {
@@ -5420,7 +5397,7 @@ Method Genexp319Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 }
 
 /// ':='
-Method Genexp320Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Genexp319Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
@@ -6880,9 +6857,9 @@ Method KwargOrDoubleStarred(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..KwargOrDoubleStarred346Or(subElement,.addedElement)  {
+		if ..KwargOrDoubleStarred345Or(subElement,.addedElement)  {
 			set done=1 ; or
-		} elseif ..KwargOrDoubleStarred347Or(subElement,.addedElement)  {
+		} elseif ..KwargOrDoubleStarred346Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
@@ -6904,7 +6881,7 @@ Method KwargOrDoubleStarred(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 /// 
 /// summary=&C&P&C
-Method KwargOrDoubleStarred346Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method KwargOrDoubleStarred345Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
@@ -6925,7 +6902,7 @@ Method KwargOrDoubleStarred346Or(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 /// 
 /// summary=&P&C
-Method KwargOrDoubleStarred347Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method KwargOrDoubleStarred346Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
@@ -6957,7 +6934,7 @@ Method KwargOrStarred(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..KwargOrStarred345Or(subElement,.addedElement)  {
+		if ..KwargOrStarred344Or(subElement,.addedElement)  {
 			set done=1 ; or
 		} elseif ..StarredExpression(subElement,.addedElement)  {
 			set done=1 ; end compileRules
@@ -6981,7 +6958,7 @@ Method KwargOrStarred(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 /// 
 /// summary=&C&P&C
-Method KwargOrStarred345Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method KwargOrStarred344Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
@@ -7013,11 +6990,11 @@ Method Kwargs(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..Kwargs339Or(subElement,.addedElement)  {
+		if ..Kwargs338Or(subElement,.addedElement)  {
+			set done=1 ; or
+		} elseif ..Kwargs341RepSep(subElement,.addedElement)  {
 			set done=1 ; or
 		} elseif ..Kwargs342RepSep(subElement,.addedElement)  {
-			set done=1 ; or
-		} elseif ..Kwargs343RepSep(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
@@ -7039,12 +7016,12 @@ Method Kwargs(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 
 /// 
 /// summary=&?4RepeatSep4?&P&?4RepeatSep4?
-Method Kwargs339Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Kwargs338Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..Kwargs340RepSep(subElement,.addedElement)  && ..addPunctuation(subElement,",")  && ..Kwargs341RepSep(subElement,.addedElement)  {
+		if ..Kwargs339RepSep(subElement,.addedElement)  && ..addPunctuation(subElement,",")  && ..Kwargs340RepSep(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -7059,7 +7036,7 @@ Method Kwargs339Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 }
 
 ///  ','.kwarg_or_starred+
-Method Kwargs340RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Kwargs339RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -7090,7 +7067,7 @@ Method Kwargs340RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 }
 
 ///  ','.kwarg_or_double_starred+
-Method Kwargs341RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Kwargs340RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -7121,7 +7098,7 @@ Method Kwargs341RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 }
 
 ///  ','.kwarg_or_starred+
-Method Kwargs342RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Kwargs341RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -7152,7 +7129,7 @@ Method Kwargs342RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 }
 
 ///  ','.kwarg_or_double_starred+
-Method Kwargs343RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Kwargs342RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -8353,7 +8330,7 @@ Method List(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..List302Or(subElement,.addedElement)  {
+		if ..List301Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
@@ -8375,7 +8352,7 @@ Method List(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 
 /// 
 /// summary=&P&[C]&P
-Method List302Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method List301Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
@@ -8407,7 +8384,7 @@ Method Listcomp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..Listcomp315Or(subElement,.addedElement)  {
+		if ..Listcomp314Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
@@ -8429,7 +8406,7 @@ Method Listcomp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 
 /// 
 /// summary=&P&C&C&P
-Method Listcomp315Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Listcomp314Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
@@ -10985,7 +10962,7 @@ Method Setcomp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..Setcomp316Or(subElement,.addedElement)  {
+		if ..Setcomp315Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
@@ -11007,7 +10984,7 @@ Method Setcomp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 
 /// 
 /// summary=&P&C&C&P
-Method Setcomp316Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Setcomp315Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
@@ -11436,9 +11413,9 @@ Method SingleSubscriptAttributeTarget(ParentElement As PXW.DEV.BNF.Element, ByRe
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..SingleSubscriptAttributeTarget370Or(subElement,.addedElement)  {
+		if ..SingleSubscriptAttributeTarget369Or(subElement,.addedElement)  {
 			set done=1 ; or
-		} elseif ..SingleSubscriptAttributeTarget372Or(subElement,.addedElement)  {
+		} elseif ..SingleSubscriptAttributeTarget371Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
@@ -11460,12 +11437,12 @@ Method SingleSubscriptAttributeTarget(ParentElement As PXW.DEV.BNF.Element, ByRe
 
 /// 
 /// summary=&C&P&C&?4NotRule4?
-Method SingleSubscriptAttributeTarget370Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SingleSubscriptAttributeTarget369Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..TPrimary(subElement,.addedElement)  && ..addPunctuation(subElement,".")  && ..Name(subElement,.addedElement)  && ..SingleSubscriptAttributeTarget371Not(subElement,.addedElement)  {
+		if ..TPrimary(subElement,.addedElement)  && ..addPunctuation(subElement,".")  && ..Name(subElement,.addedElement)  && ..SingleSubscriptAttributeTarget370Not(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -11480,7 +11457,7 @@ Method SingleSubscriptAttributeTarget370Or(ParentElement As PXW.DEV.BNF.Element,
 }
 
 /// t_lookahead
-Method SingleSubscriptAttributeTarget371Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SingleSubscriptAttributeTarget370Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
@@ -11498,12 +11475,12 @@ Method SingleSubscriptAttributeTarget371Not(ParentElement As PXW.DEV.BNF.Element
 
 /// 
 /// summary=&C&P&C&P&?4NotRule4?
-Method SingleSubscriptAttributeTarget372Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SingleSubscriptAttributeTarget371Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..TPrimary(subElement,.addedElement)  && ..addPunctuation(subElement,"[")  && ..Slices(subElement,.addedElement)  && ..addPunctuation(subElement,"]")  && ..SingleSubscriptAttributeTarget373Not(subElement,.addedElement)  {
+		if ..TPrimary(subElement,.addedElement)  && ..addPunctuation(subElement,"[")  && ..Slices(subElement,.addedElement)  && ..addPunctuation(subElement,"]")  && ..SingleSubscriptAttributeTarget372Not(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -11518,7 +11495,7 @@ Method SingleSubscriptAttributeTarget372Or(ParentElement As PXW.DEV.BNF.Element,
 }
 
 /// t_lookahead
-Method SingleSubscriptAttributeTarget373Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SingleSubscriptAttributeTarget372Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
@@ -11551,7 +11528,7 @@ Method SingleTarget(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	while ok {
 		$$$BNFSTART(subElement)
 		do ..gotoBookmark(.bm)
-		set rec=..SingleTarget368Recurse(subElement,.addedElement)
+		set rec=..SingleTarget367Recurse(subElement,.addedElement)
 		if rec,..stream.pos>lastpos {
 			$$$BNFMEMOSET(pos,addedElement)
 			set done=1,lastpos=..stream.pos
@@ -11572,7 +11549,7 @@ Method SingleTarget(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 
 /// 
 /// summary=?4punctuation:4?&?4punctuation:4?&?4punctuation:4?
-Method SingleTarget368Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SingleTarget367Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	set subElement=ParentElement
@@ -11581,7 +11558,7 @@ Method SingleTarget368Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 		set done=1 ; or
 	} elseif ..Name(subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SingleTarget369Or(subElement,.addedElement)  {
+	} elseif ..SingleTarget368Or(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 	if done {
@@ -11595,7 +11572,7 @@ Method SingleTarget368Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 /// 
 /// summary=&P&C&P
-Method SingleTarget369Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SingleTarget368Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
@@ -12208,11 +12185,11 @@ Method StarAtom(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	} else {
 		if ..Name(subElement,.addedElement)  {
 			set done=1 ; or
+		} elseif ..StarAtom364Or(subElement,.addedElement)  {
+			set done=1 ; or
 		} elseif ..StarAtom365Or(subElement,.addedElement)  {
 			set done=1 ; or
 		} elseif ..StarAtom366Or(subElement,.addedElement)  {
-			set done=1 ; or
-		} elseif ..StarAtom367Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
@@ -12234,7 +12211,7 @@ Method StarAtom(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 
 /// 
 /// summary=&P&C&P
-Method StarAtom365Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method StarAtom364Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
@@ -12255,7 +12232,7 @@ Method StarAtom365Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 /// 
 /// summary=&P&[C]&P
-Method StarAtom366Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method StarAtom365Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
@@ -12276,7 +12253,7 @@ Method StarAtom366Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 /// 
 /// summary=&P&[C]&P
-Method StarAtom367Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method StarAtom366Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
@@ -12829,7 +12806,7 @@ Method StarTarget(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..StarTarget358Or(subElement,.addedElement)  {
+		if ..StarTarget357Or(subElement,.addedElement)  {
 			set done=1 ; or
 		} elseif ..TargetWithStarAtom(subElement,.addedElement)  {
 			set done=1 ; end compileRules
@@ -12853,12 +12830,12 @@ Method StarTarget(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 /// 
 /// summary=&P&?4NotRule4?&C
-Method StarTarget358Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method StarTarget357Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..addPunctuation(subElement,"*")  && ..StarTarget359Sub(subElement,.addedElement)  {
+		if ..addPunctuation(subElement,"*")  && ..StarTarget358Sub(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -12874,12 +12851,12 @@ Method StarTarget358Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 /// !'*' star_target
 /// summary=?4NotRule4?&C
-Method StarTarget359Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method StarTarget358Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..StarTarget360Not(subElement,.addedElement)  && ..StarTarget(subElement,.addedElement)  {
+	if ..StarTarget359Not(subElement,.addedElement)  && ..StarTarget(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 	if done {
@@ -12894,7 +12871,7 @@ Method StarTarget359Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 }
 
 /// '*'
-Method StarTarget360Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method StarTarget359Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
@@ -12923,9 +12900,9 @@ Method StarTargets(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..StarTargets348Or(subElement,.addedElement)  {
+		if ..StarTargets347Or(subElement,.addedElement)  {
 			set done=1 ; or
-		} elseif ..StarTargets350Or(subElement,.addedElement)  {
+		} elseif ..StarTargets349Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
@@ -12947,12 +12924,12 @@ Method StarTargets(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 
 /// 
 /// summary=&C&?4NotRule4?
-Method StarTargets348Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method StarTargets347Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..StarTarget(subElement,.addedElement)  && ..StarTargets349Not(subElement,.addedElement)  {
+		if ..StarTarget(subElement,.addedElement)  && ..StarTargets348Not(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -12967,7 +12944,7 @@ Method StarTargets348Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 }
 
 /// ','
-Method StarTargets349Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method StarTargets348Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
@@ -12985,12 +12962,12 @@ Method StarTargets349Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 /// 
 /// summary=&C&(?4punctuation:4?)*&[P]
-Method StarTargets350Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method StarTargets349Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..StarTarget(subElement,.addedElement)  && ..StarTargets351RepZero(subElement,.addedElement)  && $S(..addPunctuation(subElement,",") :1,1:1) {
+		if ..StarTarget(subElement,.addedElement)  && ..StarTargets350RepZero(subElement,.addedElement)  && $S(..addPunctuation(subElement,",") :1,1:1) {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -13005,11 +12982,11 @@ Method StarTargets350Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 }
 
 ///  (',' star_target )*
-Method StarTargets351RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method StarTargets350RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..StarTargets352Sub(subElement,.addedElement)  {
+	while ..StarTargets351Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -13022,7 +12999,7 @@ Method StarTargets351RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 
 /// ',' star_target
 /// summary=P&C
-Method StarTargets352Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method StarTargets351Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
@@ -13054,7 +13031,7 @@ Method StarTargetsListSeq(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..StarTargetsListSeq353RepSep(subElement,.addedElement)  && $S(..addPunctuation(subElement,",") :1,1:1) {
+		if ..StarTargetsListSeq352RepSep(subElement,.addedElement)  && $S(..addPunctuation(subElement,",") :1,1:1) {
 			set done=1 ; end compileRules
 		}
 
@@ -13075,7 +13052,7 @@ Method StarTargetsListSeq(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 }
 
 ///  ','.star_target+
-Method StarTargetsListSeq353RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method StarTargetsListSeq352RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -13118,9 +13095,9 @@ Method StarTargetsTupleSeq(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..StarTargetsTupleSeq354Or(subElement,.addedElement)  {
+		if ..StarTargetsTupleSeq353Or(subElement,.addedElement)  {
 			set done=1 ; or
-		} elseif ..StarTargetsTupleSeq357Or(subElement,.addedElement)  {
+		} elseif ..StarTargetsTupleSeq356Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
@@ -13142,12 +13119,12 @@ Method StarTargetsTupleSeq(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 /// 
 /// summary=&C&(?4punctuation:4?)+&[P]
-Method StarTargetsTupleSeq354Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method StarTargetsTupleSeq353Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..StarTarget(subElement,.addedElement)  && ..StarTargetsTupleSeq355RepOne(subElement,.addedElement)  && $S(..addPunctuation(subElement,",") :1,1:1) {
+		if ..StarTarget(subElement,.addedElement)  && ..StarTargetsTupleSeq354RepOne(subElement,.addedElement)  && $S(..addPunctuation(subElement,",") :1,1:1) {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -13162,12 +13139,12 @@ Method StarTargetsTupleSeq354Or(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 }
 
 ///  (',' star_target )+
-Method StarTargetsTupleSeq355RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method StarTargetsTupleSeq354RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	set subElement=ParentElement
 	set done=0 ; method start
 	set done=0 ; must be at least 1
-	while ..StarTargetsTupleSeq356Sub(subElement,.addedElement)  {
+	while ..StarTargetsTupleSeq355Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -13180,7 +13157,7 @@ Method StarTargetsTupleSeq355RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef 
 
 /// ',' star_target
 /// summary=P&C
-Method StarTargetsTupleSeq356Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method StarTargetsTupleSeq355Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
@@ -13201,7 +13178,7 @@ Method StarTargetsTupleSeq356Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 /// 
 /// summary=&C&P
-Method StarTargetsTupleSeq357Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method StarTargetsTupleSeq356Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
@@ -13233,7 +13210,7 @@ Method StarredExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..StarredExpression344Or(subElement,.addedElement)  {
+		if ..StarredExpression343Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
@@ -13255,7 +13232,7 @@ Method StarredExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 /// 
 /// summary=&P&C
-Method StarredExpression344Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method StarredExpression343Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
@@ -13436,7 +13413,7 @@ Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 	while ok {
 		$$$BNFSTART(subElement)
 		do ..gotoBookmark(.bm)
-		set rec=..String299Recurse(subElement,.addedElement)
+		set rec=..String298Recurse(subElement,.addedElement)
 		if rec,..stream.pos>lastpos {
 			$$$BNFMEMOSET(pos,addedElement)
 			set done=1,lastpos=..stream.pos
@@ -13457,7 +13434,7 @@ Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 
 /// 
 /// summary=C
-Method String299Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method String298Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	set subElement=ParentElement
@@ -13487,7 +13464,7 @@ Method Strings(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..Strings300RepOne(subElement,.addedElement)  {
+		if ..Strings299RepOne(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
@@ -13508,12 +13485,12 @@ Method Strings(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 }
 
 ///  (fstring|string)+
-Method Strings300RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Strings299RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	set subElement=ParentElement
 	set done=0 ; method start
 	set done=0 ; must be at least 1
-	while ..Strings301Sub(subElement,.addedElement)  {
+	while ..Strings300Sub(subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -13526,7 +13503,7 @@ Method Strings300RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 /// fstring|string
 /// summary=C&?4punctuation:4?
-Method Strings301Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Strings300Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
@@ -13758,7 +13735,7 @@ Method TPrimary(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	while ok {
 		$$$BNFSTART(subElement)
 		do ..gotoBookmark(.bm)
-		set rec=..TPrimary374Recurse(subElement,.addedElement)
+		set rec=..TPrimary373Recurse(subElement,.addedElement)
 		if rec,..stream.pos>lastpos {
 			$$$BNFMEMOSET(pos,addedElement)
 			set done=1,lastpos=..stream.pos
@@ -13779,20 +13756,20 @@ Method TPrimary(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 
 /// 
 /// summary=?4punctuation:4?&?4punctuation:4?&?4punctuation:4?&?4punctuation:4?&?4punctuation:4?
-Method TPrimary374Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TPrimary373Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	set subElement=ParentElement
 	set done=0 ; method start
-	if ..TPrimary375Or(subElement,.addedElement)  {
+	if ..TPrimary374Or(subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..TPrimary377Or(subElement,.addedElement)  {
+	} elseif ..TPrimary376Or(subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..TPrimary379Or(subElement,.addedElement)  {
+	} elseif ..TPrimary378Or(subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..TPrimary381Or(subElement,.addedElement)  {
+	} elseif ..TPrimary380Or(subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..TPrimary383Or(subElement,.addedElement)  {
+	} elseif ..TPrimary382Or(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 	if done {
@@ -13806,12 +13783,12 @@ Method TPrimary374Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 /// 
 /// summary=&C&P&C&?4LookAhead4?
-Method TPrimary375Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TPrimary374Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..TPrimary(subElement,.addedElement)  && ..addPunctuation(subElement,".")  && ..Name(subElement,.addedElement)  && ..TPrimary376Peek(subElement,.addedElement)  {
+	if ..TPrimary(subElement,.addedElement)  && ..addPunctuation(subElement,".")  && ..Name(subElement,.addedElement)  && ..TPrimary375Peek(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 	if done {
@@ -13826,7 +13803,7 @@ Method TPrimary375Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 }
 
 ///  &t_lookahead
-Method TPrimary376Peek(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TPrimary375Peek(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; ruleE=LookAheadRule :t_lookahead
 	$$$DEBUGMethodBegin
@@ -13849,12 +13826,12 @@ Method TPrimary376Peek(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 /// 
 /// summary=&C&P&C&P&?4LookAhead4?
-Method TPrimary377Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TPrimary376Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..TPrimary(subElement,.addedElement)  && ..addPunctuation(subElement,"[")  && ..Slices(subElement,.addedElement)  && ..addPunctuation(subElement,"]")  && ..TPrimary378Peek(subElement,.addedElement)  {
+	if ..TPrimary(subElement,.addedElement)  && ..addPunctuation(subElement,"[")  && ..Slices(subElement,.addedElement)  && ..addPunctuation(subElement,"]")  && ..TPrimary377Peek(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 	if done {
@@ -13869,7 +13846,7 @@ Method TPrimary377Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 }
 
 ///  &t_lookahead
-Method TPrimary378Peek(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TPrimary377Peek(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; ruleE=LookAheadRule :t_lookahead
 	$$$DEBUGMethodBegin
@@ -13892,12 +13869,12 @@ Method TPrimary378Peek(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 /// 
 /// summary=&C&C&?4LookAhead4?
-Method TPrimary379Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TPrimary378Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..TPrimary(subElement,.addedElement)  && ..Genexp(subElement,.addedElement)  && ..TPrimary380Peek(subElement,.addedElement)  {
+	if ..TPrimary(subElement,.addedElement)  && ..Genexp(subElement,.addedElement)  && ..TPrimary379Peek(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 	if done {
@@ -13912,7 +13889,7 @@ Method TPrimary379Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 }
 
 ///  &t_lookahead
-Method TPrimary380Peek(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TPrimary379Peek(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; ruleE=LookAheadRule :t_lookahead
 	$$$DEBUGMethodBegin
@@ -13935,12 +13912,12 @@ Method TPrimary380Peek(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 /// 
 /// summary=&C&P&[C]&P&?4LookAhead4?
-Method TPrimary381Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TPrimary380Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..TPrimary(subElement,.addedElement)  && ..addPunctuation(subElement,"(")  && $S(..Arguments(subElement,.addedElement) :1,1:1) && ..addPunctuation(subElement,")")  && ..TPrimary382Peek(subElement,.addedElement)  {
+	if ..TPrimary(subElement,.addedElement)  && ..addPunctuation(subElement,"(")  && $S(..Arguments(subElement,.addedElement) :1,1:1) && ..addPunctuation(subElement,")")  && ..TPrimary381Peek(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 	if done {
@@ -13955,7 +13932,7 @@ Method TPrimary381Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 }
 
 ///  &t_lookahead
-Method TPrimary382Peek(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TPrimary381Peek(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; ruleE=LookAheadRule :t_lookahead
 	$$$DEBUGMethodBegin
@@ -13978,12 +13955,12 @@ Method TPrimary382Peek(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 /// 
 /// summary=&C&?4LookAhead4?
-Method TPrimary383Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TPrimary382Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Atom(subElement,.addedElement)  && ..TPrimary384Peek(subElement,.addedElement)  {
+	if ..Atom(subElement,.addedElement)  && ..TPrimary383Peek(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 	if done {
@@ -13998,7 +13975,7 @@ Method TPrimary383Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 }
 
 ///  &t_lookahead
-Method TPrimary384Peek(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TPrimary383Peek(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; ruleE=LookAheadRule :t_lookahead
 	$$$DEBUGMethodBegin
@@ -14032,9 +14009,9 @@ Method TargetWithStarAtom(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..TargetWithStarAtom361Or(subElement,.addedElement)  {
+		if ..TargetWithStarAtom360Or(subElement,.addedElement)  {
 			set done=1 ; or
-		} elseif ..TargetWithStarAtom363Or(subElement,.addedElement)  {
+		} elseif ..TargetWithStarAtom362Or(subElement,.addedElement)  {
 			set done=1 ; or
 		} elseif ..StarAtom(subElement,.addedElement)  {
 			set done=1 ; end compileRules
@@ -14058,12 +14035,12 @@ Method TargetWithStarAtom(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 /// 
 /// summary=&C&P&C&?4NotRule4?
-Method TargetWithStarAtom361Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TargetWithStarAtom360Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..TPrimary(subElement,.addedElement)  && ..addPunctuation(subElement,".")  && ..Name(subElement,.addedElement)  && ..TargetWithStarAtom362Not(subElement,.addedElement)  {
+		if ..TPrimary(subElement,.addedElement)  && ..addPunctuation(subElement,".")  && ..Name(subElement,.addedElement)  && ..TargetWithStarAtom361Not(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -14078,7 +14055,7 @@ Method TargetWithStarAtom361Or(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 }
 
 /// t_lookahead
-Method TargetWithStarAtom362Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TargetWithStarAtom361Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
@@ -14096,12 +14073,12 @@ Method TargetWithStarAtom362Not(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 /// 
 /// summary=&C&P&C&P&?4NotRule4?
-Method TargetWithStarAtom363Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TargetWithStarAtom362Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..TPrimary(subElement,.addedElement)  && ..addPunctuation(subElement,"[")  && ..Slices(subElement,.addedElement)  && ..addPunctuation(subElement,"]")  && ..TargetWithStarAtom364Not(subElement,.addedElement)  {
+		if ..TPrimary(subElement,.addedElement)  && ..addPunctuation(subElement,"[")  && ..Slices(subElement,.addedElement)  && ..addPunctuation(subElement,"]")  && ..TargetWithStarAtom363Not(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -14116,7 +14093,7 @@ Method TargetWithStarAtom363Or(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 }
 
 /// t_lookahead
-Method TargetWithStarAtom364Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TargetWithStarAtom363Not(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
@@ -14449,7 +14426,7 @@ Method Tuple(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..Tuple303Or(subElement,.addedElement)  {
+		if ..Tuple302Or(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
@@ -14471,12 +14448,12 @@ Method Tuple(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 
 /// 
 /// summary=&P&[C&P&[C]]&P
-Method Tuple303Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Tuple302Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..addPunctuation(subElement,"(")  && ..Tuple304OptGrp(subElement,.addedElement)  && ..addPunctuation(subElement,")")  {
+		if ..addPunctuation(subElement,"(")  && ..Tuple303OptGrp(subElement,.addedElement)  && ..addPunctuation(subElement,")")  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -14492,7 +14469,7 @@ Method Tuple303Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 /// 
 /// summary=C&P&[C]
-Method Tuple304OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Tuple303OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
@@ -14611,19 +14588,19 @@ Method TypeExpressions(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 		$$$BNFMEMOGET(pos,subElement)
 		set done=$isobject(subElement)
 	} else {
-		if ..TypeExpressions393Or(subElement,.addedElement)  {
+		if ..TypeExpressions392Or(subElement,.addedElement)  {
 			set done=1 ; or
-		} elseif ..TypeExpressions395Or(subElement,.addedElement)  {
+		} elseif ..TypeExpressions394Or(subElement,.addedElement)  {
 			set done=1 ; or
-		} elseif ..TypeExpressions397Or(subElement,.addedElement)  {
+		} elseif ..TypeExpressions396Or(subElement,.addedElement)  {
+			set done=1 ; or
+		} elseif ..TypeExpressions398Or(subElement,.addedElement)  {
 			set done=1 ; or
 		} elseif ..TypeExpressions399Or(subElement,.addedElement)  {
 			set done=1 ; or
 		} elseif ..TypeExpressions400Or(subElement,.addedElement)  {
 			set done=1 ; or
-		} elseif ..TypeExpressions401Or(subElement,.addedElement)  {
-			set done=1 ; or
-		} elseif ..TypeExpressions402RepSep(subElement,.addedElement)  {
+		} elseif ..TypeExpressions401RepSep(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
@@ -14645,12 +14622,12 @@ Method TypeExpressions(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 /// 
 /// summary=&?4RepeatSep4?&P&P&C&P&P&C
-Method TypeExpressions393Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TypeExpressions392Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..TypeExpressions394RepSep(subElement,.addedElement)  && ..addPunctuation(subElement,",")  && ..addPunctuation(subElement,"*")  && ..Expression(subElement,.addedElement)  && ..addPunctuation(subElement,",")  && ..addPunctuation(subElement,"**")  && ..Expression(subElement,.addedElement)  {
+		if ..TypeExpressions393RepSep(subElement,.addedElement)  && ..addPunctuation(subElement,",")  && ..addPunctuation(subElement,"*")  && ..Expression(subElement,.addedElement)  && ..addPunctuation(subElement,",")  && ..addPunctuation(subElement,"**")  && ..Expression(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -14665,7 +14642,7 @@ Method TypeExpressions393Or(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 }
 
 ///  ','.expression+
-Method TypeExpressions394RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TypeExpressions393RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -14697,12 +14674,12 @@ Method TypeExpressions394RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 /// 
 /// summary=&?4RepeatSep4?&P&P&C
-Method TypeExpressions395Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TypeExpressions394Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..TypeExpressions396RepSep(subElement,.addedElement)  && ..addPunctuation(subElement,",")  && ..addPunctuation(subElement,"*")  && ..Expression(subElement,.addedElement)  {
+		if ..TypeExpressions395RepSep(subElement,.addedElement)  && ..addPunctuation(subElement,",")  && ..addPunctuation(subElement,"*")  && ..Expression(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -14717,7 +14694,7 @@ Method TypeExpressions395Or(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 }
 
 ///  ','.expression+
-Method TypeExpressions396RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TypeExpressions395RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -14749,12 +14726,12 @@ Method TypeExpressions396RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 /// 
 /// summary=&?4RepeatSep4?&P&P&C
-Method TypeExpressions397Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TypeExpressions396Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..TypeExpressions398RepSep(subElement,.addedElement)  && ..addPunctuation(subElement,",")  && ..addPunctuation(subElement,"**")  && ..Expression(subElement,.addedElement)  {
+		if ..TypeExpressions397RepSep(subElement,.addedElement)  && ..addPunctuation(subElement,",")  && ..addPunctuation(subElement,"**")  && ..Expression(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -14769,7 +14746,7 @@ Method TypeExpressions397Or(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 }
 
 ///  ','.expression+
-Method TypeExpressions398RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TypeExpressions397RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -14801,7 +14778,7 @@ Method TypeExpressions398RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 /// 
 /// summary=&P&C&P&P&C
-Method TypeExpressions399Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TypeExpressions398Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
@@ -14822,7 +14799,7 @@ Method TypeExpressions399Or(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 /// 
 /// summary=&P&C
-Method TypeExpressions400Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TypeExpressions399Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
@@ -14843,7 +14820,7 @@ Method TypeExpressions400Or(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 /// 
 /// summary=&P&C
-Method TypeExpressions401Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TypeExpressions400Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
@@ -14863,7 +14840,7 @@ Method TypeExpressions401Or(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 }
 
 ///  ','.expression+
-Method TypeExpressions402RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method TypeExpressions401RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -14893,7 +14870,7 @@ Method TypeExpressions402RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	quit ok
 }
 
-///  type_param: | NAME [type_param_bound] | '*' NAME | '**' NAME
+///  type_param: | NAME [type_param_bound] [type_param_default] | '*' NAME [type_param_starred_default] | '**' NAME [type_param_default]
 /// summary=?4punctuation:4?&?4punctuation:4?&?4punctuation:4?
 Method TypeParam(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
@@ -14931,13 +14908,13 @@ Method TypeParam(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 }
 
 /// 
-/// summary=&C&[C]
+/// summary=&C&[C]&[C]
 Method TypeParam179Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..Name(subElement,.addedElement)  && $S(..TypeParamBound(subElement,.addedElement) :1,1:1) {
+		if ..Name(subElement,.addedElement)  && $S(..TypeParamBound(subElement,.addedElement) :1,1:1) && $S(..TypeParamDefault(subElement,.addedElement) :1,1:1) {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -14952,13 +14929,13 @@ Method TypeParam179Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 }
 
 /// 
-/// summary=&P&C
+/// summary=&P&C&[C]
 Method TypeParam180Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..addPunctuation(subElement,"*")  && ..Name(subElement,.addedElement)  {
+		if ..addPunctuation(subElement,"*")  && ..Name(subElement,.addedElement)  && $S(..TypeParamStarredDefault(subElement,.addedElement) :1,1:1) {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -14973,13 +14950,13 @@ Method TypeParam180Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 }
 
 /// 
-/// summary=&P&C
+/// summary=&P&C&[C]
 Method TypeParam181Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..addPunctuation(subElement,"**")  && ..Name(subElement,.addedElement)  {
+		if ..addPunctuation(subElement,"**")  && ..Name(subElement,.addedElement)  && $S(..TypeParamDefault(subElement,.addedElement) :1,1:1) {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -15007,6 +14984,39 @@ Method TypeParamBound(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		set done=$isobject(subElement)
 	} else {
 		if ..addPunctuation(subElement,":")  && ..Expression(subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+
+	}
+	if done {
+		$$$BNFMEMOSET(pos,subElement)
+	} else {
+	}
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0 ; normal rollback
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  type_param_default: '=' expression
+/// summary=P&C
+Method TypeParamDefault(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		set done=$isobject(subElement)
+	} else {
+		if ..addPunctuation(subElement,"=")  && ..Expression(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 
@@ -15081,6 +15091,39 @@ Method TypeParamSeq178RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	}
 	if done {
 		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0 ; normal rollback
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  type_param_starred_default: '=' star_expression
+/// summary=P&C
+Method TypeParamStarredDefault(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	set pos=..stream.pos
+	if $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		set done=$isobject(subElement)
+	} else {
+		if ..addPunctuation(subElement,"=")  && ..StarExpression(subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+
+	}
+	if done {
+		$$$BNFMEMOSET(pos,subElement)
+	} else {
+	}
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
@@ -15409,7 +15452,7 @@ Method WithItem118Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	quit ok
 }
 
-///  with_stmt: | 'with' '(' ','.with_item+ ','? ')' ':' block | 'with' ','.with_item+ ':' [TYPE_COMMENT] block | ASYNC 'with' '(' ','.with_item+ ','? ')' ':' block | ASYNC 'with' ','.with_item+ ':' [TYPE_COMMENT] block
+///  with_stmt: | 'with' '(' ','.with_item+ ','? ')' ':' [TYPE_COMMENT] block | 'with' ','.with_item+ ':' [TYPE_COMMENT] block | 'async' 'with' '(' ','.with_item+ ','? ')' ':' block | 'async' 'with' ','.with_item+ ':' [TYPE_COMMENT] block
 /// summary=?4punctuation:4?&?4punctuation:4?&?4punctuation:4?&?4punctuation:4?
 Method WithStmt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
@@ -15449,13 +15492,13 @@ Method WithStmt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 }
 
 /// 
-/// summary=&K&P&?4RepeatSep4?&?4OptionalSingle4?&P&P&C
+/// summary=&K&P&?4RepeatSep4?&?4OptionalSingle4?&P&P&[C]&C
 Method WithStmt108Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..addKeyword(subElement,"WITH")  && ..addPunctuation(subElement,"(")  && ..WithStmt109RepSep(subElement,.addedElement)  && $s(..addPunctuation(subElement,",") :1,1:1)  && ..addPunctuation(subElement,")")  && ..addPunctuation(subElement,":")  && ..Block(subElement,.addedElement)  {
+		if ..addKeyword(subElement,"WITH")  && ..addPunctuation(subElement,"(")  && ..WithStmt109RepSep(subElement,.addedElement)  && $s(..addPunctuation(subElement,",") :1,1:1)  && ..addPunctuation(subElement,")")  && ..addPunctuation(subElement,":")  && $S(..TypeComment(subElement,.addedElement) :1,1:1) && ..Block(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -15553,13 +15596,13 @@ Method WithStmt111RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 }
 
 /// 
-/// summary=&C&K&P&?4RepeatSep4?&?4OptionalSingle4?&P&P&C
+/// summary=&K&K&P&?4RepeatSep4?&?4OptionalSingle4?&P&P&C
 Method WithStmt112Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..Async(subElement,.addedElement)  && ..addKeyword(subElement,"WITH")  && ..addPunctuation(subElement,"(")  && ..WithStmt113RepSep(subElement,.addedElement)  && $s(..addPunctuation(subElement,",") :1,1:1)  && ..addPunctuation(subElement,")")  && ..addPunctuation(subElement,":")  && ..Block(subElement,.addedElement)  {
+		if ..addKeyword(subElement,"ASYNC")  && ..addKeyword(subElement,"WITH")  && ..addPunctuation(subElement,"(")  && ..WithStmt113RepSep(subElement,.addedElement)  && $s(..addPunctuation(subElement,",") :1,1:1)  && ..addPunctuation(subElement,")")  && ..addPunctuation(subElement,":")  && ..Block(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 		if done {
@@ -15605,13 +15648,13 @@ Method WithStmt113RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 }
 
 /// 
-/// summary=&C&K&?4RepeatSep4?&P&[C]&C
+/// summary=&K&K&?4RepeatSep4?&P&[C]&C
 Method WithStmt114Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 		$$$DEBUGMethodBegin
 		$$$BNFSTART(subElement)
 		set done=0 ; method start
-		if ..Async(subElement,.addedElement)  && ..addKeyword(subElement,"WITH")  && ..WithStmt115RepSep(subElement,.addedElement)  && ..addPunctuation(subElement,":")  && $S(..TypeComment(subElement,.addedElement) :1,1:1) && ..Block(subElement,.addedElement)  {
+		if ..addKeyword(subElement,"ASYNC")  && ..addKeyword(subElement,"WITH")  && ..WithStmt115RepSep(subElement,.addedElement)  && ..addPunctuation(subElement,":")  && $S(..TypeComment(subElement,.addedElement) :1,1:1) && ..Block(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 		if done {

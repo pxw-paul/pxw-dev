@@ -53,7 +53,7 @@ Method gotoBookmark(ByRef bookmark As %String)
     ;quit
     ;$$$DEBUGMethodBegin
     Set forward=(..stream.pos<$LISTGET(bookmark,1))
-    $$$DEBUG("Going "_$SELECT(forward:"forward",1:"back")_" from:"_$zconvert(..peek(20),"O","JSON"))
+    $$$DEBUG("Going "_$SELECT(forward:"forward",1:"back")_" from:"_$ZCONVERT(..peek(20),"O","JSON"))
     
     Set $LISTBUILD(pos,col,line,startOfLinePos,needsWScheck,stopeol,stopws,
             bracketDepth,sqDepth,curlyDepth,indent)=bookmark
@@ -74,7 +74,7 @@ Method gotoBookmark(ByRef bookmark As %String)
     Set ..keyword="",..peekedlen=0
     Set ..stopAtEOL=stopeol
     Set ..stopAtWhitespace=stopws
-    $$$DEBUG("Going "_$SELECT(forward:"forward",1:"back")_"   to:"_$zconvert(..peek(20),"O","JSON"))
+    $$$DEBUG("Going "_$SELECT(forward:"forward",1:"back")_"   to:"_$ZCONVERT(..peek(20),"O","JSON"))
     ;$$$DEBUGMethodEnd
 }
 
@@ -82,8 +82,8 @@ Method File(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 {
 	Set ok=##super(ParentElement,.subElement)
     If ok=0 {
-        Set retok=..recover(ParentElement,.recsub,"{}",$LISTBUILD())
-        s ok=1 ; recovered so continue
+        Set ok=..recover(ParentElement,.recsub,"{}",$LISTBUILD())
+        Set ok=1 ; recovered so continue
     }
     Quit ok
 }
@@ -252,6 +252,7 @@ Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
         If n'="" {
             Set atom=..newAtom("Number",n)
             Do subElement.AddPart(atom)
+            $$$BNFCOMMITCOPY(subElement,ParentElement)
             Set ok=1
         }
     ; binary number
@@ -263,6 +264,20 @@ Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
         If n'="" {
             Set atom=..newAtom("Number",n)
             Do subElement.AddPart(atom)
+            $$$BNFCOMMITCOPY(subElement,ParentElement)
+            Set ok=1
+        }
+        $$$DEBUG("number binary:"_n_", ok="_ok)
+    ; octal?
+    } ElseIf $$$LOWER(..peek(2))="0o" {
+        Set n=..nextNotEOL(2)
+        While (..peek(1)'="") && ("01234567_"[..peek(1)) {
+            Set n=n_..nextNotEOL(1)
+        }
+        If n'="" {
+            Set atom=..newAtom("Number",n)
+            Do subElement.AddPart(atom)
+            $$$BNFCOMMITCOPY(subElement,ParentElement)
             Set ok=1
         }
     } Else {
@@ -453,14 +468,14 @@ Method FstringMiddleText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
     ;$$$BNFPATH
     ;;$$$DEBUG("%path="_%path)
     Set n=""
-    set endf=..fStringEndChar
-    set endfLen=$l(endf)
-    set embeddedf="\"_..fStringEndChar
-    set embeddedfLen=$l(embeddedf)
+    Set endf=..fStringEndChar
+    Set endfLen=$LENGTH(endf)
+    Set embeddedf="\"_..fStringEndChar
+    Set embeddedfLen=$LENGTH(embeddedf)
     While ..peek(1)'="{",..peek(endfLen)'=endf {
-        if ..peek(embeddedfLen)=embeddedf {
-            set n=n_..next(embeddedfLen)
-        } else {
+        If ..peek(embeddedfLen)=embeddedf {
+            Set n=n_..next(embeddedfLen)
+        } Else {
             Set n=n_..next(1)
         }
     }

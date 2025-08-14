@@ -33,7 +33,12 @@ ClassMethod WriteMainBody()
         Write "<div style='order:1;  display:block; vertical-align: top; height: 100%; width: 50%; padding:10px; overflow: auto; background-color: var(--bgAlternate1);'>"
         Write "<pre>" 
         $$$DEBUGNew(##class(PXW.Tools.Debugger).%ClassName(1))
-        Do $CLASSMETHOD(class,"test1",text,method,.a,0,$GET($$$debugObject))
+        $$$DEBUG("Running "_class_":"_method)
+        try {
+            Do $CLASSMETHOD(class,"test1",text,method,.a,0,$GET($$$debugObject))
+        } catch e {
+            Do ..WriteStatus(e.AsStatus())
+        }
         Write "</pre>"
         Write "</div>"
         ; /left

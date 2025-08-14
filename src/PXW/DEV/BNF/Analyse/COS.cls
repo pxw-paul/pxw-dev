@@ -220,7 +220,9 @@ Method checkSetItem(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.element
 	For {
 		Set var=$ORDER(..CurrentlySetting(var),1,velement)
 		Quit:var=""
-		
+
+		d ..checkAndRecordVariableType(velement,var,derivedtype)
+		/*	
 		Set dimmedtype=..FullClassName($GET(..DimmedTypes(var)))
 		Set currenttype=..FullClassName($GET(..VariablesTypes(var)))
 		If dimmedtype'="",derivedtype'="",dimmedtype'=derivedtype {
@@ -242,10 +244,39 @@ Method checkSetItem(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.element
 		; we have a type so remember it, dont bother storing when it went to null, thats normally not useful
 		If finaltype'="" {
 			Set ..VariablesTypes(var)=finaltype
-	}
+		}
+		*/
 	}
 	Kill ..CurrentlySetting
 	Quit ""
+}
+
+Method checkAndRecordVariableType(VariableElement As PXW.DEV.Element, Variable As %String, DerivedType As %String)
+{
+
+	s var=Variable,derivedtype=DerivedType,velement=VariableElement
+		Set dimmedtype=..FullClassName($GET(..DimmedTypes(var)))
+		Set currenttype=..FullClassName($GET(..VariablesTypes(var)))
+		If dimmedtype'="",derivedtype'="",dimmedtype'=derivedtype {
+			If (..IsExtension(derivedtype,dimmedtype)=0) && (..IsExtension(dimmedtype,derivedtype)=0) {
+				Do ..AddElementWarning(velement,"Derived type of "_var_" ("_derivedtype_") differs to dimmed type ("_dimmedtype_")")
+			}
+		}
+		; assume the programmer is right, i.e. prefer the dimmed type
+		Set finaltype=..FullClassName($SELECT(dimmedtype'="":dimmedtype,1:derivedtype))
+
+		If currenttype'="",finaltype'="",currenttype'=finaltype {
+			; if the current type is a superclass of the new type then this is allowed
+			If ..IsExtension(finaltype,currenttype) {
+				; not an error
+			} Else {
+				Do ..AddElementWarning(velement,"Change of type on "_var_" from "_currenttype_" to "_finaltype)
+			}
+		}
+		; we have a type so remember it, dont bother storing when it went to null, thats normally not useful
+		If finaltype'="" {
+			Set ..VariablesTypes(var)=finaltype
+		}
 }
 
 Method checkVariable(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="Variable")
@@ -326,6 +357,37 @@ Method checkQuitCommand(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.ele
 	Quit ""
 }
 
+Method checkReturnCommand(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="ReturnCommand")
+{
+	Set quitexpE=element.findFirstElementByType("ReturnExpression",1)
+	If $ISOBJECT(quitexpE) {
+		Set derivedtype=..DeriveTypeReturned(quitexpE)
+		If derivedtype="" {
+			If quitexpE.ToString(0)="""""" {
+				; if the return value is null ("") then this is always ok
+				Set derivedtype=..ReturnType
+			} Else {
+				If ..ClassServer.GetClassDetails(..ReturnType,.classtype) {
+					If $$$UPPER(classtype)="DATATYPE" {
+						Set derivedtype=..ReturnType
+					}
+				}
+			}
+		}
+		If ..ReturnType="" {
+			Do ..AddElementWarning(element,"return type is not set, derived type="_derivedtype)
+		} ElseIf  ..FullClassName(..ReturnType)'=..FullClassName(derivedtype) {
+			If ..IsExtension(derivedtype,..ReturnType) {
+				; the derived type EXTENDS the expected type, which is fine
+			} Else {
+				Do ..AddElementWarning(element,"return type="_..ReturnType_", derived type="_derivedtype)
+			}
+		}
+		Set ..QuitFound=1
+	}
+	Quit ""
+}
+
 Method checkOneClassMemeberFINAL(element As PXW.DEV.Element)
 {
 	Set var=$CHAR($ASCII("%")+1) ; skip over % variables, we don't care if they are used they might be used in deeper, untrackable ways
@@ -375,25 +437,55 @@ Method checkMethodAttribute(element As PXW.DEV.BNF.Elements.ClassDefinition) As 
 	Quit ""
 }
 
-Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName As %String) As %String
+Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName As %String, ByRef FormalSpecParsed) As %String
 {
+	#dim fpE,fparamsE as PXW.DEV.Element
+
+	Set lastthing=""
     Set type=StartClassName
     Set classname=StartClassName
     Set objectchain=ParentElement.findFirstElementByType("ObjectChain",0)
 	If '$ISOBJECT(objectchain) Set objectchain=ParentElement.findFirstElementByType("ObjectChainNoDot",0)
     While $ISOBJECT(objectchain) {
+		s fspec=""
         ; the objectchain has the "." and the name
         Set propertyname=objectchain.ToStringAtomsOnly(0)
 		Set propertyname=$SELECT($EXTRACT(propertyname,1)=".":$PIECE(propertyname,".",2),1:propertyname)
 		Set found=..ClassServer.GetPropertyDetails(classname,propertyname,.type)
-		Set:'found type=..ClassServer.GetMethodReturnType(classname,propertyname)
-       
+		Set:'found type=..ClassServer.GetMethodReturnType(classname,propertyname,.fspec)
+		
+		if fspec'="" {
+			;d objectchain.write()
+			;zw fspec
+			s fparamsE=objectchain.findFirstElementByType("FunctionParameterList",0)
+			s fpk="",count=0
+			f  {
+				s fpE=fparamsE.findNextElement(.fpk)
+				q:fpk=""
+				s count=count+1
+				i fpE.type="FunctionParameter" {
+					s byrefE=fpE.findFirstElementByType("ByrefVariable",0)
+					i $ISOBJECT(byrefE) {
+						s var=byrefE.ToString(0)
+						i var'="" {
+							s btype=$lg($lg(fspec,count),2)
+							i btype'="" {
+								d ..checkAndRecordVariableType(byrefE,var,btype)
+							}
+						}
+					}
+				}
+			}
+		}
+
         Set objectchain=objectchain.findFirstElementByType("ObjectChain",0)
         Set classname=type
     }
+	
     Quit type
 }
 
+/// Returns the name of the class of the type of thing
 Method DeriveTypeReturned(ValueElement As PXW.DEV.Element) As %String
 {
 	#dim element as PXW.DEV.Element
@@ -447,7 +539,7 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.Element) As %String
 		Set thisobjectselfE=variableElement.findFirstElementByType("ThisObjectSelf",0)
 		; otherwise its ..property
 		If $ISOBJECT(thisobjectselfE) {
-		Set finaltype=..FollowObjectChainForType(thisobjectselfE,..This)
+			Set finaltype=..FollowObjectChainForType(thisobjectselfE,..This)
 		} Else {
 			; check for $this.property
 			Set thisobjectthisE=variableElement.findFirstElementByType("ThisObjectThis",0)

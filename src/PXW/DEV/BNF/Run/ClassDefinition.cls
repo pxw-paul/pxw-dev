@@ -30,7 +30,7 @@ Method cheese(element As PXW.DEV.Element) As %Boolean
         If ok=0 {
             Set ok=..addPunctuation(element,"}")
             If ok {
-                do:..needsWScheck ..skipWhiteSpaceAndComments()
+                Do:..needsWScheck ..skipWhiteSpaceAndComments()
                 Set ..nextStage=2
             }
         } 
@@ -430,8 +430,8 @@ Method JavascriptCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 		Set ..comment=parser.comment
 		Set atom=..newAtom("JavascriptCodeBlock Empty","")
 		Do ParentElement.AddPart(atom)
-		set retok=1
-	} else {
+		Set retok=1
+	} Else {
         $$$DEBUG("Javascript language normal")
        If parser.StatementListMandatory(subElement) {
             $$$BNFCOMMIT(subElement,ParentElement)
@@ -439,14 +439,14 @@ Method JavascriptCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
             Set ..comment=parser.comment
             Set atom=..newAtom("JavascriptCodeBlock End","")
             Do ParentElement.AddPart(atom)
-            set retok=1
+            Set retok=1
         } Else {
  
-            do ..recover(ParentElement,.recElement,"{}","")
-            set retok=1
+            Do ..recover(ParentElement,.recElement,"{}","")
+            Set retok=1
         }
     }
-    quit retok
+    Quit retok
 }
 
 /// expression ::= 'NEEDS EXPRESSION'
@@ -1090,20 +1090,20 @@ Method XdataText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
         Set ok=1
     }
 
-    if ..mimetype="application/sql" {
+    If ..mimetype="application/sql" {
         Set parser=##class(PXW.DEV.BNF.Run.SQL).%New()
 	    Set parser.stream=##class(PXW.DEV.InputStream).NewString(n)
         Set parser.stream.line=..stream.line
         Set parser.whitespace=..whitespace
-        set parser.comment=..comment
-        set sqlElement=..newElement("XdataSql")
+        Set parser.comment=..comment
+        Set sqlElement=..newElement("XdataSql")
        	If parser.QuerySpecification(sqlElement) {
             $$$BNFCOMMIT(sqlElement,subElement)
         } 
-        set ..whitespace=parser.whitespace
-        set ..comment=parser.comment
+        Set ..whitespace=parser.whitespace
+        Set ..comment=parser.comment
         ;d sqlElement.write()
-    } else {
+    } Else {
         Set o=..newAtom(subElement.type,n)
         Do subElement.AddPart(o)
     }
@@ -1119,9 +1119,9 @@ Method XdataText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 Method ClassXdata(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
 	Set ..mimetype=""
-    set ok=##super(ParentElement,.subElement)
+    Set ok=##super(ParentElement,.subElement)
     
-    q ok
+    Quit ok
 }
 
 Method XmlCdataText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean

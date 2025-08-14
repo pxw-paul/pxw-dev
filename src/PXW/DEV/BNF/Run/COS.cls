@@ -523,7 +523,9 @@ Method Naked(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
     ; eg: f x=1:1:10 d
     ; and therefore IS naked
     If ..stopAtEOL,'$ISOBJECT(..whitespace) {
-        Set retok=1 
+        Set retok=1
+    } ElseIf  ..stopAtEOL,$ISOBJECT(..whitespace),..peek(1)=$char(13) {
+        Set retok=1
     } ElseIf ..peek(1)="{" {
         ; code block does not count as naked
         Set retok=0

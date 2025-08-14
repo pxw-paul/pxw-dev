@@ -22,6 +22,9 @@
     zpm "install pxw-debug"
     zpm "install pxw-lib-sql"
     
+    set ^PXW.Debuggers("ENABLED")=1
+    set ^PXW.Debuggers("BasicToFile")="/home/irisowner/dev/debug/"
+
     // Configure %UnitTest in IRISAPP to suit the VS Code extension
     set ^UnitTestRoot="/usr/irissys/.vscode/IRISAPP/UnitTestRoot"
 

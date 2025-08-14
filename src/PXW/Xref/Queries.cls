@@ -43,9 +43,13 @@ Query Get(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = 
 		--ENDIF
 	--ENDIF
 	--IF ItemKey2'=""
-		--IF ItemKey2["*"
-			AND UPPER(ItemKey2) LIKE (UPPER(:ItemKey2))
-		--ELSE 
+		-- item key 2 = %x% means search LIKE
+		-- item key 2 = %x means searching for something that starts with the %
+		--IF ItemKey2["%",(($E(ItemKey2,1)'="%")||($l(ItemKey2,"%")>2))
+			AND UPPER(ItemKey2) LIKE (UPPER(:ItemKey2))                               
+		--ELSEIF $E(ItemKey2,*)="*"
+			AND UPPER(ItemKey2) %STARTSWITH UPPER($PIECE(:ItemKey2,'*',1))
+		--ELSE
 			AND UPPER(ItemKey2) %INLIST $LISTFROMSTRING(UPPER(:ItemKey2))
 		--ENDIF
 	--ENDIF
@@ -71,9 +75,9 @@ Query GetSuper(NameSpace As %String, ItemType As %String = "", ItemKey1 As %Stri
 	       dat.CalledByType,dat.CalledByCommand,dat.CalledByKey1,dat.CalledByKey2,dat.CalledByKey3,dat.LineNumber,dat.Parameters,
 	       PXW_Xref.Queries_GetCode(dat.NameSpace,dat.CalledByType,dat.CalledByKey1,dat.CalledByKey2,dat.CalledByKey3,dat.ItemKey1,dat.ItemKey2,dat.LineNumber,:WindowSize) AS CallingCode 
 	FROM PXW_Xref.Queries_GetOverrideTree(:NameSpace,:ItemKey1,:ItemKey2) as overs
-	INNER JOIN PXW_Xref.Data as dat ON dat.NameSpace=overs.NameSpace 
-	      AND ((overs.itemkey1 IS NULL) OR (dat.itemkey1=overs.itemkey1))
-		  AND ((overs.itemkey2 IS NULL) OR (dat.itemkey2=overs.itemkey2))
+	INNER JOIN PXW_Xref.Data as dat ON dat.NameSpace=%SQLUPPER(overs.NameSpace)
+	      AND ((overs.itemkey1 IS NULL) OR (dat.itemkey1=%SQLUPPER(overs.itemkey1)))
+		  AND ((overs.itemkey2 IS NULL) OR (dat.itemkey2=%SQLUPPER(overs.itemkey2)))
 	WHERE 1=1
 	--IF ItemType'=""
 		AND dat.ItemType=:ItemType
@@ -167,65 +171,6 @@ ClassMethod GetCode(%NS As %String, CodeType As %String, CodeKey1 As %String, Co
 	Quit code
 }
 
-/*
-/// Summary of where a class calls something not in the same package
-Query PackageSummary(NameSpace As %String, Package As %String) As PXW.LIB.SQL.Query [ SqlProc ]
-{
-SELECT distinct ItemPackage, CalledByPackage
-FROM (
-        
-        SELECT NameSpace,ItemType,ItemKey1,ItemKey2,
-	        CalledByType,CalledByCommand,CalledByKey1,CalledByKey2,CalledByKey3,LineNumber,Parameters,
-            PXW_Xref.Queries_PackageName(NameSpace,ItemKey1) as ItemPackage,
-            PXW_Xref.Queries_PackageName(NameSpace,CalledByKey1) as CalledByPackage
-        FROM PXW_Xref.Data
-    )
-  WHERE (ItemType = 'CLS')
-    AND (NameSpace=:NameSpace)
-    AND (ItemPackage != CalledByPackage)
-    AND $extract(itemPackage, 1) != '%'
-    AND CalledByKey1 %STARTSWITH :Package
-}
-
-/// Details of where a class calls something not in the same package
-Query PackageDetail(NameSpace As %String, ItemPackage As %String, CalledByPackage As %String, WindowSize As %Integer = 1) As PXW.LIB.SQL.Query [ SqlProc ]
-{
-SELECT *
-FROM (
-        SELECT NameSpace,ItemType,ItemKey1,ItemKey2,
-	        CalledByType,CalledByCommand,CalledByKey1,CalledByKey2,CalledByKey3,LineNumber,Parameters,
-            PXW_Xref.Queries_PackageName(NameSpace,ItemKey1) as ItemPackage,
-            PXW_Xref.Queries_PackageName(NameSpace,CalledByKey1) as CalledByPackage,
-            PXW_Xref.Queries_GetCode(NameSpace,CalledByType,CalledByKey1,CalledByKey2,CalledByKey3,ItemKey1,ItemKey2,LineNumber,:WindowSize) AS CallingCode 
-        FROM PXW_Xref.Data
-    )
-WHERE (ItemType = 'CLS')
-    AND (NameSpace=:NameSpace)
-    AND (ItemPackage != CalledByPackage)
-    AND $extract(itemPackage, 1) != '%'
-    AND CalledByKey1 %STARTSWITH :CalledByPackage -- makes it use an index
-    AND $piece(CalledByPackage,'.',1,$length(:CalledByPackage,'.')) = :CalledByPackage 
-    --IF ItemPackage=""
-        AND ItemPackage IS NULL 
-    --ELSE
-        AND ItemPackage = :ItemPackage 
-    --ENDIF
-}
-
-
-ClassMethod PackageName(NameSpace As %String, ClassName As %String) As %String [ SqlProc ]
-{
-	Set ClassServer=$GET(%PXWClassServer(NameSpace))
-	If '$ISOBJECT(ClassServer) {
-		Set ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).%OpenId(NameSpace)
-		Set %PXWClassServer(%NS)=ClassServer
-	}
-
-    Set full=ClassServer.FullClassName(ClassName)
-    Set package=$PIECE(full,".",1,*-1)
-    Quit package
-}
-*/
 Query BuildProblems(NameSpace As %String) As PXW.LIB.SQL.Query [ SqlProc ]
 {
 	SELECT ID, BuildStatus, ItemKey1, ItemType, LastUpdate, NameSpace

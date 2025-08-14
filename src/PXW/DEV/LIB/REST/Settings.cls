@@ -20,6 +20,8 @@ Property Password As %String;
 
 Property ContentType As %String [ InitialExpression = "application/json" ];
 
+Property SSLConfiguration As %String;
+
 Index idkey On ServerName [ IdKey, PrimaryKey ];
 
 Storage Default
@@ -45,6 +47,9 @@ Storage Default
 </Value>
 <Value name="7">
 <Value>ContentType</Value>
+</Value>
+<Value name="8">
+<Value>SSLConfiguration</Value>
 </Value>
 </Data>
 <DataLocation>^PXW.DEV.LIB.REST.SettingsD</DataLocation>

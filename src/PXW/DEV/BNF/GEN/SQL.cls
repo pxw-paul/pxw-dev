@@ -1,4 +1,4 @@
-/// Created: 2024-11-06 18:05:22 PXW.DEV.BNF.Compilers.Compiler1
+/// Created: 2025-06-02 16:33:53 PXW.DEV.BNF.Compilers.Compiler1
 Class PXW.DEV.BNF.GEN.SQL Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 
@@ -15,7 +15,7 @@ Method AliasName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Identifier(subElement,.addedElement)  {
+	if ..Identifier(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -41,7 +41,7 @@ Method AnyTextUptoCloseBracket(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"code this")  {
+	if ..addPunctuation(.subElement,"code this")  {
 		set done=1 ; end compileRules
 	}
 
@@ -65,8 +65,8 @@ Method AsClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if $S(..addKeyword(subElement,"AS") :1,1:1) {
-		if ..ColumnName(subElement,.addedElement)  {
+	if $S(..addKeyword(.subElement,"AS") :1,1:1) {
+		if ..ColumnName(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -94,8 +94,8 @@ Method CallCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"CALL")  {
-		if ..StoredProcCall(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"CALL")  {
+		if ..StoredProcCall(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -123,11 +123,11 @@ Method CheckprivCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"%CHECKPRIV")  {
-		if ..CheckprivObjpriv(subElement,.addedElement)  {
-			if ..CheckprivCommand70OptGrp(subElement,.addedElement)  {
-				if ..addKeyword(subElement,"ON")  {
-					if ..TableReference(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,"%CHECKPRIV")  {
+		if ..CheckprivObjpriv(.subElement,.addedElement)  {
+			if ..CheckprivCommand70OptGrp(.subElement,.addedElement)  {
+				if ..addKeyword(.subElement,"ON")  {
+					if ..TableReference(.subElement,.addedElement)  {
 						set done=1 ; end compileRules
 					}
 				}
@@ -157,10 +157,10 @@ Method CheckprivCommand70OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"(")  {
-		if ..ColumnName(subElement,.addedElement)  {
-			if ..CheckprivCommand71RepZero(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,")")  {
+	if ..addPunctuation(.subElement,"(")  {
+		if ..ColumnName(.subElement,.addedElement)  {
+			if ..CheckprivCommand71RepZero(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -184,7 +184,7 @@ Method CheckprivCommand71RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..CheckprivCommand72Sub(subElement,.addedElement)  {
+	while ..CheckprivCommand72Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -206,8 +206,8 @@ Method CheckprivCommand72Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,",")  {
-		if ..ColumnName(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,",")  {
+		if ..ColumnName(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -232,19 +232,19 @@ Method CheckprivObjpriv(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"%ALTER")  {
+	if ..addPunctuation(.subElement,"%ALTER")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"DELETE")  {
+	} elseif ..addKeyword(.subElement,"DELETE")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"SELECT")  {
+	} elseif ..addKeyword(.subElement,"SELECT")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"INSERT")  {
+	} elseif ..addKeyword(.subElement,"INSERT")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"UPDATE")  {
+	} elseif ..addKeyword(.subElement,"UPDATE")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"EXECUTE")  {
+	} elseif ..addKeyword(.subElement,"EXECUTE")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"REFERENCES")  {
+	} elseif ..addKeyword(.subElement,"REFERENCES")  {
 		set done=1 ; end compileRules
 	}
 
@@ -271,8 +271,8 @@ Method CloseCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"CLOSE")  {
-		if ..CursorName(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"CLOSE")  {
+		if ..CursorName(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -297,8 +297,8 @@ Method ColList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ColumnReference(subElement,.addedElement)  {
-		if ..ColList159RepZero(subElement,.addedElement)  {
+	if ..ColumnReference(.subElement,.addedElement)  {
+		if ..ColList159RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -320,7 +320,7 @@ Method ColList159RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..ColList160Sub(subElement,.addedElement)  {
+	while ..ColList160Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -342,8 +342,8 @@ Method ColList160Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,",")  {
-		if ..ColumnReference(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,",")  {
+		if ..ColumnReference(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -371,8 +371,8 @@ Method ColonSqlCosVariable(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,":")  {
-		if ..SqlCosVariable(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,":")  {
+		if ..SqlCosVariable(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -397,7 +397,7 @@ Method ColumnName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Identifier(subElement,.addedElement)  {
+	if ..Identifier(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -421,8 +421,8 @@ Method ColumnNameList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ColumnName(subElement,.addedElement)  {
-		if ..ColumnNameList45RepZero(subElement,.addedElement)  {
+	if ..ColumnName(.subElement,.addedElement)  {
+		if ..ColumnNameList45RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -444,7 +444,7 @@ Method ColumnNameList45RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..ColumnNameList46Sub(subElement,.addedElement)  {
+	while ..ColumnNameList46Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -466,8 +466,8 @@ Method ColumnNameList46Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,",")  {
-		if ..ColumnName(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,",")  {
+		if ..ColumnName(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -492,9 +492,9 @@ Method ColumnReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ColumnReference161OptGrp(subElement,.addedElement)  {
-		if ..ColumnName(subElement,.addedElement)  {
-			if $S(..ColumnReferenceImplicit(subElement,.addedElement) :1,1:1) {
+	if ..ColumnReference161OptGrp(.subElement,.addedElement)  {
+		if ..ColumnName(.subElement,.addedElement)  {
+			if $S(..ColumnReferenceImplicit(.subElement,.addedElement) :1,1:1) {
 				set done=1 ; end compileRules
 			}
 		}
@@ -519,8 +519,8 @@ Method ColumnReference161OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..AliasName(subElement,.addedElement)  {
-		if ..addPunctuation(subElement,".")  {
+	if ..AliasName(.subElement,.addedElement)  {
+		if ..addPunctuation(.subElement,".")  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -545,7 +545,7 @@ Method ColumnReferenceImplicit(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ColumnReferenceImplicit162RepZero(subElement,.addedElement)  {
+	if ..ColumnReferenceImplicit162RepZero(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -566,7 +566,7 @@ Method ColumnReferenceImplicit162RepZero(ParentElement As PXW.DEV.BNF.Element, B
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..ColumnReferenceImplicit163Sub(subElement,.addedElement)  {
+	while ..ColumnReferenceImplicit163Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -588,8 +588,8 @@ Method ColumnReferenceImplicit163Sub(ParentElement As PXW.DEV.BNF.Element, ByRef
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"->")  {
-		if ..ColumnName(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,"->")  {
+		if ..ColumnName(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -614,10 +614,10 @@ Method CrossJoin(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..TableReference(subElement,.addedElement)  {
-		if ..addKeyword(subElement,"CROSS")  {
-			if ..addKeyword(subElement,"JOIN")  {
-				if ..TableReference(subElement,.addedElement)  {
+	if ..TableReference(.subElement,.addedElement)  {
+		if ..addKeyword(.subElement,"CROSS")  {
+			if ..addKeyword(.subElement,"JOIN")  {
+				if ..TableReference(.subElement,.addedElement)  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -644,7 +644,7 @@ Method CursorName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Identifier(subElement,.addedElement)  {
+	if ..Identifier(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -671,12 +671,12 @@ Method DeclareCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"DECLARE")  {
-		if ..CursorName(subElement,.addedElement)  {
-			if ..addKeyword(subElement,"CURSOR")  {
-				if ..addKeyword(subElement,"FOR")  {
-					if ..QuerySpecification(subElement,.addedElement)  {
-						if ..DeclareCommand65OptGrp(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"DECLARE")  {
+		if ..CursorName(.subElement,.addedElement)  {
+			if ..addKeyword(.subElement,"CURSOR")  {
+				if ..addKeyword(.subElement,"FOR")  {
+					if ..QuerySpecification(.subElement,.addedElement)  {
+						if ..DeclareCommand65OptGrp(.subElement,.addedElement)  {
 							set done=1 ; end compileRules
 						}
 					}
@@ -707,8 +707,8 @@ Method DeclareCommand65OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"FOR")  {
-		if ..DeclareCommand66Sub(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"FOR")  {
+		if ..DeclareCommand66Sub(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -732,9 +732,9 @@ Method DeclareCommand66Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"UPDATE")  {
+	if ..addKeyword(.subElement,"UPDATE")  {
 		set done=1 ; or
-	} elseif ..DeclareCommand67Sub(subElement,.addedElement)  {
+	} elseif ..DeclareCommand67Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -760,8 +760,8 @@ Method DeclareCommand67Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"READ")  {
-		if ..addKeyword(subElement,"ONLY")  {
+	if ..addKeyword(.subElement,"READ")  {
+		if ..addKeyword(.subElement,"ONLY")  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -789,11 +789,11 @@ Method DeleteCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"DELETE")  {
-		if ..DeleteCommand68RepZero(subElement,.addedElement)  {
-			if $S(..addKeyword(subElement,"FROM") :1,1:1) {
-				if ..DirectTable(subElement,.addedElement)  {
-					if $S(..WhereClause(subElement,.addedElement) :1,1:1) {
+	if ..addKeyword(.subElement,"DELETE")  {
+		if ..DeleteCommand68RepZero(.subElement,.addedElement)  {
+			if $S(..addKeyword(.subElement,"FROM") :1,1:1) {
+				if ..DirectTable(.subElement,.addedElement)  {
+					if $S(..WhereClause(.subElement,.addedElement) :1,1:1) {
 						set done=1 ; end compileRules
 					}
 				}
@@ -818,7 +818,7 @@ Method DeleteCommand68RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..DeleteCommand69Sub(subElement,.addedElement)  {
+	while ..DeleteCommand69Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -837,7 +837,7 @@ Method DeleteCommand69Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	set subElement=ParentElement
 	set done=0 ; method start
 	Set subElement=ParentElement
-	if ..UpdateKeyword(subElement,.addedElement)  {
+	if ..UpdateKeyword(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -858,8 +858,8 @@ Method DerivedColumn(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlExpression(subElement,.addedElement)  {
-		if $S(..AsClause(subElement,.addedElement) :1,1:1) {
+	if ..SqlExpression(.subElement,.addedElement)  {
+		if $S(..AsClause(.subElement,.addedElement) :1,1:1) {
 			set done=1 ; end compileRules
 		}
 	}
@@ -884,8 +884,8 @@ Method DerivedTable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..TableSubquery(subElement,.addedElement)  {
-		if $S(..TableAsClause(subElement,.addedElement) :1,1:1) {
+	if ..TableSubquery(.subElement,.addedElement)  {
+		if $S(..TableAsClause(.subElement,.addedElement) :1,1:1) {
 			set done=1 ; end compileRules
 		}
 	}
@@ -910,7 +910,7 @@ Method DerivedTableNoalias(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..TableSubquery(subElement,.addedElement)  {
+	if ..TableSubquery(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -934,8 +934,8 @@ Method DirectTable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..TableName(subElement,.addedElement)  {
-		if $S(..TableAsClause(subElement,.addedElement) :1,1:1) {
+	if ..TableName(.subElement,.addedElement)  {
+		if $S(..TableAsClause(.subElement,.addedElement) :1,1:1) {
 			set done=1 ; end compileRules
 		}
 	}
@@ -960,7 +960,7 @@ Method DirectTableNoalias(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..TableName(subElement,.addedElement)  {
+	if ..TableName(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -987,9 +987,9 @@ Method FetchCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"FETCH")  {
-		if ..CursorName(subElement,.addedElement)  {
-			if $S(..SelectInto(subElement,.addedElement) :1,1:1) {
+	if ..addKeyword(.subElement,"FETCH")  {
+		if ..CursorName(.subElement,.addedElement)  {
+			if $S(..SelectInto(.subElement,.addedElement) :1,1:1) {
 				set done=1 ; end compileRules
 			}
 		}
@@ -1018,11 +1018,11 @@ Method FromClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"FROM")  {
-		if $S(..FromOptimiseList(subElement,.addedElement) :1,1:1) {
-			if ..FromClause18Sub(subElement,.addedElement)  {
-				if $S(..FromClause19RepZero(subElement,.addedElement) :1,1:1) {
-					if ..FromClause21RepZero(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"FROM")  {
+		if $S(..FromOptimiseList(.subElement,.addedElement) :1,1:1) {
+			if ..FromClause18Sub(.subElement,.addedElement)  {
+				if $S(..FromClause19RepZero(.subElement,.addedElement) :1,1:1) {
+					if ..FromClause21RepZero(.subElement,.addedElement)  {
 						set done=1 ; end compileRules
 					}
 				}
@@ -1049,7 +1049,7 @@ Method FromClause18Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	set subElement=ParentElement
 	set done=0 ; method start
 	Set subElement=ParentElement
-	if ..TableReference(subElement,.addedElement)  {
+	if ..TableReference(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -1067,7 +1067,7 @@ Method FromClause19RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..FromClause20Sub(subElement,.addedElement)  {
+	while ..FromClause20Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -1089,8 +1089,8 @@ Method FromClause20Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,",")  {
-		if ..TableReference(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,",")  {
+		if ..TableReference(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -1112,7 +1112,7 @@ Method FromClause21RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..FromClause22Sub(subElement,.addedElement)  {
+	while ..FromClause22Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -1131,7 +1131,7 @@ Method FromClause22Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	set subElement=ParentElement
 	set done=0 ; method start
 	Set subElement=ParentElement
-	if ..Join(subElement,.addedElement)  {
+	if ..Join(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -1143,43 +1143,45 @@ Method FromClause22Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	quit ok
 }
 
-///  from_optimise ::= ('%firsttable' [alias_name]) | '%ALLINDEX' | '%STARTTABLE' | '%INORDER' | '%FULL' | '%NOFLATTEN' | '%NOMERGE' | '%NOREDUCE' | '%NOSVSO' | '%NOTOPOPT' | '%NOUNIONOROPT' | '%PARALLEL' | ('%IGNOREINDEX' index_reference_list ) | ('%IGNOREINDICES' index_reference_list )
-/// summary=P&[C]|P|P|P|P|P|P|P|P|P|P|P|P&C|P&C
+///  from_optimise ::= ('%firsttable' [alias_name]) | '%ALLINDEX' | '%STARTTABLE' | '%INORDER' | '%FULL' | '%NOFLATTEN' | '%NOMERGE' | '%NOREDUCE' | '%NOSVSO' | '%NOTOPOPT' | '%NOUNIONOROPT' | '%PARALLEL' | '%NOPARALLEL' | ('%IGNOREINDEX' index_reference_list ) | ('%IGNOREINDICES' index_reference_list )
+/// summary=P&[C]|P|P|P|P|P|P|P|P|P|P|P|P|P&C|P&C
 Method FromOptimise(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&[C]|P|P|P|P|P|P|P|P|P|P|P|P&C|P&C
+	; rules summary P&[C]|P|P|P|P|P|P|P|P|P|P|P|P|P&C|P&C
 	; first rule summary P&[C]
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..FromOptimise25Sub(subElement,.addedElement)  {
+	if ..FromOptimise25Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%ALLINDEX")  {
+	} elseif ..addPunctuation(.subElement,"%ALLINDEX")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%STARTTABLE")  {
+	} elseif ..addPunctuation(.subElement,"%STARTTABLE")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%INORDER")  {
+	} elseif ..addPunctuation(.subElement,"%INORDER")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%FULL")  {
+	} elseif ..addPunctuation(.subElement,"%FULL")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%NOFLATTEN")  {
+	} elseif ..addPunctuation(.subElement,"%NOFLATTEN")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%NOMERGE")  {
+	} elseif ..addPunctuation(.subElement,"%NOMERGE")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%NOREDUCE")  {
+	} elseif ..addPunctuation(.subElement,"%NOREDUCE")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%NOSVSO")  {
+	} elseif ..addPunctuation(.subElement,"%NOSVSO")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%NOTOPOPT")  {
+	} elseif ..addPunctuation(.subElement,"%NOTOPOPT")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%NOUNIONOROPT")  {
+	} elseif ..addPunctuation(.subElement,"%NOUNIONOROPT")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%PARALLEL")  {
+	} elseif ..addPunctuation(.subElement,"%PARALLEL")  {
 		set done=1 ; or
-	} elseif ..FromOptimise26Sub(subElement,.addedElement)  {
+	} elseif ..addPunctuation(.subElement,"%NOPARALLEL")  {
 		set done=1 ; or
-	} elseif ..FromOptimise27Sub(subElement,.addedElement)  {
+	} elseif ..FromOptimise26Sub(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..FromOptimise27Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -1205,8 +1207,8 @@ Method FromOptimise25Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"%firsttable")  {
-		if $S(..AliasName(subElement,.addedElement) :1,1:1) {
+	if ..addPunctuation(.subElement,"%firsttable")  {
+		if $S(..AliasName(.subElement,.addedElement) :1,1:1) {
 			set done=1 ; end compileRules
 		}
 	}
@@ -1233,8 +1235,8 @@ Method FromOptimise26Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"%IGNOREINDEX")  {
-		if ..IndexReferenceList(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,"%IGNOREINDEX")  {
+		if ..IndexReferenceList(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -1261,8 +1263,8 @@ Method FromOptimise27Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"%IGNOREINDICES")  {
-		if ..IndexReferenceList(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,"%IGNOREINDICES")  {
+		if ..IndexReferenceList(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -1287,8 +1289,8 @@ Method FromOptimiseList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..FromOptimise(subElement,.addedElement)  {
-		if ..FromOptimiseList23RepZero(subElement,.addedElement)  {
+	if ..FromOptimise(.subElement,.addedElement)  {
+		if ..FromOptimiseList23RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -1310,7 +1312,7 @@ Method FromOptimiseList23RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..FromOptimiseList24Sub(subElement,.addedElement)  {
+	while ..FromOptimiseList24Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -1329,7 +1331,7 @@ Method FromOptimiseList24Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	set subElement=ParentElement
 	set done=0 ; method start
 	Set subElement=ParentElement
-	if ..FromOptimise(subElement,.addedElement)  {
+	if ..FromOptimise(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -1353,9 +1355,9 @@ Method GroupByClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"GROUP")  {
-		if ..addKeyword(subElement,"BY")  {
-			if ..GroupingColumnReferenceList(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"GROUP")  {
+		if ..addKeyword(.subElement,"BY")  {
+			if ..GroupingColumnReferenceList(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -1381,7 +1383,7 @@ Method GroupingColumnReference(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlExpression(subElement,.addedElement)  {
+	if ..SqlExpression(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -1405,8 +1407,8 @@ Method GroupingColumnReferenceList(ParentElement As PXW.DEV.BNF.Element, ByRef s
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..GroupingColumnReference(subElement,.addedElement)  {
-		if ..GroupingColumnReferenceList37RepZero(subElement,.addedElement)  {
+	if ..GroupingColumnReference(.subElement,.addedElement)  {
+		if ..GroupingColumnReferenceList37RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -1428,7 +1430,7 @@ Method GroupingColumnReferenceList37RepZero(ParentElement As PXW.DEV.BNF.Element
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..GroupingColumnReferenceList38Sub(subElement,.addedElement)  {
+	while ..GroupingColumnReferenceList38Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -1450,8 +1452,8 @@ Method GroupingColumnReferenceList38Sub(ParentElement As PXW.DEV.BNF.Element, By
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,",")  {
-		if ..GroupingColumnReference(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,",")  {
+		if ..GroupingColumnReference(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -1479,8 +1481,8 @@ Method HavingClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"HAVING")  {
-		if ..SqlExpression(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"HAVING")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -1507,7 +1509,7 @@ Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)")  {
+	if ..addPunctuation(.subElement,"regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)")  {
 		set done=1 ; end compileRules
 	}
 
@@ -1531,8 +1533,8 @@ Method IndexReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..IndexReference30OptGrp(subElement,.addedElement)  {
-		if ..Identifier(subElement,.addedElement)  {
+	if ..IndexReference30OptGrp(.subElement,.addedElement)  {
+		if ..Identifier(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -1556,8 +1558,8 @@ Method IndexReference30OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..TableReferenceNoalias(subElement,.addedElement)  {
-		if ..addPunctuation(subElement,".")  {
+	if ..TableReferenceNoalias(.subElement,.addedElement)  {
+		if ..addPunctuation(.subElement,".")  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -1582,8 +1584,8 @@ Method IndexReferenceList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..IndexReference(subElement,.addedElement)  {
-		if ..IndexReferenceList31RepZero(subElement,.addedElement)  {
+	if ..IndexReference(.subElement,.addedElement)  {
+		if ..IndexReferenceList31RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -1605,7 +1607,7 @@ Method IndexReferenceList31RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef s
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..IndexReferenceList32Sub(subElement,.addedElement)  {
+	while ..IndexReferenceList32Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -1627,8 +1629,8 @@ Method IndexReferenceList32Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,",")  {
-		if ..IndexReference(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,",")  {
+		if ..IndexReference(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -1656,11 +1658,11 @@ Method InsertCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"INSERT")  {
-		if ..InsertCommand48RepZero(subElement,.addedElement)  {
-			if $S(..addKeyword(subElement,"INTO") :1,1:1) {
-				if ..DirectTable(subElement,.addedElement)  {
-					if ..InsertMethod(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"INSERT")  {
+		if ..InsertCommand48RepZero(.subElement,.addedElement)  {
+			if $S(..addKeyword(.subElement,"INTO") :1,1:1) {
+				if ..DirectTable(.subElement,.addedElement)  {
+					if ..InsertMethod(.subElement,.addedElement)  {
 						set done=1 ; end compileRules
 					}
 				}
@@ -1685,7 +1687,7 @@ Method InsertCommand48RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..InsertCommand49Sub(subElement,.addedElement)  {
+	while ..InsertCommand49Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -1704,7 +1706,7 @@ Method InsertCommand49Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	set subElement=ParentElement
 	set done=0 ; method start
 	Set subElement=ParentElement
-	if ..UpdateKeyword(subElement,.addedElement)  {
+	if ..UpdateKeyword(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -1725,11 +1727,11 @@ Method InsertMethod(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..InsertSetList(subElement,.addedElement)  {
+	if ..InsertSetList(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..InsertValuesList(subElement,.addedElement)  {
+	} elseif ..InsertValuesList(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..InsertMultirow(subElement,.addedElement)  {
+	} elseif ..InsertMultirow(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -1753,8 +1755,8 @@ Method InsertMultirow(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if $S(..UpdateColumns(subElement,.addedElement) :1,1:1) {
-		if ..SelectCommand(subElement,.addedElement)  {
+	if $S(..UpdateColumns(.subElement,.addedElement) :1,1:1) {
+		if ..SelectCommand(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -1779,9 +1781,9 @@ Method InsertSet(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ColumnReference(subElement,.addedElement)  {
-		if ..addPunctuation(subElement,"=")  {
-			if ..SqlExpression(subElement,.addedElement)  {
+	if ..ColumnReference(.subElement,.addedElement)  {
+		if ..addPunctuation(.subElement,"=")  {
+			if ..SqlExpression(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -1810,9 +1812,9 @@ Method InsertSetList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"SET")  {
-		if ..InsertSet(subElement,.addedElement)  {
-			if ..InsertSetList50RepZero(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"SET")  {
+		if ..InsertSet(.subElement,.addedElement)  {
+			if ..InsertSetList50RepZero(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -1835,7 +1837,7 @@ Method InsertSetList50RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..InsertSetList51Sub(subElement,.addedElement)  {
+	while ..InsertSetList51Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -1857,8 +1859,8 @@ Method InsertSetList51Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,",")  {
-		if ..InsertSet(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,",")  {
+		if ..InsertSet(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -1883,9 +1885,9 @@ Method InsertValuesList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..UpdateColumns(subElement,.addedElement)  {
-		if ..addKeyword(subElement,"VALUES")  {
-			if ..UpdateValues(subElement,.addedElement)  {
+	if ..UpdateColumns(.subElement,.addedElement)  {
+		if ..addKeyword(.subElement,"VALUES")  {
+			if ..UpdateValues(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -1911,10 +1913,10 @@ Method Join(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if $S(..Join28RepZero(subElement,.addedElement) :1,1:1) {
-		if ..addKeyword(subElement,"JOIN")  {
-			if ..TableReference(subElement,.addedElement)  {
-				if $S(..JoinOn(subElement,.addedElement) :1,1:1) {
+	if $S(..Join28RepZero(.subElement,.addedElement) :1,1:1) {
+		if ..addKeyword(.subElement,"JOIN")  {
+			if ..TableReference(.subElement,.addedElement)  {
+				if $S(..JoinOn(.subElement,.addedElement) :1,1:1) {
 					set done=1 ; end compileRules
 				}
 			}
@@ -1938,7 +1940,7 @@ Method Join28RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..Join29Sub(subElement,.addedElement)  {
+	while ..Join29Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -1959,19 +1961,19 @@ Method Join29Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	set subElement=ParentElement
 	set done=0 ; method start
 	Set subElement=ParentElement
-	if ..addKeyword(subElement,"INNER")  {
+	if ..addKeyword(.subElement,"INNER")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"OUTER")  {
+	} elseif ..addKeyword(.subElement,"OUTER")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"LEFT")  {
+	} elseif ..addKeyword(.subElement,"LEFT")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"RIGHT")  {
+	} elseif ..addKeyword(.subElement,"RIGHT")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"CROSS")  {
+	} elseif ..addKeyword(.subElement,"CROSS")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"NATURAL")  {
+	} elseif ..addKeyword(.subElement,"NATURAL")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"FULL")  {
+	} elseif ..addKeyword(.subElement,"FULL")  {
 		set done=1 ; end compileRules
 	}
 
@@ -1992,7 +1994,7 @@ Method JoinColumnList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ColumnNameList(subElement,.addedElement)  {
+	if ..ColumnNameList(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -2019,8 +2021,8 @@ Method JoinCondition(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"ON")  {
-		if ..SqlExpression(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"ON")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -2048,8 +2050,8 @@ Method JoinOn(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"ON")  {
-		if ..SqlExpression(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"ON")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -2074,9 +2076,9 @@ Method JoinSpecification(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..JoinCondition(subElement,.addedElement)  {
+	if ..JoinCondition(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..NamedColumnsJoin(subElement,.addedElement)  {
+	} elseif ..NamedColumnsJoin(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -2100,9 +2102,9 @@ Method JoinType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"INNER")  {
+	if ..addKeyword(.subElement,"INNER")  {
 		set done=1 ; or
-	} elseif ..JoinType36Sub(subElement,.addedElement)  {
+	} elseif ..JoinType36Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -2125,8 +2127,8 @@ Method JoinType36Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..OuterJoinType(subElement,.addedElement)  {
-		if $S(..addKeyword(subElement,"OUTER") :1,1:1) {
+	if ..OuterJoinType(.subElement,.addedElement)  {
+		if $S(..addKeyword(.subElement,"OUTER") :1,1:1) {
 			set done=1 ; end compileRules
 		}
 	}
@@ -2151,11 +2153,11 @@ Method JoinedTable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..CrossJoin(subElement,.addedElement)  {
+	if ..CrossJoin(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..QualifiedJoin(subElement,.addedElement)  {
+	} elseif ..QualifiedJoin(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..JoinedTable35Sub(subElement,.addedElement)  {
+	} elseif ..JoinedTable35Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -2181,9 +2183,9 @@ Method JoinedTable35Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"(")  {
-		if ..JoinedTable(subElement,.addedElement)  {
-			if ..addPunctuation(subElement,")")  {
+	if ..addPunctuation(.subElement,"(")  {
+		if ..JoinedTable(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,")")  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -2209,7 +2211,7 @@ Method MacroIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Identifier(subElement,.addedElement)  {
+	if ..Identifier(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -2233,7 +2235,7 @@ Method MacroParameter(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlExpression(subElement,.addedElement)  {
+	if ..SqlExpression(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -2260,9 +2262,9 @@ Method MacroParameterList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"(")  {
-		if ..MacroParameterList81OptGrp(subElement,.addedElement)  {
-			if ..addPunctuation(subElement,")")  {
+	if ..addPunctuation(.subElement,"(")  {
+		if ..MacroParameterList81OptGrp(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,")")  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -2287,8 +2289,8 @@ Method MacroParameterList81OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if $S(..MacroParameter(subElement,.addedElement) :1,1:1) {
-		if ..MacroParameterList82RepZero(subElement,.addedElement)  {
+	if $S(..MacroParameter(.subElement,.addedElement) :1,1:1) {
+		if ..MacroParameterList82RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -2310,7 +2312,7 @@ Method MacroParameterList82RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef s
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..MacroParameterList83Sub(subElement,.addedElement)  {
+	while ..MacroParameterList83Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -2332,8 +2334,8 @@ Method MacroParameterList83Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,",")  {
-		if $S(..MacroParameter(subElement,.addedElement) :1,1:1) {
+	if ..addPunctuation(.subElement,",")  {
+		if $S(..MacroParameter(.subElement,.addedElement) :1,1:1) {
 			set done=1 ; end compileRules
 		}
 	}
@@ -2361,9 +2363,9 @@ Method MacroParameterText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"(")  {
-		if ..AnyTextUptoCloseBracket(subElement,.addedElement)  {
-			if ..addPunctuation(subElement,")")  {
+	if ..addPunctuation(.subElement,"(")  {
+		if ..AnyTextUptoCloseBracket(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,")")  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -2392,9 +2394,9 @@ Method Macrocall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"$$$")  {
-		if ..MacroIdentifier(subElement,.addedElement)  {
-			if ..Macrocall80OptGrp(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,"$$$")  {
+		if ..MacroIdentifier(.subElement,.addedElement)  {
+			if ..Macrocall80OptGrp(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -2419,9 +2421,9 @@ Method Macrocall80OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	set subElement=ParentElement
 	set done=0 ; method start
 	Set subElement=ParentElement
-	if ..MacroParameterList(subElement,.addedElement)  {
+	if ..MacroParameterList(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..MacroParameterText(subElement,.addedElement)  {
+	} elseif ..MacroParameterText(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -2445,10 +2447,10 @@ Method NamedColumnsJoin(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"USING")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..JoinColumnList(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,")")  {
+	if ..addKeyword(.subElement,"USING")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..JoinColumnList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -2475,7 +2477,7 @@ Method NonJoinQueryExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..NonJoinQueryTerm(subElement,.addedElement)  {
+	if ..NonJoinQueryTerm(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -2499,9 +2501,9 @@ Method NonJoinQueryPrimary(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SimpleTable(subElement,.addedElement)  {
+	if ..SimpleTable(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..NonJoinQueryPrimary44Sub(subElement,.addedElement)  {
+	} elseif ..NonJoinQueryPrimary44Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -2527,9 +2529,9 @@ Method NonJoinQueryPrimary44Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"(")  {
-		if ..NonJoinQueryExpression(subElement,.addedElement)  {
-			if ..addPunctuation(subElement,")")  {
+	if ..addPunctuation(.subElement,"(")  {
+		if ..NonJoinQueryExpression(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,")")  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -2555,7 +2557,7 @@ Method NonJoinQueryTerm(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..NonJoinQueryPrimary(subElement,.addedElement)  {
+	if ..NonJoinQueryPrimary(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -2580,9 +2582,9 @@ Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Number168Sub(subElement,.addedElement)  {
+	if ..Number168Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..Number172Sub(subElement,.addedElement)  {
+	} elseif ..Number172Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -2608,9 +2610,9 @@ Method Number168Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"regexp:[0-9]*")  {
-		if ..Number169OptGrp(subElement,.addedElement)  {
-			if ..Number170OptGrp(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,"regexp:[0-9]*")  {
+		if ..Number169OptGrp(.subElement,.addedElement)  {
+			if ..Number170OptGrp(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -2638,8 +2640,8 @@ Method Number169OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,".")  {
-		if ..addPunctuation(subElement,"regexp:[0-9]+")  {
+	if ..addPunctuation(.subElement,".")  {
+		if ..addPunctuation(.subElement,"regexp:[0-9]+")  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -2663,8 +2665,8 @@ Method Number170OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Number171Sub(subElement,.addedElement)  {
-		if ..addPunctuation(subElement,"regexp:[0-9]+")  {
+	if ..Number171Sub(.subElement,.addedElement)  {
+		if ..addPunctuation(.subElement,"regexp:[0-9]+")  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -2690,9 +2692,9 @@ Method Number171Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	set subElement=ParentElement
 	set done=0 ; method start
 	Set subElement=ParentElement
-	if ..addKeyword(subElement,"E")  {
+	if ..addKeyword(.subElement,"E")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"E")  {
+	} elseif ..addKeyword(.subElement,"E")  {
 		set done=1 ; end compileRules
 	}
 
@@ -2715,9 +2717,9 @@ Method Number172Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,".")  {
-		if ..addPunctuation(subElement,"regexp:[0-9]+")  {
-			if ..Number173OptGrp(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,".")  {
+		if ..addPunctuation(.subElement,"regexp:[0-9]+")  {
+			if ..Number173OptGrp(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -2742,8 +2744,8 @@ Method Number173OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Number174Sub(subElement,.addedElement)  {
-		if ..addPunctuation(subElement,"regexp:[0-9]+")  {
+	if ..Number174Sub(.subElement,.addedElement)  {
+		if ..addPunctuation(.subElement,"regexp:[0-9]+")  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -2769,9 +2771,9 @@ Method Number174Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	set subElement=ParentElement
 	set done=0 ; method start
 	Set subElement=ParentElement
-	if ..addKeyword(subElement,"E")  {
+	if ..addKeyword(.subElement,"E")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"E")  {
+	} elseif ..addKeyword(.subElement,"E")  {
 		set done=1 ; end compileRules
 	}
 
@@ -2795,8 +2797,8 @@ Method OpenCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"OPEN")  {
-		if ..CursorName(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"OPEN")  {
+		if ..CursorName(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -2824,9 +2826,9 @@ Method OrderByClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"ORDER")  {
-		if ..addKeyword(subElement,"BY")  {
-			if ..OrderingColumnReferenceList(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"ORDER")  {
+		if ..addKeyword(.subElement,"BY")  {
+			if ..OrderingColumnReferenceList(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -2852,8 +2854,8 @@ Method OrderingColumnReference(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlExpression(subElement,.addedElement)  {
-		if ..OrderingColumnReference41OptGrp(subElement,.addedElement)  {
+	if ..SqlExpression(.subElement,.addedElement)  {
+		if ..OrderingColumnReference41OptGrp(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -2879,9 +2881,9 @@ Method OrderingColumnReference41OptGrp(ParentElement As PXW.DEV.BNF.Element, ByR
 	set subElement=ParentElement
 	set done=0 ; method start
 	Set subElement=ParentElement
-	if ..addKeyword(subElement,"ASC")  {
+	if ..addKeyword(.subElement,"ASC")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"DESC")  {
+	} elseif ..addKeyword(.subElement,"DESC")  {
 		set done=1 ; end compileRules
 	}
 
@@ -2902,8 +2904,8 @@ Method OrderingColumnReferenceList(ParentElement As PXW.DEV.BNF.Element, ByRef s
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..OrderingColumnReference(subElement,.addedElement)  {
-		if ..OrderingColumnReferenceList39RepZero(subElement,.addedElement)  {
+	if ..OrderingColumnReference(.subElement,.addedElement)  {
+		if ..OrderingColumnReferenceList39RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -2925,7 +2927,7 @@ Method OrderingColumnReferenceList39RepZero(ParentElement As PXW.DEV.BNF.Element
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..OrderingColumnReferenceList40Sub(subElement,.addedElement)  {
+	while ..OrderingColumnReferenceList40Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -2947,8 +2949,8 @@ Method OrderingColumnReferenceList40Sub(ParentElement As PXW.DEV.BNF.Element, By
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,",")  {
-		if ..OrderingColumnReference(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,",")  {
+		if ..OrderingColumnReference(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -2975,11 +2977,11 @@ Method OuterJoinType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"LEFT")  {
+	if ..addKeyword(.subElement,"LEFT")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"RIGHT")  {
+	} elseif ..addKeyword(.subElement,"RIGHT")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"FULL")  {
+	} elseif ..addKeyword(.subElement,"FULL")  {
 		set done=1 ; end compileRules
 	}
 
@@ -3003,7 +3005,7 @@ Method QualifiedIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Identifier(subElement,.addedElement)  {
+	if ..Identifier(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -3027,12 +3029,12 @@ Method QualifiedJoin(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..TableReference(subElement,.addedElement)  {
-		if $S(..addKeyword(subElement,"NATURAL") :1,1:1) {
-			if $S(..JoinType(subElement,.addedElement) :1,1:1) {
-				if ..addKeyword(subElement,"JOIN")  {
-					if ..TableReference(subElement,.addedElement)  {
-						if $S(..JoinSpecification(subElement,.addedElement) :1,1:1) {
+	if ..TableReference(.subElement,.addedElement)  {
+		if $S(..addKeyword(.subElement,"NATURAL") :1,1:1) {
+			if $S(..JoinType(.subElement,.addedElement) :1,1:1) {
+				if ..addKeyword(.subElement,"JOIN")  {
+					if ..TableReference(.subElement,.addedElement)  {
+						if $S(..JoinSpecification(.subElement,.addedElement) :1,1:1) {
 							set done=1 ; end compileRules
 						}
 					}
@@ -3061,7 +3063,7 @@ Method Qualifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..TableName(subElement,.addedElement)  {
+	if ..TableName(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -3085,9 +3087,9 @@ Method QueryExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..NonJoinQueryExpression(subElement,.addedElement)  {
+	if ..NonJoinQueryExpression(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..JoinedTable(subElement,.addedElement)  {
+	} elseif ..JoinedTable(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -3111,9 +3113,9 @@ Method QuerySpecification(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if $S(..WithCommand(subElement,.addedElement) :1,1:1) {
-		if ..SelectCommand(subElement,.addedElement)  {
-			if ..QuerySpecification1RepZero(subElement,.addedElement)  {
+	if $S(..WithCommand(.subElement,.addedElement) :1,1:1) {
+		if ..SelectCommand(.subElement,.addedElement)  {
+			if ..QuerySpecification1RepZero(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -3136,7 +3138,7 @@ Method QuerySpecification1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..QuerySpecification2Sub(subElement,.addedElement)  {
+	while ..QuerySpecification2Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -3155,8 +3157,8 @@ Method QuerySpecification2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Union(subElement,.addedElement)  {
-		if ..SelectCommand(subElement,.addedElement)  {
+	if ..Union(.subElement,.addedElement)  {
+		if ..SelectCommand(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -3181,7 +3183,7 @@ Method SchemaName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Identifier(subElement,.addedElement)  {
+	if ..Identifier(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -3208,11 +3210,11 @@ Method SelectCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"SELECT")  {
-		if $S(..SetQuantifier(subElement,.addedElement) :1,1:1) {
-			if ..SelectList(subElement,.addedElement)  {
-				if $S(..SelectInto(subElement,.addedElement) :1,1:1) {
-					if $S(..TableExpression(subElement,.addedElement) :1,1:1) {
+	if ..addKeyword(.subElement,"SELECT")  {
+		if $S(..SetQuantifier(.subElement,.addedElement) :1,1:1) {
+			if ..SelectList(.subElement,.addedElement)  {
+				if $S(..SelectInto(.subElement,.addedElement) :1,1:1) {
+					if $S(..TableExpression(.subElement,.addedElement) :1,1:1) {
 						set done=1 ; end compileRules
 					}
 				}
@@ -3243,9 +3245,9 @@ Method SelectInto(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"INTO")  {
-		if ..SelectIntoVariable(subElement,.addedElement)  {
-			if ..SelectInto33RepZero(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"INTO")  {
+		if ..SelectIntoVariable(.subElement,.addedElement)  {
+			if ..SelectInto33RepZero(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -3268,7 +3270,7 @@ Method SelectInto33RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..SelectInto34Sub(subElement,.addedElement)  {
+	while ..SelectInto34Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -3290,8 +3292,8 @@ Method SelectInto34Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,",")  {
-		if ..SelectIntoVariable(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,",")  {
+		if ..SelectIntoVariable(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -3316,8 +3318,8 @@ Method SelectIntoVariable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if $S(..addPunctuation(subElement,":") :1,1:1) {
-		if ..SqlCosVariable(subElement,.addedElement)  {
+	if $S(..addPunctuation(.subElement,":") :1,1:1) {
+		if ..SqlCosVariable(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -3342,8 +3344,8 @@ Method SelectList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SelectSublist(subElement,.addedElement)  {
-		if ..SelectList15RepZero(subElement,.addedElement)  {
+	if ..SelectSublist(.subElement,.addedElement)  {
+		if ..SelectList15RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -3365,7 +3367,7 @@ Method SelectList15RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..SelectList16Sub(subElement,.addedElement)  {
+	while ..SelectList16Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -3387,8 +3389,8 @@ Method SelectList16Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,",")  {
-		if ..SelectSublist(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,",")  {
+		if ..SelectSublist(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -3413,9 +3415,9 @@ Method SelectSublist(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..DerivedColumn(subElement,.addedElement)  {
+	if ..DerivedColumn(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SelectSublist17Sub(subElement,.addedElement)  {
+	} elseif ..SelectSublist17Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -3438,9 +3440,9 @@ Method SelectSublist17Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Qualifier(subElement,.addedElement)  {
-		if ..addPunctuation(subElement,".")  {
-			if ..addPunctuation(subElement,"*")  {
+	if ..Qualifier(.subElement,.addedElement)  {
+		if ..addPunctuation(.subElement,".")  {
+			if ..addPunctuation(.subElement,"*")  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -3466,7 +3468,7 @@ Method SetQuantifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SetQuantifier7RepZero(subElement,.addedElement)  {
+	if ..SetQuantifier7RepZero(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -3492,11 +3494,11 @@ Method SetQuantifier10OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"BY")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..SqlExpression(subElement,.addedElement)  {
-				if ..SetQuantifier11RepZero(subElement,.addedElement)  {
-					if ..addPunctuation(subElement,")")  {
+	if ..addKeyword(.subElement,"BY")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlExpression(.subElement,.addedElement)  {
+				if ..SetQuantifier11RepZero(.subElement,.addedElement)  {
+					if ..addPunctuation(.subElement,")")  {
 						set done=1 ; end compileRules
 					}
 				}
@@ -3521,7 +3523,7 @@ Method SetQuantifier11RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..SetQuantifier12Sub(subElement,.addedElement)  {
+	while ..SetQuantifier12Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -3543,8 +3545,8 @@ Method SetQuantifier12Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,",")  {
-		if ..SqlExpression(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,",")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -3571,8 +3573,8 @@ Method SetQuantifier13Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"TOP")  {
-		if ..SqlExpression(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"TOP")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -3599,8 +3601,8 @@ Method SetQuantifier14Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"%PROFILE")  {
-		if $S(..addKeyword(subElement,"ALL") :1,1:1) {
+	if ..addPunctuation(.subElement,"%PROFILE")  {
+		if $S(..addKeyword(.subElement,"ALL") :1,1:1) {
 			set done=1 ; end compileRules
 		}
 	}
@@ -3622,7 +3624,7 @@ Method SetQuantifier7RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..SetQuantifier8Sub(subElement,.addedElement)  {
+	while ..SetQuantifier8Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -3642,19 +3644,19 @@ Method SetQuantifier8Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SetQuantifier9Sub(subElement,.addedElement)  {
+	if ..SetQuantifier9Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"ALL")  {
+	} elseif ..addKeyword(.subElement,"ALL")  {
 		set done=1 ; or
-	} elseif ..SetQuantifier13Sub(subElement,.addedElement)  {
+	} elseif ..SetQuantifier13Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%NOFPLAN")  {
+	} elseif ..addPunctuation(.subElement,"%NOFPLAN")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%NOLOCK")  {
+	} elseif ..addPunctuation(.subElement,"%NOLOCK")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%NORUNTIME")  {
+	} elseif ..addPunctuation(.subElement,"%NORUNTIME")  {
 		set done=1 ; or
-	} elseif ..SetQuantifier14Sub(subElement,.addedElement)  {
+	} elseif ..SetQuantifier14Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -3680,8 +3682,8 @@ Method SetQuantifier9Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"DISTINCT")  {
-		if ..SetQuantifier10OptGrp(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"DISTINCT")  {
+		if ..SetQuantifier10OptGrp(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -3706,7 +3708,7 @@ Method SimpleTable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..QuerySpecification(subElement,.addedElement)  {
+	if ..QuerySpecification(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -3721,22 +3723,77 @@ Method SimpleTable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	quit ok
 }
 
-///  sql_case_expression ::= 'CASE' ( sql_case_expression1 | sql_case_expression2 ) ['ELSE' sql_expression ] 'END'
+///  sql_case_else ::= 'ELSE' sql_expression
+/// summary values:ELSE
+/// summary=K&C
+Method SqlCaseElse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary K&C
+	; first rule summary K
+	if '(..isKeywordInList($lb("ELSE"),.value)) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"ELSE")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0 ; normal rollback
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  sql_case_end ::= 'END'
+/// summary values:END
+/// summary=K
+Method SqlCaseEnd(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary K
+	if '(..isKeywordInList($lb("END"),.value)) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"END")  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0 ; normal rollback
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  sql_case_expression ::= 'CASE' ( sql_case_expression1 | sql_case_expression2 ) [ sql_case_else ] sql_case_end
 /// summary values:CASE
-/// summary=K&C|C&[K&C]&K
+/// summary=K&C|C&[C]&C
 Method SqlCaseExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&C|C&[K&C]&K
+	; rules summary K&C|C&[C]&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("CASE"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"CASE")  {
-		if ..SqlCaseExpression153Sub(subElement,.addedElement)  {
-			if ..SqlCaseExpression154OptGrp(subElement,.addedElement)  {
-				if ..addKeyword(subElement,"END")  {
+	if ..addKeyword(.subElement,"CASE")  {
+		if ..SqlCaseExpression154Sub(.subElement,.addedElement)  {
+			if $S(..SqlCaseElse(.subElement,.addedElement) :1,1:1) {
+				if ..SqlCaseEnd(.subElement,.addedElement)  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -3754,27 +3811,18 @@ Method SqlCaseExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	quit ok
 }
 
-///  sql_case_expression1 ::= 'WHEN' sql_expression 'THEN' sql_expression ('WHEN' sql_expression 'THEN' sql_expression )*
-/// summary values:WHEN
-/// summary=K&C&K&C&(?4punctuation:4?)*
+///  sql_case_expression1 ::= sql_case_when ( sql_case_when )*
+/// summary=C&(?4punctuation:4?)*
 Method SqlCaseExpression1(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&C&K&C&(?4punctuation:4?)*
-	; first rule summary K
-	if '(..isKeywordInList($lb("WHEN"),.value)) { quit 0 /* normal */ }
+	; rules summary C&(?4punctuation:4?)*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"WHEN")  {
-		if ..SqlExpression(subElement,.addedElement)  {
-			if ..addKeyword(subElement,"THEN")  {
-				if ..SqlExpression(subElement,.addedElement)  {
-					if ..SqlCaseExpression1155RepZero(subElement,.addedElement)  {
-						set done=1 ; end compileRules
-					}
-				}
-			}
+	if ..SqlCaseWhen(.subElement,.addedElement)  {
+		if ..SqlCaseExpression1155RepZero(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
 		}
 	}
 
@@ -3789,13 +3837,13 @@ Method SqlCaseExpression1(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	quit ok
 }
 
-///  ('WHEN' sql_expression 'THEN' sql_expression )*
+///  ( sql_case_when )*
 Method SqlCaseExpression1155RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..SqlCaseExpression1156Sub(subElement,.addedElement)  {
+	while ..SqlCaseExpression1156Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -3806,49 +3854,15 @@ Method SqlCaseExpression1155RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef 
 	quit ok
 }
 
-/// 'WHEN' sql_expression 'THEN' sql_expression
-/// summary values:WHEN
-/// summary=K&C&K&C
+///  sql_case_when
+/// summary=C
 Method SqlCaseExpression1156Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&C&K&C
-	; first rule summary K
-	if '(..isKeywordInList($lb("WHEN"),.value)) { quit 0 /* normal */ }
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(subElement,"WHEN")  {
-		if ..SqlExpression(subElement,.addedElement)  {
-			if ..addKeyword(subElement,"THEN")  {
-				if ..SqlExpression(subElement,.addedElement)  {
-					set done=1 ; end compileRules
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-}
-
-///  sql_case_expression1 | sql_case_expression2
-/// summary=C|C
-Method SqlCaseExpression153Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
-{
-	; rules summary C|C
+	; rules summary C
 	set subElement=ParentElement
 	set done=0 ; method start
 	Set subElement=ParentElement
-	if ..SqlCaseExpression1(subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..SqlCaseExpression2(subElement,.addedElement)  {
+	if ..SqlCaseWhen(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -3860,35 +3874,29 @@ Method SqlCaseExpression153Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	quit ok
 }
 
-/// 
-/// summary values:ELSE
-/// summary=K&C
-Method SqlCaseExpression154OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+///  sql_case_expression1 | sql_case_expression2
+/// summary=C|C
+Method SqlCaseExpression154Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&C
-	; first rule summary K
-	if '(..isKeywordInList($lb("ELSE"),.value)) { quit 1 /* not found is OK */ }
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
+	; rules summary C|C
+	set subElement=ParentElement
 	set done=0 ; method start
-	if ..addKeyword(subElement,"ELSE")  {
-		if ..SqlExpression(subElement,.addedElement)  {
-			set done=1 ; end compileRules
-		}
+	Set subElement=ParentElement
+	if ..SqlCaseExpression1(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..SqlCaseExpression2(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
 		set ok=1
 	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
+		set ok=0 ; normal rollback
 	}
-	$$$DEBUGMethodEnd
 	quit ok
 }
 
-///  sql_case_expression2 ::= sql_expression ('WHEN' sql_expression 'THEN' sql_expression )*
+///  sql_case_expression2 ::= sql_expression ( sql_case_when )*
 /// summary=C&(?4punctuation:4?)*
 Method SqlCaseExpression2(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
@@ -3897,8 +3905,8 @@ Method SqlCaseExpression2(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlExpression(subElement,.addedElement)  {
-		if ..SqlCaseExpression2157RepZero(subElement,.addedElement)  {
+	if ..SqlExpression(.subElement,.addedElement)  {
+		if ..SqlCaseExpression2157RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -3914,13 +3922,13 @@ Method SqlCaseExpression2(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	quit ok
 }
 
-///  ('WHEN' sql_expression 'THEN' sql_expression )*
+///  ( sql_case_when )*
 Method SqlCaseExpression2157RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..SqlCaseExpression2158Sub(subElement,.addedElement)  {
+	while ..SqlCaseExpression2158Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -3931,21 +3939,42 @@ Method SqlCaseExpression2157RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef 
 	quit ok
 }
 
-/// 'WHEN' sql_expression 'THEN' sql_expression
+///  sql_case_when
+/// summary=C
+Method SqlCaseExpression2158Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary C
+	set subElement=ParentElement
+	set done=0 ; method start
+	Set subElement=ParentElement
+	if ..SqlCaseWhen(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		set ok=1
+	} else {
+		set ok=0 ; normal rollback
+	}
+	quit ok
+}
+
+///  sql_case_when ::= 'WHEN' sql_expression 'THEN' sql_expression
 /// summary values:WHEN
 /// summary=K&C&K&C
-Method SqlCaseExpression2158Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlCaseWhen(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&C&K&C
 	; first rule summary K
 	if '(..isKeywordInList($lb("WHEN"),.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
+	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"WHEN")  {
-		if ..SqlExpression(subElement,.addedElement)  {
-			if ..addKeyword(subElement,"THEN")  {
-				if ..SqlExpression(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"WHEN")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
+			if ..addKeyword(.subElement,"THEN")  {
+				if ..SqlExpression(.subElement,.addedElement)  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -3953,7 +3982,7 @@ Method SqlCaseExpression2158Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	}
 
 	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		$$$BNFCOMMIT(subElement,ParentElement)
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
@@ -3974,7 +4003,7 @@ Method SqlCosVariable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"NEED COS VAR")  {
+	if ..addPunctuation(.subElement,"NEED COS VAR")  {
 		set done=1 ; end compileRules
 	}
 
@@ -3998,69 +4027,69 @@ Method SqlDyadicop(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"+")  {
+	if ..addPunctuation(.subElement,"+")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"-")  {
+	} elseif ..addPunctuation(.subElement,"-")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"\\")  {
+	} elseif ..addPunctuation(.subElement,"\\")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"/")  {
+	} elseif ..addPunctuation(.subElement,"/")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"<>")  {
+	} elseif ..addPunctuation(.subElement,"<>")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,">=")  {
+	} elseif ..addPunctuation(.subElement,">=")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,">")  {
+	} elseif ..addPunctuation(.subElement,">")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"!>")  {
+	} elseif ..addPunctuation(.subElement,"!>")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"<=")  {
+	} elseif ..addPunctuation(.subElement,"<=")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"<")  {
+	} elseif ..addPunctuation(.subElement,"<")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"!<")  {
+	} elseif ..addPunctuation(.subElement,"!<")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"=")  {
+	} elseif ..addPunctuation(.subElement,"=")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"!=")  {
+	} elseif ..addPunctuation(.subElement,"!=")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"**")  {
+	} elseif ..addPunctuation(.subElement,"**")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"*")  {
+	} elseif ..addPunctuation(.subElement,"*")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"&&")  {
+	} elseif ..addPunctuation(.subElement,"&&")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"&")  {
+	} elseif ..addPunctuation(.subElement,"&")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"]]")  {
+	} elseif ..addPunctuation(.subElement,"]]")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"[")  {
+	} elseif ..addPunctuation(.subElement,"[")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"'[")  {
+	} elseif ..addPunctuation(.subElement,"'[")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"!")  {
+	} elseif ..addPunctuation(.subElement,"!")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"||")  {
+	} elseif ..addPunctuation(.subElement,"||")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"_")  {
+	} elseif ..addPunctuation(.subElement,"_")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"#")  {
+	} elseif ..addPunctuation(.subElement,"#")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"\")  {
+	} elseif ..addPunctuation(.subElement,"\")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"AND")  {
+	} elseif ..addKeyword(.subElement,"AND")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"OR")  {
+	} elseif ..addKeyword(.subElement,"OR")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"NOT=")  {
+	} elseif ..addPunctuation(.subElement,"NOT=")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"SIZE")  {
+	} elseif ..addKeyword(.subElement,"SIZE")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"ESCAPE")  {
+	} elseif ..addKeyword(.subElement,"ESCAPE")  {
 		set done=1 ; or
-	} elseif ..SqlPredicate(subElement,.addedElement)  {
+	} elseif ..SqlPredicate(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlDyadicop75Sub(subElement,.addedElement)  {
+	} elseif ..SqlDyadicop75Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -4086,8 +4115,8 @@ Method SqlDyadicop75Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"NOT")  {
-		if ..SqlPredicate(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"NOT")  {
+		if ..SqlPredicate(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -4112,8 +4141,8 @@ Method SqlExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlFactor(subElement,.addedElement)  {
-		if ..SqlExpression73RepZero(subElement,.addedElement)  {
+	if ..SqlFactor(.subElement,.addedElement)  {
+		if ..SqlExpression73RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -4135,7 +4164,7 @@ Method SqlExpression73RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..SqlExpression74Sub(subElement,.addedElement)  {
+	while ..SqlExpression74Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -4154,8 +4183,8 @@ Method SqlExpression74Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlDyadicop(subElement,.addedElement)  {
-		if ..SqlFactor(subElement,.addedElement)  {
+	if ..SqlDyadicop(.subElement,.addedElement)  {
+		if ..SqlFactor(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -4180,8 +4209,8 @@ Method SqlFactor(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if $S(..SqlMonadicop(subElement,.addedElement) :1,1:1) {
-		if ..SqlTerm(subElement,.addedElement)  {
+	if $S(..SqlMonadicop(.subElement,.addedElement) :1,1:1) {
+		if ..SqlTerm(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -4209,10 +4238,10 @@ Method SqlFnFunction(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"{")  {
-		if ..addKeyword(subElement,"FN")  {
-			if ..SqlFunction(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,"}")  {
+	if ..addPunctuation(.subElement,"{")  {
+		if ..addKeyword(.subElement,"FN")  {
+			if ..SqlFunction(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,"}")  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -4230,51 +4259,53 @@ Method SqlFnFunction(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	quit ok
 }
 
-///  sql_function ::= ('$' identifier '(' [ sql_expression ( ',' sql_expression)* ] ')') | ('%exact' sql_expression ) | ('count' '(' ['distinct' | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ] ) | ('min' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ] ) | ('max' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ] ) | ('sum' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ] ) | ('avg' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ] ) | ('cast' '(' sql_expression 'as' identifier ['(' sql_expression ( ',' sql_expression)* ')' ] ')' ) | ('exists' '(' subquery_specification ')' ) | ('list' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')') | ('%dlist' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')') | ('FOR' 'SOME' '%ELEMENT' '(' sql_expression ')' sql_expression ) | ('trim' '(' ['leading' | 'trailing' | 'both'] [(sql_expression 'from')] sql_expression ')' ) | ('dateadd' '(' sql_function_datepart_part ',' sql_expression ',' sql_expression ')' ) | ('datediff' '(' sql_function_datepart_part ',' sql_expression ',' sql_expression ')' ) | ('datename' '(' sql_function_datepart_part ',' sql_expression ')' ) | ('datepart' '(' sql_function_datepart_part ',' sql_expression ')' ) | (identifier '(' [ '*' | (sql_expression ( ',' sql_expression)*) ] ')' [ sql_window ] )
-/// summary=P&C&P&[C&(?4punctuation:4?)*]&P|P&C|K&P&[K|K]&P|C&[P&P&C&P]&P&[C]|K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]|K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]|K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]|K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]|K&P&C&K&C&[P&C&(?4punctuation:4?)*&P]&P|K&P&C&P|K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P|P&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P|K&K&P&P&C&P&C|K&P&[K|K|K]&[C&K]&C&P|K&P&C&P&C&P&C&P|K&P&C&P&C&P&C&P|K&P&C&P&C&P|K&P&C&P&C&P|C&P&[P|C&(?4punctuation:4?)*]&P&[C]
+///  sql_function ::= ('$' identifier '(' [ sql_expression ( ',' sql_expression)* ] ')') | ('%exact' sql_expression ) | ('count' '(' ')' [ sql_window ] ) | ('count' '(' ['distinct' | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ] ) | ('min' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ] ) | ('max' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ] ) | ('sum' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ] ) | ('avg' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ] ) | ('cast' '(' sql_expression 'as' identifier ['(' sql_expression ( ',' sql_expression)* ')' ] ')' ) | ('exists' '(' subquery_specification ')' ) | ('list' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')') | ('%dlist' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')') | ('FOR' 'SOME' '%ELEMENT' '(' sql_expression ')' sql_expression ) | ('trim' '(' ['leading' | 'trailing' | 'both'] [(sql_expression 'from')] sql_expression ')' ) | ('dateadd' '(' sql_function_datepart_part ',' sql_expression ',' sql_expression ')' ) | ('datediff' '(' sql_function_datepart_part ',' sql_expression ',' sql_expression ')' ) | ('datename' '(' sql_function_datepart_part ',' sql_expression ')' ) | ('datepart' '(' sql_function_datepart_part ',' sql_expression ')' ) | (identifier '(' [ '*' | (sql_expression ( ',' sql_expression)*) ] ')' [ sql_window ] )
+/// summary=P&C&P&[C&(?4punctuation:4?)*]&P|P&C|K&P&P&[C]|K&P&[K|K]&P|C&[P&P&C&P]&P&[C]|K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]|K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]|K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]|K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]|K&P&C&K&C&[P&C&(?4punctuation:4?)*&P]&P|K&P&C&P|K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P|P&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P|K&K&P&P&C&P&C|K&P&[K|K|K]&[C&K]&C&P|K&P&C&P&C&P&C&P|K&P&C&P&C&P&C&P|K&P&C&P&C&P|K&P&C&P&C&P|C&P&[P|C&(?4punctuation:4?)*]&P&[C]
 Method SqlFunction(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&C&P&[C&(?4punctuation:4?)*]&P|P&C|K&P&[K|K]&P|C&[P&P&C&P]&P&[C]|K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]|K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]|K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]|K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]|K&P&C&K&C&[P&C&(?4punctuation:4?)*&P]&P|K&P&C&P|K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P|P&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P|K&K&P&P&C&P&C|K&P&[K|K|K]&[C&K]&C&P|K&P&C&P&C&P&C&P|K&P&C&P&C&P&C&P|K&P&C&P&C&P|K&P&C&P&C&P|C&P&[P|C&(?4punctuation:4?)*]&P&[C]
+	; rules summary P&C&P&[C&(?4punctuation:4?)*]&P|P&C|K&P&P&[C]|K&P&[K|K]&P|C&[P&P&C&P]&P&[C]|K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]|K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]|K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]|K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]|K&P&C&K&C&[P&C&(?4punctuation:4?)*&P]&P|K&P&C&P|K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P|P&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P|K&K&P&P&C&P&C|K&P&[K|K|K]&[C&K]&C&P|K&P&C&P&C&P&C&P|K&P&C&P&C&P&C&P|K&P&C&P&C&P|K&P&C&P&C&P|C&P&[P|C&(?4punctuation:4?)*]&P&[C]
 	; first rule summary P&C&P&[C&(?4punctuation:4?)*]&P
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlFunction84Sub(subElement,.addedElement)  {
+	if ..SqlFunction84Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction88Sub(subElement,.addedElement)  {
+	} elseif ..SqlFunction88Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction89Sub(subElement,.addedElement)  {
+	} elseif ..SqlFunction89Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction93Sub(subElement,.addedElement)  {
+	} elseif ..SqlFunction90Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction99Sub(subElement,.addedElement)  {
+	} elseif ..SqlFunction94Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction105Sub(subElement,.addedElement)  {
+	} elseif ..SqlFunction100Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction111Sub(subElement,.addedElement)  {
+	} elseif ..SqlFunction106Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction117Sub(subElement,.addedElement)  {
+	} elseif ..SqlFunction112Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction121Sub(subElement,.addedElement)  {
+	} elseif ..SqlFunction118Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction122Sub(subElement,.addedElement)  {
+	} elseif ..SqlFunction122Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction128Sub(subElement,.addedElement)  {
+	} elseif ..SqlFunction123Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction134Sub(subElement,.addedElement)  {
+	} elseif ..SqlFunction129Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction135Sub(subElement,.addedElement)  {
+	} elseif ..SqlFunction135Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction138Sub(subElement,.addedElement)  {
+	} elseif ..SqlFunction136Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction139Sub(subElement,.addedElement)  {
+	} elseif ..SqlFunction139Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction140Sub(subElement,.addedElement)  {
+	} elseif ..SqlFunction140Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction141Sub(subElement,.addedElement)  {
+	} elseif ..SqlFunction141Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction142Sub(subElement,.addedElement)  {
+	} elseif ..SqlFunction142Sub(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..SqlFunction143Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -4289,18 +4320,56 @@ Method SqlFunction(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	quit ok
 }
 
+/// 'max' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ]
+/// summary values:MAX
+/// summary=K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]
+Method SqlFunction100Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]
+	; first rule summary K
+	if '(..isKeywordInList($lb("MAX"),.value)) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"MAX")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlFunction101OptGrp(.subElement,.addedElement)  {
+				if ..SqlFunction104Sub(.subElement,.addedElement)  {
+					if ..SqlFunction105OptGrp(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,")")  {
+							if $S(..SqlWindow(.subElement,.addedElement) :1,1:1) {
+								set done=1 ; end compileRules
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0 ; normal rollback
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
 /// 
 /// summary=K&[K&P&C&P]|K
-Method SqlFunction100OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction101OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&[K&P&C&P]|K
 	; first rule summary K&[K&P&C&P]
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlFunction101Sub(subElement,.addedElement)  {
+	if ..SqlFunction102Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"ALL")  {
+	} elseif ..addKeyword(.subElement,"ALL")  {
 		set done=1 ; end compileRules
 	}
 
@@ -4318,7 +4387,7 @@ Method SqlFunction100OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 ///  'distinct' ['by' '(' col_list ')']
 /// summary values:DISTINCT
 /// summary=K&[K&P&C&P]
-Method SqlFunction101Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction102Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&[K&P&C&P]
 	; first rule summary K
@@ -4326,8 +4395,8 @@ Method SqlFunction101Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"DISTINCT")  {
-		if ..SqlFunction102OptGrp(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"DISTINCT")  {
+		if ..SqlFunction103OptGrp(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -4346,7 +4415,7 @@ Method SqlFunction101Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 /// 
 /// summary values:BY
 /// summary=K&P&C&P
-Method SqlFunction102OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction103OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&P&C&P
 	; first rule summary K
@@ -4354,10 +4423,10 @@ Method SqlFunction102OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"BY")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..ColList(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,")")  {
+	if ..addKeyword(.subElement,"BY")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -4377,15 +4446,15 @@ Method SqlFunction102OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 /// '*' | sql_expression
 /// summary=P|C
-Method SqlFunction103Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction104Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P|C
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"*")  {
+	if ..addPunctuation(.subElement,"*")  {
 		set done=1 ; or
-	} elseif ..SqlExpression(subElement,.addedElement)  {
+	} elseif ..SqlExpression(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -4403,7 +4472,7 @@ Method SqlFunction103Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 /// 
 /// summary values:%FOREACH
 /// summary=P&P&C&P
-Method SqlFunction104OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction105OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&P&C&P
 	; first rule summary P
@@ -4411,10 +4480,10 @@ Method SqlFunction104OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"%FOREACH")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..ColList(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,")")  {
+	if ..addPunctuation(.subElement,"%FOREACH")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -4435,7 +4504,7 @@ Method SqlFunction104OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 /// 'sum' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ]
 /// summary values:SUM
 /// summary=K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]
-Method SqlFunction105Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction106Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]
 	; first rule summary K
@@ -4443,13 +4512,13 @@ Method SqlFunction105Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"SUM")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..SqlFunction106OptGrp(subElement,.addedElement)  {
-				if ..SqlFunction109Sub(subElement,.addedElement)  {
-					if ..SqlFunction110OptGrp(subElement,.addedElement)  {
-						if ..addPunctuation(subElement,")")  {
-							if $S(..SqlWindow(subElement,.addedElement) :1,1:1) {
+	if ..addKeyword(.subElement,"SUM")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlFunction107OptGrp(.subElement,.addedElement)  {
+				if ..SqlFunction110Sub(.subElement,.addedElement)  {
+					if ..SqlFunction111OptGrp(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,")")  {
+							if $S(..SqlWindow(.subElement,.addedElement) :1,1:1) {
 								set done=1 ; end compileRules
 							}
 						}
@@ -4472,16 +4541,16 @@ Method SqlFunction105Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 /// 
 /// summary=K&[K&P&C&P]|K
-Method SqlFunction106OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction107OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&[K&P&C&P]|K
 	; first rule summary K&[K&P&C&P]
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlFunction107Sub(subElement,.addedElement)  {
+	if ..SqlFunction108Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"ALL")  {
+	} elseif ..addKeyword(.subElement,"ALL")  {
 		set done=1 ; end compileRules
 	}
 
@@ -4499,7 +4568,7 @@ Method SqlFunction106OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 ///  'distinct' ['by' '(' col_list ')']
 /// summary values:DISTINCT
 /// summary=K&[K&P&C&P]
-Method SqlFunction107Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction108Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&[K&P&C&P]
 	; first rule summary K
@@ -4507,8 +4576,8 @@ Method SqlFunction107Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"DISTINCT")  {
-		if ..SqlFunction108OptGrp(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"DISTINCT")  {
+		if ..SqlFunction109OptGrp(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -4527,7 +4596,7 @@ Method SqlFunction107Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 /// 
 /// summary values:BY
 /// summary=K&P&C&P
-Method SqlFunction108OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction109OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&P&C&P
 	; first rule summary K
@@ -4535,10 +4604,10 @@ Method SqlFunction108OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"BY")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..ColList(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,")")  {
+	if ..addKeyword(.subElement,"BY")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -4558,15 +4627,15 @@ Method SqlFunction108OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 /// '*' | sql_expression
 /// summary=P|C
-Method SqlFunction109Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction110Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P|C
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"*")  {
+	if ..addPunctuation(.subElement,"*")  {
 		set done=1 ; or
-	} elseif ..SqlExpression(subElement,.addedElement)  {
+	} elseif ..SqlExpression(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -4584,7 +4653,7 @@ Method SqlFunction109Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 /// 
 /// summary values:%FOREACH
 /// summary=P&P&C&P
-Method SqlFunction110OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction111OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&P&C&P
 	; first rule summary P
@@ -4592,10 +4661,10 @@ Method SqlFunction110OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"%FOREACH")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..ColList(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,")")  {
+	if ..addPunctuation(.subElement,"%FOREACH")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -4616,7 +4685,7 @@ Method SqlFunction110OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 /// 'avg' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ]
 /// summary values:AVG
 /// summary=K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]
-Method SqlFunction111Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction112Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]
 	; first rule summary K
@@ -4624,13 +4693,13 @@ Method SqlFunction111Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"AVG")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..SqlFunction112OptGrp(subElement,.addedElement)  {
-				if ..SqlFunction115Sub(subElement,.addedElement)  {
-					if ..SqlFunction116OptGrp(subElement,.addedElement)  {
-						if ..addPunctuation(subElement,")")  {
-							if $S(..SqlWindow(subElement,.addedElement) :1,1:1) {
+	if ..addKeyword(.subElement,"AVG")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlFunction113OptGrp(.subElement,.addedElement)  {
+				if ..SqlFunction116Sub(.subElement,.addedElement)  {
+					if ..SqlFunction117OptGrp(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,")")  {
+							if $S(..SqlWindow(.subElement,.addedElement) :1,1:1) {
 								set done=1 ; end compileRules
 							}
 						}
@@ -4653,16 +4722,16 @@ Method SqlFunction111Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 /// 
 /// summary=K&[K&P&C&P]|K
-Method SqlFunction112OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction113OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&[K&P&C&P]|K
 	; first rule summary K&[K&P&C&P]
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlFunction113Sub(subElement,.addedElement)  {
+	if ..SqlFunction114Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"ALL")  {
+	} elseif ..addKeyword(.subElement,"ALL")  {
 		set done=1 ; end compileRules
 	}
 
@@ -4680,7 +4749,7 @@ Method SqlFunction112OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 ///  'distinct' ['by' '(' col_list ')']
 /// summary values:DISTINCT
 /// summary=K&[K&P&C&P]
-Method SqlFunction113Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction114Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&[K&P&C&P]
 	; first rule summary K
@@ -4688,8 +4757,8 @@ Method SqlFunction113Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"DISTINCT")  {
-		if ..SqlFunction114OptGrp(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"DISTINCT")  {
+		if ..SqlFunction115OptGrp(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -4708,7 +4777,7 @@ Method SqlFunction113Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 /// 
 /// summary values:BY
 /// summary=K&P&C&P
-Method SqlFunction114OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction115OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&P&C&P
 	; first rule summary K
@@ -4716,10 +4785,10 @@ Method SqlFunction114OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"BY")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..ColList(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,")")  {
+	if ..addKeyword(.subElement,"BY")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -4739,15 +4808,15 @@ Method SqlFunction114OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 /// '*' | sql_expression
 /// summary=P|C
-Method SqlFunction115Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction116Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P|C
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"*")  {
+	if ..addPunctuation(.subElement,"*")  {
 		set done=1 ; or
-	} elseif ..SqlExpression(subElement,.addedElement)  {
+	} elseif ..SqlExpression(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -4765,7 +4834,7 @@ Method SqlFunction115Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 /// 
 /// summary values:%FOREACH
 /// summary=P&P&C&P
-Method SqlFunction116OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction117OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&P&C&P
 	; first rule summary P
@@ -4773,10 +4842,10 @@ Method SqlFunction116OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"%FOREACH")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..ColList(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,")")  {
+	if ..addPunctuation(.subElement,"%FOREACH")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -4797,7 +4866,7 @@ Method SqlFunction116OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 /// 'cast' '(' sql_expression 'as' identifier ['(' sql_expression ( ',' sql_expression)* ')' ] ')'
 /// summary values:CAST
 /// summary=K&P&C&K&C&[P&C&(?4punctuation:4?)*&P]&P
-Method SqlFunction117Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction118Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&P&C&K&C&[P&C&(?4punctuation:4?)*&P]&P
 	; first rule summary K
@@ -4805,13 +4874,13 @@ Method SqlFunction117Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"CAST")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..SqlExpression(subElement,.addedElement)  {
-				if ..addKeyword(subElement,"AS")  {
-					if ..Identifier(subElement,.addedElement)  {
-						if ..SqlFunction118OptGrp(subElement,.addedElement)  {
-							if ..addPunctuation(subElement,")")  {
+	if ..addKeyword(.subElement,"CAST")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlExpression(.subElement,.addedElement)  {
+				if ..addKeyword(.subElement,"AS")  {
+					if ..Identifier(.subElement,.addedElement)  {
+						if ..SqlFunction119OptGrp(.subElement,.addedElement)  {
+							if ..addPunctuation(.subElement,")")  {
 								set done=1 ; end compileRules
 							}
 						}
@@ -4835,7 +4904,7 @@ Method SqlFunction117Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 /// 
 /// summary values:(
 /// summary=P&C&(?4punctuation:4?)*&P
-Method SqlFunction118OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction119OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&C&(?4punctuation:4?)*&P
 	; first rule summary P
@@ -4843,10 +4912,10 @@ Method SqlFunction118OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"(")  {
-		if ..SqlExpression(subElement,.addedElement)  {
-			if ..SqlFunction119RepZero(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,")")  {
+	if ..addPunctuation(.subElement,"(")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
+			if ..SqlFunction120RepZero(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -4865,12 +4934,12 @@ Method SqlFunction118OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 }
 
 ///  ( ',' sql_expression)*
-Method SqlFunction119RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction120RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..SqlFunction120Sub(subElement,.addedElement)  {
+	while ..SqlFunction121Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -4884,7 +4953,7 @@ Method SqlFunction119RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 ///  ',' sql_expression
 /// summary values:,
 /// summary=P&C
-Method SqlFunction120Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction121Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&C
 	; first rule summary P
@@ -4892,8 +4961,8 @@ Method SqlFunction120Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,",")  {
-		if ..SqlExpression(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,",")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -4912,7 +4981,7 @@ Method SqlFunction120Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 /// 'exists' '(' subquery_specification ')'
 /// summary values:EXISTS
 /// summary=K&P&C&P
-Method SqlFunction121Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction122Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&P&C&P
 	; first rule summary K
@@ -4920,10 +4989,10 @@ Method SqlFunction121Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"EXISTS")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..SubquerySpecification(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,")")  {
+	if ..addKeyword(.subElement,"EXISTS")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SubquerySpecification(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -4944,7 +5013,7 @@ Method SqlFunction121Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 /// 'list' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')'
 /// summary values:LIST
 /// summary=K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P
-Method SqlFunction122Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction123Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P
 	; first rule summary K
@@ -4952,12 +5021,12 @@ Method SqlFunction122Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"LIST")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..SqlFunction123OptGrp(subElement,.addedElement)  {
-				if ..SqlFunction126Sub(subElement,.addedElement)  {
-					if ..SqlFunction127OptGrp(subElement,.addedElement)  {
-						if ..addPunctuation(subElement,")")  {
+	if ..addKeyword(.subElement,"LIST")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlFunction124OptGrp(.subElement,.addedElement)  {
+				if ..SqlFunction127Sub(.subElement,.addedElement)  {
+					if ..SqlFunction128OptGrp(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,")")  {
 							set done=1 ; end compileRules
 						}
 					}
@@ -4979,16 +5048,16 @@ Method SqlFunction122Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 /// 
 /// summary=K&[K&P&C&P]|K
-Method SqlFunction123OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction124OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&[K&P&C&P]|K
 	; first rule summary K&[K&P&C&P]
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlFunction124Sub(subElement,.addedElement)  {
+	if ..SqlFunction125Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"ALL")  {
+	} elseif ..addKeyword(.subElement,"ALL")  {
 		set done=1 ; end compileRules
 	}
 
@@ -5006,7 +5075,7 @@ Method SqlFunction123OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 ///  'distinct' ['by' '(' col_list ')']
 /// summary values:DISTINCT
 /// summary=K&[K&P&C&P]
-Method SqlFunction124Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction125Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&[K&P&C&P]
 	; first rule summary K
@@ -5014,8 +5083,8 @@ Method SqlFunction124Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"DISTINCT")  {
-		if ..SqlFunction125OptGrp(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"DISTINCT")  {
+		if ..SqlFunction126OptGrp(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -5034,7 +5103,7 @@ Method SqlFunction124Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 /// 
 /// summary values:BY
 /// summary=K&P&C&P
-Method SqlFunction125OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction126OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&P&C&P
 	; first rule summary K
@@ -5042,10 +5111,10 @@ Method SqlFunction125OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"BY")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..ColList(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,")")  {
+	if ..addKeyword(.subElement,"BY")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -5065,15 +5134,15 @@ Method SqlFunction125OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 /// '*' | sql_expression
 /// summary=P|C
-Method SqlFunction126Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction127Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P|C
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"*")  {
+	if ..addPunctuation(.subElement,"*")  {
 		set done=1 ; or
-	} elseif ..SqlExpression(subElement,.addedElement)  {
+	} elseif ..SqlExpression(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -5091,7 +5160,7 @@ Method SqlFunction126Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 /// 
 /// summary values:%FOREACH
 /// summary=P&P&C&P
-Method SqlFunction127OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction128OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&P&C&P
 	; first rule summary P
@@ -5099,10 +5168,10 @@ Method SqlFunction127OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"%FOREACH")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..ColList(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,")")  {
+	if ..addPunctuation(.subElement,"%FOREACH")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -5123,7 +5192,7 @@ Method SqlFunction127OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 /// '%dlist' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')'
 /// summary values:%DLIST
 /// summary=P&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P
-Method SqlFunction128Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction129Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P
 	; first rule summary P
@@ -5131,12 +5200,12 @@ Method SqlFunction128Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"%dlist")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..SqlFunction129OptGrp(subElement,.addedElement)  {
-				if ..SqlFunction132Sub(subElement,.addedElement)  {
-					if ..SqlFunction133OptGrp(subElement,.addedElement)  {
-						if ..addPunctuation(subElement,")")  {
+	if ..addPunctuation(.subElement,"%dlist")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlFunction130OptGrp(.subElement,.addedElement)  {
+				if ..SqlFunction133Sub(.subElement,.addedElement)  {
+					if ..SqlFunction134OptGrp(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,")")  {
 							set done=1 ; end compileRules
 						}
 					}
@@ -5158,16 +5227,16 @@ Method SqlFunction128Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 /// 
 /// summary=K&[K&P&C&P]|K
-Method SqlFunction129OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction130OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&[K&P&C&P]|K
 	; first rule summary K&[K&P&C&P]
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlFunction130Sub(subElement,.addedElement)  {
+	if ..SqlFunction131Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"ALL")  {
+	} elseif ..addKeyword(.subElement,"ALL")  {
 		set done=1 ; end compileRules
 	}
 
@@ -5185,7 +5254,7 @@ Method SqlFunction129OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 ///  'distinct' ['by' '(' col_list ')']
 /// summary values:DISTINCT
 /// summary=K&[K&P&C&P]
-Method SqlFunction130Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction131Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&[K&P&C&P]
 	; first rule summary K
@@ -5193,8 +5262,8 @@ Method SqlFunction130Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"DISTINCT")  {
-		if ..SqlFunction131OptGrp(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"DISTINCT")  {
+		if ..SqlFunction132OptGrp(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -5213,7 +5282,7 @@ Method SqlFunction130Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 /// 
 /// summary values:BY
 /// summary=K&P&C&P
-Method SqlFunction131OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction132OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&P&C&P
 	; first rule summary K
@@ -5221,10 +5290,10 @@ Method SqlFunction131OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"BY")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..ColList(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,")")  {
+	if ..addKeyword(.subElement,"BY")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -5244,15 +5313,15 @@ Method SqlFunction131OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 /// '*' | sql_expression
 /// summary=P|C
-Method SqlFunction132Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction133Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P|C
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"*")  {
+	if ..addPunctuation(.subElement,"*")  {
 		set done=1 ; or
-	} elseif ..SqlExpression(subElement,.addedElement)  {
+	} elseif ..SqlExpression(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -5270,7 +5339,7 @@ Method SqlFunction132Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 /// 
 /// summary values:%FOREACH
 /// summary=P&P&C&P
-Method SqlFunction133OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction134OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&P&C&P
 	; first rule summary P
@@ -5278,10 +5347,10 @@ Method SqlFunction133OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"%FOREACH")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..ColList(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,")")  {
+	if ..addPunctuation(.subElement,"%FOREACH")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -5302,7 +5371,7 @@ Method SqlFunction133OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 /// 'FOR' 'SOME' '%ELEMENT' '(' sql_expression ')' sql_expression
 /// summary values:FOR
 /// summary=K&K&P&P&C&P&C
-Method SqlFunction134Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction135Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&K&P&P&C&P&C
 	; first rule summary K
@@ -5310,13 +5379,13 @@ Method SqlFunction134Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"FOR")  {
-		if ..addKeyword(subElement,"SOME")  {
-			if ..addPunctuation(subElement,"%ELEMENT")  {
-				if ..addPunctuation(subElement,"(")  {
-					if ..SqlExpression(subElement,.addedElement)  {
-						if ..addPunctuation(subElement,")")  {
-							if ..SqlExpression(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"FOR")  {
+		if ..addKeyword(.subElement,"SOME")  {
+			if ..addPunctuation(.subElement,"%ELEMENT")  {
+				if ..addPunctuation(.subElement,"(")  {
+					if ..SqlExpression(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,")")  {
+							if ..SqlExpression(.subElement,.addedElement)  {
 								set done=1 ; end compileRules
 							}
 						}
@@ -5340,7 +5409,7 @@ Method SqlFunction134Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 /// 'trim' '(' ['leading' | 'trailing' | 'both'] [(sql_expression 'from')] sql_expression ')'
 /// summary values:TRIM
 /// summary=K&P&[K|K|K]&[C&K]&C&P
-Method SqlFunction135Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction136Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&P&[K|K|K]&[C&K]&C&P
 	; first rule summary K
@@ -5348,12 +5417,12 @@ Method SqlFunction135Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"TRIM")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..SqlFunction136OptGrp(subElement,.addedElement)  {
-				if $S(..SqlFunction137Sub(subElement,.addedElement) :1,1:1) {
-					if ..SqlExpression(subElement,.addedElement)  {
-						if ..addPunctuation(subElement,")")  {
+	if ..addKeyword(.subElement,"TRIM")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlFunction137OptGrp(.subElement,.addedElement)  {
+				if $S(..SqlFunction138Sub(.subElement,.addedElement) :1,1:1) {
+					if ..SqlExpression(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,")")  {
 							set done=1 ; end compileRules
 						}
 					}
@@ -5376,18 +5445,18 @@ Method SqlFunction135Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 /// 
 /// summary values:LEADING,TRAILING,BOTH
 /// summary=K|K|K
-Method SqlFunction136OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction137OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|K|K
 	if '(..isKeywordInList($lb("LEADING","TRAILING","BOTH"),.value)) { quit 1 /* not found is OK */ }
 	set subElement=ParentElement
 	set done=0 ; method start
 	Set subElement=ParentElement
-	if ..addKeyword(subElement,"LEADING")  {
+	if ..addKeyword(.subElement,"LEADING")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"TRAILING")  {
+	} elseif ..addKeyword(.subElement,"TRAILING")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"BOTH")  {
+	} elseif ..addKeyword(.subElement,"BOTH")  {
 		set done=1 ; end compileRules
 	}
 
@@ -5401,14 +5470,14 @@ Method SqlFunction136OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 /// sql_expression 'from'
 /// summary=C&K
-Method SqlFunction137Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction138Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary C&K
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlExpression(subElement,.addedElement)  {
-		if ..addKeyword(subElement,"FROM")  {
+	if ..SqlExpression(.subElement,.addedElement)  {
+		if ..addKeyword(.subElement,"FROM")  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -5427,7 +5496,7 @@ Method SqlFunction137Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 /// 'dateadd' '(' sql_function_datepart_part ',' sql_expression ',' sql_expression ')'
 /// summary values:DATEADD
 /// summary=K&P&C&P&C&P&C&P
-Method SqlFunction138Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction139Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&P&C&P&C&P&C&P
 	; first rule summary K
@@ -5435,14 +5504,14 @@ Method SqlFunction138Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"DATEADD")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..SqlFunctionDatepartPart(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,",")  {
-					if ..SqlExpression(subElement,.addedElement)  {
-						if ..addPunctuation(subElement,",")  {
-							if ..SqlExpression(subElement,.addedElement)  {
-								if ..addPunctuation(subElement,")")  {
+	if ..addKeyword(.subElement,"DATEADD")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlFunctionDatepartPart(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,",")  {
+					if ..SqlExpression(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,",")  {
+							if ..SqlExpression(.subElement,.addedElement)  {
+								if ..addPunctuation(.subElement,")")  {
 									set done=1 ; end compileRules
 								}
 							}
@@ -5467,7 +5536,7 @@ Method SqlFunction138Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 /// 'datediff' '(' sql_function_datepart_part ',' sql_expression ',' sql_expression ')'
 /// summary values:DATEDIFF
 /// summary=K&P&C&P&C&P&C&P
-Method SqlFunction139Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction140Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&P&C&P&C&P&C&P
 	; first rule summary K
@@ -5475,14 +5544,14 @@ Method SqlFunction139Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"DATEDIFF")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..SqlFunctionDatepartPart(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,",")  {
-					if ..SqlExpression(subElement,.addedElement)  {
-						if ..addPunctuation(subElement,",")  {
-							if ..SqlExpression(subElement,.addedElement)  {
-								if ..addPunctuation(subElement,")")  {
+	if ..addKeyword(.subElement,"DATEDIFF")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlFunctionDatepartPart(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,",")  {
+					if ..SqlExpression(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,",")  {
+							if ..SqlExpression(.subElement,.addedElement)  {
+								if ..addPunctuation(.subElement,")")  {
 									set done=1 ; end compileRules
 								}
 							}
@@ -5507,7 +5576,7 @@ Method SqlFunction139Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 /// 'datename' '(' sql_function_datepart_part ',' sql_expression ')'
 /// summary values:DATENAME
 /// summary=K&P&C&P&C&P
-Method SqlFunction140Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction141Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&P&C&P&C&P
 	; first rule summary K
@@ -5515,12 +5584,12 @@ Method SqlFunction140Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"DATENAME")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..SqlFunctionDatepartPart(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,",")  {
-					if ..SqlExpression(subElement,.addedElement)  {
-						if ..addPunctuation(subElement,")")  {
+	if ..addKeyword(.subElement,"DATENAME")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlFunctionDatepartPart(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,",")  {
+					if ..SqlExpression(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,")")  {
 							set done=1 ; end compileRules
 						}
 					}
@@ -5543,7 +5612,7 @@ Method SqlFunction140Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 /// 'datepart' '(' sql_function_datepart_part ',' sql_expression ')'
 /// summary values:DATEPART
 /// summary=K&P&C&P&C&P
-Method SqlFunction141Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction142Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&P&C&P&C&P
 	; first rule summary K
@@ -5551,12 +5620,12 @@ Method SqlFunction141Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"DATEPART")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..SqlFunctionDatepartPart(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,",")  {
-					if ..SqlExpression(subElement,.addedElement)  {
-						if ..addPunctuation(subElement,")")  {
+	if ..addKeyword(.subElement,"DATEPART")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlFunctionDatepartPart(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,",")  {
+					if ..SqlExpression(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,")")  {
 							set done=1 ; end compileRules
 						}
 					}
@@ -5578,17 +5647,17 @@ Method SqlFunction141Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 /// identifier '(' [ '*' | (sql_expression ( ',' sql_expression)*) ] ')' [ sql_window ]
 /// summary=C&P&[P|C&(?4punctuation:4?)*]&P&[C]
-Method SqlFunction142Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction143Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary C&P&[P|C&(?4punctuation:4?)*]&P&[C]
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Identifier(subElement,.addedElement)  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..SqlFunction143OptGrp(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,")")  {
-					if $S(..SqlWindow(subElement,.addedElement) :1,1:1) {
+	if ..Identifier(.subElement,.addedElement)  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlFunction144OptGrp(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
+					if $S(..SqlWindow(.subElement,.addedElement) :1,1:1) {
 						set done=1 ; end compileRules
 					}
 				}
@@ -5609,15 +5678,15 @@ Method SqlFunction142Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 /// 
 /// summary=P|C&(?4punctuation:4?)*
-Method SqlFunction143OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction144OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P|C&(?4punctuation:4?)*
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"*")  {
+	if ..addPunctuation(.subElement,"*")  {
 		set done=1 ; or
-	} elseif ..SqlFunction144Sub(subElement,.addedElement)  {
+	} elseif ..SqlFunction145Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -5634,14 +5703,14 @@ Method SqlFunction143OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 /// sql_expression ( ',' sql_expression)*
 /// summary=C&(?4punctuation:4?)*
-Method SqlFunction144Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction145Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary C&(?4punctuation:4?)*
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlExpression(subElement,.addedElement)  {
-		if ..SqlFunction145RepZero(subElement,.addedElement)  {
+	if ..SqlExpression(.subElement,.addedElement)  {
+		if ..SqlFunction146RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -5658,12 +5727,12 @@ Method SqlFunction144Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 }
 
 ///  ( ',' sql_expression)*
-Method SqlFunction145RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction146RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..SqlFunction146Sub(subElement,.addedElement)  {
+	while ..SqlFunction147Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -5677,7 +5746,7 @@ Method SqlFunction145RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 ///  ',' sql_expression
 /// summary values:,
 /// summary=P&C
-Method SqlFunction146Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction147Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&C
 	; first rule summary P
@@ -5685,8 +5754,8 @@ Method SqlFunction146Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,",")  {
-		if ..SqlExpression(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,",")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -5713,11 +5782,11 @@ Method SqlFunction84Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"$")  {
-		if ..Identifier(subElement,.addedElement)  {
-			if ..addPunctuation(subElement,"(")  {
-				if ..SqlFunction85OptGrp(subElement,.addedElement)  {
-					if ..addPunctuation(subElement,")")  {
+	if ..addPunctuation(.subElement,"$")  {
+		if ..Identifier(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,"(")  {
+				if ..SqlFunction85OptGrp(.subElement,.addedElement)  {
+					if ..addPunctuation(.subElement,")")  {
 						set done=1 ; end compileRules
 					}
 				}
@@ -5744,8 +5813,8 @@ Method SqlFunction85OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlExpression(subElement,.addedElement)  {
-		if ..SqlFunction86RepZero(subElement,.addedElement)  {
+	if ..SqlExpression(.subElement,.addedElement)  {
+		if ..SqlFunction86RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -5767,7 +5836,7 @@ Method SqlFunction86RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..SqlFunction87Sub(subElement,.addedElement)  {
+	while ..SqlFunction87Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -5789,8 +5858,8 @@ Method SqlFunction87Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,",")  {
-		if ..SqlExpression(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,",")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -5817,9 +5886,41 @@ Method SqlFunction88Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"%exact")  {
-		if ..SqlExpression(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,"%exact")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0 ; normal rollback
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+/// 'count' '(' ')' [ sql_window ]
+/// summary values:COUNT
+/// summary=K&P&P&[C]
+Method SqlFunction89Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary K&P&P&[C]
+	; first rule summary K
+	if '(..isKeywordInList($lb("COUNT"),.value)) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"COUNT")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..addPunctuation(.subElement,")")  {
+				if $S(..SqlWindow(.subElement,.addedElement) :1,1:1) {
+					set done=1 ; end compileRules
+				}
+			}
 		}
 	}
 
@@ -5837,7 +5938,7 @@ Method SqlFunction88Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 /// 'count' '(' ['distinct' | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ]
 /// summary values:COUNT
 /// summary=K&P&[K|K]&P|C&[P&P&C&P]&P&[C]
-Method SqlFunction89Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction90Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&P&[K|K]&P|C&[P&P&C&P]&P&[C]
 	; first rule summary K
@@ -5845,13 +5946,13 @@ Method SqlFunction89Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"COUNT")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..SqlFunction90OptGrp(subElement,.addedElement)  {
-				if ..SqlFunction91Sub(subElement,.addedElement)  {
-					if ..SqlFunction92OptGrp(subElement,.addedElement)  {
-						if ..addPunctuation(subElement,")")  {
-							if $S(..SqlWindow(subElement,.addedElement) :1,1:1) {
+	if ..addKeyword(.subElement,"COUNT")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlFunction91OptGrp(.subElement,.addedElement)  {
+				if ..SqlFunction92Sub(.subElement,.addedElement)  {
+					if ..SqlFunction93OptGrp(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,")")  {
+							if $S(..SqlWindow(.subElement,.addedElement) :1,1:1) {
 								set done=1 ; end compileRules
 							}
 						}
@@ -5875,16 +5976,16 @@ Method SqlFunction89Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 /// 
 /// summary values:DISTINCT,ALL
 /// summary=K|K
-Method SqlFunction90OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction91OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K|K
 	if '(..isKeywordInList($lb("DISTINCT","ALL"),.value)) { quit 1 /* not found is OK */ }
 	set subElement=ParentElement
 	set done=0 ; method start
 	Set subElement=ParentElement
-	if ..addKeyword(subElement,"DISTINCT")  {
+	if ..addKeyword(.subElement,"DISTINCT")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"ALL")  {
+	} elseif ..addKeyword(.subElement,"ALL")  {
 		set done=1 ; end compileRules
 	}
 
@@ -5898,15 +5999,15 @@ Method SqlFunction90OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 /// '*' | sql_expression
 /// summary=P|C
-Method SqlFunction91Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction92Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P|C
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"*")  {
+	if ..addPunctuation(.subElement,"*")  {
 		set done=1 ; or
-	} elseif ..SqlExpression(subElement,.addedElement)  {
+	} elseif ..SqlExpression(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -5924,7 +6025,7 @@ Method SqlFunction91Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 /// 
 /// summary values:%FOREACH
 /// summary=P&P&C&P
-Method SqlFunction92OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction93OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&P&C&P
 	; first rule summary P
@@ -5932,10 +6033,10 @@ Method SqlFunction92OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"%FOREACH")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..ColList(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,")")  {
+	if ..addPunctuation(.subElement,"%FOREACH")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -5956,7 +6057,7 @@ Method SqlFunction92OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 /// 'min' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ]
 /// summary values:MIN
 /// summary=K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]
-Method SqlFunction93Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction94Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]
 	; first rule summary K
@@ -5964,13 +6065,13 @@ Method SqlFunction93Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"MIN")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..SqlFunction94OptGrp(subElement,.addedElement)  {
-				if ..SqlFunction97Sub(subElement,.addedElement)  {
-					if ..SqlFunction98OptGrp(subElement,.addedElement)  {
-						if ..addPunctuation(subElement,")")  {
-							if $S(..SqlWindow(subElement,.addedElement) :1,1:1) {
+	if ..addKeyword(.subElement,"MIN")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlFunction95OptGrp(.subElement,.addedElement)  {
+				if ..SqlFunction98Sub(.subElement,.addedElement)  {
+					if ..SqlFunction99OptGrp(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,")")  {
+							if $S(..SqlWindow(.subElement,.addedElement) :1,1:1) {
 								set done=1 ; end compileRules
 							}
 						}
@@ -5993,16 +6094,16 @@ Method SqlFunction93Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 /// 
 /// summary=K&[K&P&C&P]|K
-Method SqlFunction94OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction95OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&[K&P&C&P]|K
 	; first rule summary K&[K&P&C&P]
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlFunction95Sub(subElement,.addedElement)  {
+	if ..SqlFunction96Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"ALL")  {
+	} elseif ..addKeyword(.subElement,"ALL")  {
 		set done=1 ; end compileRules
 	}
 
@@ -6020,7 +6121,7 @@ Method SqlFunction94OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 ///  'distinct' ['by' '(' col_list ')']
 /// summary values:DISTINCT
 /// summary=K&[K&P&C&P]
-Method SqlFunction95Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction96Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&[K&P&C&P]
 	; first rule summary K
@@ -6028,8 +6129,8 @@ Method SqlFunction95Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"DISTINCT")  {
-		if ..SqlFunction96OptGrp(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"DISTINCT")  {
+		if ..SqlFunction97OptGrp(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -6048,7 +6149,7 @@ Method SqlFunction95Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 /// 
 /// summary values:BY
 /// summary=K&P&C&P
-Method SqlFunction96OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction97OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&P&C&P
 	; first rule summary K
@@ -6056,10 +6157,10 @@ Method SqlFunction96OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"BY")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..ColList(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,")")  {
+	if ..addKeyword(.subElement,"BY")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -6079,15 +6180,15 @@ Method SqlFunction96OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 /// '*' | sql_expression
 /// summary=P|C
-Method SqlFunction97Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction98Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P|C
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"*")  {
+	if ..addPunctuation(.subElement,"*")  {
 		set done=1 ; or
-	} elseif ..SqlExpression(subElement,.addedElement)  {
+	} elseif ..SqlExpression(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -6105,7 +6206,7 @@ Method SqlFunction97Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 /// 
 /// summary values:%FOREACH
 /// summary=P&P&C&P
-Method SqlFunction98OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlFunction99OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&P&C&P
 	; first rule summary P
@@ -6113,10 +6214,10 @@ Method SqlFunction98OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"%FOREACH")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..ColList(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,")")  {
+	if ..addPunctuation(.subElement,"%FOREACH")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -6134,44 +6235,6 @@ Method SqlFunction98OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	quit ok
 }
 
-/// 'max' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ]
-/// summary values:MAX
-/// summary=K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]
-Method SqlFunction99Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
-{
-	; rules summary K&P&[K&[K&P&C&P]|K]&P|C&[P&P&C&P]&P&[C]
-	; first rule summary K
-	if '(..isKeywordInList($lb("MAX"),.value)) { quit 0 /* normal */ }
-	$$$DEBUGMethodBegin
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(subElement,"MAX")  {
-		if ..addPunctuation(subElement,"(")  {
-			if ..SqlFunction100OptGrp(subElement,.addedElement)  {
-				if ..SqlFunction103Sub(subElement,.addedElement)  {
-					if ..SqlFunction104OptGrp(subElement,.addedElement)  {
-						if ..addPunctuation(subElement,")")  {
-							if $S(..SqlWindow(subElement,.addedElement) :1,1:1) {
-								set done=1 ; end compileRules
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-}
-
 ///  sql_function_datepart_part ::= sql_function_datepart_part_word | sql_string | colon_sql_cos_variable
 /// summary=C|C|C
 Method SqlFunctionDatepartPart(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -6181,11 +6244,11 @@ Method SqlFunctionDatepartPart(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlFunctionDatepartPartWord(subElement,.addedElement)  {
+	if ..SqlFunctionDatepartPartWord(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlString(subElement,.addedElement)  {
+	} elseif ..SqlString(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..ColonSqlCosVariable(subElement,.addedElement)  {
+	} elseif ..ColonSqlCosVariable(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -6211,73 +6274,73 @@ Method SqlFunctionDatepartPartWord(ParentElement As PXW.DEV.BNF.Element, ByRef s
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"YEAR")  {
+	if ..addKeyword(.subElement,"YEAR")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"YY")  {
+	} elseif ..addKeyword(.subElement,"YY")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"YYYY")  {
+	} elseif ..addKeyword(.subElement,"YYYY")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"QUARTER")  {
+	} elseif ..addKeyword(.subElement,"QUARTER")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"QQ")  {
+	} elseif ..addKeyword(.subElement,"QQ")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"Q")  {
+	} elseif ..addKeyword(.subElement,"Q")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"MONTH")  {
+	} elseif ..addKeyword(.subElement,"MONTH")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"MM")  {
+	} elseif ..addKeyword(.subElement,"MM")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"M")  {
+	} elseif ..addKeyword(.subElement,"M")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"WEEK")  {
+	} elseif ..addKeyword(.subElement,"WEEK")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"WK")  {
+	} elseif ..addKeyword(.subElement,"WK")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"WW")  {
+	} elseif ..addKeyword(.subElement,"WW")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"WEEKDAY")  {
+	} elseif ..addKeyword(.subElement,"WEEKDAY")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"DW")  {
+	} elseif ..addKeyword(.subElement,"DW")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"W")  {
+	} elseif ..addKeyword(.subElement,"W")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"DAYOFYEAR")  {
+	} elseif ..addKeyword(.subElement,"DAYOFYEAR")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"DY")  {
+	} elseif ..addKeyword(.subElement,"DY")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"Y")  {
+	} elseif ..addKeyword(.subElement,"Y")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"DAY")  {
+	} elseif ..addKeyword(.subElement,"DAY")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"DD")  {
+	} elseif ..addKeyword(.subElement,"DD")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"D")  {
+	} elseif ..addKeyword(.subElement,"D")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"HOUR")  {
+	} elseif ..addKeyword(.subElement,"HOUR")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"HH")  {
+	} elseif ..addKeyword(.subElement,"HH")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"H")  {
+	} elseif ..addKeyword(.subElement,"H")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"MINUTE")  {
+	} elseif ..addKeyword(.subElement,"MINUTE")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"MI")  {
+	} elseif ..addKeyword(.subElement,"MI")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"N")  {
+	} elseif ..addKeyword(.subElement,"N")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"SECOND")  {
+	} elseif ..addKeyword(.subElement,"SECOND")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"SS")  {
+	} elseif ..addKeyword(.subElement,"SS")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"S")  {
+	} elseif ..addKeyword(.subElement,"S")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"MILLISECOND")  {
+	} elseif ..addKeyword(.subElement,"MILLISECOND")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"MS")  {
+	} elseif ..addKeyword(.subElement,"MS")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"SQLTIMESTAMP")  {
+	} elseif ..addKeyword(.subElement,"SQLTIMESTAMP")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"STS")  {
+	} elseif ..addKeyword(.subElement,"STS")  {
 		set done=1 ; end compileRules
 	}
 
@@ -6301,13 +6364,13 @@ Method SqlMonadicop(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"+")  {
+	if ..addPunctuation(.subElement,"+")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"-")  {
+	} elseif ..addPunctuation(.subElement,"-")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"NOT")  {
+	} elseif ..addKeyword(.subElement,"NOT")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%NOINDEX")  {
+	} elseif ..addPunctuation(.subElement,"%NOINDEX")  {
 		set done=1 ; end compileRules
 	}
 
@@ -6333,7 +6396,7 @@ Method SqlNumber(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"NEED NUMBER")  {
+	if ..addPunctuation(.subElement,"NEED NUMBER")  {
 		set done=1 ; end compileRules
 	}
 
@@ -6357,21 +6420,21 @@ Method SqlPredicate(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"%STARTSWITH")  {
+	if ..addPunctuation(.subElement,"%STARTSWITH")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"BETWEEN")  {
+	} elseif ..addKeyword(.subElement,"BETWEEN")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"IS")  {
+	} elseif ..addKeyword(.subElement,"IS")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"IN")  {
+	} elseif ..addKeyword(.subElement,"IN")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%INLIST")  {
+	} elseif ..addPunctuation(.subElement,"%INLIST")  {
 		set done=1 ; or
-	} elseif ..addKeyword(subElement,"LIKE")  {
+	} elseif ..addKeyword(.subElement,"LIKE")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%PATTERN")  {
+	} elseif ..addPunctuation(.subElement,"%PATTERN")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%MATCHES")  {
+	} elseif ..addPunctuation(.subElement,"%MATCHES")  {
 		set done=1 ; end compileRules
 	}
 
@@ -6395,29 +6458,29 @@ Method SqlPrimary(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlNumber(subElement,.addedElement)  {
+	if ..SqlNumber(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlString(subElement,.addedElement)  {
+	} elseif ..SqlString(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlCaseExpression(subElement,.addedElement)  {
+	} elseif ..SqlCaseExpression(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFnFunction(subElement,.addedElement)  {
+	} elseif ..SqlFnFunction(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction(subElement,.addedElement)  {
+	} elseif ..SqlFunction(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..ColonSqlCosVariable(subElement,.addedElement)  {
+	} elseif ..ColonSqlCosVariable(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..StoredProcCall(subElement,.addedElement)  {
+	} elseif ..StoredProcCall(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..ColumnReference(subElement,.addedElement)  {
+	} elseif ..ColumnReference(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlSpecialVariable(subElement,.addedElement)  {
+	} elseif ..SqlSpecialVariable(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..Macrocall(subElement,.addedElement)  {
+	} elseif ..Macrocall(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlPrimary76Sub(subElement,.addedElement)  {
+	} elseif ..SqlPrimary76Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlPrimary77Sub(subElement,.addedElement)  {
+	} elseif ..SqlPrimary77Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -6443,9 +6506,9 @@ Method SqlPrimary76Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"(")  {
-		if ..SubquerySpecification(subElement,.addedElement)  {
-			if ..addPunctuation(subElement,")")  {
+	if ..addPunctuation(.subElement,"(")  {
+		if ..SubquerySpecification(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,")")  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -6473,10 +6536,10 @@ Method SqlPrimary77Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"(")  {
-		if ..SqlExpression(subElement,.addedElement)  {
-			if ..SqlPrimary78RepZero(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,")")  {
+	if ..addPunctuation(.subElement,"(")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
+			if ..SqlPrimary78RepZero(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -6500,7 +6563,7 @@ Method SqlPrimary78RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..SqlPrimary79Sub(subElement,.addedElement)  {
+	while ..SqlPrimary79Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -6522,8 +6585,8 @@ Method SqlPrimary79Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,",")  {
-		if ..SqlExpression(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,",")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -6548,25 +6611,25 @@ Method SqlProgram(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..QuerySpecification(subElement,.addedElement)  {
+	if ..QuerySpecification(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..CallCommand(subElement,.addedElement)  {
+	} elseif ..CallCommand(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..InsertCommand(subElement,.addedElement)  {
+	} elseif ..InsertCommand(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..UpdateCommand(subElement,.addedElement)  {
+	} elseif ..UpdateCommand(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..DeclareCommand(subElement,.addedElement)  {
+	} elseif ..DeclareCommand(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..OpenCommand(subElement,.addedElement)  {
+	} elseif ..OpenCommand(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..FetchCommand(subElement,.addedElement)  {
+	} elseif ..FetchCommand(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..CloseCommand(subElement,.addedElement)  {
+	} elseif ..CloseCommand(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..DeleteCommand(subElement,.addedElement)  {
+	} elseif ..DeleteCommand(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..CheckprivCommand(subElement,.addedElement)  {
+	} elseif ..CheckprivCommand(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -6581,22 +6644,24 @@ Method SqlProgram(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	quit ok
 }
 
-///  sql_special_variable ::= 'NULL' | '?' | '$H' | '$ZNSPACE'
-/// summary=K|P|P|P
+///  sql_special_variable ::= 'NULL' | '?' | '$H' | '$ZNSPACE' | '$NAMESPACE'
+/// summary=K|P|P|P|P
 Method SqlSpecialVariable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K|P|P|P
+	; rules summary K|P|P|P|P
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"NULL")  {
+	if ..addKeyword(.subElement,"NULL")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"?")  {
+	} elseif ..addPunctuation(.subElement,"?")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"$H")  {
+	} elseif ..addPunctuation(.subElement,"$H")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"$ZNSPACE")  {
+	} elseif ..addPunctuation(.subElement,"$ZNSPACE")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"$NAMESPACE")  {
 		set done=1 ; end compileRules
 	}
 
@@ -6622,7 +6687,7 @@ Method SqlString(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"NEED STRING")  {
+	if ..addPunctuation(.subElement,"NEED STRING")  {
 		set done=1 ; end compileRules
 	}
 
@@ -6646,7 +6711,7 @@ Method SqlTerm(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlPrimary(subElement,.addedElement)  {
+	if ..SqlPrimary(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -6673,12 +6738,12 @@ Method SqlWindow(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"OVER")  {
-		if ..addPunctuation(subElement,"(")  {
-			if $S(..SqlWindowPartition(subElement,.addedElement) :1,1:1) {
-				if $S(..OrderByClause(subElement,.addedElement) :1,1:1) {
-					if $S(..SqlWindow147Sub(subElement,.addedElement) :1,1:1) {
-						if ..addPunctuation(subElement,")")  {
+	if ..addKeyword(.subElement,"OVER")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if $S(..SqlWindowPartition(.subElement,.addedElement) :1,1:1) {
+				if $S(..OrderByClause(.subElement,.addedElement) :1,1:1) {
+					if $S(..SqlWindow148Sub(.subElement,.addedElement) :1,1:1) {
+						if ..addPunctuation(.subElement,")")  {
 							set done=1 ; end compileRules
 						}
 					}
@@ -6700,15 +6765,15 @@ Method SqlWindow(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 
 /// sql_window_rows_between | sql_window_rows
 /// summary=C|C
-Method SqlWindow147Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlWindow148Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary C|C
 	set subElement=ParentElement
 	set done=0 ; method start
 	Set subElement=ParentElement
-	if ..SqlWindowRowsBetween(subElement,.addedElement)  {
+	if ..SqlWindowRowsBetween(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlWindowRows(subElement,.addedElement)  {
+	} elseif ..SqlWindowRows(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -6730,15 +6795,15 @@ Method SqlWindowFrame(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlWindowFrame148Sub(subElement,.addedElement)  {
+	if ..SqlWindowFrame149Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlWindowFrame149Sub(subElement,.addedElement)  {
+	} elseif ..SqlWindowFrame150Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlWindowFrame150Sub(subElement,.addedElement)  {
+	} elseif ..SqlWindowFrame151Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlWindowFrame151Sub(subElement,.addedElement)  {
+	} elseif ..SqlWindowFrame152Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlWindowFrame152Sub(subElement,.addedElement)  {
+	} elseif ..SqlWindowFrame153Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -6756,7 +6821,7 @@ Method SqlWindowFrame(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 /// 'UNBOUNDED' 'PRECEDING'
 /// summary values:UNBOUNDED
 /// summary=K&K
-Method SqlWindowFrame148Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlWindowFrame149Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&K
 	; first rule summary K
@@ -6764,8 +6829,8 @@ Method SqlWindowFrame148Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"UNBOUNDED")  {
-		if ..addKeyword(subElement,"PRECEDING")  {
+	if ..addKeyword(.subElement,"UNBOUNDED")  {
+		if ..addKeyword(.subElement,"PRECEDING")  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -6783,14 +6848,14 @@ Method SqlWindowFrame148Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 /// sql_expression 'PRECEDING'
 /// summary=C&K
-Method SqlWindowFrame149Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlWindowFrame150Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary C&K
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlExpression(subElement,.addedElement)  {
-		if ..addKeyword(subElement,"PRECEDING")  {
+	if ..SqlExpression(.subElement,.addedElement)  {
+		if ..addKeyword(.subElement,"PRECEDING")  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -6809,7 +6874,7 @@ Method SqlWindowFrame149Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 /// 'CURRENT' 'ROW'
 /// summary values:CURRENT
 /// summary=K&K
-Method SqlWindowFrame150Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlWindowFrame151Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&K
 	; first rule summary K
@@ -6817,8 +6882,8 @@ Method SqlWindowFrame150Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"CURRENT")  {
-		if ..addKeyword(subElement,"ROW")  {
+	if ..addKeyword(.subElement,"CURRENT")  {
+		if ..addKeyword(.subElement,"ROW")  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -6837,7 +6902,7 @@ Method SqlWindowFrame150Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 /// 'UNBOUNDED' 'FOLLOWING'
 /// summary values:UNBOUNDED
 /// summary=K&K
-Method SqlWindowFrame151Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlWindowFrame152Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&K
 	; first rule summary K
@@ -6845,8 +6910,8 @@ Method SqlWindowFrame151Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"UNBOUNDED")  {
-		if ..addKeyword(subElement,"FOLLOWING")  {
+	if ..addKeyword(.subElement,"UNBOUNDED")  {
+		if ..addKeyword(.subElement,"FOLLOWING")  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -6864,14 +6929,14 @@ Method SqlWindowFrame151Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 /// sql_expression 'FOLLOWING'
 /// summary=C&K
-Method SqlWindowFrame152Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method SqlWindowFrame153Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary C&K
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlExpression(subElement,.addedElement)  {
-		if ..addKeyword(subElement,"FOLLOWING")  {
+	if ..SqlExpression(.subElement,.addedElement)  {
+		if ..addKeyword(.subElement,"FOLLOWING")  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -6899,9 +6964,9 @@ Method SqlWindowPartition(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"PARTITION")  {
-		if ..addKeyword(subElement,"BY")  {
-			if ..ColList(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"PARTITION")  {
+		if ..addKeyword(.subElement,"BY")  {
+			if ..ColList(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -6930,8 +6995,8 @@ Method SqlWindowRows(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"ROWS")  {
-		if ..SqlWindowFrame(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"ROWS")  {
+		if ..SqlWindowFrame(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -6959,11 +7024,11 @@ Method SqlWindowRowsBetween(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"ROWS")  {
-		if ..addKeyword(subElement,"BETWEEN")  {
-			if ..SqlWindowFrame(subElement,.addedElement)  {
-				if ..addKeyword(subElement,"AND")  {
-					if ..SqlWindowFrame(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"ROWS")  {
+		if ..addKeyword(.subElement,"BETWEEN")  {
+			if ..SqlWindowFrame(.subElement,.addedElement)  {
+				if ..addKeyword(.subElement,"AND")  {
+					if ..SqlWindowFrame(.subElement,.addedElement)  {
 						set done=1 ; end compileRules
 					}
 				}
@@ -6991,8 +7056,8 @@ Method StoredProcCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..StoredProcName(subElement,.addedElement)  {
-		if ..StoredProcParameterList(subElement,.addedElement)  {
+	if ..StoredProcName(.subElement,.addedElement)  {
+		if ..StoredProcParameterList(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -7017,8 +7082,8 @@ Method StoredProcName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..StoredProcName167OptGrp(subElement,.addedElement)  {
-		if ..QualifiedIdentifier(subElement,.addedElement)  {
+	if ..StoredProcName167OptGrp(.subElement,.addedElement)  {
+		if ..QualifiedIdentifier(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -7042,8 +7107,8 @@ Method StoredProcName167OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SchemaName(subElement,.addedElement)  {
-		if ..addPunctuation(subElement,".")  {
+	if ..SchemaName(.subElement,.addedElement)  {
+		if ..addPunctuation(.subElement,".")  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -7068,7 +7133,7 @@ Method StoredProcParameter(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlExpression(subElement,.addedElement)  {
+	if ..SqlExpression(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -7095,9 +7160,9 @@ Method StoredProcParameterList(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"(")  {
-		if ..StoredProcParameterList164OptGrp(subElement,.addedElement)  {
-			if ..addPunctuation(subElement,")")  {
+	if ..addPunctuation(.subElement,"(")  {
+		if ..StoredProcParameterList164OptGrp(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,")")  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -7122,8 +7187,8 @@ Method StoredProcParameterList164OptGrp(ParentElement As PXW.DEV.BNF.Element, By
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if $S(..StoredProcParameter(subElement,.addedElement) :1,1:1) {
-		if ..StoredProcParameterList165RepZero(subElement,.addedElement)  {
+	if $S(..StoredProcParameter(.subElement,.addedElement) :1,1:1) {
+		if ..StoredProcParameterList165RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -7145,7 +7210,7 @@ Method StoredProcParameterList165RepZero(ParentElement As PXW.DEV.BNF.Element, B
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..StoredProcParameterList166Sub(subElement,.addedElement)  {
+	while ..StoredProcParameterList166Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -7167,8 +7232,8 @@ Method StoredProcParameterList166Sub(ParentElement As PXW.DEV.BNF.Element, ByRef
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,",")  {
-		if $S(..StoredProcParameter(subElement,.addedElement) :1,1:1) {
+	if ..addPunctuation(.subElement,",")  {
+		if $S(..StoredProcParameter(.subElement,.addedElement) :1,1:1) {
 			set done=1 ; end compileRules
 		}
 	}
@@ -7193,9 +7258,9 @@ Method StoredProcTable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..StoredProcName(subElement,.addedElement)  {
-		if ..StoredProcParameterList(subElement,.addedElement)  {
-			if $S(..TableAsClause(subElement,.addedElement) :1,1:1) {
+	if ..StoredProcName(.subElement,.addedElement)  {
+		if ..StoredProcParameterList(.subElement,.addedElement)  {
+			if $S(..TableAsClause(.subElement,.addedElement) :1,1:1) {
 				set done=1 ; end compileRules
 			}
 		}
@@ -7224,9 +7289,9 @@ Method Subquery(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"(")  {
-		if ..QueryExpression(subElement,.addedElement)  {
-			if ..addPunctuation(subElement,")")  {
+	if ..addPunctuation(.subElement,"(")  {
+		if ..QueryExpression(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,")")  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -7252,8 +7317,8 @@ Method SubquerySpecification(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SelectCommand(subElement,.addedElement)  {
-		if ..SubquerySpecification3RepZero(subElement,.addedElement)  {
+	if ..SelectCommand(.subElement,.addedElement)  {
+		if ..SubquerySpecification3RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -7275,7 +7340,7 @@ Method SubquerySpecification3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..SubquerySpecification4Sub(subElement,.addedElement)  {
+	while ..SubquerySpecification4Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -7294,8 +7359,8 @@ Method SubquerySpecification4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Union(subElement,.addedElement)  {
-		if ..SelectCommand(subElement,.addedElement)  {
+	if ..Union(.subElement,.addedElement)  {
+		if ..SelectCommand(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -7320,8 +7385,8 @@ Method TableAsClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if $S(..addKeyword(subElement,"AS") :1,1:1) {
-		if ..AliasName(subElement,.addedElement)  {
+	if $S(..addKeyword(.subElement,"AS") :1,1:1) {
+		if ..AliasName(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -7346,11 +7411,11 @@ Method TableExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..FromClause(subElement,.addedElement)  {
-		if $S(..WhereClause(subElement,.addedElement) :1,1:1) {
-			if $S(..GroupByClause(subElement,.addedElement) :1,1:1) {
-				if $S(..HavingClause(subElement,.addedElement) :1,1:1) {
-					if $S(..OrderByClause(subElement,.addedElement) :1,1:1) {
+	if ..FromClause(.subElement,.addedElement)  {
+		if $S(..WhereClause(.subElement,.addedElement) :1,1:1) {
+			if $S(..GroupByClause(.subElement,.addedElement) :1,1:1) {
+				if $S(..HavingClause(.subElement,.addedElement) :1,1:1) {
+					if $S(..OrderByClause(.subElement,.addedElement) :1,1:1) {
 						set done=1 ; end compileRules
 					}
 				}
@@ -7378,8 +7443,8 @@ Method TableName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..TableName47OptGrp(subElement,.addedElement)  {
-		if ..QualifiedIdentifier(subElement,.addedElement)  {
+	if ..TableName47OptGrp(.subElement,.addedElement)  {
+		if ..QualifiedIdentifier(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -7403,8 +7468,8 @@ Method TableName47OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SchemaName(subElement,.addedElement)  {
-		if ..addPunctuation(subElement,".")  {
+	if ..SchemaName(.subElement,.addedElement)  {
+		if ..addPunctuation(.subElement,".")  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -7429,11 +7494,11 @@ Method TableReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..StoredProcTable(subElement,.addedElement)  {
+	if ..StoredProcTable(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..DirectTable(subElement,.addedElement)  {
+	} elseif ..DirectTable(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..DerivedTable(subElement,.addedElement)  {
+	} elseif ..DerivedTable(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -7457,9 +7522,9 @@ Method TableReferenceNoalias(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..DirectTableNoalias(subElement,.addedElement)  {
+	if ..DirectTableNoalias(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..DerivedTableNoalias(subElement,.addedElement)  {
+	} elseif ..DerivedTableNoalias(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -7483,7 +7548,7 @@ Method TableSubquery(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Subquery(subElement,.addedElement)  {
+	if ..Subquery(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -7510,8 +7575,8 @@ Method Union(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"UNION")  {
-		if ..Union42RepZero(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"UNION")  {
+		if ..Union42RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -7533,7 +7598,7 @@ Method Union42RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..Union43Sub(subElement,.addedElement)  {
+	while ..Union43Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -7552,9 +7617,9 @@ Method Union43Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"ALL")  {
+	if ..addKeyword(.subElement,"ALL")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%PARALLEL")  {
+	} elseif ..addPunctuation(.subElement,"%PARALLEL")  {
 		set done=1 ; end compileRules
 	}
 
@@ -7581,10 +7646,10 @@ Method UpdateColumns(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"(")  {
-		if ..ColumnName(subElement,.addedElement)  {
-			if ..UpdateColumns61RepZero(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,")")  {
+	if ..addPunctuation(.subElement,"(")  {
+		if ..ColumnName(.subElement,.addedElement)  {
+			if ..UpdateColumns61RepZero(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -7608,7 +7673,7 @@ Method UpdateColumns61RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..UpdateColumns62Sub(subElement,.addedElement)  {
+	while ..UpdateColumns62Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -7630,8 +7695,8 @@ Method UpdateColumns62Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,",")  {
-		if ..ColumnName(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,",")  {
+		if ..ColumnName(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -7659,11 +7724,11 @@ Method UpdateCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"UPDATE")  {
-		if ..UpdateCommand52RepZero(subElement,.addedElement)  {
-			if ..DirectTable(subElement,.addedElement)  {
-				if ..UpdateCommand54Sub(subElement,.addedElement)  {
-					if $S(..WhereClause(subElement,.addedElement) :1,1:1) {
+	if ..addKeyword(.subElement,"UPDATE")  {
+		if ..UpdateCommand52RepZero(.subElement,.addedElement)  {
+			if ..DirectTable(.subElement,.addedElement)  {
+				if ..UpdateCommand54Sub(.subElement,.addedElement)  {
+					if $S(..WhereClause(.subElement,.addedElement) :1,1:1) {
 						set done=1 ; end compileRules
 					}
 				}
@@ -7688,7 +7753,7 @@ Method UpdateCommand52RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..UpdateCommand53Sub(subElement,.addedElement)  {
+	while ..UpdateCommand53Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -7707,7 +7772,7 @@ Method UpdateCommand53Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	set subElement=ParentElement
 	set done=0 ; method start
 	Set subElement=ParentElement
-	if ..UpdateKeyword(subElement,.addedElement)  {
+	if ..UpdateKeyword(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -7728,9 +7793,9 @@ Method UpdateCommand54Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..UpdateCommand55Sub(subElement,.addedElement)  {
+	if ..UpdateCommand55Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..UpdateCommand58Sub(subElement,.addedElement)  {
+	} elseif ..UpdateCommand58Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -7756,9 +7821,9 @@ Method UpdateCommand55Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"SET")  {
-		if ..UpdateSet(subElement,.addedElement)  {
-			if ..UpdateCommand56RepZero(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"SET")  {
+		if ..UpdateSet(.subElement,.addedElement)  {
+			if ..UpdateCommand56RepZero(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -7781,7 +7846,7 @@ Method UpdateCommand56RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..UpdateCommand57Sub(subElement,.addedElement)  {
+	while ..UpdateCommand57Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -7803,8 +7868,8 @@ Method UpdateCommand57Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,",")  {
-		if ..UpdateSet(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,",")  {
+		if ..UpdateSet(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -7828,8 +7893,8 @@ Method UpdateCommand58Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..UpdateColumns(subElement,.addedElement)  {
-		if ..UpdateCommand59Sub(subElement,.addedElement)  {
+	if ..UpdateColumns(.subElement,.addedElement)  {
+		if ..UpdateCommand59Sub(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -7854,9 +7919,9 @@ Method UpdateCommand59Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..UpdateCommand60Sub(subElement,.addedElement)  {
+	if ..UpdateCommand60Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SelectCommand(subElement,.addedElement)  {
+	} elseif ..SelectCommand(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -7882,8 +7947,8 @@ Method UpdateCommand60Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"VALUES")  {
-		if ..UpdateValues(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"VALUES")  {
+		if ..UpdateValues(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -7910,21 +7975,21 @@ Method UpdateKeyword(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"%NOCHECK")  {
+	if ..addPunctuation(.subElement,"%NOCHECK")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%NOFPLAN")  {
+	} elseif ..addPunctuation(.subElement,"%NOFPLAN")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%NOINDEX")  {
+	} elseif ..addPunctuation(.subElement,"%NOINDEX")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%NOJOURN")  {
+	} elseif ..addPunctuation(.subElement,"%NOJOURN")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%NOLOCK")  {
+	} elseif ..addPunctuation(.subElement,"%NOLOCK")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%NOTRIGGER")  {
+	} elseif ..addPunctuation(.subElement,"%NOTRIGGER")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%PROFILE_ALL")  {
+	} elseif ..addPunctuation(.subElement,"%PROFILE_ALL")  {
 		set done=1 ; or
-	} elseif ..addPunctuation(subElement,"%PROFILE_ALL")  {
+	} elseif ..addPunctuation(.subElement,"%PROFILE_ALL")  {
 		set done=1 ; end compileRules
 	}
 
@@ -7948,9 +8013,9 @@ Method UpdateSet(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ColumnReference(subElement,.addedElement)  {
-		if ..addPunctuation(subElement,"=")  {
-			if ..SqlExpression(subElement,.addedElement)  {
+	if ..ColumnReference(.subElement,.addedElement)  {
+		if ..addPunctuation(.subElement,"=")  {
+			if ..SqlExpression(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -7979,10 +8044,10 @@ Method UpdateValues(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,"(")  {
-		if ..SqlExpression(subElement,.addedElement)  {
-			if ..UpdateValues63RepZero(subElement,.addedElement)  {
-				if ..addPunctuation(subElement,")")  {
+	if ..addPunctuation(.subElement,"(")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
+			if ..UpdateValues63RepZero(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -8006,7 +8071,7 @@ Method UpdateValues63RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..UpdateValues64Sub(subElement,.addedElement)  {
+	while ..UpdateValues64Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -8028,8 +8093,8 @@ Method UpdateValues64Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,",")  {
-		if ..SqlExpression(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,",")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -8057,8 +8122,8 @@ Method WhereClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"WHERE")  {
-		if ..SqlExpression(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"WHERE")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -8083,11 +8148,11 @@ Method WithClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..AliasName(subElement,.addedElement)  {
-		if ..addKeyword(subElement,"AS")  {
-			if ..addPunctuation(subElement,"(")  {
-				if ..SelectCommand(subElement,.addedElement)  {
-					if ..addPunctuation(subElement,")")  {
+	if ..AliasName(.subElement,.addedElement)  {
+		if ..addKeyword(.subElement,"AS")  {
+			if ..addPunctuation(.subElement,"(")  {
+				if ..SelectCommand(.subElement,.addedElement)  {
+					if ..addPunctuation(.subElement,")")  {
 						set done=1 ; end compileRules
 					}
 				}
@@ -8118,9 +8183,9 @@ Method WithCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(subElement,"WITH")  {
-		if ..WithClause(subElement,.addedElement)  {
-			if ..WithCommand5RepZero(subElement,.addedElement)  {
+	if ..addKeyword(.subElement,"WITH")  {
+		if ..WithClause(.subElement,.addedElement)  {
+			if ..WithCommand5RepZero(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -8143,7 +8208,7 @@ Method WithCommand5RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..WithCommand6Sub(subElement,.addedElement)  {
+	while ..WithCommand6Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	if done {
@@ -8165,8 +8230,8 @@ Method WithCommand6Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(subElement,",")  {
-		if ..WithClause(subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,",")  {
+		if ..WithClause(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}

@@ -7,6 +7,9 @@ Parameter SubElementType = "PXW.DEV.BNF.Elements.COS";
 
 /// Used by the code generator and passed onto the generated code.
 /// The check is done lots of times to keep building up a word until the test fails.
+/// 
+/// For COS this should really take into account $piece,##class etc but its not working properly.
+/// I think to make this work it need the bnf rearranged a bit, which is too much for this evening. 
 Parameter KeywordPattern = "1A.AN";
 
 XData file
@@ -238,7 +241,8 @@ special_intrinsic                   ::= case_function_call
                                         | zobjmethod_function_call
                                         | zobjclassmethod_function_call
                                         | text_function_call
-                                        | bitlogic_function_call 
+                                        | bitlogic_function_call  
+                                        | vector_function_call
 general_intrinsic                   ::= any_keyword function_parameter_list  [ object_chain ]
 
 
@@ -246,14 +250,15 @@ intrinsicfncall_parameter_list      ::= open_bracket [expression] ( ',' [express
 intrinsicfncall_parameter           ::= expression
 
 function_parameter_list             ::= open_bracket [ [function_parameter] ( ',' [function_parameter] )* ] ['...'] close_bracket
-function_parameter                  ::= ( '.' ( this_object_direct_property | simple_indirection | variable )) | expression 
-
+function_parameter                  ::= ( '.' ( this_object_direct_property | simple_indirection | byref_variable )) | expression 
+byref_variable                      ::= variable_set /* maybe set_value_expression would be better, but requires more careful check on analysis */
 
 intrinsicfncall_set                 ::= '$' (special_intrinsic_set | general_intrinsic_set )
 special_intrinsic_set               ::= extract_function_call_set
                                         | piece_function_call_set
                                         | listitem_function_call_set
                                         | listbuild_function_call_set
+                                        | vector_function_call_set
 general_intrinsic_set               ::= any_keyword function_parameter_list  [ object_chain ]
  
 
@@ -332,11 +337,13 @@ special_variable                    ::= '$' ('DEVICE' -- Contains user-specified
                                           | 'PRINCIPAL' -- Contains the ID of the principal I/O device.
                                           | 'P'
                                           | 'QUIT' -- Contains a flag indicating what kind of QUIT is required to exit the current context.
+                                          | 'Q'
                                           | 'ROLES' -- Contains the roles assigned to the current process.
                                           | 'STACK' -- Special variable that contains the number of context frames saved on the call stack.
                                           | 'STORAGE' -- Contains the number of bytes available for local variable storage.
                                           | python_import
                                           | ('SYSTEM' [ object_chain ])  -- Contains system information about system objects.
+                                          | 'SY'
                                           | 'S' -- storage
                                           | 'TEST' -- Contains the truth value resulting from the last command using the timeout option.
                                           /*| ('THIS' [ object_chain ] )  -- Contains the current class context.*/
@@ -564,7 +571,8 @@ offset                              ::= 'regexp:[0-9]+'
 quit_command                        ::= ('quit' | 'q') [ post_conditional ] ( naked | [ quit_expression ])
 quit_expression                     ::= expression
 
-return_command                      ::= 'return' [ post_conditional ] [ naked | expression ]
+return_command                      ::= 'return' [ post_conditional ] [ naked | return_expression ] 
+return_expression                     ::= expression
 
 set_command                         ::= ('set' | 's') [ post_conditional ] set_item_list
 set_item_list                       ::= set_item ( ',' set_item )*
@@ -756,6 +764,10 @@ listitem_function_call_set          ::= ('list' | 'li') open_bracket set_value_e
 
 bitlogic_function_call              ::= 'bitlogic' open_bracket bitlogic_expression [ ',' expression ] close_bracket
 bitlogic_expression                  ::= (expression ('|' | '&' | '^' |'~')* )*
+
+vector_function_call               ::= 'vector' open_bracket expression [ ',' star_parameter [ ',' star_parameter ] ] close_bracket
+vector_function_call_set           ::= 'vector' open_bracket set_value_expression  ',' expression ',' expression close_bracket
+
 
 text_function_call                  ::= ('text') open_bracket label_reference close_bracket
 

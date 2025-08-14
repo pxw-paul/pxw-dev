@@ -58,36 +58,36 @@ Property commentid As %Integer;
 
 Method OutputKeywordCommentAsDocumentation(Element As PXW.DEV.Element, Output commentid As %String)
 {
-    set commentid=""
+    Set commentid=""
     /* This does not work how I want yet, it needs to do all the stuff that documatic does, can I just call that or do I need to write my own? */
     Set keywordatom=Element.FirstAtom()
-    set textA=keywordatom.getComment()
-    i textA'="" {
-        s text=textA.ToString()
-        s text=$replace(text,"///","")
-        set ..commentid=..commentid+1
-        set commentid="comment"_..commentid
+    Set textA=keywordatom.getComment()
+    If textA'="" {
+        Set text=textA.ToString()
+        Set text=$REPLACE(text,"///","")
+        Set ..commentid=..commentid+1
+        Set commentid="comment"_..commentid
         ;do ..output("<div style='position:relative;' class='CDEFdocHTML nocopy' id='"_commentid_"HTML'>")
         ;do ..output("<span style='position:absolute;  top:0px; left:0px;' onmouseover='flipComments("""_commentid_""");'>X</span>")
-        do ..output("<div style='position:relative; display:none;' class='CDEFdocHTML nocopy' id='"_commentid_"HTML'>")
-        do ..output(text)
+        Do ..output("<div style='position:relative; display:none;' class='CDEFdocHTML nocopy' id='"_commentid_"HTML'>")
+        Do ..output(text)
         ;do ##class(%CSP.Documatic).RenderDescription(..This,text,"","")
-        do ..output("</div>")
+        Do ..output("</div>")
 
         ;do ..output("<div style='position:relative; display:none;' class='CDEFdocText' id='"_commentid_"Text'>")
         ;do ..output("<span style='position:absolute; top:0px; left:0px;' onmouseout='flipComments("""_commentid_""");'>X</span>")
-        do ..output("<div style='position:relative;' class='CDEFdocText'  id='"_commentid_"Text'>")
+        Do ..output("<div style='position:relative;' class='CDEFdocText'  id='"_commentid_"Text'>")
         If $ISOBJECT(keywordatom.whitespace) {
             Do ..writeAtom(keywordatom.whitespace,"<span class=whitespace>","</span>",1)
         }
         If $ISOBJECT(keywordatom.comment) {
             Do ..writeAtom(keywordatom.comment,"<span class='"_..#CommentClass_"'>","</span>")
         }
-        do ..output("</div>")
-        do keywordatom.clearComment()
-        set keywordatom.whitespace=""
-    } else {
-        s commentid=""
+        Do ..output("</div>")
+        Do keywordatom.clearComment()
+        Set keywordatom.whitespace=""
+    } Else {
+        Set commentid=""
     }
     ;*/
 }
@@ -169,13 +169,10 @@ Method writeElement(element As PXW.DEV.Element)
 {
     #dim a as PXW.DEV.Atom
     #dim cref as PXW.DEV.Element
-    ;#dim cdefelement as PXW.DEV.ClassDefinition.Element
-    $$$DEBUGMethodBegin
-    ;w !,element.type
     /* CDEF */
-
+    $$$DEBUG("writeElement:"_element.type)
     Set oldXMLPath=..XMLPath
-
+ 
     Do ..GenericRedirect(element)
 
     For  {
@@ -247,8 +244,6 @@ Method writeElement(element As PXW.DEV.Element)
 
     Do ##super(element)
     Set ..XMLPath=oldXMLPath
-    
-    $$$DEBUGMethodEnd
 }
 
 Method writeElementBNF1(element As PXW.DEV.Element)
@@ -342,7 +337,7 @@ Method writeCDEFOneClassMember(element As PXW.DEV.BNF.Elements.ClassDefinition) 
         Do ..wrapElementHTML(element,"<a name='"_anchor_"'></a>","") ; anchor goes before the member (ie before the comment)
         ;do ..OutputKeywordCommentAsDocumentation(element,.commentid)
 
-        do ..wrapElementHTML(element,"<span class=CDEFOneClassMember>","</span>")
+        Do ..wrapElementHTML(element,"<span class=CDEFOneClassMember>","</span>")
     }
     Quit ""
 }
@@ -350,7 +345,7 @@ Method writeCDEFOneClassMember(element As PXW.DEV.BNF.Elements.ClassDefinition) 
 Method writeCDEFClassDefinition(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassDefinition")
 {
     Set keywordatom=element.FirstAtom()
-    do ..OutputKeywordCommentAsDocumentation(element,.commentid)
+    Do ..OutputKeywordCommentAsDocumentation(element,.commentid)
     Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This)
     Set menu="<div class='CDEFItemMenu nocopy'>"
     Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,)_"'>Xref ("_count_") </a>"
@@ -1001,7 +996,7 @@ Method writeSQLInsertCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
         ;s aliasNameE=cref.findFirstElementByType("AliasName",1) ; hmm, in a group, can we promote in bnf?
         ;s columnNameE=cref.findFirstElementByType("ColumnName",0)
         If fulltable'="" {
-            Do ..wrapElementHTML(columnNameE,"<a class='COSObjectMember' href='"_..HREFToClass(fulltable,columnNameE.ToString(0))_"'>","</a>")            
+            Do ..wrapElementHTML(columnNameE,"<a class='COSObjectMember' href='"_..HREFToSQLTable(fulltable,columnNameE.ToString(0))_"'>","</a>")            
         } Else {
             ; should always be a name
             ;  s colname="col"_$$$UPPER(fieldname),aname=""
@@ -1025,7 +1020,7 @@ Method writeSQL(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.el
         ;s aliasNameE=cref.findFirstElementByType("AliasName",1) ; hmm, in a group, can we promote in bnf?
         ;s columnNameE=cref.findFirstElementByType("ColumnName",0)
         If fulltable'="" {
-            Do ..wrapElementHTML(columnNameE,"<a class='COSObjectMember' href='"_..HREFToClass(fulltable,columnNameE.ToString(0))_"'>","</a>")            
+            Do ..wrapElementHTML(columnNameE,"<a class='COSObjectMember' href='"_..HREFToSQLTable(fulltable,columnNameE.ToString(0))_"'>","</a>")            
         } Else {
             ; should always be a name
             ;  s colname="col"_$$$UPPER(fieldname),aname=""
@@ -1051,7 +1046,7 @@ Method writeSQLDirectTable(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.C
                 Set aliasname="alias"_tablename
                 Do ..wrapElementHTML(tablenameE,"<span class='SQLTableAlias' title='show alias usage' varid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
             } Else {
-                Do ..wrapAtomHTML(tablenameE,"<a class='CDEFClassName' href='"_..HREFToClass(tablename)_"'>","</a>")
+                Do ..wrapAtomHTML(tablenameE,"<a class='CDEFClassName' href='"_..HREFToSQLTable(tablename)_"'>","</a>")
             }
         }
     }    
@@ -1222,10 +1217,174 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName
 
         Set path=path_"."_propertyatom.value
 		Do ..wrapAtomHTML(propertyatom,"<a class='COSObjectMember' href='"_..HREFToClass(StartClassName,path)_"'>","</a>")
+        Do ..writeCOSParameterChecks(StartClassName,path,objectchain)
 
         Set objectchain=objectchain.findFirstElementByType("ObjectChain",0) 
     }
     $$$DEBUGMethodEnd
+}
+
+Method writeCOSParameterChecks(ClassName As %String, MethodPath As %String, Element As PXW.DEV.Element)
+{
+    If ClassName="%Library.ResultSet",MethodPath=".%New" {
+        Set paramsE=Element.findFirstElementByType("FunctionParameterList")
+        Do paramsE.findElementsByType("FunctionParameter",.plist,0)
+        If $ISOBJECT($GET(plist)) {
+            Kill atoms
+            Set p1=plist.GetAt(1)
+            Set flat=..flattenlist(p1,.atoms),f2=..flattenold(p1)
+            ;d p1.write() zw flat,f2,atoms
+            
+            ; "%Studio.Project:ProjectList
+            ; flat=$lb($lb("String","%Studio.Project:ProjectList"))
+            If atoms.Count()=1,$PIECE(atoms.GetAt(1).type,":",1)="String" {
+                Set val=atoms.GetAt(1).value
+                Set class=$PIECE(val,":",1)
+                Set query=$PIECE(val,":",2)
+                set a=atoms.GetAt(1)
+                Do ..wrapAtomHTML(a,"<a class='CDEFClassName' href='"_..HREFToClass(class,query)_"'>","</a>")
+            }
+
+            ; ..%ClassName(1)_":ProjectList"
+            ;=flat=$lb($lb("ObjectChainNoDot","%ClassName"),$lb("Number","1"),$lb("String",":ProjectList"))
+            If atoms.Count()=3,$$$UPPER(atoms.GetAt(1).value)="%CLASSNAME",$PIECE(atoms.GetAt(3).type,":",1)="String" {
+                Set class=..This
+                Set query=$PIECE(atoms.GetAt(3).value,":",2)
+                Set a=atoms.GetAt(3)
+                Do ..wrapAtomHTML(a,"<a class='CDEFClassName' href='"_..HREFToClass(class,query)_"'>","</a>")
+            }
+            
+            ; ..%ClassName(1)_":"_"ProjectList"
+            ; flat=$lb($lb("ObjectChainNoDot","%ClassName"),$lb("Number","1"),$lb("String",":"),$lb("String","ProjectList"))
+            If atoms.Count()=4,$$$UPPER(atoms.GetAt(1).value)="%CLASSNAME",atoms.GetAt(3).value=":",$PIECE(atoms.GetAt(4).type,":",1)="String" {
+                Set class=..This
+                Set query=atoms.GetAt(4).value
+                Set a=atoms.GetAt(4)
+                Do ..wrapAtomHTML(a,"<a class='CDEFClassName' href='"_..HREFToClass(class,query)_"'>","</a>")
+
+            }
+            
+            ; $classname($this)_":ProjectList"
+            ; flat=$lb($lb("keyword","classname"),$lb("keyword","$this"),$lb("String",":ProjectList"))
+            If atoms.Count()=3,$$$UPPER(atoms.GetAt(1).value)="CLASSNAME",$PIECE(atoms.GetAt(3).type,":",1)="String" {
+                Set class=..This
+                Set query=$piece(atoms.GetAt(3).value,":",2)
+                Set a=atoms.GetAt(3)
+                Do ..wrapAtomHTML(a,"<a class='CDEFClassName' href='"_..HREFToClass(class,query)_"'>","</a>")
+            }
+            
+            ; $classname($this)_":"_"ProjectList"
+            ; flat=$lb($lb("keyword","classname"),$lb("keyword","$this"),$lb("String",":"),$lb("String","ProjectList"))
+            If atoms.Count()=4,$$$UPPER(atoms.GetAt(1).value)="CLASSNAME",atoms.GetAt(3).value=":",$PIECE(atoms.GetAt(4).type,":",1)="String" {
+                Set class=..This
+                Set query=atoms.GetAt(4).value
+                Set a=atoms.GetAt(4)
+                Do ..wrapAtomHTML(a,"<a class='CDEFClassName' href='"_..HREFToClass(class,query)_"'>","</a>")
+            }
+            
+            ; $classname()_":ProjectList"
+            ; flat=$lb($lb("keyword","classname"),$lb("String",":ProjectList"))
+            If atoms.Count()=2,$$$UPPER(atoms.GetAt(1).value)="CLASSNAME",$PIECE(atoms.GetAt(2).type,":",1)="String" {
+                Set class=..This
+                Set query=$PIECE(atoms.GetAt(2).value,":",2)
+                Set a=atoms.GetAt(2)
+                Do ..wrapAtomHTML(a,"<a class='CDEFClassName' href='"_..HREFToClass(class,query)_"'>","</a>")
+            }
+
+            ; $classname()_":"_"ProjectList"
+            ; flat=$lb($lb("keyword","classname"),$lb("String",":"),$lb("String","ProjectList"))
+            If atoms.Count()=3,$$$UPPER(atoms.GetAt(1).value)="CLASSNAME",atoms.GetAt(2).value=":",$PIECE(atoms.GetAt(3).type,":",1)="String" {
+                Set class=..This
+                Set query=atoms.GetAt(3).value
+                Set a=atoms.GetAt(3)
+                Do ..wrapAtomHTML(a,"<a class='CDEFClassName' href='"_..HREFToClass(class,query)_"'>","</a>")
+            }
+
+        }
+    }
+}
+
+ClassMethod flattenlist(Element As PXW.DEV.Element, AtomList As %Library.ListOfObjects) As %List
+{
+	#dim a as PXW.DEV.Atom
+	#dim e as PXW.DEV.Element
+	
+    If '$ISOBJECT($GET(AtomList)) Set AtomList=##class(%Library.ListOfObjects).%New()
+    
+ 	Set list=""
+    ;if AtomList'="" w "new list" s AtomList=##class(%ListOfObjects).%New()
+	Set akey=""
+	Set sep=""
+    If Element.partsCount()=1 {
+        Set single=1
+    } Else {
+        Set single=0
+    }
+	If 'single {
+        ;Set list=list_$lb(Element.type)
+    }
+	For  {
+		Set a=Element.partsGetNext(.akey)
+		Quit:akey=""
+
+        If a.%IsA("PXW.DEV.Element") {
+            Set list=list_..flattenlist(a,.AtomList)
+        } ElseIf $PIECE(a.type,":",1)="punctuation" {
+            ; forget punctuation for the timebeing
+            ;Set list=list_$lb($lb("punctuation",a.value))
+            ;do AtomList.Insert(a)
+            
+            ; Unless the thing truely IS punctuation. Due to complexity deep in the parser $this counts as punctuation, which is wrong.
+            If a.value'?1.P {
+                Set list=list_$LISTBUILD($LISTBUILD("keyword",a.value))
+                Do AtomList.Insert(a)
+            }
+
+        } Else {
+            Set list=list_$LISTBUILD($LISTBUILD($PIECE(a.type,":",1),a.value))
+            Do AtomList.Insert(a)
+        }		
+	}
+	If 'single {
+        ;Set str=str_"}"
+    }
+	Quit list
+}
+
+ClassMethod flattenold(Element As PXW.DEV.Element) As %String
+{
+	#dim a as PXW.DEV.Atom
+	#dim e as PXW.DEV.Element
+	
+ 	Set str=""
+	Set akey=""
+	Set sep=""
+    If Element.partsCount()=1 {
+        Set single=1
+    } Else {
+        Set single=0
+    }
+	If 'single {
+        Set str=str_Element.type_":{"
+    }
+	For  {
+		Set a=Element.partsGetNext(.akey)
+		Quit:akey=""
+
+        If a.%IsA("PXW.DEV.Element") {
+            Set str=str_sep_..flattenold(a)
+        } ElseIf $PIECE(a.type,":",1)="punctuation" {
+            Set str=str_sep_a.type_a.value
+        } Else {
+            Set str=str_sep_$PIECE(a.type,":",1)_":"_a.value
+        }
+		
+		Set sep=","
+	}
+	If 'single {
+        Set str=str_"}"
+    }
+	Quit str
 }
 
 Method FollowImplicitJoins(ColumnReference As PXW.DEV.Element, fulltable As %String)
@@ -1254,7 +1413,7 @@ Method FollowImplicitJoins(ColumnReference As PXW.DEV.Element, fulltable As %Str
     
     Set columnNameE=ColumnReference.findFirstElementByType("ColumnName",0)
     Set crefimpE=ColumnReference.findFirstElementByType("ColumnReferenceImplicit",0)
-    Do ..wrapElementHTML(columnNameE,"<a class='COSObjectMember' href='"_..HREFToClass(fulltable,columnNameE.ToString(0))_"'>","</a>")
+    Do ..wrapElementHTML(columnNameE,"<a class='COSObjectMember' href='"_..HREFToSQLTable(fulltable,columnNameE.ToString(0))_"'>","</a>")
     If $ISOBJECT(crefimpE) {
         Set fulref=columnNameE.ToString(0)_"->"
         Set cols=##class(%ListOfObjects).%New()
@@ -1262,7 +1421,7 @@ Method FollowImplicitJoins(ColumnReference As PXW.DEV.Element, fulltable As %Str
         For i=1:1:cols.Count() {
             Set ij=cols.GetAt(i)
             Set fulref=fulref_ij.ToString(0)
-            Do ..wrapElementHTML(ij,"<a class='COSObjectMember' href='"_..HREFToClass(fulltable,fulref)_"'>","</a>")
+            Do ..wrapElementHTML(ij,"<a class='COSObjectMember' href='"_..HREFToSQLTable(fulltable,fulref)_"'>","</a>")
             Set fulref=fulref_"->"
         }
     }
@@ -1349,6 +1508,11 @@ Method HREFToPython(Module As %String) As %String
 Method HREFToRoutine(LabelRef As %String) As %String
 {
     Quit ##class(PXW.Tools.DEV.Routine).HREFTo(LabelRef)
+}
+
+Method HREFToSQLTable(Name As %String, Field As %String = "") As %String
+{
+    Quit ##class(PXW.Tools.DEV.Class).HREFTo(Name,Field,,%NS,..This)
 }
 
 }

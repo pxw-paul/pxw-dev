@@ -233,7 +233,7 @@ one_foreignkey_atttribute           ::= attribute_Internal
 
 class_parameter                     ::= 'parameter' class_parameter_name [ 'as' class_parameter_type ] [ class_parameter_attribute_list ] [ '=' class_parameter_value ] ';'
 class_parameter_name                ::= class_item_identifier
-class_parameter_type                ::= class_reference | 'COSEXPRESSION'
+class_parameter_type                ::= 'COSEXPRESSION' | 'BOOLEAN' | 'STRING' | 'INTEGER' | 'CONFIGVALUE' | class_reference 
 class_parameter_value               ::= string | number | ( '{' expression '}' )
 class_parameter_attribute_list      ::= '[' class_parameter_attribute ( ',' class_parameter_attribute )* ']'
 
@@ -377,9 +377,10 @@ class_query_attribute               ::= attribute_ClientName
                                         | attribute_WebMethod
 
 
-class_xdata                         ::= 'xdata' xdata_name [ '[' (xdata_attributes)* ']' ] '{' (xdata_text | xdata_xml | xdata_json )   /* ([xml_xml] [xml_data] [xdata_json] */ '}'
+class_xdata                         ::= 'xdata' xdata_name [xdata_attributes  ] '{' (xdata_text | xdata_xml | xdata_json )   /* ([xml_xml] [xml_data] [xdata_json] */ '}'
 xdata_name                          ::= class_item_identifier
-xdata_attributes                    ::= attribute_Internal
+xdata_attributes                    ::=  '[' xdata_attribute (',' xdata_attribute)* ']'
+xdata_attribute                    ::= attribute_Internal
                                         | attribute_MimeType
                                         | attribute_SchemaSpec
                                         | attribute_XMLNamespace

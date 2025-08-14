@@ -74,8 +74,11 @@ Query SelectResults() As %Query(ROWSPEC = "ClassName:%String,MethodName:%String,
 
 ClassMethod SelectResultsExecute(ByRef qHandle As %Binary) As %Status
 {
-    If '$DATA(%pxwdebug) Quit $$$ERROR(5001,"No debugger object found (%pxwdebug)")
-    If '%pxwdebug.%IsA(..%ClassName(1)) Quit $$$ERROR(5001,"Debugger object is not a Timing one")
+    #dim debug as PXW.Tools.DebugTiming
+
+    s debug=$g($$$debugObject)
+    If debug="" Quit $$$ERROR(5001,"No debugger object found (%pxwdeb)")
+    If 'debug.%IsA(..%ClassName(1)) Quit $$$ERROR(5001,"Debugger object is not a Timing one")
     ;m %pxwdebug.times=%pxwdebtimes
     ;m %pxwdebug.counts=%pxwdebcounts
 

@@ -449,16 +449,16 @@ Method WriteStyles()
 
 ClassMethod RandomNumbers() As %String
 {
-	s s=""
-	f i=1:1:10 {
-		f j=1:1:20 {
-			f k=1:1:4 {
-				s s=s_$CHAR($RANDOM(10)+$a("0"))
+	Set s=""
+	For i=1:1:10 {
+		For j=1:1:20 {
+			For k=1:1:4 {
+				Set s=s_$CHAR($RANDOM(10)+$ASCII("0"))
 			}
-			s s=s_" "
+			Set s=s_" "
 		}
 	}
-	q s
+	Quit s
 }
 
 }

@@ -14,7 +14,7 @@ ClassMethod xrefPackage(Package As %String, Force As %Boolean = 0) As %Status
 
 ClassMethod WriteMainBody()
 {
-	Do ..HREFFrom(.package,.force,.background)
+	Do ..HREFFrom(.package,.force,.background,.deleteold)
 	&html<
 	<fieldset>
 		<form id=formRoutine action='PXW.Tools.DEV.XrefBuild.cls'>
@@ -29,6 +29,10 @@ ClassMethod WriteMainBody()
 		</form>
 	</fieldset>
 	>
+
+	If +deleteold=1 {
+		do ##class(PXW.Xref.BuildStatus).Purge()
+	}
 
 	If package'="" {
         If package="*" Set package=""
@@ -56,16 +60,18 @@ ClassMethod WriteMainBody()
 	Write "<th>Status</th>"
 	Write "</tr>"
 	Write "</thead>"
-	Write "<tbody>"
+	Write "<tbody>" 
 
+	set today=$zd(+$h,3)
 	Set rs=##class(%Library.ResultSet).%New(..%ClassName(1)_":"_"SelectStatus")
 	$$$ThrowOnError(rs.Execute())
-	While rs.%Next() {
+	While rs.%Next() { 
 		Set rowclass=""
 		Set enddatetime=rs.%Get("EndDateTime")
 		Set running=rs.%Get("Running")
-		If running Set rowclass=" class=goodrow"
+		If running Set rowclass=" class=warningrow"
 		If 'running,enddatetime="" Set rowclass="class=errorrow"
+		If 'running,$p(enddatetime," ",1)=today Set rowclass=" class=goodrow"
 		Write "<tr "_rowclass_">"
 		Write "<td>"_..EscapeHTML(rs.%Get("ID"))_"</td>"
 		Write "<td>"_..EscapeHTML(rs.%Get("ProcessId"))_"</td>"
@@ -79,38 +85,45 @@ ClassMethod WriteMainBody()
 		Write "<td>"_..EscapeHTML(rs.%Get("TotalErrors"))_"</td>"
 		Write "<td>"_..EscapeHTML(rs.%Get("TotalSkipped"))_"</td>"
 		Write "<td>"_..EscapeHTML(rs.%Get("Status"))_"</td>"
-		Write "</tr>"
-		
+		Write "</tr>"		
 	}
 
 	Write "</tbody>"
 	Write "</table>"
+
+	Write "<a href='"_..HREFTo("","","",1)_"'>Delete status history</a>"
 }
 
 Query SelectStatus() As %Library.SQLQuery
 {
-	SELECT top 25 * FROM PXW_Xref.BuildStatus ORDER BY ID DESC
+	SELECT * FROM ( 
+		SELECT 'a' || (10000000000-ID)  as sortkey,* FROM PXW_Xref.BuildStatus WHERE EndDateTime is null 
+		union 
+		SELECT top 50 'b' || (10000000000-ID) as sortkey,* FROM PXW_Xref.BuildStatus where EndDateTime is not null
+	) order by sortkey
 }
 
 /// This shoud output some variables, getting the data from %request
-ClassMethod HREFFrom(Output Package As %String, Output force As %Boolean, Output background As %Boolean)
+ClassMethod HREFFrom(Output Package As %String, Output force As %Boolean, Output background As %Boolean, Output DeleteOld As %Boolean)
 {
 	Set Package=%request.Get("P")
 	Set force=+%request.Get("F")
     Set background=+%request.Get("B")
+	set DeleteOld=+%request.Get("DO")
 }
 
 /// This should return a string of the href to this page based on the input parameters
 /// Package will build the entire package
 /// MethodId will build just the method
 /// DEBUG - only makes sense when building a single method
-ClassMethod HREFTo(Package As %String = "", Force As %Boolean = 0, Background As %Boolean = 1) As %String
+ClassMethod HREFTo(Package As %String = "", Force As %Boolean = 0, Background As %Boolean = 1, DeleteOld As %Boolean = 0) As %String
 {
 	Set href=##super()
 	Set sep="&"
 	If Package'="" Set href=href_sep_"P="_..EscapeURL(Package),sep="&"
 	If Force'="" Set href=href_sep_"F="_..EscapeURL(Force),sep="&"
 	If Background'="" Set href=href_sep_"B="_..EscapeURL(Background),sep="&"
+	If DeleteOld'=0 Set href=href_sep_"DO="_..EscapeURL(DeleteOld),sep="&"
 	Quit href
 }
 

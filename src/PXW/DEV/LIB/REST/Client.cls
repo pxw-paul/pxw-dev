@@ -123,6 +123,10 @@ Method SetNetRequest(ServerName As %String)
         Set netrequest.Password=..Settings.Password ; "pxw123456"
         Set netrequest.ContentType=..Settings.ContentType ; "application/json"
         Set netrequest.Timeout=60
+        If ..Settings.SSLConfiguration'="" {
+            Set netrequest.SSLConfiguration=..Settings.SSLConfiguration
+            Set netrequest.Https=1
+        }
         Set ..NetRequest=netrequest
         Do ..restorecookies()
         Set %netrequest(ServerName)=netrequest

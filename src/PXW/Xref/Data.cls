@@ -45,15 +45,15 @@ Property CalledBySection As %String;
 
 Index CalledBy On (NameSpace, ItemType, ItemKey1, ItemKey2, CalledByType, CalledByCommand, CalledByKey1, CalledByKey2, CalledByKey3) [ PrimaryKey, Unique ];
 
-Index CalledBy2 On (NameSpace, ItemKey1, ItemKey2, CalledByType, CalledByCommand, CalledByKey1, CalledByKey2, CalledByKey3);
+Index CalledBy2 On (NameSpace, ItemKey1, ItemKey2);
 
-Index CalledBy3 On (NameSpace, ItemKey2, ItemKey1, CalledByType, CalledByCommand, CalledByKey1, CalledByKey2, CalledByKey3);
+Index CalledBy3 On (NameSpace, ItemKey2, ItemKey1);
 
-Index Calls On (NameSpace, CalledByType, CalledByKey1, CalledByKey2, ItemType, ItemKey1, ItemKey2);
+Index Calls On (NameSpace, CalledByType, CalledByKey1, CalledByKey2);
 
-Index Calls2 On (NameSpace, CalledByKey1, CalledByKey2, ItemType, ItemKey1, ItemKey2);
+Index Calls2 On (NameSpace, CalledByKey1, CalledByKey2, CalledByCommand);
 
-Index Calls3 On (NameSpace, CalledByKey2, CalledByKey1, ItemType, ItemKey1, ItemKey2);
+Index Calls3 On (NameSpace, CalledByKey2, CalledByKey1, CalledByCommand);
 
 Index NS On NameSpace [ Type = bitmap ];
 

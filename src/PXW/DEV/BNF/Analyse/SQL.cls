@@ -351,13 +351,13 @@ Method FindTable(cref As PXW.DEV.Element, ByRef tables) As %String
         If fulltable="" {
             ; table not found by looking up the alias so maybe the alias is the table name:
             ; SELECT race.* FROM f1_data.race
-            s ta=""
-            f  {
-                s ta=$o(tables(ta),1,ft)
-                q:ta=""
+            Set ta=""
+            For  {
+                Set ta=$ORDER(tables(ta),1,ft)
+                Quit:ta=""
 
-                i $p(ft,".",*)=tablealias {
-                    s fulltable=ft
+                If $PIECE(ft,".",*)=tablealias {
+                    Set fulltable=ft
                     Set:$ISOBJECT(..ClassServer) fulltable=..ClassServer.GetFullTableName(fulltable,..This)
                 }
             }
