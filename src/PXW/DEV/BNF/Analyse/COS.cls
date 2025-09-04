@@ -662,7 +662,7 @@ Method SimplifySubscripts(element As PXW.DEV.Element) As %String
 {
 	Set simple=""
 	If element.type="SubscriptParameterList" {
-		;Set bracket=element.partsGetAt(1)
+		/*;Set bracket=element.partsGetAt(1)
 		Set first=element.partsGetAt(2)
 		If $ISOBJECT(first) {
 			Set type=..SimplifyExpression(first)
@@ -679,6 +679,16 @@ Method SimplifySubscripts(element As PXW.DEV.Element) As %String
 				}
 			}
 		}
+		*/
+		Set sep=""
+		For i=1:1:element.partsCount() {
+			Set exp=element.partsGetAt(i)
+			If $ISOBJECT(exp),exp.type="Expression" {
+				Set type=..SimplifyExpression(exp)
+				Set simple=simple_sep_type,sep=":"
+			}
+		}
+
 	}
 	Quit simple
 }

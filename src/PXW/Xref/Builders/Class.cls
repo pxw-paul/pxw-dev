@@ -131,7 +131,8 @@ Method SaveCOSXref(ItemType As %String, ItemKey1 As %String, ItemKey2 As %String
 	Set xref.CalledByKey2=..CalledByItemName
 	Set xref.CalledByCommand=CalledByCommand
 	Set xref.ItemType=ItemType
-	Set xref.ItemKey1=..ClassServer.FullClassName(ItemKey1,$PIECE(..CalledByClassName,".",1,*-1))
+	; for xref to classes set the full spec of the class - maybe a new method needed for CLS and others
+	Set xref.ItemKey1=$select(ItemType="CLS":..ClassServer.FullClassName(ItemKey1,$PIECE(..CalledByClassName,".",1,*-1)),1:ItemKey1)
 	Set xref.ItemKey2=ItemKey2
 	If $ISOBJECT(Atom) {
 		Set xref.CalledByKey3=Atom.line-..ClassElementLineNumber
@@ -145,6 +146,8 @@ Method SaveCOSXref(ItemType As %String, ItemKey1 As %String, ItemKey2 As %String
 		Set sc=xref.%Save()
 		If $$$ISERR(sc) {
 			$$$DEBUG($EXTRACT($SYSTEM.Status.GetErrorText(sc),1,100))
+		} else {
+			$$$DEBUG("Saved "_xref.%Id())
 		}
 	}
 	If $$$ISOK(sc),ItemType="CLS" {
@@ -438,10 +441,11 @@ Method xrefCOSVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compi
 	Quit ""
 }
 
-Method xrefCOSGlobal(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="GlobalRef,GlobalRefs")
+Method xrefCOSGlobal(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="GlobalRef,GlobalRefs,GlobalRefSet")
 {
 	Set setmode="fetch"
 	If element.type="GlobalRefSet" Set setmode="SET"
+
 
 	Set fullrefE=element.findFirstElementByType("GlobalRefFull",0)
 	If $ISOBJECT(fullrefE) {

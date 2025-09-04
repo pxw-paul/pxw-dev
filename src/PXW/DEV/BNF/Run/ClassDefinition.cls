@@ -41,6 +41,13 @@ Method cheese(element As PXW.DEV.Element) As %Boolean
     Quit ok
 }
 
+Method full(element As PXW.DEV.Element) As %Boolean
+{
+    s ..lowmem=0
+    s retval=..ClassDefinition(element)
+    q retval
+}
+
 /// class_member_section ::= '{' class_member_list? '}'
 ///  summary=S&?&S
 ///  type=group

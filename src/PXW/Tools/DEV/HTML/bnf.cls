@@ -137,7 +137,7 @@ Method %OnNew() As %Status
 }
 
 /// Output the html directly to destination. No escaping or other formatting is done.
-Method output(html As %String, newLine As %Boolean = 0)
+Method output2(html As %String, newLine As %Boolean = 0)
 {
 	If ..WriteMode {
 		If html'="" Write html If newLine Write !

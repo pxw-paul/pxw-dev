@@ -1,17 +1,9 @@
 Class PXW.DEV.UnitTests.BNF.TestCOS Extends %UnitTest.TestCase
 {
 
-Method t1()
+Method TestGlobal()
 {
-
-    		Set tProjRS = ##class(%Library.ResultSet).%New("%Studio.Project:ProjectList",np2,np3)
-    		Set tProjRS = ##class(%Library.ResultSet).%New(..%ClassName(1)_":ProjectList",np2,np3)
-    		Set tProjRS = ##class(%Library.ResultSet).%New(..%ClassName(1)_":"_"ProjectList",np2,np3)
-            Set tProjRS = ##class(%Library.ResultSet).%New($classname($this)_":ProjectList",np2,np3)
-            Set tProjRS = ##class(%Library.ResultSet).%New($classname($this)_":"_"ProjectList",np2,np3) ;hi there
-            Set tProjRS = ##class(%Library.ResultSet).%New($classname()_":ProjectList",np2,np3)
-            Set tProjRS = ##class(%Library.ResultSet).%New($classname()_":"_"ProjectList",np2,np3) ;hi there
-            Set tProjRS = ##class(%Library.ResultSet).%New("%DynamicQuery:SQL") ;hi there
+    do $$$AssertEquals(..parseAndFlat(" s x=^aglob(""string key"",1)"),"SetCommand:{Keyword:s,SetItem:{VariableSet:x,=,GlobalRefFull:{^,GlobalName:aglob,SubscriptParameterList:{(,String:string key,,,Number:1,)}}}}")
 }
 
 Method TestNaked()
