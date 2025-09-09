@@ -84,7 +84,7 @@ ClassMethod query(ServerName As %String, SQL As %String, Output object As %Dynam
     Set q={}
     Set q.query=SQL
     Set q.parameters=[]
-    For i=1:1:$GET(parameters) Do q.parameters.%Push(parameters(i))
+    For i=1:1:$GET(parameters) Do q.parameters.%Push(parameters(i)) $$$DEBUG("parameter"_i_"="_parameters(i))
 
     Do q.%ToJSON(request.EntityBody)
     Set request.ContentType="application/json"
@@ -92,6 +92,10 @@ ClassMethod query(ServerName As %String, SQL As %String, Output object As %Dynam
     Set url="/api/atelier/v2/"_ns_"/action/query"
     ; s sep="?"
     Set sc=handler.postAsObject(url,.object)
+
+    i $isobject(object),$isobject(object.status),object.status.summary'="" {
+        s sc=$$$ERROR(5001,object.status.summary)
+    }
     ;d ..display(object)
     
     $$$DEBUGMethodEnd

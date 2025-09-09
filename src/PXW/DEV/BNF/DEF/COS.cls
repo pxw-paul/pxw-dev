@@ -32,13 +32,13 @@ cos_code_block_trigger              ::= one_cos_statement ( one_cos_statement )*
 one_cos_statement                   ::= [ label_definition ] ('.')* cos_command 
 one_cos_statement_sql               ::= ('.')* cos_command  /* in SQLCompute mode line labels are not allowed, and variables can be {*} or {field} */
 
-label_definition                    ::= label_identifier [ label_formal_specification ] [ label_scope ] [ '{' cos_code_block '}']
+label_definition                    ::= label_identifier [ label_formal_specification ] [ label_scope ] [ '{' [cos_code_block] '}']
 label_formal_specification          ::= '(' [ label-formal-param-list ]  ')'
 label-formal-param-list             ::= label-one-formal-param ( ',' label-one-formal-param )* ['...']
 label-one-formal-param              ::= [ '&' ] label-param-name [ label-param-default-value ]
 label-param-default-value           ::= '=' expression
 label-param-name                    ::= variable_set /*identifier*/
-label_scope                         ::= ( [ label_public_vars ] 'public' | 'private' | 'methodimpl' ) /*'{' [ command_list ] '}'*/
+label_scope                         ::= ( [ label_public_vars ] 'public' | 'private' | 'methodimpl'  ) /*'{' [ command_list ] '}'*/
 label_public_vars                   ::= '[' variable ( ',' variable )* ']'
 
 label_reference                     ::= (( label_identifier  | simple_indirection ) [ '^' [routine_env] ( routine_identifier  | simple_indirection) ])  /* lab^rouine */

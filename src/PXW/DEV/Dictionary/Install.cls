@@ -85,6 +85,26 @@ ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, Ate
     Quit sc
 }
 
+ClassMethod SetupUT(NamespaceName As %String, AtelierServerName As %String) As %Status
+{
+    s sc=$$$OK
+    ; code interfaces
+    Set:$$$ISOK(sc) sc=##class(PXW.Tools.UnitTest.UTInterface).RegisterType()
+    ; html display pages
+    Set:$$$ISOK(sc) sc=##class(PXW.Tools.UnitTest.UTCase).RegisterType()
+
+    if $$$ISOK(sc) {
+        s interface=##class(PXW.Tools.UnitTest.UTInterface).OpenNamespace(NamespaceName)
+        i '$isobject(interface) {
+            s interface=##class(PXW.Tools.UnitTest.UTInterface).%New()
+            s interface.Namespace=##class(PXW.DEV.Dictionary.Namespace).%OpenId(NamespaceName)
+        }
+        s interface.AtelierSettings=##class(PXW.DEV.Dictionary.AtelierSettings).%OpenId(AtelierServerName)
+        s sc=interface.%Save()
+    }
+    q sc
+}
+
 /// d ##class(PXW.DEV.Dictionary.Install).GenAll()
 ClassMethod GenAll()
 {

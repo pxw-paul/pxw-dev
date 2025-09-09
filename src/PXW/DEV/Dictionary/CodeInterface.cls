@@ -45,10 +45,28 @@ ClassMethod OpenNamespace(Namespace As %String) As PXW.DEV.Dictionary.CodeInterf
     Quit object
 }
 
-/// Needs to return at least SubType,Name,TimeChanged
+/// Needs to return at least SubType,Name,TimeChanged, and optionally ID
 /// The return must be similar to %ResultSet
 Method List(SearchName As %String) As %RegisteredObject [ Abstract ]
 {
+}
+
+/// Goto the next row in the resultset, if there are no more rows return 0.
+/// Otherwise populate all the output fields from the resultset and return 1.
+/// This is compatible with the object returned from list.
+/// 
+/// The default behaviour of this is to treat ResultSet as a result set. If your List method returns something else you will need to override this.
+Method ListNext(ResultSet As %RegisteredObject, Output SubType As %String, Output Name As %String, Output TimeChanged As %String, Output ID As %String) As %Boolean
+{
+    s next=ResultSet.%Next()
+    i next {
+        s SubType=ResultSet.%Get("SubType")
+        s Name=ResultSet.%Get("Name")
+        s TimeChanged=ResultSet.%Get("TimeChanged")
+        s ID=ResultSet.%Get("ID")
+        i ID="" s ID=Name
+    }
+    q next
 }
 
 Method Load(Name As %String, Output Text As %String, Output LastUpdateTime As %TimeStamp) As %Status [ Abstract ]

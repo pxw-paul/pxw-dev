@@ -1340,7 +1340,7 @@ Method TextToEolContinue(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
             Set n=""
             While ..peek(1)'=$CHAR(13) { Set n=n_..nextNotEOL(1) } ; add trailing whitespace (after the ##continue)
-            Set n=n_..nextNotEOL(1)   ; the next line
+            Set n=n_..next(1)   ; the next line
             Set ..whitespace=..newAtom("whitespace",n)
             Set n=""
 

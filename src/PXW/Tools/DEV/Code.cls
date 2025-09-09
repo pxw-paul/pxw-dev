@@ -40,23 +40,23 @@ ClassMethod WriteCodeList(Type As %String, Name As %String)
         Set page=rs.%Get("Page")
         Set interface=##class(PXW.DEV.Dictionary.CodeInterface).%OpenId(rs.%Get("ID"))
         Set rs2=interface.List(Name)
-        While rs2.%Next() {
+        While interface.ListNext(rs2,.subtyp,.name,.timechanged,.id) {
             Write "<tr>"
             Write "<td>"_..EscapeHTML(typ)_"</td>"
-            Write "<td>"_..EscapeHTML(rs2.%Get("SubType"))_"</td>"
+            Write "<td>"_..EscapeHTML(subtyp)_"</td>"
             Write "<td>"
             If page="" {
                 Write "<span title='CodeType ("_typ_") has no display page defined'>"
-                Write ..EscapeHTML(rs2.%Get("Name")) 
+                Write ..EscapeHTML(name) 
                 Write "</span>"
                 
             } Else {
-                Write "<a class='CDEFClassName' href='"_$CLASSMETHOD(page,"HREFToK123",rs2.%Get("Name"))_"'>"
-                Write ..EscapeHTML(rs2.%Get("Name")) 
+                Write "<a class='CDEFClassName' href='"_$CLASSMETHOD(page,"HREFToID",id,name,subtyp)_"'>"
+                Write ..EscapeHTML(name) 
                 Write "</a>"
             }
             Write "</td>"
-            Write "<td>"_..EscapeHTML(rs2.%Get("TimeChanged"))_"</td>"
+            Write "<td>"_..EscapeHTML(timechanged)_"</td>"
             Write "</tr>",!
         }
 	}
@@ -97,40 +97,6 @@ Query SelectTypes(Namespace As %String, Type As %String) As PXW.LIB.SQL.Query [ 
                     ON cti.Usage='CodeDisplay' AND cti.CodeType=ci.Type
       WHERE ci.Namespace=:Namespace
         AND ((:Type IS NULL) OR (ci.Type=:Type))
-}
-
-ClassMethod WriteMainBodyold(ByRef scratch)
-{
-	Do ..HREFFrom(.CodeReference)
-
-    Set type=$PIECE(CodeReference,".",*)
-    ; most likely being used to view m code?
-    If type="" Set type="INT",CodeReference=CodeReference_".INT"
-    Set utype=$$$UPPER(type)
-    If utype="CLS" {
-        Set cls=$PIECE(CodeReference,".",1,*-1)
-    	If cls["*" Do ##class(PXW.Tools.DEV.Class).WriteClassDir(cls) Quit
-        Do ##class(PXW.Tools.DEV.Class).WriteClass(cls,"","","",.scratch)
-    } ElseIf utype="INT" {
-        Set rtn=$PIECE(CodeReference,".",1,*-1)
-        If rtn["*" Do ##class(PXW.Tools.DEV.Routine).WriteRoutineDir(rtn) Quit
-        Set rtn=$PIECE(CodeReference,".",1,*-1)
-        Do ##class(PXW.Tools.DEV.Routine).WriteRoutine(rtn)
-    } ElseIf utype="INC" {
-        Set inc=$PIECE(CodeReference,".",1,*-1)
-        If inc["*" Do ##class(PXW.Tools.DEV.Include).WriteIncludeDir(inc) Quit
-        Set inc=$PIECE(CodeReference,".",1,*-1)
-        Do ##class(PXW.Tools.DEV.Include).WriteInclude(rtn)
-    } Else {
-        Write !,"UNKNOWN TYPE ("_type_") "_CodeReference,!
-        Write "try "
-        Write "<ul>"
-        Write "<li><a href='"_..HREFTo(CodeReference_".CLS")_"'>"_..EscapeHTML(CodeReference_".CLS")_"</a></li>"
-        Write "<li><a href='"_..HREFTo(CodeReference_".INT")_"'>"_..EscapeHTML(CodeReference_".INT")_"</a></li>"
-        Write "<li><a href='"_..HREFTo(CodeReference_".INC")_"'>"_..EscapeHTML(CodeReference_".INC")_"</a></li>"
-        Write "</ul>"
-    }
-	Quit
 }
 
 ClassMethod WriteHeadForm(Page As %String)
