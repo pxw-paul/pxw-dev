@@ -173,7 +173,7 @@ sql_special_variable					::= 'NULL' | '?' | '$H'  | '$ZNSPACE' | '$NAMESPACE'
 /* expression */
 sql_expression                       ::= sql_factor ( sql_dyadicop sql_factor )*  /* using star as an expression on its own not strictly correct but good enough?*/
 sql_dyadicop                            ::=  "+" | "-" | "\\" | "/" | "<>" | ">=" | ">" | "!>" | "<=" |  "<" | "!<" 
-                                        | "=" | "!=" | "**" | "*" | "&&" | "&" | "]]" | "[" | "'[" | "!" | "||" | "_" | "#" | '\'
+                                        | "=" | "!=" | "**" | "*" | "&&" | "&" | "]]" | "]" | "[" | "'[" | "!" | "||" | "_" | "#" | '\'
 										| "AND" | "OR" | "NOT=" 
 										| "SIZE" | "ESCAPE" /* size and escape do not really belong here, but I am just using on already valid sql */
 										| sql_predicate

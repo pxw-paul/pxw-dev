@@ -59,7 +59,7 @@ Method ListResults(TestCaseId As %String) As PXW.DEV.Dictionary.AtelierRS
 {
     $$$DEBUGMethodBegin
     s sql=""
-    s sql=sql_"SELECT ta.id as ID,tc.id as TestCaseId,tc.Name,tm.name as Method,ta.Counter,ta.Action,ta.Status,ta.Description,ta.Location"
+    s sql=sql_"SELECT ta.id as ID,tc.id as TestCaseId,tc.Name,tm.name as Method,ta.Counter,ta.Action,ta.Status,ta.Description,ta.Location,tm.Duration"
     s sql=sql_" FROM %UnitTest_Result.TestAssert as ta"
     s sql=sql_" inner join %UnitTest_Result.TestMethod as tm on tm.id=ta.testmethod"
     s sql=sql_" inner join %UnitTest_Result.TestCase as tc on tc.id=tm.testcase"
@@ -76,7 +76,7 @@ Method ListResults(TestCaseId As %String) As PXW.DEV.Dictionary.AtelierRS
 	Quit rs
 }
 
-Method ListResultsNext(ResultSet As PXW.DEV.Dictionary.AtelierRS, Output ResultID As %String, Output TestCaseId As %String, Output TestCaseName As %String, Output Method As %String, Output Counter As %String, Output Action As %String, Output Status As %String, Output Description As %String, Output Location As %String) As %Boolean
+Method ListResultsNext(ResultSet As PXW.DEV.Dictionary.AtelierRS, Output ResultID As %String, Output TestCaseId As %String, Output TestCaseName As %String, Output Method As %String, Output Counter As %String, Output Action As %String, Output Status As %String, Output Description As %String, Output Location As %String, Output Duration As %String) As %Boolean
 {
     s next=ResultSet.%Next()
     $$$DEBUG("next="_next)
@@ -91,6 +91,7 @@ Method ListResultsNext(ResultSet As PXW.DEV.Dictionary.AtelierRS, Output ResultI
         s Status=ResultSet.%Get("Status")
         s Description=ResultSet.%Get("Description")
         s Location=ResultSet.%Get("Location")
+        s Duration=ResultSet.%Get("Duration")
     }
     q next
 }

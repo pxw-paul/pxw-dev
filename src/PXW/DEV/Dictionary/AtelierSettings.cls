@@ -3,6 +3,8 @@ Class PXW.DEV.Dictionary.AtelierSettings Extends PXW.DEV.LIB.REST.Settings
 
 Property Namespace As %String;
 
+Index iNamespace On Namespace;
+
 Storage Default
 {
 <Data name="AtelierSettingsDefaultData">

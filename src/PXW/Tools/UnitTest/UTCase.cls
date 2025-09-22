@@ -20,30 +20,65 @@ ClassMethod WriteMainBody(ByRef scratch)
         <table>
             <thead><tr>
                 <th>method</th>
-                <th>counter</th>
                 <th>action</th>
                 <th>status</th>
                 <th>description</th>
             </tr></thead>
             <tbody>
     >
-    while interface.ListResultsNext(rs,.rid,.tcid,.tcname,.method,.counter,.action,.status,.description,.location) {
-        i action="AssertEquals",status=0 {
-            s com=$p(description,"==",1),res=$p(description,"==",2,*)
-            s description=com_"==<br>"_..EscapeHTML($p(res," was ",1))_"<br>was<br>"_..EscapeHTML($p(res," was ",2))
-        } else {
-            s description=..EscapeHTML(description)
-        }
+    d ..SortResults(interface,rs,.methodsArray)
+    s method=""
+    f  {
+        s method=$o(methodsArray(method),1,mdata)
+        q:method=""
+
+        s $lb(duration,mstatus)=mdata
+        zw mstatus,duration
         &html<
             <tr><td>#(..EscapeHTML(method))#</td>
-                <td>#(..EscapeHTML(counter))#</td>
-                <td>#(..EscapeHTML(action))#</td>
-                <td #($s(status=1:"class='gooddata'",1:"class='errordata'"))# >#(..EscapeHTML($s(status:"Pass",1:"Fail")))#</td>
-                <td><pre>#(description)#</pre></td>
+                <td>&nbsp;</td>
+                <td #($s(mstatus=1:"class='gooddata'",1:"class='errordata'"))# >#(..EscapeHTML($s(mstatus:"Pass",1:"Fail")))#</td>
+                <td>#(..EscapeHTML(duration))#</td>
             </tr>
         >
+
+        s counter=""
+        f  {
+            s counter=$o(methodsArray(method,counter),1,adata)
+            q:counter=""
+
+            s $lb(action,status,description)=adata
+            i action="AssertEquals",status=0 {
+                s com=$p(description,"==",1),res=$p(description,"==",2,*)
+                s description=com_"==<br>"_..EscapeHTML($p(res," was ",1))_"<br>was<br>"_..EscapeHTML($p(res," was ",2))
+            } else {
+                s description=..EscapeHTML(description)
+            }
+        
+            &html<
+                <tr><td>#(..EscapeHTML(method))#</td>
+                    <td>#(..EscapeHTML(action))#</td>
+                    <td #($s(status=1:"class='gooddata'",1:"class='errordata'"))# >#(..EscapeHTML($s(status:"Pass",1:"Fail")))#</td>
+                    <td><pre>#(description)#</pre></td>
+                </tr>
+            >
+        }
     }
     &html<</tbody></table>>
+}
+
+/// Methods array
+ClassMethod SortResults(interface As PXW.Tools.UnitTest.UTInterface, rs As PXW.DEV.Dictionary.AtelierRS, Output methodsArray)
+{
+    k mstatus
+    while interface.ListResultsNext(rs,.rid,.tcid,.tcname,.method,.counter,.action,.status,.description,.location,.duration) {
+        ; remember the status of the entire method, 
+        ; if this is a new method then it will stay the same or default to 1 ($g(,1))
+        ; if this status is 0 then the method failed
+        s mstatus(method)=$s(status=0:0,1:$g(mstatus(method),1))
+        s methodsArray(method)=$lb(duration,mstatus(method))
+        s methodsArray(method,counter)=$lb(action,status,description)
+    }
 }
 
 /// ID,Name,Subtype opens from something like CODE list page, where id is probably the same as Name but might not be.

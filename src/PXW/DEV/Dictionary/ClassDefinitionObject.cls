@@ -32,6 +32,8 @@ Property KnownVariables As array Of %String;
 /// Its not used yet by I can see a case for a tool being able to just prepare sql rather than running it.
 Property JDBCName As %String;
 
+Index iAtelierSettings On AtelierSettings;
+
 ClassMethod ClearCache() [ CodeMode = objectgenerator ]
 {
     ;
@@ -893,6 +895,16 @@ Method GetMacroLocation(ClassUsingMacro As %String, MacroName As %String, Output
     Set sourceDocument=$LISTGET(data,1),lineNumber=$LISTGET(data,2),found=(sourceDocument'="")
     $$$DEBUGMethodEnd
 	Quit found
+}
+
+ClassMethod FindNamespaceFromIRISNameSpace(IRISNameSpace As %String) As %String [ SqlProc ]
+{
+    &SQL(SELECT cdef.Namespace INTO :ns
+            FROM pxw_dev_dictionary.ClassDefinitionObject as cdef
+            left outer join PXW_DEV_Dictionary.AtelierSettings  as atel on atel.ServerName =cdef.AtelierSettings
+            )
+    I SQLCODE'=0 s ns=""
+    q ns
 }
 
 Storage Default

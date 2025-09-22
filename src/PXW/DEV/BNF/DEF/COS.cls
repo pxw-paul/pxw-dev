@@ -757,7 +757,7 @@ piece_function_call_set             ::= ('piece' | 'p') open_bracket set_value_e
 listbuild_function_call             ::= ('listbuild' | 'lb') open_bracket  expression (',' expression)* close_bracket
 listbuild_function_call_set         ::= ('listbuild' | 'lb') open_bracket  set_value_expression (',' variable_set)* close_bracket
 
-listupdate_function_call            ::= ('listupdate' | 'lu') open_bracket  expression /* list */ ',' expression /* pos */ (',' expression ':' expression)* close_bracket
+listupdate_function_call            ::= ('listupdate' | 'lu') open_bracket  expression ',' expression (',' [ expression ':' expression] )* close_bracket
 
 listitem_function_call              ::= ('listget' | 'list' | 'li' |'lg' ) open_bracket expression  [ ',' star_parameter [ ',' star_parameter ] ] close_bracket
 listitem_function_call_set          ::= ('list' | 'li') open_bracket set_value_expression  [ ',' star_parameter [ ',' star_parameter ] ] close_bracket

@@ -88,6 +88,7 @@ Method ToString(wspace As %String = "") As %String
 
 Method ToStringAtomsOnly(wspace As %String = "") As %String
 {
+ 
 	#dim a as PXW.DEV.Atom
 	#dim e as PXW.DEV.Element
 	
