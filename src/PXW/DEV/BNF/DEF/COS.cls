@@ -213,22 +213,6 @@ extrinsicfncall                     ::= '$$' label_reference  [extrinsicfncall_p
 extrinsicfncall_parameter_list                ::= open_bracket [ [extrinsicfncall_parameter] ( ',' [extrinsicfncall_parameter] )* ] ['...'] close_bracket
 extrinsicfncall_parameter                     ::= ('.' (this_object_direct_property | simple_indirection | variable )) | expression 
 
-OLDintrinsicfncall                     ::= case_function_call
-                                        | select_function_call
-                                        | extract_function_call
-                                        | piece_function_call
-                                        | listitem_function_call
-                                        | listupdate_function_call
-                                        | increment_function_call
-                                        | method_function_call
-                                        | classmethod_function_call
-                                        | zobjmethod_function_call
-                                        | zobjclassmethod_function_call
-                                        | text_function_call
-                                        | bitlogic_function_call 
-                                        | expression_function_call
-                                        | ('$' identifier function_parameter_list /* intrinsicfncall_parameter_list */ [ object_chain ])
-
 intrinsicfncall                     ::= '$' (special_intrinsic | general_intrinsic )
 special_intrinsic                   ::= case_function_call
                                         | select_function_call
