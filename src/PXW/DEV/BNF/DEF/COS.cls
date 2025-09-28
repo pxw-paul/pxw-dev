@@ -141,6 +141,7 @@ cos_command                         ::=  set_command
                                          | html_command
                                          | print_command
                                          | mpv_command
+                                         | ZZ_COMMAND
 
 command_list                        ::= cos_command ( cos_command )*
 command_list_eol                    ::= cos_command ( cos_command )* /* needs to stop at end of line */
@@ -274,8 +275,6 @@ class_expression                    ::= '##class' '('  class_reference  ')' [ cl
 class_casting                       ::= ['(' ] ( '##this' | '$this' | variable_identifier ) [')'] 
 class_reference                     ::= class_identifier
 
-oldthis_object                           ::= ('..' | 'i%' | 'r%' | '$this' | '##this') object_chain_item  [ object_chain] 
-oldthis_object_set                       ::= ('..' | 'i%' | 'r%' | '$this' | '##this' ) object_chain_item  [ object_chain] 
 this_object                         ::= this_object_self | this_object_this
 this_object_set                     ::= this_object_self | this_object_this
 this_object_self                    ::= ('..' | 'i%' | 'r%' | 'm%' | 's%') [object_chain_no_dot] 
@@ -532,7 +531,6 @@ lock_command                        ::= ('lock' | 'l') [post_conditional ] ( nak
 lock_parameter                      ::= [ '+' | '-' ] (lockname_list | lockname_list_item) [ lock_timeout ]
 lockname_list                       ::= '(' lockname_list_item ( ',' lockname_list_item )* ')'
 lockname_list_item                  ::= lockname [ lock_type ]
-OLDlock_type                        ::= '#' '"' ( 'S' | 'E' | 'I' | 'D' )* '"' /* this does not work as it treats these as keywords and #"SI" is not in the keyword list...*/
 lock_type                           ::= hash_op expression
 lock_timeout                        ::= ':' expression
 lockname                            ::= global_ref | variable | macrocall | indirection
@@ -576,7 +574,6 @@ return_expression                     ::= expression
 
 set_command                         ::= ('set' | 's') [ post_conditional ] set_item_list
 set_item_list                       ::= set_item ( ',' set_item )*
-set_item_old                            ::= (( set_item_single | set_item_varlist ) '=' expression) | simple_indirection /* PXW deal with set @x */
 set_item                            ::= (( set_value_expression | ('(' set_value_expression ( ',' set_value_expression )* ')'  )) '=' set_expression) | simple_indirection /* PXW deal with set @x */
 set_item_single                     ::= lvalue_expression
 set_item_varlist                    ::= '(' set_item_single_list ')'
@@ -622,7 +619,7 @@ view_newvalue                       ::= expression
 
 while_command                       ::= 'while' expression_list '{'  [ cos_code_block ] '}' 
 
-write_command                       ::= ('write' | 'w') [ post_conditional ] [ write_argument_list ]
+write_command                       ::= ('write' | 'w') [ post_conditional ] ( naked | write_argument_list )
 write_argument_list                 ::= one_write_argument ( ',' one_write_argument)*
 one_write_argument                  ::= expression | write_control_expression_list 
 write_control_expression_list       ::= write_control_expression (write_control_expression)*
@@ -711,13 +708,17 @@ zsync_command                       ::= 'zsync' [ post_conditional ]
 
 ztrap_command                       ::= ('ztrap' | 'zt') [post_conditional ] [naked | expression]
 
-zwrite_command                      ::= ( 'zwrite' | 'zw' ) [ post_conditional ] [ zwrite_argument_list ]
+zwrite_command                      ::= ( 'zwrite' | 'zw' ) [ post_conditional ] ( naked | zwrite_argument_list )
 
 zwrite_argument_list                ::= zwrite_argument ( ',' zwrite_argument )*
 
 zzdump_command                      ::= 'zzdump' [post_conditional] expression
 
 zzwrite_command                     ::= 'zzwrite' [post_conditional] expression
+
+ZZ_COMMAND                          ::= ZZ_COMMAND_WORD (naked | expression_list)
+ZZ_COMMAND_WORD                     ::= 'ZZ'   -- this must be hand coded
+
 
 html_command                        ::= '&html<' html_body '>'
 html_body                           ::= 'NEED HTML BODY'
@@ -775,10 +776,12 @@ star_parameter                      ::= ('*' [expression]) | expression
 
 increment_function_call             ::= ('increment' | '$i') '(' variable_set [',' expression ] ')'
 
-method_function_call                ::= 'method' function_parameter_list [ object_chain ]
-classmethod_function_call           ::= 'classmethod' function_parameter_list [ object_chain ]
-zobjmethod_function_call            ::= 'zobjmethod' function_parameter_list [ object_chain ]
-zobjclassmethod_function_call       ::= 'zobjclassmethod' function_parameter_list [ object_chain ]
+method_function_call                ::= 'method' open_bracket classmethod_class ',' classmethod_method [ ',' expression_list] close_bracket [ object_chain ]
+classmethod_function_call           ::= 'classmethod' open_bracket classmethod_class ',' classmethod_method [ ',' expression_list] close_bracket [ object_chain ]
+classmethod_class                   ::= expression
+classmethod_method                  ::= expression
+zobjmethod_function_call            ::= 'zobjmethod' open_bracket classmethod_class ',' classmethod_method [ ',' expression_list] close_bracket [ object_chain ]
+zobjclassmethod_function_call       ::= 'zobjclassmethod' open_bracket classmethod_class ',' classmethod_method [ ',' expression_list] close_bracket [ object_chain ]
 
 select_function_call                ::= ('select' | 's') '(' select_clauses ')' [ object_chain ] /* who returns an object from a $s? */
 select_clauses                      ::= select_clause ( ',' select_clause )*

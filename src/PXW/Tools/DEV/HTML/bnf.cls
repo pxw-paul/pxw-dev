@@ -719,6 +719,18 @@ Method writeCOSVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Comp
         Set classname=$GET(..Analyser.DimmedTypes(variablename))
         If classname="" Set classname=$GET(..Analyser.VariablesTypes(variablename))
         If classname'="" Do ..FollowObjectChainForType(element,classname)
+
+        ; treat %parameter("xxx") as a parameter
+        if ..Analyser.CodeMode="OBJECTGENERATOR",variablename="%parameter" {
+            s arrayE=element.findFirstElementByType(("ArrayParameterList"),0)
+            if $isobject(arrayE) {
+                s parameter=..Analyser.SimplifySubscripts(arrayE)
+                ; is the paremeter a string
+                i parameter?1"""".AN1"""" {
+                    d ..wrapElementHTML(arrayE,"<a href='"_..HREFToClass(..This,$tr(parameter,"""",""))_"'>","</a>")
+                }
+            }
+        }
     }
     Quit ""
 }
@@ -780,6 +792,7 @@ Method writeCOSPythonImport(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.
 
 Method writeCOSMacrocall(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="Macrocall")
 {
+    #dim a as %Dictionary.ClassDefinition
     Set macroatom=element.partsGetAt(2)
     If $ISOBJECT(macroatom) {
         Set name=macroatom.ToString(0)
@@ -802,6 +815,23 @@ Method writeCOSMacrocall(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Com
 Method writeCOSCosDirectiveIncludeName(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosDirectiveIncludeName")
 {
     Do ..wrapElementHTML(element,"<a href='"_..HREFToInclude(element.ToString(0))_"'>","</a>")
+    Quit ""
+}
+
+Method writeCOSClassmethodMethod(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassmethodMethod")
+{
+
+    if $ISOBJECT(..Analyser) {
+        set expressionE=element.findFirstElementByType("Expression")
+        if $isobject(expressionE) {
+            set simple=..Analyser.SimplifyExpression(expressionE) 
+            ; its a string, so its a hard coded method name
+            if $e(simple,1)="""",$e(simple,*)="""" {
+                s mname=$tr(simple,"""","")
+                d ..wrapElementHTML(expressionE,"<a href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS","*",mname)_"'>","</a>")
+            }
+        }
+    }
     Quit ""
 }
 

@@ -357,7 +357,7 @@ primary ::= anonymous_Function
     | ('(' expression_Sequence ')' (member_expression_part)*)                                           /* ParenthesizedExpression */
 
 Member_Expression_Part	::=	( "[" single_Expression "]" )
-   |	( "." Identifier [( "(" [ expression_Sequence ] ")" )] )
+   |	( ['?'] "." Identifier [( "(" [ expression_Sequence ] ")" )] )
 
 macro   ::= '$$$' identifier ['(' expression_sequence ')']
 

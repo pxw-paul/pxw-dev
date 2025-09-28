@@ -44,7 +44,8 @@ ClassMethod parse(text As %String, method As %String = "CosCodeBlock", class As 
     #dim x as PXW.DEV.BNF.super
     Set element=##class(PXW.DEV.Element).%New()
     Set %section=element
-    Set x=$SYSTEM.OBJ.New(class)
+    ;Set x=$SYSTEM.OBJ.New(class)
+    Set x=$CLASSMETHOD(class,"%New")
     Set x.stream=##class(PXW.DEV.InputStream).NewString(text)
     Set ok=$METHOD(x,method,element)
     If 'ok $$$ThrowStatus($$$ERROR(5001,"Method "_method_" returned "_ok))

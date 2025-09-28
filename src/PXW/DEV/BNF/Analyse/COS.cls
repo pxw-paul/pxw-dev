@@ -661,7 +661,7 @@ Method SimplifyExpression(expressionElement As PXW.DEV.Element, Output variableE
 Method SimplifySubscripts(element As PXW.DEV.Element) As %String
 {
 	Set simple=""
-	If element.type="SubscriptParameterList" {
+	If (element.type="SubscriptParameterList") || (element.type="ArrayParameterList") {
 		/*;Set bracket=element.partsGetAt(1)
 		Set first=element.partsGetAt(2)
 		If $ISOBJECT(first) {

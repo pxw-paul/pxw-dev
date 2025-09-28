@@ -1373,6 +1373,38 @@ Method AnyKeyword(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
     Quit retok
 }
 
+///  ZZ_COMMAND_WORD ::= 'ZZ'
+/// summary values:ZZ
+/// summary=K
+Method ZzCommandWord(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary K
+	;if '(..isKeywordInList($lb("ZZ"),.value)) { quit 0 /* normal */ }
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+    Set keyword=..peekKeyword()
+    Set UPP=$$$UPPER(keyword)
+    $$$DEBUG("keyword="_keyword)
+	if UPP'?1"ZZ".AN Quit 0
+	
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,UPP) {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0 ; normal rollback
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
 /// Skip over the next set of comments, return 1 if something was done or 0
 Method skipComments(ch10 As %String) As %Boolean
 {

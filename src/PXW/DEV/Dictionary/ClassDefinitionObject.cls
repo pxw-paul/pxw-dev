@@ -484,7 +484,7 @@ Method GetPropertyDetails(ClassName As %String, Name As %String, Output RuntimeT
     ;s data=$lb(pname,rs.%Get("RuntimeType"),psqlname,
     ;                    rs.%Get("Collection"),rs.%Get("Type"))            
    
-    Set data=$GET(^PXW.Cache("CDEF",..Namespace,$$$UPPER(fcn),"GPD","propertyname",ufield))
+    Set data=$select(ufield'="":$GET(^PXW.Cache("CDEF",..Namespace,$$$UPPER(fcn),"GPD","propertyname",ufield)),1:"")
     If data="" Quit 0
 
 	Set RuntimeType=$LISTGET(data,2)
@@ -534,7 +534,7 @@ Method GetMethodDetails(ClassName As %String, Name As %String, Output ReturnType
 
     Do ..CacheIfNecessary(fcn,"GMD")
 	  
-    Set data=$GET(^PXW.Cache("CDEF",..Namespace,$$$UPPER(fcn),"GMD",ufield))
+    Set data=$select(ufield'="":$GET(^PXW.Cache("CDEF",..Namespace,$$$UPPER(fcn),"GMD",ufield)),1:"")
     Set ReturnType=$LISTGET(data,2)
     Set Origin=$LISTGET(data,3)
     Set Stub=$LISTGET(data,4)
@@ -902,6 +902,7 @@ ClassMethod FindNamespaceFromIRISNameSpace(IRISNameSpace As %String) As %String 
     &SQL(SELECT cdef.Namespace INTO :ns
             FROM pxw_dev_dictionary.ClassDefinitionObject as cdef
             left outer join PXW_DEV_Dictionary.AtelierSettings  as atel on atel.ServerName =cdef.AtelierSettings
+            where atel.Namespace=:IRISNameSpace
             )
     I SQLCODE'=0 s ns=""
     q ns

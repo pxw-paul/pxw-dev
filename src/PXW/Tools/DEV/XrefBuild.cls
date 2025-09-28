@@ -57,7 +57,7 @@ ClassMethod WriteMainBody()
 	Write "<th>Built</th>"
 	Write "<th>Errors</th>"
 	Write "<th>Skipped</th>"
-	Write "<th>Done</th>"
+	Write "<th>ToDo</th>"
 	Write "<th>Status</th>"
 	Write "</tr>"
 	Write "</thead>"
@@ -85,7 +85,7 @@ ClassMethod WriteMainBody()
 		Write "<td>"_..EscapeHTML(rs.%Get("TotalBuilt"))_"</td>"
 		Write "<td>"_..EscapeHTML(rs.%Get("TotalErrors"))_"</td>"
 		Write "<td>"_..EscapeHTML(rs.%Get("TotalSkipped"))_"</td>"
-		Write "<td>"_..EscapeHTML(rs.%Get("TotalBuilt")+rs.%Get("TotalErrors")+rs.%Get("TotalSkipped"))_"</td>"
+		Write "<td>"_..EscapeHTML(rs.%Get("Total")-rs.%Get("TotalBuilt")-rs.%Get("TotalErrors")-rs.%Get("TotalSkipped"))_"</td>"
 		Write "<td>"_..EscapeHTML(rs.%Get("Status"))_"</td>"
 		Write "</tr>"		
 	}
@@ -101,7 +101,7 @@ Query SelectStatus() As %Library.SQLQuery
 	SELECT * FROM ( 
 		SELECT 'a' as sortkey,* FROM PXW_Xref.BuildStatus WHERE EndDateTime is null 
 		union 
-		SELECT top 50 'b' as sortkey,* FROM PXW_Xref.BuildStatus where EndDateTime is not null
+		SELECT 'b' as sortkey,* FROM PXW_Xref.BuildStatus where EndDateTime is not null
 	) order by sortkey, EndDateTime desc
 }
 

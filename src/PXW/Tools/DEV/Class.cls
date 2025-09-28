@@ -107,13 +107,14 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
     Set output=##class(PXW.Tools.DEV.HTML.bnf).%New()
 	Set output.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)
 
-	Set showPaths=0 
+	Set showPaths=0,forceXref=0
     Write "<pre>"
 	; Debug is only for the DISPLAY of the page, if you want to debug the parsing use the ParserTest page.
 	If +Debug=1 $$$DEBUGNew(##class(PXW.Tools.Debugger).%ClassName(1))
 	If Debug["$FILE" $$$DEBUGNew(##class(PXW.Debuggers.BasicToFile).%ClassName(1)) 
 	If Debug["$PATHS" Set showPaths=1,%path="" ; no need to set any output its just for tooltips
 	if Debug["$TIME" $$$DEBUGNew(##class(PXW.Tools.DebugTiming).%ClassName(1))
+	If Debug["$XREF" set forceXref=1
 	
 	Set sc=output.ClassServer.GetClassStudioText(ClassName,.text,.linesOfCode,.timestamp)
 	Set zh(1,"load")=$ZHOROLOG-zh,zh=$ZHOROLOG
@@ -167,14 +168,14 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 
 		Set zh(5,"render end")=$ZHOROLOG-zh,zh=$ZHOROLOG
 
-		Do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName)
+		Do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName,forceXref)
 
 		Set zh(6,"xref")=$ZHOROLOG-zh,zh=$ZHOROLOG
 		Kill element,x,output
 
 	} Else {
 		Do ..WriteStatus(sc)
-		Do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName)
+		Do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName,forceXref)
 	}
 
 	

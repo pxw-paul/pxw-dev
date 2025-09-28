@@ -132,7 +132,8 @@ Method SaveCOSXref(ItemType As %String, ItemKey1 As %String, ItemKey2 As %String
 	Set xref.CalledByCommand=CalledByCommand
 	Set xref.ItemType=ItemType
 	; for xref to classes set the full spec of the class - maybe a new method needed for CLS and others
-	Set xref.ItemKey1=$select(ItemType="CLS":..ClassServer.FullClassName(ItemKey1,$PIECE(..CalledByClassName,".",1,*-1)),1:ItemKey1)
+	; * is a special case where we know the method but not the class (eg $classmethod)
+	Set xref.ItemKey1=$select(ItemKey1="*":ItemKey1,ItemType="CLS":..ClassServer.FullClassName(ItemKey1,$PIECE(..CalledByClassName,".",1,*-1)),1:ItemKey1)
 	Set xref.ItemKey2=ItemKey2
 	If $ISOBJECT(Atom) {
 		Set xref.CalledByKey3=Atom.line-..ClassElementLineNumber
@@ -437,8 +438,42 @@ Method xrefCOSVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compi
 		If classname'="" {
 			Do ..FollowObjectChainForType(element,classname)
 		}
+
+        ; treat %parameter("xxx") as a parameter
+        if ..Analyser.CodeMode="OBJECTGENERATOR",variablename="%parameter" {
+            s arrayE=element.findFirstElementByType(("ArrayParameterList"),0)
+            if $isobject(arrayE) {
+                s parameter=..Analyser.SimplifySubscripts(arrayE)
+                ; is the paremeter a string
+                i parameter?1"""".AN1"""" {
+					s atom=arrayE.FirstAtom()
+                    ;d ..wrapElementHTML(arrayE,"<a href='"_..HREFToClass(..This,$tr(parameter,"""",""))_"'","</a>")
+					d ..SaveCOSXref("CLS",..CalledByClassName,$tr(parameter,"""",""),"%parameter",atom)
+                }
+            }
+        }
+
 	}
 	Quit ""
+}
+
+Method xrefCOSClassmethodMethod(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassmethodMethod")
+{
+
+    if $ISOBJECT(..Analyser) {
+        set expressionE=element.findFirstElementByType("Expression")
+        if $isobject(expressionE) {
+            set simple=..Analyser.SimplifyExpression(expressionE) 
+            ; its a string, so its a hard coded method name
+            if $e(simple,1)="""",$e(simple,*)="""" {
+                s mname=$tr(simple,"""","")
+                ;d ..wrapElementHTML(expressionE,"<a href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS","*",mname)_"'>","</a>")
+				s atom=expressionE.FirstAtom()
+				d ..SaveCOSXref("CLS","*",mname,"$classmethod",atom)
+            }
+        }
+    }
+    Quit ""
 }
 
 Method xrefCOSGlobal(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="GlobalRef,GlobalRefs,GlobalRefSet")
