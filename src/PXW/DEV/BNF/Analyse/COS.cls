@@ -11,9 +11,6 @@ Property VariablesTypes As %String [ MultiDimensional ];
 /// ..DimmedTypes(varname)=type
 Property DimmedTypes As %String [ MultiDimensional ];
 
-/// Array of the variables currently being Set.
-Property CurrentlySetting As PXW.DEV.Element [ MultiDimensional ];
-
 /// Keep track of variable types passed in as parameters
 /// ..ParameterVariables(varname)=type
 Property ParameterVariables As %String [ MultiDimensional ];
@@ -67,7 +64,6 @@ Method Reset()
 
 	Kill ..VariablesTypes
 	Kill ..DimmedTypes
-	Kill ..CurrentlySetting
 	Kill ..ElementWarnings
 	Kill ..ParameterVariables
 	Kill ..DefinedMacros
@@ -156,7 +152,6 @@ Method checkReturnTypeClassReference(element As PXW.DEV.Element) As PXW.DEV.BNF.
 
 Method checkCosCommand(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosCommand")
 {
-	Kill ..CurrentlySetting
 	Set directiveE=element.findFirstElementByType("CosDirective")
 	; directives count as a command (is this right?) but start with a # atom so would end up being counted as short
 	; therefore only check if its NOT a directive
@@ -247,11 +242,12 @@ Method checkFormalSpecItem(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.
 
 Method checkSetItem(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="SetItem")
 {
-	Do element.findElementsByTypePath("*,SetValueExpression,VariableSet",.variablelist)
+	; work out what is being set
+	do element.findElementsXPath("SetValueExpression/VariableSet",.variablelist)
 	For i=1:1:variablelist.Count() {
 		Set varE=variablelist.GetAt(i)
 		Set var=varE.ToString(0)
-		Set ..CurrentlySetting(var)=varE
+		Set currentlySetting(var)=varE
 		; if its JUST a variable then we are interested in keeping track of it
 		If varE.partsCount()=1 {
 			Set ..VariablesSet(var)=varE
@@ -261,42 +257,17 @@ Method checkSetItem(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.element
 			Set ..VariablesUsed(varname)=varE
 		}
 	}
-	Do element.findElementsByTypePath("*,SetExpression",.setvalue)
-	Set value=$SELECT($ISOBJECT(setvalue):setvalue.GetAt(1),1:"")
 
+	; work out what its being set to
+	set value=element.findFirstElementByType("SetExpression",0)
 	Set derivedtype=..DeriveTypeReturned(value)
 	Set var=""
 	For {
-		Set var=$ORDER(..CurrentlySetting(var),1,velement)
+		Set var=$ORDER(currentlySetting(var),1,velement)
 		Quit:var=""
 
 		d ..checkAndRecordVariableType(velement,var,derivedtype)
-		/*	
-		Set dimmedtype=..FullClassName($GET(..DimmedTypes(var)))
-		Set currenttype=..FullClassName($GET(..VariablesTypes(var)))
-		If dimmedtype'="",derivedtype'="",dimmedtype'=derivedtype {
-			If (..IsExtension(derivedtype,dimmedtype)=0) && (..IsExtension(dimmedtype,derivedtype)=0) {
-				Do ..AddElementWarning(velement,"Derived type of "_var_" ("_derivedtype_") differs to dimmed type ("_dimmedtype_")")
-			}
-		}
-		; assume the programmer is right, i.e. prefer the dimmed type
-		Set finaltype=..FullClassName($SELECT(dimmedtype'="":dimmedtype,1:derivedtype))
-
-		If currenttype'="",finaltype'="",currenttype'=finaltype {
-			; if the current type is a superclass of the new type then this is allowed
-			If ..IsExtension(finaltype,currenttype) {
-				; not an error
-			} Else {
-				Do ..AddElementWarning(velement,"Change of type on "_var_" from "_currenttype_" to "_finaltype)
-			}
-		}
-		; we have a type so remember it, dont bother storing when it went to null, thats normally not useful
-		If finaltype'="" {
-			Set ..VariablesTypes(var)=finaltype
-		}
-		*/
 	}
-	Kill ..CurrentlySetting
 	Quit ""
 }
 

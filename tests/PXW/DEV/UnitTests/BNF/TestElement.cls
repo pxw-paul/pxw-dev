@@ -5,26 +5,8 @@ ClassMethod XPath()
 {
     #dim element,itemE as PXW.DEV.Element
     
-    s element=..parse("ObjList As %ListOfObjects(ELEMENTTYPE=""PXW.DEV.ClassToDisplay"",CLASSNAMEINOID=1)","FormalSpecItem","PXW.DEV.BNF.Run.ClassDefinition")
-    s fsE=element.partsGetAt(1)
-
-    d fsE.findElementsXPath("AsTypeClassReference/TypeClassReference/TypeParameters/TypeParametersList/TypeParameterItem",.list)
-    f i=1:1:list.Count() { 
-		s itemE=list.GetAt(i)
-        w !,itemE.type_":"_itemE.ToString()
-    }
-
-    d fsE.findElementsXPath("AsTypeClassReference/TypeClassReference/TypeParameters/TypeParametersList/TypeParameterItem[ClassItemIdentifier=ELEMENTTYPE]",.list)
-    f i=1:1:list.Count() { 
-		s itemE=list.GetAt(i)
-        w !,itemE.type_":"_itemE.ToString()
-    }
-
-    d fsE.findElementsXPath("AsTypeClassReference/TypeClassReference/TypeParameters/TypeParametersList/TypeParameterItem[ClassItemIdentifier=ELEMENTTYPE]/String",.list)
-    f i=1:1:list.Count() { 
-		s itemE=list.GetAt(i)
-        w !,itemE.type_":"_itemE.ToString()
-    }
+    s element=..parse(" s x=..object","CosCodeBlock","PXW.DEV.BNF.Run.COS")
+    d element.write()
 }
 
 Method TestXPath()

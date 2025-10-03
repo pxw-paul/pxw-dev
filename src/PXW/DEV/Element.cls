@@ -160,6 +160,7 @@ Method FirstAtom() As PXW.DEV.Atom
 	Quit atom
 }
 
+/*
 /// STOP USING THIS - go for findElementsByType or findElementsByClass
 Method findElementTypes(ClassName As %String, ByRef OuputArray As %String)
 {
@@ -171,7 +172,7 @@ Method findElementTypes(ClassName As %String, ByRef OuputArray As %String)
 		}
 	}
 }
-
+*/
 Method findFirstElementByType(Type As %String, deep As %Boolean = 1) As PXW.DEV.Element
 {
 	#dim ele,founda as PXW.DEV.Element
@@ -270,6 +271,7 @@ Method findElementsByType(Type As %String, ByRef OutputList As %Library.ListOfOb
 	}
 }
 
+/*
 Method findElementsByClass(ClassName As %String, ByRef OuputArray As %String)
 {
 	If ..%IsA(ClassName) Set OuputArray(+$THIS)=$THIS
@@ -280,7 +282,10 @@ Method findElementsByClass(ClassName As %String, ByRef OuputArray As %String)
 		}
 	}
 }
+*/
 
+/*
+/// THIS HAS BEEN REPLACED BY XPATH WHICH IS A LITTLE SIMPLER TO UNDERSTAND AS I WANT TO KEEP IT WITH THE SAME SYNTAX AS XML PATHS
 Method findElementsByTypePath(Path As %String, ByRef OutputList As %Library.ListOfObjects(ELEMENTTYPE="PXW.DEV.Element"))
 {
 	
@@ -315,7 +320,7 @@ Method findElementsByTypePath(Path As %String, ByRef OutputList As %Library.List
 	}
 	Set OutputList=list1
 }
-
+*/
 /// Use an XPath type syntax to navigate
 /// eg https://www.w3schools.com/xml/xpath_syntax.asp
 /// NOT dealing with * for the time being, it makes life complicated, and we should know our own paths

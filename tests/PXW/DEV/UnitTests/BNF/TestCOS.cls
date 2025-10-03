@@ -25,6 +25,12 @@ Method TestGlobal()
     do $$$AssertEquals(..parseAndFlat(" s x=^aglob(""string key"",1)"),"SetCommand:{Keyword:s,SetItem:{VariableSet:x,=,GlobalRefFull:{^,GlobalName:aglob,SubscriptParameterList:{(,String:string key,,,Number:1,)}}}}")
 }
 
+/*
+method TestSet()
+{
+    do $$$AssertEquals(..parseAndFlat(" "))
+}
+*/
 Method TestNaked()
 {
     ; normal, end of line directly after naked Do
