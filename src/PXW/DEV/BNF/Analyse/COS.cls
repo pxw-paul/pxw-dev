@@ -174,6 +174,51 @@ Method checkCosCommand(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.elem
 
 Method checkFormalSpecItem(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="FormalSpecItem")
 {
+	#dim itemE as PXW.DEV.Element
+	/*
+		ObjList As %ListOfObjects(ELEMENTTYPE="PXW.DEV.ClassToDisplay")
+		
+		Element=FormalSpecItem PXW.DEV.BNF.Elements.ClassDefinition @7112
+		.Element=VariableSet PXW.DEV.BNF.Elements.ClassDefinition @6156
+		..type=VariableSet:
+		.. ObjList
+		.Element=AsTypeClassReference PXW.DEV.BNF.Elements.ClassDefinition @6605
+		..type=CDEFKeyword:
+		.. As
+		..Element=TypeClassReference PXW.DEV.BNF.Elements.ClassDefinition @7031
+		...Element=ClassReference PXW.DEV.BNF.Elements.ClassDefinition @6660
+		....type=ClassReference:
+		.... %ListOfObjects
+		...Element=TypeParameters PXW.DEV.BNF.Elements.ClassDefinition @6609
+		....type=punctuation:
+		.... (
+		....Element=TypeParametersList PXW.DEV.BNF.Elements.ClassDefinition @6965
+		.....Element=TypeParameterItem PXW.DEV.BNF.Elements.ClassDefinition @6361
+		......Element=ClassItemIdentifier PXW.DEV.BNF.Elements.ClassDefinition @6618
+		.......type=ClassItemIdentifier:
+		....... ELEMENTTYPE
+		......type=punctuation:
+		...... =
+		......Element=String PXW.DEV.BNF.Elements.ClassDefinition @6985
+		.......type=String:
+		....... "PXW.DEV.ClassToDisplay"
+		....type=punctuation:
+		.... )
+
+		nav to AsTypeClassReference.TypeClassReference.TypeParameters.TypeParametersList
+		for each TypeParameterItem
+		  nav to ClassItemIdentifier looking for ELEMENTTYPE
+		  get String
+	*/
+	; for listOfObjects we want to know the element type if there is one
+	s elementType=""
+	d element.findElementsXPath("AsTypeClassReference/TypeClassReference/TypeParameters/TypeParametersList/TypeParameterItem[ClassItemIdentifier=ELEMENTTYPE]/String",.listOfElementTypes)
+	f i=1:1:listOfElementTypes.Count() { 
+		s itemE=listOfElementTypes.GetAt(i)
+		s atom=itemE.FirstAtom()
+		s elementType=$tr(atom.value,"""","")
+	}
+
 	Set modeE=element.findFirstElementByType("FormalSpecMode",0)
 	Set mode=$S($ISOBJECT(modeE):modeE.ToString(0),1:"")
 	Set varE=element.findFirstElementByType("VariableSet",0)
@@ -185,6 +230,10 @@ Method checkFormalSpecItem(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.
 		If type'="" {
 			Set ..VariablesTypes(var)=type
 			Set ..DimmedTypes(var)=type ; count the formal spec definition as the dimmed type (definitive)
+			if elementType'="" {
+				Set ..VariablesTypes(var,"ELEMENTTYPE")=elementType
+				Set ..DimmedTypes(var,"ELEMENTTYPE")=elementType ; count the formal spec definition as the dimmed type (definitive)
+			}
 		} Else {
 			; for me, byref means you pass stuff in and out so it could be array
 			; or something modifiable so don't check the type
@@ -437,7 +486,7 @@ Method checkMethodAttribute(element As PXW.DEV.BNF.Elements.ClassDefinition) As 
 	Quit ""
 }
 
-Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName As %String, ByRef FormalSpecParsed) As %String
+Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName As %String, ElementTypeClassName As %String = "") As %String
 {
 	#dim fpE,fparamsE as PXW.DEV.Element
 
@@ -451,12 +500,17 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName
         ; the objectchain has the "." and the name
         Set propertyname=objectchain.ToStringAtomsOnly(0)
 		Set propertyname=$SELECT($EXTRACT(propertyname,1)=".":$PIECE(propertyname,".",2),1:propertyname)
-		Set found=..ClassServer.GetPropertyDetails(classname,propertyname,.type)
-		Set:'found type=..ClassServer.GetMethodReturnType(classname,propertyname,.fspec)
 		
+		; special case for List.Get methods where we know the element type already
+		if propertyname?1"Get".AN,ElementTypeClassName'="" {
+			s type=ElementTypeClassName
+		} else {
+			Set found=..ClassServer.GetPropertyDetails(classname,propertyname,.type)
+			Set:'found type=..ClassServer.GetMethodReturnType(classname,propertyname,.fspec)
+		}
 		if fspec'="" {
 			;d objectchain.write()
-			;zw fspec
+			;zw fspec,type
 			s fparamsE=objectchain.findFirstElementByType("FunctionParameterList",0)
 			s fpk="",count=0
 			f  {
@@ -526,8 +580,9 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.Element) As %String
 		; possible that name cannot be determined at this point eg {*}
 		If variablename'="" {
 			Set classname=$GET(..DimmedTypes(variablename))
+			Set elementtype=$GET(..DimmedTypes(variablename,"ELEMENTTYPE"))
 			If classname="" Set classname=$GET(..VariablesTypes(variablename))
-			If classname'=""	Set finaltype=..FollowObjectChainForType(variableElement,classname)
+			If classname'=""	Set finaltype=..FollowObjectChainForType(variableElement,classname,elementtype)
 		}
 	}
 	$$$DEBUG("variable="_finaltype)

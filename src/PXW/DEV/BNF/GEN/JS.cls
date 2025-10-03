@@ -1,4 +1,4 @@
-/// Created: 2025-06-02 16:33:35 PXW.DEV.BNF.Compilers.Compiler1
+/// Created: 2025-09-29 12:42:25 PXW.DEV.BNF.Compilers.Compiler1
 Class PXW.DEV.BNF.GEN.JS Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 
@@ -5454,11 +5454,11 @@ Method Macro163OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	quit ok
 }
 
-///  Member_Expression_Part ::= ( "[" single_Expression "]" ) | ( "." Identifier [( "(" [ expression_Sequence ] ")" )] )
-/// summary=P&C&P|P&C&[P&[C]&P]
+///  Member_Expression_Part ::= ( "[" single_Expression "]" ) | ( ['?'] "." Identifier [( "(" [ expression_Sequence ] ")" )] )
+/// summary=P&C&P|[P]&P&C&[P&[C]&P]
 Method MemberExpressionPart(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&C&P|P&C&[P&[C]&P]
+	; rules summary P&C&P|[P]&P&C&[P&[C]&P]
 	; first rule summary P&C&P
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -5511,21 +5511,20 @@ Method MemberExpressionPart160Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	quit ok
 }
 
-///  "." Identifier [( "(" [ expression_Sequence ] ")" )]
-/// summary values:.
-/// summary=P&C&[P&[C]&P]
+///  ['?'] "." Identifier [( "(" [ expression_Sequence ] ")" )]
+/// summary=[P]&P&C&[P&[C]&P]
 Method MemberExpressionPart161Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&C&[P&[C]&P]
-	; first rule summary P
-	if '(..isStringSingle(".",.value)) { quit 0 /* normal */ }
+	; rules summary [P]&P&C&[P&[C]&P]
 	$$$DEBUGMethodBegin
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(.subElement,".")  {
-		if ..Identifier(.subElement,.addedElement)  {
-			if $S(..MemberExpressionPart162Sub(.subElement,.addedElement) :1,1:1) {
-				set done=1 ; end compileRules
+	if $S(..addPunctuation(.subElement,"?") :1,1:1) {
+		if ..addPunctuation(.subElement,".")  {
+			if ..Identifier(.subElement,.addedElement)  {
+				if $S(..MemberExpressionPart162Sub(.subElement,.addedElement) :1,1:1) {
+					set done=1 ; end compileRules
+				}
 			}
 		}
 	}

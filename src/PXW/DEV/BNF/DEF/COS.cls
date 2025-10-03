@@ -235,6 +235,7 @@ intrinsicfncall_parameter_list      ::= open_bracket [expression] ( ',' [express
 intrinsicfncall_parameter           ::= expression
 
 function_parameter_list             ::= open_bracket [ [function_parameter] ( ',' [function_parameter] )* ] ['...'] close_bracket
+function_parameter_list_items ::= [ [function_parameter] ( ',' [function_parameter] )* ] ['...']
 function_parameter                  ::= ( '.' ( this_object_direct_property | simple_indirection | byref_variable )) | expression 
 byref_variable                      ::= variable_set /* maybe set_value_expression would be better, but requires more careful check on analysis */
 
@@ -758,14 +759,14 @@ text_function_call                  ::= ('text') open_bracket label_reference cl
 
 star_parameter                      ::= ('*' [expression]) | expression
 
-increment_function_call             ::= ('increment' | '$i') '(' variable_set [',' expression ] ')'
+increment_function_call             ::= ('increment' | 'i') '(' variable_set [',' expression ] ')'
 
-method_function_call                ::= 'method' open_bracket classmethod_class ',' classmethod_method [ ',' expression_list] close_bracket [ object_chain ]
-classmethod_function_call           ::= 'classmethod' open_bracket classmethod_class ',' classmethod_method [ ',' expression_list] close_bracket [ object_chain ]
+method_function_call                ::= 'method' open_bracket classmethod_class ',' classmethod_method [ ',' function_parameter_list_items ] close_bracket [ object_chain ]
+classmethod_function_call           ::= 'classmethod' open_bracket classmethod_class ',' classmethod_method [ ',' function_parameter_list_items ] close_bracket [ object_chain ]
 classmethod_class                   ::= expression
 classmethod_method                  ::= expression
-zobjmethod_function_call            ::= 'zobjmethod' open_bracket classmethod_class ',' classmethod_method [ ',' expression_list] close_bracket [ object_chain ]
-zobjclassmethod_function_call       ::= 'zobjclassmethod' open_bracket classmethod_class ',' classmethod_method [ ',' expression_list] close_bracket [ object_chain ]
+zobjmethod_function_call            ::= 'zobjmethod' open_bracket classmethod_class ',' classmethod_method [ ',' function_parameter_list_items ] close_bracket [ object_chain ]
+zobjclassmethod_function_call       ::= 'zobjclassmethod' open_bracket classmethod_class ',' classmethod_method [ ',' function_parameter_list_items ] close_bracket [ object_chain ]
 
 select_function_call                ::= ('select' | 's') '(' select_clauses ')' [ object_chain ] /* who returns an object from a $s? */
 select_clauses                      ::= select_clause ( ',' select_clause )*

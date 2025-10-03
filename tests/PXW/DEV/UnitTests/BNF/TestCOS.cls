@@ -1,6 +1,25 @@
 Class PXW.DEV.UnitTests.BNF.TestCOS Extends %UnitTest.TestCase
 {
 
+Method TestIncrement()
+{
+    s pmeth="Intrinsicfncall"
+    do $$$AssertEquals(..parseAndFlat("$increment(x)",pmeth),"Intrinsicfncall:{$,IncrementFunctionCall:{Keyword:increment,(,VariableSet:x,)}}")
+    do $$$AssertEquals(..parseAndFlat("$i(x)",pmeth),"Intrinsicfncall:{$,IncrementFunctionCall:{Keyword:i,(,VariableSet:x,)}}")
+}
+
+Method TestClassmethod()
+{
+    s pmeth="ClassmethodFunctionCall"
+    ; NOTE: For these test we are bypassing the intrinic function (to keep result shorter) so  no $ needed
+    do $$$AssertEquals(..parseAndFlat("classmethod(classvar,methodvar)",pmeth),"ClassmethodFunctionCall:{Keyword:classmethod,(,Variable:classvar,,,Variable:methodvar,)}")
+    do $$$AssertEquals(..parseAndFlat("classmethod(classvar,""MethodName"")",pmeth),"ClassmethodFunctionCall:{Keyword:classmethod,(,Variable:classvar,,,String:MethodName,)}")
+    do $$$AssertEquals(..parseAndFlat("classmethod(classvar,""MethodName"",p1)",pmeth),"ClassmethodFunctionCall:{Keyword:classmethod,(,Variable:classvar,,,String:MethodName,,,Variable:p1,)}")    
+    do $$$AssertEquals(..parseAndFlat("classmethod(classvar,""MethodName"",p1,p2)",pmeth),"ClassmethodFunctionCall:{Keyword:classmethod,(,Variable:classvar,,,String:MethodName,,,FunctionParameterListItems:{Variable:p1,,,Variable:p2},)}")
+    do $$$AssertEquals(..parseAndFlat("classmethod(classvar,""MethodName"",p1,p2,,p4)",pmeth),"ClassmethodFunctionCall:{Keyword:classmethod,(,Variable:classvar,,,String:MethodName,,,FunctionParameterListItems:{Variable:p1,,,Variable:p2,,,,,Variable:p4},)}")
+    do $$$AssertEquals(..parseAndFlat("classmethod(classvar,""MethodName"",p1,p2,,p4,p5...)",pmeth),"ClassmethodFunctionCall:{Keyword:classmethod,(,Variable:classvar,,,String:MethodName,,,FunctionParameterListItems:{Variable:p1,,,Variable:p2,,,,,Variable:p4,,,Variable:p5,...},)}")
+}
+
 Method TestGlobal()
 {
     do $$$AssertEquals(..parseAndFlat(" s x=^aglob(""string key"",1)"),"SetCommand:{Keyword:s,SetItem:{VariableSet:x,=,GlobalRefFull:{^,GlobalName:aglob,SubscriptParameterList:{(,String:string key,,,Number:1,)}}}}")

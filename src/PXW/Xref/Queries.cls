@@ -3,7 +3,7 @@ Class PXW.Xref.Queries [ Owner = {_PUBLIC} ]
 
 /// <dl>
 /// 		<dt>ItemType</dt><dd>Class, Global, Rtn etc</dd>
-/// 		<dt>ItemKey1</dt><dd>Class name ,may be a comma separated list OR end in a * to do a package, you cannot mix , and *</dd>
+/// 		<dt>ItemKey1</dt><dd>Class name ,may be a single string, a comma separated list OR contain wildcard (*), you cannot mix , and *</dd>
 /// 		<dt>ItemKey2</dt><dd>Method name, may be a comma separated list</dd>
 /// 		<dt>CalledByKey2</dt><dd>Class name, may be a comma separated list</dd>
 /// </dl>
@@ -20,37 +20,39 @@ Query Get(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = 
 		AND ItemType=:ItemType
 	--ENDIF 
 	--IF ItemKey1'="" 
-		--IF $E(ItemKey1,*)="*" 
-			AND ItemKey1 %STARTSWITH $PIECE(:ItemKey1,'*',1)
-		--ELSE
+		--IF ItemKey1["*" 
+			AND ItemKey1 LIKE replace(replace(:ItemKey1,'%','\%'),'*','%') ESCAPE '\'
+		--ELSEIF ItemKey1[","
 			AND ItemKey1 %INLIST $LISTFROMSTRING(:ItemKey1)
+		--ELSE
+			AND ItemKey1=:ItemKey1
 		--ENDIF
 	--ENDIF 
-	--IF CalledByKey1'=""
-		--IF $E(CalledByKey1,*)="*" 
-			AND CalledByKey1 %STARTSWITH $PIECE(:CalledByKey1,'*',1)
-		--ELSE
-			AND CalledByKey1 %INLIST $LISTFROMSTRING(:CalledByKey1)
+	--IF ItemKey2'=""
+		--IF ItemKey2["*"
+			AND ItemKey2 LIKE replace(replace(:ItemKey2,'%','\%'),'*','%') ESCAPE '\'
+		--ELSEIF ItemKey2["," 
+			AND ItemKey2 %INLIST $LISTFROMSTRING(:ItemKey2)
+		--ELSE 
+			AND ItemKey2=:ItemKey2
 		--ENDIF
+	--ENDIF
+	--IF CalledByKey1'=""
+		--IF CalledByKey1["*" 
+			AND CalledByKey1 LIKE replace(replace(:CalledByKey1,'%','\%'),'*','%') ESCAPE '\'
+		--ELSEIF CalledByKey1[","
+			AND CalledByKey1 %INLIST $LISTFROMSTRING(:CalledByKey1)
+		--ELSE
+			AND CalledByKey1=:CalledByKey1
+		--ENDIF	
 	--ENDIF
 	--IF CalledByKey2'=""
-		--IF CalledByKey2["%" 
-			AND UPPER(CalledByKey2) LIKE (UPPER(:CalledByKey2))			
-		--ELSEIF $E(CalledByKey2,*)="*" 
-			AND CalledByKey2 %STARTSWITH $PIECE(:CalledByKey2,'*',1)
-		--ELSE
+		--IF CalledByKey2["*" 
+			AND CalledByKey2 LIKE replace(replace(:CalledByKey2,'%','\%'),'*','%') ESCAPE '\'
+		--ELSEIF CalledByKey1[","
 			AND CalledByKey2 %INLIST $LISTFROMSTRING(:CalledByKey2)
-		--ENDIF
-	--ENDIF
-	--IF ItemKey2'=""
-		-- item key 2 = %x% means search LIKE
-		-- item key 2 = %x means searching for something that starts with the %
-		--IF ItemKey2["%",(($E(ItemKey2,1)'="%")||($l(ItemKey2,"%")>2))
-			AND UPPER(ItemKey2) LIKE (UPPER(:ItemKey2))                               
-		--ELSEIF $E(ItemKey2,*)="*"
-			AND UPPER(ItemKey2) %STARTSWITH UPPER($PIECE(:ItemKey2,'*',1))
 		--ELSE
-			AND UPPER(ItemKey2) %INLIST $LISTFROMSTRING(UPPER(:ItemKey2))
+			AND CalledByKey2=:CalledByKey2
 		--ENDIF
 	--ENDIF
 	--IF CalledByCommand'=""

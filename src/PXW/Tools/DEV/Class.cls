@@ -153,6 +153,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 			Do output.middle(element)
 			Set element=##class(PXW.DEV.Element).%New()
 			i Debug'="$TIME" $$$DEBUGPause
+			;zw output.Analyser
 		}
 		$$$DEBUGResume
 

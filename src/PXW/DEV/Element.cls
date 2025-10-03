@@ -281,7 +281,7 @@ Method findElementsByClass(ClassName As %String, ByRef OuputArray As %String)
 	}
 }
 
-Method findElementsByTypePath(Path As %String, ByRef OutputList As %Library.ListOfObjects)
+Method findElementsByTypePath(Path As %String, ByRef OutputList As %Library.ListOfObjects(ELEMENTTYPE="PXW.DEV.Element"))
 {
 	
 	; find everything on the first step of the path
@@ -314,6 +314,77 @@ Method findElementsByTypePath(Path As %String, ByRef OutputList As %Library.List
 		}
 	}
 	Set OutputList=list1
+}
+
+/// Use an XPath type syntax to navigate
+/// eg https://www.w3schools.com/xml/xpath_syntax.asp
+/// NOT dealing with * for the time being, it makes life complicated, and we should know our own paths
+/// only supports 1 condition level check (because its all based on PIECES)
+///  eg; /p1/p2[sub1=xxx] is ok
+///      /p2/p2[sub1/sup2=xxx] will not work
+Method findElementsXPath(Path As %String, ByRef OutputList As %Library.ListOfObjects(ELEMENTTYPE="PXW.DEV.Element"))
+{
+	#dim item1 as PXW.DEV.Element
+
+	; find everything on the first step of the path
+	Set stepI=1
+	Set step1=$PIECE(Path,"/",stepI)
+	;If step1="*" Set deep=1,stepI=stepI+1,step1=$PIECE(Path,"/",stepI)
+
+	s stepField=$p(step1,"[",1),stepCondition=$p($p(step1,"[",2,*),"]",1)
+	Set list1=##class(%Library.ListOfObjects).%New()
+	Do ..findElementsXPathCondition(stepField,stepCondition,list1)
+	
+	; go along each step after and find all the sub elements that are in the previous list
+	; each time we go along the steps we use the output of the previous step as the input of
+	; of the next search
+	; list1 from above builds list2, list1 is reset to list2 and it runs again
+	; if the step is * this means anything will do (look deep)
+	; otherwise just look a the next level
+	Set stepI=stepI+1,deep=0
+	For si=stepI:1:$LENGTH(Path,"/") {
+		Set step2=$PIECE(Path,"/",si)
+		s stepField=$p(step2,"[",1),stepCondition=$p($p(step2,"[",2,*),"]",1)
+		Set list2=##class(%Library.ListOfObjects).%New()
+		For i=1:1:list1.Count() {
+			Set item1=list1.GetAt(i)
+			Do item1.findElementsXPathCondition(stepField,stepCondition,list2)		
+		}
+		Set list1=list2
+	}
+	Set OutputList=list1
+}
+
+/// Condition only supports = at the moment
+Method findElementsXPathCondition(Type As %String, Condition As %String, ByRef OutputList As %Library.ListOfObjects)
+{
+	s condfield=$p(Condition,"=",1)
+	s condvalue=$p(Condition,"=",2,*)
+	Set uType=$$$UPPER(Type)
+	For i=1:1:..partsCount() {
+		Set ele=..partsGetAt(i)
+		If ele.%IsA("PXW.DEV.Element"),$$$UPPER(ele.type)=uType {
+			If '$ISOBJECT($GET(OutputList)) { 
+				Set OutputList=##class(%Library.ListOfObjects).%New()
+			}
+			if condfield'="" {
+				do ele.findElementsXPath(condfield,.itemsToCheck)
+				set ok=1
+				for j=1:1:itemsToCheck.Count() {
+					s condE=itemsToCheck.GetAt(j)
+					s value=condE.ToString()
+					i value'=condvalue {
+						s ok=0
+					}
+				}
+				i ok {
+					Do OutputList.Insert(ele)
+				}
+			} else {
+				Do OutputList.Insert(ele)
+			}
+		}
+	}
 }
 
 Method %OnNew(type As %String) As %Status

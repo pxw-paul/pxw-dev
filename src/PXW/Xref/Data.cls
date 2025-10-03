@@ -1,3 +1,13 @@
+/// Xref Data is made up of 2 parts:
+/// Item: ItemType, ItemKey1, ItemKey2 makes up the part of the thing being referenced.
+/// Caller: CalledByType, CalledByCommand, CalledByKey1, CalledByKey2, CalledByKey3, LineNumber make up the information about where the item is being used.
+/// 
+/// ItemType and CalledByType will be the Type of code referenced, used to work out what code to display (EG. CLS for a Objectscript Class)
+/// ItemKey1 and CalledByKey1 will be the main key of the code (EG the class name)
+/// ItemKey2 and CalledByKey2 will be the section of the code to look at (EG method name)
+///              CalledByKey3 will be a even more precise location of the code where the object was called (EG. line number in the method)
+///              LineNumber will be a precise location of the code, (EG the line number in the file)
+///              CalledByCommand will be a thing used for indexing so we can look up all VariableSets or _Overrides etc.
 Class PXW.Xref.Data Extends %Library.Persistent [ Owner = {_PUBLIC} ]
 {
 
@@ -43,22 +53,20 @@ Property Parameters As %String(MAXLEN = "", TRUNCATE = 1);
 /// </example>
 Property CalledBySection As %String;
 
-Index CalledBy On (NameSpace, ItemType, ItemKey1, ItemKey2, CalledByType, CalledByCommand, CalledByKey1, CalledByKey2, CalledByKey3) [ PrimaryKey, Unique ];
+Index PK On (NameSpace, ItemType, ItemKey1, ItemKey2, CalledByType, CalledByCommand, CalledByKey1, CalledByKey2, CalledByKey3) [ PrimaryKey, Unique ];
 
-Index CalledBy2 On (NameSpace, ItemType, ItemKey1, ItemKey2);
+Index iItemT21 On (NameSpace, ItemType, ItemKey2, ItemKey1);
 
-Index CalledBy3 On (NameSpace, ItemType, ItemKey2, ItemKey1);
+Index iCallerT12 On (NameSpace, CalledByType, CalledByKey1, CalledByKey2);
 
-Index Calls On (NameSpace, CalledByType, CalledByKey1, CalledByKey2);
+Index iCallerT21 On (NameSpace, CalledByType, CalledByKey2, CalledByKey1);
 
-Index Calls2 On (NameSpace, CalledByKey1, CalledByKey2, CalledByCommand);
-
-Index Calls3 On (NameSpace, CalledByKey2, CalledByKey1, CalledByCommand);
+Index iCallerCommand On (NameSpace, CalledByCommand, CalledByKey2, CalledByKey1);
 
 /*Index NS On NameSpace [ Type = bitmap ];*/
 Method AlreadyExists() As %Boolean
 {
-	Quit ..CalledByExists(..NameSpace,..ItemType, ..ItemKey1, ..ItemKey2, ..CalledByType, ..CalledByCommand, ..CalledByKey1, ..CalledByKey2, ..CalledByKey3)
+	Quit ..PKExists(..NameSpace,..ItemType, ..ItemKey1, ..ItemKey2, ..CalledByType, ..CalledByCommand, ..CalledByKey1, ..CalledByKey2, ..CalledByKey3)
 }
 
 Storage Default
