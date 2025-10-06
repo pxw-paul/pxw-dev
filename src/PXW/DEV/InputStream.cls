@@ -159,6 +159,7 @@ Method NextChars(ValidChars As %String) As %String
 
 Method Peek(offsetStart As %Integer = 0, offsetEnd As %Integer = {offsetStart}) As %String
 {
+	;q $EXTRACT(..input,..pos+offsetStart,..pos+offsetEnd)
 	Set ch=$EXTRACT(..input,..pos+offsetStart,..pos+offsetEnd)
 	Quit ch
 }

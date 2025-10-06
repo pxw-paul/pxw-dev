@@ -136,7 +136,7 @@ Method peek(number As %Integer) As %String
 {
     Set p=..stream.pos
     Quit $EXTRACT(..streaminput,p,p+number-1)
-    Quit ..peeked
+    ;Quit ..peeked
 }
 
 Method peekKeyword() As %String [ CodeMode = objectgenerator ]
@@ -251,7 +251,7 @@ Method isStringInList(ListOfStrings As %List, longestLen As %Integer = 50, Outpu
 
 Method isStringSingle(String As %String, Output foundString As %String) As %Boolean
 {
-    $$$DEBUGMethodBegin  
+    ;$$$DEBUGMethodBegin  
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
     
     Set len=$LENGTH(String)
@@ -261,9 +261,7 @@ Method isStringSingle(String As %String, Output foundString As %String) As %Bool
     } Else {
         Set found=0
     }
-    ;$$$DEBUG("lookingFor="_String_" found="_found_" foundString="_foundString)
-    ;s x=$i(%pxw1(String,found))
-    $$$DEBUGMethodEnd
+    ;$$$DEBUGMethodEnd
     Quit found
 }
 
@@ -274,7 +272,6 @@ Method isString(ParentElement As PXW.DEV.Element = "", StringToCheck As %String)
     ;d ..skipWhiteSpaceAndComments()
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
  
-    ;$$$DEBUG("checking string '"_StringToCheck_"' found '"_$zconvert(..peek(10),"O","JS")_"'")
     Set ok=0
     Set len=$LENGTH(StringToCheck)
     Set peeked=..peek(len)
@@ -291,8 +288,6 @@ Method isString(ParentElement As PXW.DEV.Element = "", StringToCheck As %String)
         }
         Set ok=1
     }
-    ;$$$DEBUG("checking string '"_StringToCheck_"' ok="_ok)
-    ;s %pxwstrings(StringToCheck_"="_ok)=$g(%pxwstrings(StringToCheck_"="_ok))+1
     $$$DEBUGMethodEnd
      Quit ok
 }
@@ -461,66 +456,34 @@ Method skipWhiteSpaceAndComments()
     #define isWS(%x) $c(32,9,13,10,160)[%x
     $$$DEBUGMethodBegin
 
-    If ..stopAtEOL { 
-        Set ws=$CHAR(32,9,160)
-    } Else {
-        Set ws=$CHAR(32,9,13,10,160)
-    }
-    $$$DEBUG("StopAtWhiteSpace="_..stopAtWhitespace_",StopAtEOL="_..stopAtEOL)
-    If ..stopAtWhitespace Goto readExit
-
+    If '..stopAtWhitespace {
+        If ..stopAtEOL { 
+            Set ws=$CHAR(32,9,160)
+        } Else {
+            Set ws=$CHAR(32,9,13,10,160)
+        }
+        ; leading whitespace and comments end up embedded in the next real object
+        ; so you could end up with a returned object like this
+        ; object={ 
+        ;          type:"variable",
+        ;         value:111,
+        ;       comment:{
+        ;                type:"comment",
+        ;               value:"a comment",
+        ;          whitespace:{
+        ;                      type:"whitespace",
+        ;                     value:"  "
+        ;                     }
+        ;          }                
+        ;
+        ;        
 readNextLoop		
-	Set ch10=..peek(10),ch=$EXTRACT(ch10,1)
-	
-	; leading whitespace and comments end up embedded in the next real object
-	; so you could end up with a returned object like this
-	; object={ 
-	;          type:"variable",
-	;         value:111,
-	;       comment:{
-	;                type:"comment",
-	;               value:"a comment",
-	;          whitespace:{
-	;                      type:"whitespace",
-	;                     value:"  "
-	;                     }
-	;          }                
-	;
-    ;
-	;i '..eof(),$$$isWS(ch) s ..whitespace=..readWhitespace() g readNextLoop
-    If '..eof(),ws[ch Set ..whitespace=..readWhitespace() Goto readNextLoop
-	;s ..currentline=..input.line
-    /*i ..commentMode="COS" {
-        ;i ch=";" s ..comment=..readLineComment(";") g readNextLoop
-        ;s ch2=$e(ch10,1,2),ch3=$e(ch10,1,3)
-        ;i ch2="//" s ..comment=..readLineComment("//") g readNextLoop
-        ;i ch2="#;" s ..comment=..readLineComment("#;") g readNextLoop
-        ;i ch3="##;" s ..comment=..readLineComment("##;") g readNextLoop
-        ;;i $lf($lb("//","#;","##"),ch2) s ..comment=..readLineComment(ch2) g readNextLoop
-        ;i ch2="/*" s ..comment=..readBlockComment() g readNextLoop
-        i ..skipComments(ch10) g readNextLoop
-    } elseif ..commentMode="CDEF" {
-        ;i $e(ch10,1,3)="///" s ..comment=..readLineComment("///") g readNextLoop
-        ;i $e(ch10,1,2)="//" s ..comment=..readLineComment("//") g readNextLoop
-        ;i $e(ch10,1,2)="/*" s ..comment=..readBlockComment() g readNextLoop
-        i ..skipComments(ch10) g readNextLoop
-    } elseif ..commentMode="SQL" {
-        ;i $e(ch10,1,2)="--" s ..comment=..readLineComment("--") g readNextLoop
-        ;i $e(ch10,1,2)="/*" s ..comment=..readBlockComment() g readNextLoop
-        i ..skipComments(ch10) g readNextLoop
-    } elseif ..commentMode="XML" {
-        ;i $e(ch10,1,4)="<!--" s ..comment=..readXMLBlockComment() g readNextLoop  
-        i ..skipComments(ch10) g readNextLoop
-    } elseif ..commentMode="JS" {
-        ;;i $e(ch10,1,2)="//" s ..comment=..readLineComment("//") g readNextLoop
-        ;;i $e(ch10,1,2)="/*" s ..comment=..readBlockComment() g readNextLoop
-        i ..skipComments(ch10) g readNextLoop
-    } else {
-        i ..skipComments(ch10) g readNextLoop
-    }*/
-    If ..skipComments(ch10) Goto readNextLoop
-    Set ..needsWScheck=0
-readExit
+        Set ch10=..peek(10),ch=$EXTRACT(ch10,1)
+        If '..eof(),ws[ch Set ..whitespace=..newAtom("whitespace",..stream.NextChars(ws)) Goto readNextLoop
+        If ..skipComments(ch10) Goto readNextLoop
+        Set ..needsWScheck=0
+    }
+
     $$$DEBUGMethodEnd 
     Quit
 }
@@ -542,36 +505,22 @@ Method newElement(type As %String) As PXW.DEV.BNF.Element
 
 Method newAtom(type As %String, value As %String = "") As PXW.DEV.Atom
 {
- 
-    $$$DEBUGMethodBegin
-	Set a=##class(PXW.DEV.Atom).%New() 
-	Set a.type=type_":"_$GET(%path)  
+    Set a=##class(PXW.DEV.Atom).%New() 
+    Set a.type=type_":"_$GET(%path) 
     Set a.value=value
 	Set a.col=..stream.col
 	Set a.line=..stream.line
-	If $ISOBJECT(..whitespace) Set a.whitespace=..whitespace
-	If $ISOBJECT(..comment) Set a.comment=..comment
-    ;s:..whitespace a.whitespace=..whitespace
-    ;s:..comment a.comment=..comment
-	Set ..whitespace=""
-	Set ..comment=""
+	If $ISOBJECT(..whitespace) {
+        Set a.whitespace=..whitespace
+        Set ..whitespace=""
+    }
+	If $ISOBJECT(..comment) {
+        Set a.comment=..comment
+        Set ..comment=""
+    }
     Set ..needsWScheck=1
     Set %atoms=$GET(%atoms)+1
-    $$$DEBUGMethodEnd
-	Quit a
-}
-
-Method readWhitespace() As PXW.DEV.Atom
-{
-    $$$DEBUGMethodBegin
-    If ..stopAtEOL { 
-        Set ws=$CHAR(32,9,160)
-    } Else {
-        Set ws=$CHAR(32,9,13,10,160)
-    }
-    Set o=..newAtom("whitespace",..stream.NextChars(ws))
-    $$$DEBUGMethodEnd
-	Quit o
+    Quit a
 }
 
 Method readLineComment(start As %String) As PXW.DEV.Atom

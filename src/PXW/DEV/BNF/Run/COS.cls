@@ -219,15 +219,11 @@ Method ClassIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 /// label_definition ::= label [ label_formal_specification ] [ label_scope ]
 Method LabelDefinition(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
-    $$$DEBUGMethodBegin
-	;set currentpath=$g(%path) new %path set %path=currentpath_$c(47)_"LabelDefinition"
-    ;;$$$DEBUG("%path="_%path)
-    ;d ..skipWhiteSpaceAndComments()
+    ;$$$DEBUGMethodBegin
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
     
     ; labels only defined in first column (0)
-    $$$DEBUG("LabelDefinition col="_..stream.col)
-
+    ;$$$DEBUG("LabelDefinition col="_..stream.col)
 	If ..stream.col'=0 Quit 0
 
     ; there may be a macro on the first column
@@ -237,7 +233,7 @@ Method LabelDefinition(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
     If ..peek(1)="#" Quit 0
 
     Set res=##super(ParentElement,.subElement)
-    $$$DEBUGMethodEnd
+    ;$$$DEBUGMethodEnd
     Quit res
 }
 
@@ -469,6 +465,7 @@ Method OneCosStatement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
     Quit retok
 }
 
+/*
 /// object_chain ::= '.' object_chain_item ( '.' object_chain_item )*
 Method ObjectChainOLD(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
@@ -503,7 +500,7 @@ REP298(ParentElement) New %done
 		Quit 1
 	}
 }
-
+*/
 /// object_chain ::= '.' object_chain_item ( '.' object_chain_item )*
 Method ObjectChain(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
@@ -676,6 +673,16 @@ Method VariableIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
     Quit ok
 }
 
+/*
+Method zzzIntrinsicfncall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+{
+    Set retok=0
+	If ..peek(1)="$" {
+     ;   s retok=##super(ParentElement,.subElement)
+    }
+    Quit retok
+}
+*/
 /// intrinsicfncall ::= case_function_call
 /// | select_function_call
 /// | extract_function_call
@@ -694,15 +701,6 @@ Method VariableIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 ///  summary=F|F|F|F|F|F|F|F|F|F|F|F|F|F|(S&F&F&[F])
 ///  type=group
 ///  not=0
-Method zzzIntrinsicfncall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
-{
-    Set retok=0
-	If ..peek(1)="$" {
-     ;   s retok=##super(ParentElement,.subElement)
-    }
-    Quit retok
-}
-
 /// identifier ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)'
 Method GlobalIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {

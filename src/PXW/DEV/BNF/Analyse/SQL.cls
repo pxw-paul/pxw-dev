@@ -177,7 +177,6 @@ Method SelectCommand(element As PXW.DEV.Element)
 
                 ; wrap the entire column up as a single thing and work out later what 
                 ; it refers to if its clicked on. EG Race->Circuit->Name
-                ;if fulltable="x" zw fulltable,columnname,columnjoin
                 If fulltable'="" {
                     Do ..SetColumnReference(cref,fulltable,columnname_columnjoin)
                 } Else {
@@ -313,9 +312,7 @@ Method FindTable(cref As PXW.DEV.Element, ByRef tables) As %String
     If $ISOBJECT(tablealiasE) Set tablealias=tablealiasE.ToString(0)
     Set columnnameE=cref.findFirstElementByType("ColumnName",0)
     If $ISOBJECT(columnnameE) Set columnname=columnnameE.ToString(0)
-    ;Set columnjoin=""
-    ;Set columnjoinE=cref.findFirstElementByType("ColumnReferenceImplicit",0)
-    ;If $ISOBJECT(columnjoinE) Set columnjoin=columnjoinE.ToString(0)
+
     ; if there is no alias and there is 1 table only then we can use that as the alias
     ; note than on SUB SELECTS the parent tables are available.
     If tablealias="",$ORDER(tables(""))=$ORDER(tables(""),-1) Set tablealias=$ORDER(tables("")) 

@@ -14,17 +14,16 @@ Property type As %String [ InitialExpression = {$ZCONVERT($CLASSNAME(),"U")} ];
 /// Property parts As list Of PXW.DEV.Particle [ Private ];
 Method AddPart(Part As PXW.DEV.Particle)
 {
-	$$$DEBUG("Adding "_Part.%ClassName(1)_":"_Part.type_":"_$zconvert(Part.ToString(),"O","JSON")_":"_$s(Part.%IsA("PXW.DEV.Atom"):Part.line_","_Part.col,1:""))
+	;$$$DEBUG("Adding "_Part.%ClassName(1)_":"_Part.type_":"_$zconvert(Part.ToString(),"O","JSON")_":"_$s(Part.%IsA("PXW.DEV.Atom"):Part.line_","_Part.col,1:""))
 	;d ..parts.Insert(Part)
 	; this is faster than the list of objects - not much, 20%, but on dealing with millions of things its something
-	Set i=$INCREMENT(%PXWparts(+$THIS))
-	Set %PXWparts(+$THIS,i)=Part
+	Set %PXWparts(+$THIS,$INCREMENT(%PXWparts(+$THIS)))=Part
 }
 
 Method partsGetAt(key As %Integer) As PXW.DEV.Particle
 {
 	#dim part as PXW.DEV.Particle
-	set part=$GET(%PXWparts(+$THIS,key))
+	Set part=$GET(%PXWparts(+$THIS,key))
 	Quit part
 }
 
@@ -47,10 +46,12 @@ Method partsCount() As %Integer
 	Quit +$GET(%PXWparts(+$THIS))
 }
 
+/// Copy all the parts from the source element into the current element, adding to the end of the parts (not replacing)
 Method partsCopy(Source As PXW.DEV.Element)
 {
-	Set count=$GET(%PXWparts(+Source))
-	For i=1:1:count Set %PXWparts(+$THIS,$INCREMENT(%PXWparts(+$THIS)))=%PXWparts(+Source,i)
+	Set src=+Source,this=+$THIS,c2=$GET(%PXWparts(this))
+	For i=1:1:$GET(%PXWparts(src)) Set %PXWparts(this,$INCREMENT(c2))=%PXWparts(src,i)
+	Set %PXWparts(this)=c2
 }
 
 Method partsClear()
@@ -160,19 +161,6 @@ Method FirstAtom() As PXW.DEV.Atom
 	Quit atom
 }
 
-/*
-/// STOP USING THIS - go for findElementsByType or findElementsByClass
-Method findElementTypes(ClassName As %String, ByRef OuputArray As %String)
-{
-	If ..%IsA(ClassName) Set OuputArray(+$THIS)=$THIS
-	For i=1:1:..partsCount() {
-		Set ele=..partsGetAt(i)
-		If ele.%IsA("PXW.DEV.Element") {
-			Do ele.findElementTypes(ClassName,.OuputArray)
-		}
-	}
-}
-*/
 Method findFirstElementByType(Type As %String, deep As %Boolean = 1) As PXW.DEV.Element
 {
 	#dim ele,founda as PXW.DEV.Element
@@ -206,7 +194,7 @@ Method findFirstElementByType(Type As %String, deep As %Boolean = 1) As PXW.DEV.
 Method findNextElement(ByRef key As %Integer) As PXW.DEV.Element
 {
 	#dim ele as PXW.DEV.Element
-	do {
+	Do {
 		Set ele=..partsGetNext(.key)
 	 	If ele="" Quit
 	} While 'ele.%IsA("PXW.DEV.Element") 
@@ -216,10 +204,10 @@ Method findNextElement(ByRef key As %Integer) As PXW.DEV.Element
 Method countElements() As %Integer
 {
 	Set count=0,k=""
-	While $isobject(..findNextElement(.k)) {
+	While $ISOBJECT(..findNextElement(.k)) {
 		Set count=count+1
 	}
-	quit count
+	Quit count
 }
 
 /// deep = 0 means look only at the children of this object
@@ -283,44 +271,6 @@ Method findElementsByClass(ClassName As %String, ByRef OuputArray As %String)
 	}
 }
 */
-
-/*
-/// THIS HAS BEEN REPLACED BY XPATH WHICH IS A LITTLE SIMPLER TO UNDERSTAND AS I WANT TO KEEP IT WITH THE SAME SYNTAX AS XML PATHS
-Method findElementsByTypePath(Path As %String, ByRef OutputList As %Library.ListOfObjects(ELEMENTTYPE="PXW.DEV.Element"))
-{
-	
-	; find everything on the first step of the path
-	Set stepI=1,deep=0
-	Set step1=$PIECE(Path,",",stepI)
-	If step1="*" Set deep=1,stepI=stepI+1,step1=$PIECE(Path,",",stepI)
-
-	Set list1=##class(%Library.ListOfObjects).%New()
-	Do ..findElementsByType(step1,list1,deep)
-	
-	; go along each step after and find all the sub elements that are in the previous list
-	; each time we go along the steps we use the output of the previous step as the input of
-	; of the next search
-	; list1 from above builds list2, list1 is reset to list2 and it runs again
-	; if the step is * this means anything will do (look deep)
-	; otherwise just look a the next level
-	Set stepI=stepI+1,deep=0
-	For si=stepI:1:$LENGTH(Path,",") {
-		Set step2=$PIECE(Path,",",si)
-		If step2="*" {
-			Set deep=1
-		} Else {
-			Set list2=##class(%Library.ListOfObjects).%New()
-			For i=1:1:list1.Count() {
-				Set item1=list1.GetAt(i)
-				Do item1.findElementsByType(step2,list2,deep)		
-			}
-			Set list1=list2
-			Set deep=0
-		}
-	}
-	Set OutputList=list1
-}
-*/
 /// Use an XPath type syntax to navigate
 /// eg https://www.w3schools.com/xml/xpath_syntax.asp
 /// NOT dealing with * for the time being, it makes life complicated, and we should know our own paths
@@ -336,7 +286,7 @@ Method findElementsXPath(Path As %String, ByRef OutputList As %Library.ListOfObj
 	Set step1=$PIECE(Path,"/",stepI)
 	;If step1="*" Set deep=1,stepI=stepI+1,step1=$PIECE(Path,"/",stepI)
 
-	s stepField=$p(step1,"[",1),stepCondition=$p($p(step1,"[",2,*),"]",1)
+	Set stepField=$PIECE(step1,"[",1),stepCondition=$PIECE($PIECE(step1,"[",2,*),"]",1)
 	Set list1=##class(%Library.ListOfObjects).%New()
 	Do ..findElementsXPathCondition(stepField,stepCondition,list1)
 	
@@ -349,7 +299,7 @@ Method findElementsXPath(Path As %String, ByRef OutputList As %Library.ListOfObj
 	Set stepI=stepI+1,deep=0
 	For si=stepI:1:$LENGTH(Path,"/") {
 		Set step2=$PIECE(Path,"/",si)
-		s stepField=$p(step2,"[",1),stepCondition=$p($p(step2,"[",2,*),"]",1)
+		Set stepField=$PIECE(step2,"[",1),stepCondition=$PIECE($PIECE(step2,"[",2,*),"]",1)
 		Set list2=##class(%Library.ListOfObjects).%New()
 		For i=1:1:list1.Count() {
 			Set item1=list1.GetAt(i)
@@ -363,8 +313,8 @@ Method findElementsXPath(Path As %String, ByRef OutputList As %Library.ListOfObj
 /// Condition only supports = at the moment
 Method findElementsXPathCondition(Type As %String, Condition As %String, ByRef OutputList As %Library.ListOfObjects)
 {
-	s condfield=$p(Condition,"=",1)
-	s condvalue=$p(Condition,"=",2,*)
+	Set condfield=$PIECE(Condition,"=",1)
+	Set condvalue=$PIECE(Condition,"=",2,*)
 	Set uType=$$$UPPER(Type)
 	For i=1:1:..partsCount() {
 		Set ele=..partsGetAt(i)
@@ -372,20 +322,20 @@ Method findElementsXPathCondition(Type As %String, Condition As %String, ByRef O
 			If '$ISOBJECT($GET(OutputList)) { 
 				Set OutputList=##class(%Library.ListOfObjects).%New()
 			}
-			if condfield'="" {
-				do ele.findElementsXPath(condfield,.itemsToCheck)
-				set ok=1
-				for j=1:1:itemsToCheck.Count() {
-					s condE=itemsToCheck.GetAt(j)
-					s value=condE.ToString()
-					i value'=condvalue {
-						s ok=0
+			If condfield'="" {
+				Do ele.findElementsXPath(condfield,.itemsToCheck)
+				Set ok=1
+				For j=1:1:itemsToCheck.Count() {
+					Set condE=itemsToCheck.GetAt(j)
+					Set value=condE.ToString()
+					If value'=condvalue {
+						Set ok=0
 					}
 				}
-				i ok {
+				If ok {
 					Do OutputList.Insert(ele)
 				}
-			} else {
+			} Else {
 				Do OutputList.Insert(ele)
 			}
 		}

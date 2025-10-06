@@ -211,6 +211,17 @@ Method compileQuickCheck(Method As %Dictionary.MethodDefinition, RulesElement As
         Set wordlist="",sep=""
         For i=1:1:$LISTLENGTH(listOfValues) Set wordlist=wordlist_sep_""""_$LISTGET(listOfValues,i)_"""",sep=","
         $$$WRITECR($$$Tab(indent)_"if '(..isKeywordInList($lb("_wordlist_"),.value)) { quit "_returnValue_" }")
+    } elseif (summary?1"(K"0."|K"1")&"1.E) || (summary?1"K"0."|K"1"&"1.E) {
+        ; similar to above but with something else after
+        ; Keyword list (K|K|K)&... or K|K|K&...
+        s numberofK=$l($p(summary,"&",1),"|")
+        s keywords=$list(listOfValues,1,numberofK)
+        Set Method.Description=Method.Description_$CHAR(13,10)_"summary values:"_$LISTTOSTRING(keywords)
+        Set wordlist="",sep=""
+        For i=1:1:numberofK Set wordlist=wordlist_sep_""""_$LISTGET(listOfValues,i)_"""",sep=","
+        ; It may end up doing this twice: once on the main method and then again when the keywords are processed in the submethod (above)
+        ; but I think the benefit of doing this check before the submethod is even called is worth it.
+        $$$WRITECR($$$Tab(indent)_"if '(..isKeywordInList($lb("_wordlist_"),.value)) { quit "_returnValue_" }")
     } ElseIf (summary="P") {
         ; Punctuation single (eg ,)
         Set Method.Description=Method.Description_$CHAR(13,10)_"summary values:"_$LISTTOSTRING(listOfValues)
@@ -446,13 +457,13 @@ Method compileRepeatSep(Method As %Dictionary.MethodDefinition, Element As PXW.D
     #define WRITECR(%code) $$$WRITELINE(Method,%code)
     Set indent=1
     Set path=1
-    Set transaction=1,debug=1
+    Set transaction=1,debug=0
     Set copy=1
     Set Method.Description=Element.ToString(" ")
     Set sepE=Element.findFirstElementByType("RepeatSepSeparator",0)
     Set ruleE=Element.findFirstElementByType("RepeatSepRule",0)
     Do ..compileQuickCheck(Method,sepE,indent)
-    Do ..compileMethodStart(Method,indent,path,transaction)
+    Do ..compileMethodStart(Method,indent,path,transaction,debug)
     $$$WRITECR($$$Tab(indent)_"set done=0 ; must be at least 1")
 
     $$$WRITE($$$Tab(indent)_"if ")
@@ -499,7 +510,7 @@ Method compileSubRule(Method As %Dictionary.MethodDefinition, Element As PXW.DEV
     Set indent=1
     Set path=0
     If Element.type="Rules" {
-        Set transaction=1,debug=1,copy=1
+        Set transaction=1,debug=0,copy=1
         Set summary=..summariseRules(Element)
         ; this is just one or more calls to other things, those things will be in transactions so no need here
         If summary?1"C"0."|C" Set transaction=0,debug=0
@@ -509,7 +520,7 @@ Method compileSubRule(Method As %Dictionary.MethodDefinition, Element As PXW.DEV
         ;$$$WRITECR($$$Tab(indent)_"; sub summary="_summary_", transaction="_transaction)
         Do ..compileQuickCheck(Method,Element,indent)
         Do ..compileMethodStart(Method,indent,path,transaction,debug)
-        If 'transaction $$$WRITECR($$$Tab(indent)_"Set subElement=ParentElement")
+        ;If 'transaction $$$WRITECR($$$Tab(indent)_"Set subElement=ParentElement")
         Do ..compileRules(Method,Element,indent)
         Do ..compileMethodEnd(Method,indent,,transaction,debug,copy)
     }
@@ -522,7 +533,7 @@ Method compileOptionalGroup(Method As %Dictionary.MethodDefinition, Element As P
 
     Set indent=1
     If Element.type="Rules" {
-        Set transaction=1,debug=1,copy=1
+        Set transaction=1,debug=0,copy=1
         Set summary=..summariseRules(Element)
         ; this is just one or more calls to other things, those things will be in transactions so no need here
         If summary?1"C"0."|C" Set transaction=0,debug=0
@@ -531,7 +542,7 @@ Method compileOptionalGroup(Method As %Dictionary.MethodDefinition, Element As P
         If summary?1"P"0."|P" Set transaction=0,debug=0
         Do ..compileQuickCheck(Method,Element,indent,"1 /* not found is OK */")
         Do ..compileMethodStart(Method,indent,,transaction,debug)
-        If 'transaction $$$WRITECR($$$Tab(indent)_"Set subElement=ParentElement")
+        ;If 'transaction $$$WRITECR($$$Tab(indent)_"Set subElement=ParentElement")
         Do ..compileRules(Method,Element,indent)
         Do ..compileMethodEnd(Method,indent,"1 /* failure rollsback but returns OK */",transaction,debug,copy)
     }

@@ -219,6 +219,8 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 	If Debug="$FILE" {
 		ZWrite %pxwdebug
 	}
+
+	;zw %atoms
 	;d %session.EndSession()
 	;zw zh
     Write "</pre>"

@@ -1,6 +1,27 @@
 Class PXW.DEV.UnitTests.BNF.TestCOSAnalyse Extends %UnitTest.TestCase
 {
 
+Method TestDirectiveDimItem()
+{
+    s code="#dim p1 as PXW.DEV.Element"
+    s element=..parse(code,"CosDirective","PXW.DEV.BNF.Run.COS")
+    s analyse=##class(PXW.DEV.BNF.Analyse.COS).%New()
+    s analyse.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace("LOCAL_USER")
+    d analyse.checkElement(element)
+
+    d $$$AssertEquals(analyse.DimmedTypes("p1"),"PXW.DEV.Element")
+
+    ;---------------------
+    s code="#dim p1,p2 as PXW.DEV.Element"
+    s element=..parse(code,"CosDirective","PXW.DEV.BNF.Run.COS")
+    s analyse=##class(PXW.DEV.BNF.Analyse.COS).%New()
+    s analyse.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace("LOCAL_USER")
+    d analyse.checkElement(element)
+
+    d $$$AssertEquals(analyse.DimmedTypes("p1"),"PXW.DEV.Element")
+    d $$$AssertEquals(analyse.DimmedTypes("p2"),"PXW.DEV.Element")
+}
+
 Method TestMethodSetBasic()
 {
     s code="method mName() { s p1=1,$p(p2,""."",3)=p1,(p3,p4)=p2 }"
