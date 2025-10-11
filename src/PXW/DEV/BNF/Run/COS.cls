@@ -267,10 +267,7 @@ Method AmpOp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
     Quit 1
 }
 
-/// pattern_match ::= ( "?" | "'?" ) (pattern_match_combo )*
-///  summary=(S|S)&(F)
-///  type=group
-///  not=0
+/// Trying to just get to the end of the match, not working out what it actually does or anything
 Method PatternMatch(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
 	#dim atom as PXW.DEV.Atom
@@ -357,7 +354,7 @@ Method PatternMatch(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 			Continue
 		}
 
-        If $LISTFIND($LISTBUILD(":","|","&","{"),peek) {
+        If $LISTFIND($LISTBUILD(":","|","&","{"," ",$c(9)),peek) {
             Set ok=0
             Continue
         } 
@@ -415,42 +412,6 @@ Method OneCosStatement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
     Quit retok
 }
 
-/*
-/// object_chain ::= '.' object_chain_item ( '.' object_chain_item )*
-Method ObjectChainOLD(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
-{
-    ; an object.method should not have white spaces
-    Do:..needsWScheck ..skipWhiteSpaceAndComments()
-	If ..whitespace Quit 0
-    ;break
-    $$$DEBUGMethodBegin
-	;$$$BNFPATH
-	$$$BNFSTART(subElement)
-	;;$$$DEBUG("%path="_%path)
-	If (..isString(subElement,".") && 
-		..ObjectChainItem(subElement) && 
-		$$REP298(subElement)) {
-		$$$BNFCOMMIT(subElement,ParentElement)
- 		Set retok=1
-	} Else {
-		$$$BNFROLLBACK(subElement)
-		Set retok=0
-	}
-    $$$DEBUGMethodEnd
-    Quit retok
-REP298(ParentElement) New %done 
-	$$$BNFSTART(subElement)
-	While (..isString(subElement,".") && 
-		..ObjectChainItem(%subElement)) { Set %done=1 }
-	If $GET(%done) {
-		$$$BNFCOMMIT(subElement,ParentElement)
-		Quit 1
-	} Else {
-		$$$BNFROLLBACK(subElement)
-		Quit 1
-	}
-}
-*/
 /// object_chain ::= '.' object_chain_item ( '.' object_chain_item )*
 Method ObjectChain(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
@@ -607,34 +568,24 @@ Method VariableIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 Method GlobalIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
     $$$DEBUGMethodBegin
-    ;$$$BNFPATH
-	;;$$$DEBUG("%path="_%path)
-    ;d ..skipWhiteSpaceAndComments()
-    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+    $$$BNFPATH
+	Do:..needsWScheck ..skipWhiteSpaceAndComments()
     
-    Set value=""
-    If ..peek(1)="%" Set value=value_..nextNotEOL(1)
-    If ..peek(1)="$" Set value=value_..nextNotEOL(1) ; ^$LOCK
+    s ch50=..stream.PeekToEol()
+    s pos=1
+    If $e(ch50,pos)="%" Set pos=pos+1
+    If $e(ch50,pos)="$" Set pos=pos+1 ; ^$LOCK
+    If $e(ch50,pos)?1A set pos=pos+1
     
-    ; not a letter (or number)
-    Set ch=..peek(1)
-    ; no % so must start with a letter
-    If value="",ch?1A Set value=..nextNotEOL(1)
-    
-    Set ok=1
-    If value="" {
-        ;$$$DEBUG("checking identifier, ok=0")
-        Set ok=0
-    }
-    If ok {
-        Set ch=..peek(1)
-        While (ch?1A) || (ch?1N) || (ch=".")  {
-            Set value=value_..nextNotEOL(1)
-            Set ch=..peek(1)
-        }
-    
-        Set atom=..newAtom(ParentElement.type,value)
+    If pos>1 {
+        While ($e(ch50,pos)?1AN) || ($e(ch50,pos)=".")  {
+            set pos=pos+1
+        }    
+        Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
         Do ParentElement.AddPart(atom)
+        set ok=1
+    } else {
+        set ok=0
     }
 
     $$$DEBUGMethodEnd

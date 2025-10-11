@@ -166,6 +166,9 @@ expression                          ::= factor ( pattern_match | (dyadicop facto
 factor                              ::= ( monadicop )* primary /* can be any number of +- or ' */
 monadicop                           ::= "+" | "-" | "'" | "~" /* not sure what ~ is but its used in bitlogic */
 
+/* THIS HAS BEEN HAND CODED IN THE RUN CLASS 
+    COULD THE OPTIMISATION DONE THERE BE DONE AUTOMATICALLY?
+*/
 dyadicop                            ::= "+" 
                                           | "-" 
                                           | "\\" 

@@ -1,6 +1,32 @@
 Class PXW.DEV.UnitTests.BNF.TestCOS Extends %UnitTest.TestCase
 {
 
+Method TestGlobalIdentifier()
+{
+    ; valid names
+    s pmeth="GlobalIdentifier"
+    do $$$AssertEquals(..parseAndFlat("x",pmeth),":x")
+    do $$$AssertEquals(..parseAndFlat("ab.cde",pmeth),":ab.cde")
+    do $$$AssertEquals(..parseAndFlat("ab1",pmeth),":ab1")
+    do $$$AssertEquals(..parseAndFlat("ab1cde",pmeth),":ab1cde")
+    do $$$AssertEquals(..parseAndFlat("%",pmeth),":%")
+    do $$$AssertEquals(..parseAndFlat("%abc",pmeth),":%abc")
+    do $$$AssertEquals(..parseAndFlat("%123",pmeth),":%123")
+
+    do $$$AssertEquals(..parseAndFlat("$LOCK",pmeth),":$LOCK")
+
+
+    ; invalid names these just return the % which is a valid name
+    do $$$AssertEquals(..parseAndFlat("%%a",pmeth),":%")
+    do $$$AssertEquals(..parseAndFlat("%%",pmeth),":%")
+
+    ; return nothing, no valid name
+    do $$$AssertEquals(..parseExpectFail("1",pmeth),0)
+    do $$$AssertEquals(..parseExpectFail("+",pmeth),0)
+    do $$$AssertEquals(..parseExpectFail("1a",pmeth),0)
+    do $$$AssertEquals(..parseExpectFail("-",pmeth),0)
+}
+
 Method TestPatternMatch()
 {
     s pmeth="PatternMatch"
@@ -37,6 +63,9 @@ Method TestPatternMatch()
     ; pattern match with an OR || right after, we want only the pattern
     s match=(x?1A||x=1) 
     do $$$AssertEquals(..parseAndFlat("?1A||x=1",pmeth),":{?,PatternMatch:1A}")
+
+    ; pattern match with command following
+    do $$$AssertEquals(..parseAndFlat("?1A set x=1",pmeth),":{?,PatternMatch:1A}")
 
     s y="1A"
     s match=(x?@y)
