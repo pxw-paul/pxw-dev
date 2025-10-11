@@ -166,6 +166,7 @@ Method WriteStyles()
 	.EmbeddedXML { background-color: var(--bgAlternate1); display:inline-block;}
 	.EmbeddedPython { background-color: var(--bgAlternate1); display:inline-block;}
 
+	.CDEFOneClassMember { display:block; margin:0px 0px 0px 20px;  }
 	.CDEFComment { color: var(--fgComment); }
    	.CDEFClassName, a.CDEFClassName  { color: var(--fgProgramName);}
 	.CDEFMember, a.CDEFMember, a.CDEFMember:visited {color: var(--fgProgramLabel);}

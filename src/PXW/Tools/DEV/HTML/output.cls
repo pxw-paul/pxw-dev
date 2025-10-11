@@ -65,12 +65,16 @@ Method wrapElementHTML(element As PXW.DEV.Element, pre As %String, post As %Stri
 /// Output the html directly to destination. No escaping or other formatting is done.
 Method output(html As %String)
 {
+	$$$DEBUGMethodBegin
 	If ..WriteMode {
 		Write html
+		;s %outputhtml=$g(%outputhtml)_html
+		;i $l(%outputhtml)>100000 w %outputhtml s %outputhtml=""
 		;s ^PXW("out",$i(^PXW))=html
 	} Else {
 		Set ..htmlout=..htmlout_html	
 	}
+	$$$DEBUGMethodEnd
 }
 
 Method resetWrappers()
@@ -85,8 +89,7 @@ Method html(string As %String) As %String
 
 Method writeElement(element As PXW.DEV.Element)
 {
-	Set n=+$GET(..pre(+element))
-    For i=1:1:n Do ..output($GET(..pre(+element,i)))
+	For i=1:1:+$GET(..pre(+element)) Do ..output($GET(..pre(+element,i)))
 	For  {
 		Set a=element.partsGetNext(.akey)
 		Quit:akey=""
@@ -97,8 +100,7 @@ Method writeElement(element As PXW.DEV.Element)
 			Do ..writeAtom(a)
 		}
 	}
-    Set n=+$GET(..post(+element))
-    For i=n:-1:1 Do ..output($GET(..post(+element,i)))
+    For i=+$GET(..post(+element)):-1:1 Do ..output($GET(..post(+element,i)))
 }
 
 /// the only method that should actually do any output during the middle processing
@@ -122,18 +124,16 @@ Method writeAtom(atom As PXW.DEV.Atom, preValue As %String = "", postValue As %S
 		Set preValue="<span class='"_..#WarningClass_"' title='"_$ZCONVERT(line,"O","HTML")_"'>"_preValue
 		Set postValue=postValue_"</span>"
 	}
-
-    Set n=+$GET(..pre(+atom))
-    For i=1:1:n Do ..output($GET(..pre(+atom,i)))
-    Do ..output(preValue_..html(atom.start))
-	    Set n=+$GET(..preI(+atom))
-	    For i=1:1:n Do ..output($GET(..preI(+atom,i)))
-	    Do ..output(..html(atom.value))
-	    Set n=+$GET(..postI(+atom))
-	    For i=n:-1:1 Do ..output($GET(..postI(+atom,i)))
-	Do ..output(..html(atom.end)_postValue)
-    Set n=+$GET(..post(+atom))
-    For i=n:-1:1 Do ..output($GET(..post(+atom,i)))
+	
+	s out=""
+    For i=1:1:+$GET(..pre(+atom)) set out=out_$GET(..pre(+atom,i))
+    set out=out_preValue_..html(atom.start)
+	    For i=1:1:+$GET(..preI(+atom)) set out=out_$GET(..preI(+atom,i))
+	    set out=out_..html(atom.value)
+	    For i=+$GET(..postI(+atom)):-1:1 set out=out_$GET(..postI(+atom,i))
+	set out=out_..html(atom.end)_postValue
+    For i=+$GET(..post(+atom)):-1:1 set out=out_$GET(..post(+atom,i))
+	d ..output(out)
 }
 
 Method GenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator ]

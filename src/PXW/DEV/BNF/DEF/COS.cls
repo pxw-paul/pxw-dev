@@ -81,8 +81,9 @@ cos_directive_sqlcompile            ::= 'sqlcompile' (
 cos_directive_undef                 ::= 'undef' macro_identifier 
 
 cos_directive_include_list          ::= '(' cos_directive_include_name ( ',' cos_directive_include_name )* ')'
-cos_directive_include_name          ::= identifier
+cos_directive_include_name          ::= include_identifier
 
+include_identifier                  ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)' 
 
 dim_expression                      ::= expression
 
@@ -145,8 +146,6 @@ cos_command                         ::=  set_command
 
 command_list                        ::= cos_command ( cos_command )*
 command_list_eol                    ::= cos_command ( cos_command )* /* needs to stop at end of line */
-
-whitespace                          ::= ( [ comment ] [ ( ' ' | '\t' | '\r') ] )*
 
 comment                             ::= line_comment
                                         | block_comment
@@ -250,7 +249,7 @@ general_intrinsic_set               ::= any_keyword function_parameter_list  [ o
 
 parameter_list                      ::= '(' [ parameter_values ] ')'
 parameter_values                    ::= one_parameter_value ( ',' [ one_parameter_value ] )*
-one_parameter_value                 ::= ( [ '.' ] identifier ) | ( identifier '...' ) | expression
+one_parameter_value                 ::= ( [ '.' ] variable ) | ( variable '...' ) | expression
 
 macro_expression                    ::= expression_function_call | safeexpression_function_call
 
@@ -269,8 +268,6 @@ this_object_direct_property         ::= 'i%' object_chain_item
 system_object                       ::='$system.' object_chain_item [ object_chain ]
 
 object_variable                     ::= variable_identifier [ array_parameter_list ] object_chain 
-
-member_ref                          ::= identifier | string
 
 Indirection                         ::= Subscript_Indirection | Simple_Indirection 
 Simple_Indirection                  ::= '@' term
@@ -453,7 +450,7 @@ for_end_loop_value                  ::= expression
 
 goto_command                        ::= ('goto' | 'g') [ post_conditional ]  goto_dest_list
 goto_dest_list                      ::= goto_dest ( ',' goto_dest )*
-goto_dest                           ::= goto_case_function_call | ( /* identifier [ '+' number ] [ '^' identifier ]*/ label_reference [ post_conditional ] )
+goto_dest                           ::= goto_case_function_call | ( label_reference [ post_conditional ] )
 
 
 halt_command                        ::= ('halt' | 'h') [ post_conditional ] naked
@@ -473,7 +470,10 @@ else_command                        ::= ('else' | 'e') naked /* this happen in s
 job_command                         ::= ('job' | 'j') [ post_conditional ] job_arguments
 job_arguments                       ::= job_argument ( ',' job_argument )*
 job_argument                        ::= job_call [ job_process_parameters ] [ job_timeout_spec ]
-job_call                            ::= job_routine_call | job_class_method_call | job_instanceMethod_call | job_classmethodfn_call
+job_call                            ::= ( label_reference [ function_parameter_list ] ) 
+                                        | class_expression 
+                                        | this_object 
+                                        | classmethod_function_call
 job_process_parameters              ::= ':' ( job_process_parameters_inbrackets | job_process_parameters_nobrackets )
 
 job_process_parameters_inbrackets   ::= '('  ( job_nspace_param 
@@ -499,10 +499,6 @@ job_principal-output                ::= [ expression ]
 job_priority                        ::= [ expression ]
 job_os-directory                    ::= [ expression ]
 job_process-name                    ::= [ expression ]
-job_routine_call                    ::= identifier [ '^' identifier ] [ parameter_list]
-job_class_method_call               ::= class_expression /*'##class' '(' identifier ').' identifier parameter_list*/
-job_instanceMethod_call             ::= '..' identifier function_parameter_list
-job_classmethodfn_call              ::= '$classmethod' '(' expression ',' expression ( ',' expression )* ')'
 job_timeout_spec                    ::= ':' expression
 
 kill_command                        ::= ( 'kill' | 'k') [ post_conditional ] ( naked | kill_parameter_list )
@@ -581,7 +577,7 @@ trollback_command                   ::= 'trollback' [ post_conditional ] [ '1' ]
 
 try_command                         ::= 'try' '{' [ cos_code_block ] '}'
                                         (cos_directive)* /* #dim between try and catch */
-                                         'catch' [ identifier | ( '(' identifier ')' ) ] '{' [ cos_code_block ] '}'
+                                        'catch' [ variable | ( '(' variable ')' ) ] '{' [ cos_code_block ] '}'
 
 tstart_command                      ::= ('tstart' | 'ts' ) [ post_conditional ]
 

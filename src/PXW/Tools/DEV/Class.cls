@@ -220,6 +220,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 		ZWrite %pxwdebug
 	}
 
+	zw %peek
 	;zw %atoms
 	;d %session.EndSession()
 	;zw zh

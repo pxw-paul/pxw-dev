@@ -149,12 +149,14 @@ Method output2(html As %String, newLine As %Boolean = 0)
 
 Method begin()
 {
+    s %outputhtml=""
 	Do ..output("<pre>")
 }
 
 Method end()
 {
 	Do ..output("</pre>")
+    w:$g(%outputhtml)'="" %outputhtml s %outputhtml=""
 }
 
 Method middle(element As PXW.DEV.Element)
@@ -170,6 +172,7 @@ Method writeElement(element As PXW.DEV.Element)
     #dim a as PXW.DEV.Atom
     #dim cref as PXW.DEV.Element
     /* CDEF */
+    $$$DEBUG("Begin "_$CLASSNAME()_":"_$p(element.type,":",1))
     $$$DEBUG("writeElement:"_element.type)
     Set oldXMLPath=..XMLPath
  
@@ -244,6 +247,7 @@ Method writeElement(element As PXW.DEV.Element)
 
     Do ##super(element)
     Set ..XMLPath=oldXMLPath
+    $$$DEBUG("End "_$CLASSNAME()_":"_$p(element.type,":",1))
 }
 
 Method writeElementBNF1(element As PXW.DEV.Element)
@@ -351,7 +355,7 @@ Method writeCDEFClassDefinition(element As PXW.DEV.BNF.Elements.ClassDefinition)
     Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,)_"'>Xref ("_count_") </a>"
     Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,"_class","_Extends")
     If overriddenby>0 {
-        Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,"","_Extends")_"'>Extended "_overriddenby_" </a>"
+        Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,"","_Extends")_"'>Extended ("_overriddenby_") </a>"
     }
     Set menu=menu_"</div>"
     Do ..wrapAtomHTML(keywordatom,menu,"")
@@ -378,15 +382,15 @@ Method writeCDEFClassProperty(element As PXW.DEV.BNF.Elements.ClassDefinition) A
         Set name=nameelement.ToString(0)
         Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
         Set menu="<div class='CDEFItemMenu nocopy'>"
-        Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
         Set overrides=..ClassServer.GetPropertyOverrides(..This_"||"_name)
         If overrides'="" {
             Set menu=menu_"<a class='CDEFOption' href='"_..HREFToClass(overrides,name)_"'>Override </a>"
         }
         Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name,"_Override")
         If overriddenby>0 {
-            Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_"'>Overridden "_overriddenby_" </a>"
+            Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_"'>Overridden ("_overriddenby_") </a>"
         }
+        Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
         Set menu=menu_"</div>"
         Do ..wrapAtomHTML(keywordatom,menu,"")
     }
@@ -401,15 +405,15 @@ Method writeCDEFClassParameter(element As PXW.DEV.BNF.Elements.ClassDefinition) 
         Set name=nameelement.ToString(0)
         Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
         Set menu="<div class='CDEFItemMenu  nocopy'>"
-        Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
         Set overrides=..ClassServer.GetParameterOverrides(..This_"||"_name)
         If overrides'="" {
             Set menu=menu_"<a class='CDEFOption' href='"_..HREFToClass(overrides,name)_"'>Override </a>"
         }
         Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name,"_Override")
         If overriddenby>0 {
-            Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_"'>Overridden "_overriddenby_" </a>"
+            Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_"'>Overridden ("_overriddenby_") </a>"
         }
+        Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
         Set menu=menu_"</div>"
         Do ..wrapAtomHTML(keywordatom,menu,"")
     }
@@ -425,16 +429,15 @@ Method writeCDEFClassMethod(element As PXW.DEV.BNF.Elements.ClassDefinition) As 
         Set name=nameelement.ToString(0)
         Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
         Set menu="<div class='CDEFItemMenu  nocopy'>"
-        Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
         Set overrides=..ClassServer.GetMethodOverrides(..This_"||"_name)
         If overrides'="" {
             Set menu=menu_"<a class='CDEFOption' href='"_..HREFToClass(overrides,name)_"'>Override </a>"
         }
         Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name,"_Override")
         If overriddenby>0 {
-            ;d ..wrapElementHTML(keywordatom,"<a class='CDEFOption nocopy' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Overridden "_overriddenby_" </a>","")
-            Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_"'>Overridden "_overriddenby_" </a>"
+            Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_"'>Overridden ("_overriddenby_") </a>"
         }
+        Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
         Set menu=menu_"</div>"
         Do ..wrapAtomHTML(keywordatom,menu,"")
     }
@@ -456,7 +459,6 @@ Method writeCDEFClassQuery(element As PXW.DEV.BNF.Elements.ClassDefinition) As P
         Set name=nameelement.ToString(0)
         Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
         Set menu="<div class='CDEFItemMenu nocopy'>"
-        Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
         ; not sure if/how I recognise overridden QUERIES
         /*Set overrides=..ClassServer.GetPropertyOverrides(..This_"||"_name)
         If overrides'="" {
@@ -464,8 +466,9 @@ Method writeCDEFClassQuery(element As PXW.DEV.BNF.Elements.ClassDefinition) As P
         }*/
         Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name,"_Override")
         If overriddenby>0 {
-            Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_"'>Overridden "_overriddenby_" </a>"
+            Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_"'>Overridden ("_overriddenby_") </a>"
         }
+        Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
         Set menu=menu_"</div>"
         Do ..wrapAtomHTML(keywordatom,menu,"")
     }
@@ -498,7 +501,6 @@ Method writeCDEFIndex(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DE
         Set name=nameelement.ToString(0)
         Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
         Set menu="<div class='CDEFItemMenu nocopy'>"
-        Set menu=menu_"<a title='This does NOT show where its used as a index in SQL, only where its used as Unique Open method' class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
         ; not sure if indices even can be overridden
         /*Set overrides=..ClassServer.GetPropertyOverrides(..This_"||"_name)
         If overrides'="" {
@@ -506,8 +508,9 @@ Method writeCDEFIndex(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DE
         }*/
         Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name,"_Override")
         If overriddenby>0 {
-            Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_"'>Overridden "_overriddenby_" </a>"
+            Set menu=menu_"<a class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_"'>Overridden ("_overriddenby_") </a>"
         }
+        Set menu=menu_"<a title='This does NOT show where its used as a index in SQL, only where its used as Unique Open method' class='CDEFOption' href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_"'>Xref ("_count_") </a>"
         Set menu=menu_"</div>"
         Do ..wrapAtomHTML(keywordatom,menu,"")
     }

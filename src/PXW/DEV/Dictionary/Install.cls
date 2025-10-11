@@ -87,22 +87,22 @@ ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, Ate
 
 ClassMethod SetupUT(NamespaceName As %String, AtelierServerName As %String) As %Status
 {
-    s sc=$$$OK
+    Set sc=$$$OK
     ; code interfaces
     Set:$$$ISOK(sc) sc=##class(PXW.Tools.UnitTest.UTInterface).RegisterType()
     ; html display pages
     Set:$$$ISOK(sc) sc=##class(PXW.Tools.UnitTest.UTCase).RegisterType()
 
-    if $$$ISOK(sc) {
-        s interface=##class(PXW.Tools.UnitTest.UTInterface).OpenNamespace(NamespaceName)
-        i '$isobject(interface) {
-            s interface=##class(PXW.Tools.UnitTest.UTInterface).%New()
-            s interface.Namespace=##class(PXW.DEV.Dictionary.Namespace).%OpenId(NamespaceName)
+    If $$$ISOK(sc) {
+        Set interface=##class(PXW.Tools.UnitTest.UTInterface).OpenNamespace(NamespaceName)
+        If '$ISOBJECT(interface) {
+            Set interface=##class(PXW.Tools.UnitTest.UTInterface).%New()
+            Set interface.Namespace=##class(PXW.DEV.Dictionary.Namespace).%OpenId(NamespaceName)
         }
-        s interface.AtelierSettings=##class(PXW.DEV.Dictionary.AtelierSettings).%OpenId(AtelierServerName)
-        s sc=interface.%Save()
+        Set interface.AtelierSettings=##class(PXW.DEV.Dictionary.AtelierSettings).%OpenId(AtelierServerName)
+        Set sc=interface.%Save()
     }
-    q sc
+    Quit sc
 }
 
 /// d ##class(PXW.DEV.Dictionary.Install).GenAll()
@@ -124,6 +124,8 @@ ClassMethod GenAll()
     If $$$ISERR(sc) Do $SYSTEM.Status.DisplayError(sc)
     Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.DEF.SQL","PXW.DEV.BNF.GEN.SQL")
     If $$$ISERR(sc) Do $SYSTEM.Status.DisplayError(sc)
+
+    Do ..ExportGEN()
 }
 
 /// d ##class(PXW.DEV.Dictionary.Install).ExportAll()
@@ -131,6 +133,20 @@ ClassMethod ExportAll()
 {
     Set dt=$TRANSLATE($ZDATETIME($HOROLOG,3),":- ","")
     Do $SYSTEM.OBJ.Export("PXW.*.CLS,PXW.*.INC","/home/irisowner/dev/debug/PXWALLINC_"_dt_".xml")
+}
+
+ClassMethod ExportGEN()
+{
+    Set genroot="/home/irisowner/dev/src/PXW/DEV/BNF/GEN/"
+    If ##class(%Library.File).DirectoryExists(genroot) {
+        Set package="PXW.DEV.BNF.GEN."
+        Set classes=$LISTFROMSTRING("COS,CSP,ClassDefinition,JS,Python,SQL")
+        For i=1:1:$LISTLENGTH(classes) {
+            Set cls=$LISTGET(classes,i)
+            Write !,"Exporting "_package_cls_".CLS to "_genroot_cls_".cls"
+            Do $SYSTEM.OBJ.ExportUDL(package_cls_".CLS",genroot_cls_".cls")
+        }
+    }
 }
 
 }

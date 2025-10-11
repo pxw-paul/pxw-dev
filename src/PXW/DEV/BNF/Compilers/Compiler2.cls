@@ -23,6 +23,8 @@ Method compileDefinition(Element As PXW.DEV.Element)
    
     Set method=..NewMethod(mname)
     Set method.Description=Element.ToString(" ")
+    set method.Final=0
+    set method.Private=0
     Set ..CurrentMethod=method
     
     ; simple check to look for recursion (the rules contains the name

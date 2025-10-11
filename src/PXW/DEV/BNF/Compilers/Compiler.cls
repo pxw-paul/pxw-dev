@@ -184,6 +184,8 @@ Method compileDefinition(Element As PXW.DEV.Element)
     ;d rulesE.write()
     
     Set method=..NewMethod(mname)
+    set method.Final=0
+    set method.Private=0
     Set method.Description=Element.ToString(" ")
     Set ..CurrentMethod=method
     
@@ -210,9 +212,13 @@ Method compileQuickCheck(Method As %Dictionary.MethodDefinition, RulesElement As
         Set Method.Description=Method.Description_$CHAR(13,10)_"summary values:"_$LISTTOSTRING(listOfValues)
         Set wordlist="",sep=""
         For i=1:1:$LISTLENGTH(listOfValues) Set wordlist=wordlist_sep_""""_$LISTGET(listOfValues,i)_"""",sep=","
-        $$$WRITECR($$$Tab(indent)_"if '(..isKeywordInList($lb("_wordlist_"),.value)) { quit "_returnValue_" }")
+        if $LISTLENGTH(listOfValues)=1 {
+            $$$WRITECR($$$Tab(indent)_"if '(..isKeyword("_wordlist_",.value)) { quit "_returnValue_" }")
+        } else {
+            $$$WRITECR($$$Tab(indent)_"if '(..isKeywordInList($lb("_wordlist_"),.value)) { quit "_returnValue_" }")
+        }
     } elseif (summary?1"(K"0."|K"1")&"1.E) || (summary?1"K"0."|K"1"&"1.E) {
-        ; similar to above but with something else after
+         ; similar to above but with something else after
         ; Keyword list (K|K|K)&... or K|K|K&...
         s numberofK=$l($p(summary,"&",1),"|")
         s keywords=$list(listOfValues,1,numberofK)
@@ -221,8 +227,12 @@ Method compileQuickCheck(Method As %Dictionary.MethodDefinition, RulesElement As
         For i=1:1:numberofK Set wordlist=wordlist_sep_""""_$LISTGET(listOfValues,i)_"""",sep=","
         ; It may end up doing this twice: once on the main method and then again when the keywords are processed in the submethod (above)
         ; but I think the benefit of doing this check before the submethod is even called is worth it.
-        $$$WRITECR($$$Tab(indent)_"if '(..isKeywordInList($lb("_wordlist_"),.value)) { quit "_returnValue_" }")
-    } ElseIf (summary="P") {
+        if numberofK=1 {
+            $$$WRITECR($$$Tab(indent)_"if '(..isKeyword("_wordlist_",.value)) { quit "_returnValue_" }")
+        } else {
+            $$$WRITECR($$$Tab(indent)_"if '(..isKeywordInList($lb("_wordlist_"),.value)) { quit "_returnValue_" }")
+        }
+    }  ElseIf (summary="P") {
         ; Punctuation single (eg ,)
         Set Method.Description=Method.Description_$CHAR(13,10)_"summary values:"_$LISTTOSTRING(listOfValues)
         ; only 1 but doing the same as a list
@@ -310,6 +320,10 @@ Method NewMethod(Name As %String, Element As PXW.DEV.Element) As %Dictionary.Met
     Set method.parent=..CurrentClass
     Set method.FormalSpec="ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element"
     Set method.ReturnType="%Boolean"
+    ; Most methods will be sub methods (repeat groups etc) these should not be overridden, and should be private
+    set method.Final=1
+    set method.Private=1
+    ;
     If $ISOBJECT($GET(Element)) Set method.Description=Element.ToString(" ")
     Quit method
 }
@@ -715,7 +729,7 @@ Method summariseRule(Element As PXW.DEV.Element, listOfValues As %List = "") As 
         } ElseIf subelement.type="Subrule" {
             Set rulesE=subelement.findFirstElementByType("rules",0)
             Set subsumm=..summariseRules(rulesE,.listOfValues)
-            Set summary=""_subsumm
+            Set summary="("_subsumm_")"
         } ElseIf subelement.type="Optionalgroup" {
             Set rulesE=subelement.findFirstElementByType("rules",0)
             Set summary="["_..summariseRules(rulesE,.listOfValues)_"]"

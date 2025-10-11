@@ -1184,11 +1184,11 @@ Method TextInCurly(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 Method skipComments(ch10 As %String) As %Boolean
 {
     If ..commentMode="XML" {
-        If $EXTRACT(ch10,1,4)="<!--" Set ..comment=..readXMLBlockComment() Quit 1
+        If $EXTRACT(ch10,1,4)="<!--" Set ..comment=..readBlockComment("<!--","-->") Quit 1
     } Else {
         If $EXTRACT(ch10,1,3)="///" Set ..comment=..readLineComment("///") Quit 1
         If $EXTRACT(ch10,1,2)="//" Set ..comment=..readLineComment("//") Quit 1
-        If $EXTRACT(ch10,1,2)="/*" Set ..comment=..readBlockComment() Quit 1
+        If $EXTRACT(ch10,1,2)="/*" Set ..comment=..readBlockComment("/*","*/") Quit 1
     }
     Quit 0
 }

@@ -58,7 +58,7 @@ Method Next() As %String
 	} Else {
 		Set ..nextCount=..nextCount+1
 		If ..nextCount>..#nextCountLimit {
-			$$$ThrowStatus($$$ERROR(5001,"Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
+			$$$ThrowStatus($$$ERROR(5001,"Next Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
 		}
 	}
 	Quit ch
@@ -80,13 +80,13 @@ Method NextMany(number As %Integer = 1) As %String
 	} Else {
 		Set ..nextCount=..nextCount+1
 		If ..nextCount>..#nextCountLimit {
-			$$$ThrowStatus($$$ERROR(5001,"Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
+			$$$ThrowStatus($$$ERROR(5001,"NextMany Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
 		}
 	}
 	Quit found
 }
 
-/// Read a single char, the next char is NOT checked to see if it is an EOL
+/// Read a single char, the next char is NOT checked to see if it is an EOL, saves time, be sure you are not reading past eol
 Method NextNOTEol(number As %Integer) As %String
 {
 	Set ch=$EXTRACT(..input,..pos,..pos+number-1)
@@ -97,7 +97,7 @@ Method NextNOTEol(number As %Integer) As %String
 	} Else {
 		Set ..nextCount=..nextCount+1
 		If ..nextCount>..#nextCountLimit {
-			$$$ThrowStatus($$$ERROR(5001,"Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
+			$$$ThrowStatus($$$ERROR(5001,"NextNOTEol Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
 		}
 	}
 	Quit ch
@@ -124,7 +124,7 @@ Method NextToEol() As %String
 	} Else {
 		Set ..nextCount=..nextCount+1
 		If ..nextCount>..#nextCountLimit {
-			$$$ThrowStatus($$$ERROR(5001,"Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
+			$$$ThrowStatus($$$ERROR(5001,"NextToEol Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
 		}
 	}
 	Quit found
@@ -135,7 +135,7 @@ Method NextChars(ValidChars As %String) As %String
 {
 	Set pos=..pos
 	Set peek=$EXTRACT(..input,pos)
-    While (peek'="") && (ValidChars[peek) {
+    While (ValidChars[peek) && (peek'="")  {
 		Set pos=pos+1
 		Set peek=$EXTRACT(..input,pos)
     }
@@ -144,13 +144,12 @@ Method NextChars(ValidChars As %String) As %String
 	} Else {
 		Set found=""
 	}
-	;Set:..pos>..lastPos ..lastPos=..pos
     If ..pos>..lastPos {
 		Set ..lastPos=..pos,..nextCount=0
 	} Else {
 		Set ..nextCount=..nextCount+1
 		If ..nextCount>..#nextCountLimit {
-			$$$ThrowStatus($$$ERROR(5001,"Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
+			$$$ThrowStatus($$$ERROR(5001,"NextChars Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
 		}
 	}
 
@@ -159,9 +158,9 @@ Method NextChars(ValidChars As %String) As %String
 
 Method Peek(offsetStart As %Integer = 0, offsetEnd As %Integer = {offsetStart}) As %String
 {
-	;q $EXTRACT(..input,..pos+offsetStart,..pos+offsetEnd)
-	Set ch=$EXTRACT(..input,..pos+offsetStart,..pos+offsetEnd)
-	Quit ch
+	q $EXTRACT(..input,..pos+offsetStart,..pos+offsetEnd)
+	;Set ch=$EXTRACT(..input,..pos+offsetStart,..pos+offsetEnd)
+	;Quit ch
 }
 
 /// returns the string to the EOL but NOT the eol char itself
@@ -176,6 +175,21 @@ Method PeekToEol() As %String
 		Set len=eolpos-..pos-2
 		Set found=$EXTRACT(..input,..pos,..pos+len)
 	}
+	Quit found
+}
+
+/// returns the string to the EndString but NOT the EndString char itself
+Method PeekToString(EndString As %String) As %String
+{
+	Set eolpos=$FIND(..input,EndString,..pos)
+	; no end so read whole string
+	If eolpos=0 {
+		Set len=..length-..pos
+		Set found=$EXTRACT(..input,..pos,..pos+len)
+	} Else {
+		Set len=eolpos-..pos-($LENGTH(EndString)+1)
+		Set found=$EXTRACT(..input,..pos,..pos+len)
+	} 
 	Quit found
 }
 

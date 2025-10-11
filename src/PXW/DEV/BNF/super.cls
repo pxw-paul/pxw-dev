@@ -19,9 +19,6 @@ Property needsWScheck As %Boolean [ InitialExpression = 1 ];
 /// Set to CDEF, COS
 Property commentMode As %String [ InitialExpression = "COS" ];
 
-/// last element added to
-Property lastElement As PXW.DEV.Element;
-
 Property streamlen As %Integer;
 
 /// Set to 1 if you want to stop skipping whitespace at the end of line (eg #dim command)
@@ -110,35 +107,40 @@ Method getBookmark(ByRef bookmark As %String)
 Method gotoBookmark(ByRef bookmark As %String)
 {
     ;quit
-    ;$$$DEBUGMethodBegin
+    $$$DEBUGMethodBegin
     Set forward=(..stream.pos<$LISTGET(bookmark,1))
     $$$DEBUG("Going "_$SELECT(forward:"forward",1:"back")_" from:"_$ZCONVERT(..peek(20),"O","JSON"))
     
     Set $LISTBUILD(pos,col,line,startOfLinePos,needsWScheck,stopeol,stopws)=bookmark
     Set ..stream.pos=pos,..stream.col=col,..stream.line=line,..stream.startOfLinePos=startOfLinePos
-    ;s $lb(sm,needsWScheck,stopeol,stopws)=bookmark
-    ;d ..stream.GotoBookmark(sm)
-    Set ..whitespace=bookmark("ws")
-    Set ..comment=bookmark("c") 
     Set ..needsWScheck=needsWScheck
-    ;s ..comment=""
-    ;s ..whitespace=""
-    ;s ..needsWScheck=1
-
-    Set ..keyword="",..peekedlen=0
     Set ..stopAtEOL=stopeol
     Set ..stopAtWhitespace=stopws
+    Set ..whitespace=bookmark("ws")
+    Set ..comment=bookmark("c") 
+
+    Set ..keyword="",..peekedlen=0 
+
     $$$DEBUG("Going "_$SELECT(forward:"forward",1:"back")_"   to:"_$ZCONVERT(..peek(20),"O","JSON"))
-    ;$$$DEBUGMethodEnd
+    $$$DEBUGMethodEnd
 }
 
-Method peek(number As %Integer) As %String
+Method peek(number As %Integer) As %String [ CodeMode = expression ]
 {
-    Set p=..stream.pos
-    Quit $EXTRACT(..streaminput,p,p+number-1)
-    ;Quit ..peeked
+$EXTRACT(..streaminput,..stream.pos,..stream.pos+number-1)
 }
 
+/*
+Method peek(number As %Integer) As %String [ CodeMode = expression ]
+{
+$EXTRACT(..streaminput,..stream.pos,..stream.pos+number-1)
+    ;Set p=..stream.pos
+    ;Quit $EXTRACT(..streaminput,p,p+number-1)
+    ;Quit $EXTRACT(..streaminput,..stream.pos,..stream.pos+number-1)
+    ;Quit ..peeked
+
+}
+*/
 Method peekKeyword() As %String [ CodeMode = objectgenerator ]
 {
     #define CODE(%l) do %code.WriteLine(%l)
@@ -164,6 +166,13 @@ Method next(number As %Integer = 1) As %String
     Set ..keyword="",..peekedlen=0
     ;$$$DEBUGMethodEnd
     Quit value
+}
+
+Method nextChars(chars As %String) As %String
+{
+    set value=..stream.NextChars(chars)
+    set ..keyword=""
+    q value
 }
 
 Method nextNotEOL(number As %Integer) As %String
@@ -206,7 +215,7 @@ Method isKeywordInList(ListOfStrings As %List, Output foundString As %String) As
     Set UPP=$$$UPPER(keyword)
     Set found=$LISTFIND(ListOfStrings,UPP)
     If found Set foundString=keyword
-    $$$DEBUG($SELECT(found:"("_foundString_") ",1:"NOT ")_"found:"_UPP_" in list "_$LISTTOSTRING(ListOfStrings))
+    ;$$$DEBUG($SELECT(found:"("_foundString_") ",1:"NOT ")_"found:"_UPP_" in list "_$LISTTOSTRING(ListOfStrings))
     $$$DEBUGMethodEnd
     Quit found
 }
@@ -235,11 +244,12 @@ Method isStringInList(ListOfStrings As %List, longestLen As %Integer = 50, Outpu
     Set ptr=0,notfound=1
     While notfound, $LISTNEXT(ListOfStrings,ptr,value) {
        Set len=$LENGTH(value)
-       If value?1.A {
+       /*If value?1.A {
             Set peeked=$$$UPPER(..peekKeyword())
        } Else {
             Set peeked=$EXTRACT(UPP50,1,len)
-       }
+       }*/
+       Set peeked=$EXTRACT(UPP50,1,len)
         If peeked=value {
             Set notfound=0,foundString=$EXTRACT(next50,1,len)
         }
@@ -284,7 +294,6 @@ Method isString(ParentElement As PXW.DEV.Element = "", StringToCheck As %String)
                 Set atom=..newAtom(..#keywordAtomType,value)
             }
             Do ParentElement.AddPart(atom)
-            Set ..lastElement=ParentElement
         }
         Set ok=1
     }
@@ -331,7 +340,6 @@ Method addString(ParentElement As PXW.DEV.Element = "", StringToCheck As %String
             Set atom=..newAtom(..#keywordAtomType,value)
         }
         Do ParentElement.AddPart(atom)
-        Set ..lastElement=ParentElement
         Set ok=1
     }
     $$$DEBUG("checking string '"_StringToCheck_"' ok="_ok)
@@ -351,7 +359,6 @@ Method addStringInList(ParentElement As PXW.DEV.Element, ListOfStrings As %List,
             Set atom=..newAtom(..#keywordAtomType,value)
         }
         Do ParentElement.AddPart(atom)
-        Set ..lastElement=ParentElement
         Set ok=1
         Set foundString=value
     }
@@ -367,7 +374,6 @@ Method addKeywordInList(ParentElement As PXW.DEV.Element, ListOfStrings As %List
         Set foundString=..next($LENGTH(value))
         Set atom=..newAtom(..#keywordAtomType,foundString)
         Do ParentElement.AddPart(atom)
-        Set ..lastElement=ParentElement
         Set ok=1
     }
     $$$DEBUGMethodEnd
@@ -382,7 +388,6 @@ Method addKeyword(ParentElement As PXW.DEV.Element, Keyword As %String, Output f
         Set foundString=..next($LENGTH(value))
         Set atom=..newAtom(..#keywordAtomType,foundString)
         Do ParentElement.AddPart(atom)
-        Set ..lastElement=ParentElement
         Set ok=1
     }
     $$$DEBUGMethodEnd
@@ -397,7 +402,6 @@ Method addPunctuation(ParentElement As PXW.DEV.Element, Punctuation As %String, 
         Set foundString=..next($LENGTH(value))
         Set atom=..newAtom("punctuation",foundString)
         Do ParentElement.AddPart(atom)
-        Set ..lastElement=ParentElement
         Set ok=1
     }
     ;$$$DEBUGMethodEnd
@@ -412,7 +416,6 @@ Method addPunctuationInList(ParentElement As PXW.DEV.Element, ListOfStrings As %
         Set foundString=..next(longestLen)
         Set atom=..newAtom("punctuation",foundString)
         Do ParentElement.AddPart(atom)
-        Set ..lastElement=ParentElement
         Set ok=1
     }
     $$$DEBUGMethodEnd
@@ -422,32 +425,6 @@ Method addPunctuationInList(ParentElement As PXW.DEV.Element, ListOfStrings As %
 Method concatChar(ByRef string As %String, char As %String)
 {
     If ..peek(1)=char Set string=string_char
-}
-
-Method isRegex(ParentElement As PXW.DEV.Element, Match As %String) As %Library.Boolean
-{
-    $$$DEBUGMethodBegin
-    ;d ..skipWhiteSpaceAndComments()
-    Do:..needsWScheck ..skipWhiteSpaceAndComments()
-    $$$DEBUG("checking match '"_Match_"' found '"_$ZCONVERT(..peek(10),"O","JS")_"'")
-    Set value="",count=1,ok=0
-    While '..eof(count-1),$MATCH(..peek(count),Match) {
-        Set count=count+1
-    }
-    ;$$$DEBUG("count="_count)
-    If count>1 {
-        If $ISOBJECT(ParentElement) {
-            Set value=..next(count-1) 
-            Set atom=..newAtom(ParentElement.type,value)
-            Do ParentElement.AddPart(atom)
-            Set ..lastElement=ParentElement
-        }
-        Set ok=1
-    }
-    ;$$$DEBUG("checking match, ok=1")
-    ;zw atom
-    $$$DEBUGMethodEnd
-    Quit ok
 }
 
 /// methods in here need to do a DIRECT lookup on ..text
@@ -478,9 +455,11 @@ Method skipWhiteSpaceAndComments()
         ;
         ;        
 readNextLoop		
-        Set ch10=..peek(10),ch=$EXTRACT(ch10,1)
-        If '..eof(),ws[ch Set ..whitespace=..newAtom("whitespace",..stream.NextChars(ws)) Goto readNextLoop
-        If ..skipComments(ch10) Goto readNextLoop
+        ;Set ch10=..peek(10),ch=$EXTRACT(ch10,1)
+        set ch10=$EXTRACT(..streaminput,..stream.pos,..stream.pos+9),ch=$e(ch10,1)
+        ;If '..eof(),ws[ch Set ..whitespace=..newAtom("whitespace",..nextChars(.ws)) Goto readNextLoop
+        If ws[ch,ch'="" Set ..whitespace=..newAtom("whitespace",..nextChars(.ws)) Goto readNextLoop
+        If ..skipComments(.ch10) set ..keyword="" Goto readNextLoop
         Set ..needsWScheck=0
     }
 
@@ -557,37 +536,9 @@ Method readBlockComment(StartMarker As %String = "/*", EndMarker As %String = "*
 
 	Set o=..newAtom("blockcomment")
 	Set o.start=..stream.NextNOTEol($LENGTH(StartMarker))
-	Set n=""
-	Set eob=0
-    Set eml=$LENGTH(EndMarker)
-	While '..eof() && 'eob {
-		Set ch2=..peek(eml)
-		If ch2=EndMarker Set eob=1
-		If 'eob {
-			Set n=n_..next()
-		}
-	}
-	If eob Set o.end=..stream.NextNOTEol(eml) ; put the */ in the block
-	Set o.value=n
-    $$$DEBUGMethodEnd
-	Quit o
-}
-
-Method readXMLBlockComment() As PXW.DEV.Atom
-{
-    $$$DEBUGMethodBegin
-	Set o=..newAtom("blockcomment")
-	Set o.start=..stream.NextNOTEol(4) ; <!--
-	Set n=""
-	Set eob=0
-	While '..eof() && 'eob {
-		Set ch3=..peek(3)
-		If ch3="-->" Set eob=1
-		If 'eob {
-			Set n=n_..next()
-		}
-	}
-	If eob Set o.end=..stream.NextNOTEol(3) ; put the --> in the block
+	Set p=..stream.PeekToString(EndMarker)
+    set n=..stream.NextMany($LENGTH(p))
+	If n'="" Set o.end=..stream.NextNOTEol($LENGTH(EndMarker)) ; put the */ in the block
 	Set o.value=n
     $$$DEBUGMethodEnd
 	Quit o

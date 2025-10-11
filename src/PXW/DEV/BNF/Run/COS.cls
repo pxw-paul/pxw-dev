@@ -36,60 +36,51 @@ Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 {
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
-	;$$$DEBUG("%path="_%path)
-	$$$BNFSTART(subElement)
-	Set done=0
 
-    Set n=""
+    Set ch50=..stream.PeekToEol()
+    Set i=1,hasDigits=0
     ; -
-    While (..peek(1)="-") || (..peek(1)="+") {
-        Set n=n_..nextNotEOL(1)
+    While ($EXTRACT(ch50,i)="-") || ($EXTRACT(ch50,i)="+") {
+        Set i=i+1
     }
 
     ; -123
-    While (..peek(1)?1N) {
-        Set n=n_..nextNotEOL(1)
+    While ($EXTRACT(ch50,i)?1N) {
+        Set i=i+1,hasDigits=1
     }
 
     ; start with a .
-    If ..peek(2)?1"."1N {
-        Set n=n_..next(2)
+    If $EXTRACT(ch50,i,i+1)?1"."1N {
+        Set i=i+2 ; . and number
+        Set hasDigits=1
     }
     
-    If n'="" {
-
+    If hasDigits {
+    	$$$BNFSTART(subElement)
+    
         ; -123.456
-        While (..peek(1)?1N) {
-            Set n=n_..nextNotEOL(1)
+        While ($EXTRACT(ch50,i)?1N) {
+            Set i=i+1
         }
 
         ; -123.456E
-        If (..peek(1)="E") || (..peek(1)="e") {
-            Set n=n_..nextNotEOL(1)
+        If ($EXTRACT(ch50,i)="E") || ($EXTRACT(ch50,i)="e") {
+            Set i=i+1
             ; 123.456E-
-            If ..peek(1)="-"{
-                Set n=n_..nextNotEOL(1)
+            If $EXTRACT(ch50,i)="-"{
+                Set i=i+1
             }
 
             ; -123.456E-789
-            While (..peek(1)?1N) {
-                Set n=n_..nextNotEOL(1)
+            While ($EXTRACT(ch50,i)?1N) {
+                Set i=i+1
             }
         }
 
-        If n'="" {
-            Set atom=..newAtom("Number",n)
-            Do subElement.AddPart(atom)
-            Set done=1
-        }
-
-        If done {
-            $$$BNFCOMMIT(subElement,ParentElement)
-            Set retok=1
-        } Else {
-            $$$BNFROLLBACK(subElement)
-            Set retok=0
-        }
+        Set atom=..newAtom("Number",..nextNotEOL(i-1))
+        Do subElement.AddPart(atom)
+        $$$BNFCOMMIT(subElement,ParentElement)
+        Set retok=1
     } Else {
         Set retok=0
     }
@@ -159,22 +150,22 @@ Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 Method ClassIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
     $$$DEBUGMethodBegin
-    ;$$$BNFPATH
-	;;$$$DEBUG("%path="_%path)
 
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
     ;d ..skipWhiteSpaceAndComments()
-    
-    ; IN COSSQL mode (on property definitions and maybe triiger, not tested triggers) 
+    Set ch50=..stream.PeekToEol()
+    Set pos=1
+    Set retok=0
+    ; IN COSSQL mode (on property definitions and maybe trigger, not tested triggers) 
     ; you can put {%%CLASSNAME}, you may be able to put other properties by I cannot make 
     ; any others work, so hard coding CLASSNAME only
     ;property RawContent As %String(MAXLEN = 10000) [ Calculated, ReadOnly, SqlComputeCode = { Set {RawContent}=##class({%%CLASSNAME}).getContentAsString({ID}) }, SqlComputed, Transient ];    
-    
-    If ..peek(13)="{%%CLASSNAME}" {
-        Set atom=..newAtom(ParentElement.type,..next(13))
+    If $EXTRACT(ch50,1,13)="{%%CLASSNAME}" {
+        Set atom=..newAtom(ParentElement.type,..nextNotEOL(13))
         Do ParentElement.AddPart(atom)
         Set retok=1
-    } ElseIf ..peek(1)="""" {
+    } ElseIf $EXTRACT(ch50,pos)="""" {
+        ; "name in quote"
         Set quote1=..nextNotEOL(1)
         Set value=""
         While ..peek(1)'="""" {
@@ -187,31 +178,19 @@ Method ClassIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
         Do ParentElement.AddPart(atom)
         Set retok=1
     } Else {
-        Set retok=1
-        Set value=""
-        If ..peek(1)="%" Set value=..nextNotEOL(1)
-        ; not a letter (or number)
-        Set ch=..peek(1)
-        ; no % so must start with a letter
-        If value="",ch?1A Set value=..nextNotEOL(1)
-        
-        If value="" {
-            ;$$$DEBUG("checking identifier, ok=0")
-            Set retok=0
-        }
-        
-        If retok {
-
-            Set ch=..peek(1)
-            While (ch?1A) || (ch?1N) || (ch=".")  {
-                Set value=value_..nextNotEOL(1)
-                Set ch=..peek(1)
-            }
-        
-            Set atom=..newAtom(ParentElement.type,value)
+        ; regular name %a.b.c
+        Set hasLetter=0
+        If $EXTRACT(ch50,pos)="%" Set pos=pos+1
+        If $EXTRACT(ch50,pos)?1A Set pos=pos+1,hasLetter=1        
+        If hasLetter {
+            While ($EXTRACT(ch50,pos)?1AN) || ($EXTRACT(ch50,pos)=".")  {
+                Set pos=pos+1
+            }        
+            Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
             Do ParentElement.AddPart(atom)
+            Set retok=1
         }
-    }
+    } 
     $$$DEBUGMethodEnd
     Quit retok
 }
@@ -302,55 +281,62 @@ Method PatternMatch(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
     If $EXTRACT(peek,1)'="?",peek'="'?" Quit 0
 
 	$$$DEBUGMethodBegin
-
+    $$$BNFPATH
+    $$$BNFSTART(subElement)
+    
     Set pat=""
     If peek="'?" {
-        Set pat=pat_..nextNotEOL(2)
+        set atom=..newAtom("punctuation",..nextNotEOL(2))
     } Else {
-        Set pat=pat_..nextNotEOL(1)
+        set atom=..newAtom("punctuation",..nextNotEOL(1))
     }
-    	
+    do subElement.AddPart(atom)
+    
+    ; allowed spaces directly after ?
+    do ..skipWhiteSpaceAndComments()
+
 	Set ok=1,bracket=0,patternN=0,instring=0,indirection=0,retok=1
 
     ; ?@indirect is special case
     If ..peek(1)="@" Set ok=0,indirection=1
-    $$$DEBUG("pattern indirection="_indirection)
-
-	While '..eof() && ok {
-		Set ok=0,patternN=patternN+1
-		Set peek=..peek(1)
+    
+    set ch50=..stream.PeekToEol()
+    set pos=1
+	While $e(ch50,pos)'="" && ok {
+		Set ok=0
+		Set peek=$e(ch50,pos)
 
         If peek="""" {
             If instring {
-                Set peek2=..peek(2)
+                Set peek2=$e(ch50,pos,pos+1)
                 If peek2="""""" {
-                    Set pat=pat_..nextNotEOL(2)
+                    set pos=pos+2
                 } Else {
-                    Set pat=pat_..nextNotEOL(1)
+                    set pos=pos+1
                     Set instring=0
                 }
             } Else {
                 Set instring=1
-                Set pat=pat_..nextNotEOL(1)
+                set pos=pos+1
             }
             Set ok=1
             Continue
         }
         If instring {
-            Set pat=pat_..nextNotEOL(1)
+            set pos=pos+1
             Set ok=1
             Continue
         }
 
 		If peek="(" {
 			Set bracket=bracket+1
-			Set pat=pat_..nextNotEOL(1)
+			set pos=pos+1
 			Set ok=1
 			Continue
 		}
 		If bracket>0,peek=")" {
 			Set bracket=bracket-1
-			Set pat=pat_..nextNotEOL(1)
+			set pos=pos+1
 			Set ok=1
 			Continue
 		}
@@ -361,7 +347,7 @@ Method PatternMatch(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		}
 
 		If bracket>0,peek="," {
-			Set pat=pat_..nextNotEOL(1)
+			Set pos=pos+1
 			Set ok=1
 			Continue
 		}
@@ -375,62 +361,26 @@ Method PatternMatch(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
             Set ok=0
             Continue
         } 
-
-
-    	; patterns are all joined together, no whitespace
-        If $CHAR(9,32,160,13,10)[peek {
-        	; except the first one which is allowed a leading space
-            If patternN=1 {
-                Set ok=1
-                Set pat=pat_..nextNotEOL(1)
-                Continue
-            } Else {
-                Set ok=0
-                Continue
-            }
-        } 
         
-        Set pat=pat_..nextNotEOL(1)
+        ; anything else (eg 1 or A)
+        Set pos=pos+1
         Set ok=1
-        Continue
-    
+        Continue  
     }
-    Set atom=..newAtom("PatternMatch",pat)
-    Do ParentElement.AddPart(atom)
+    if pos>1 {
+        Set atom=..newAtom("PatternMatch",..nextNotEOL(pos-1))
+        Do subElement.AddPart(atom)
+        $$$BNFCOMMITCOPY(subElement,ParentElement)
+    } 
   
     If indirection {
-        Set retok=..SimpleIndirection(ParentElement,.indirectSubElement)
+        Set retok=..SimpleIndirection(subElement,.indirectSubElement)
+        $$$BNFCOMMITCOPY(subElement,ParentElement)
         $$$DEBUG("pattern indirection result="_retok)
     }
 
 	$$$DEBUGMethodEnd
 	Quit retok
-}
-
-/// whitespace ::= ( [ comment ] [ ( ' ' | '\t' | '\r') ] )*
-Method Whitespace(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
-{
-
-	;set currentpath=$g(%path) new %path set %path=currentpath_$c(47)_"whitespace"
-	;;$$$DEBUG("%path="_%path)
-	
-    ; whitespace is handled by the super, and there is something wrong with the logic below
-    ;
-    Quit 0 
- /*    
-    if ($$REP263()) { quit 1 } else { quit 0 }
-REP263()
-	while ($$OPT260() && 
-		$$OPT262()) {} quit 1 
-OPT260()
-	if (..Comment()) {} quit 1
-OPT262()
-	if ($$GRP261()) {} quit 1
-GRP261()
-	if (..isString(" ") || 
-		..isString("\t") || 
-		..isString("\r")) { quit 1 } else { quit 0 }
-        */
 }
 
 /// one_cos_statement ::= [ label_definition ] cos_command
@@ -521,7 +471,7 @@ Method Naked(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
     ; and therefore IS naked
     If ..stopAtEOL,'$ISOBJECT(..whitespace) {
         Set retok=1
-    } ElseIf  ..stopAtEOL,$ISOBJECT(..whitespace),..peek(1)=$char(13) {
+    } ElseIf  ..stopAtEOL,$ISOBJECT(..whitespace),..peek(1)=$CHAR(13) {
         Set retok=1
     } ElseIf ..peek(1)="{" {
         ; code block does not count as naked
@@ -530,7 +480,6 @@ Method Naked(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
         ; immediate end to code block does count as naked
         Set retok=1
     } Else {
-       ;d ..skipWhiteSpaceAndComments()
         Set ch=$EXTRACT(..whitespace.value,1,2)
         Set chspc=$TRANSLATE(ch,$CHAR(9)," ") ; turn tabs into spaces for checking
         Set retok=0
@@ -542,54 +491,48 @@ Method Naked(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
             If $EXTRACT(ch,1)=$CHAR(13) Set retok=1 ; naked
         }
     }
-    $$$DEBUG("Naked="_retok)
+    ;$$$DEBUG("Naked="_retok)
     $$$DEBUGMethodEnd
     Quit retok
 }
 
-/// string ::= '""' | ('"' 'regexp:[^\"\r\n]*' '"')
 Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
 	#dim o as PXW.DEV.Atom
-
-    $$$DEBUGMethodBegin
-	;$$$BNFPATH
-	;;$$$DEBUG("%path="_%path)
-    Do:..needsWScheck ..skipWhiteSpaceAndComments()
-
-    Set ok=1
-    If ..peek(1)'="""" {
+    Set ok=0
+    If ..peek(1)="""" {
+        $$$DEBUGMethodBegin
+        Do:..needsWScheck ..skipWhiteSpaceAndComments()
         Set ok=0
-    }
-
-    If ok {
         $$$BNFSTART(subElement)
 
+        ; consume the quotes
         Set q1=..nextNotEOL(1)
-        Set n=""
+        Set ch50=..stream.PeekToEol()
+        Set pos=1
         Set instring=1
-        While '..eof() && instring {
-            Set chs=..peek(2)
-            Set ch=$EXTRACT(chs,1),ch2=$EXTRACT(chs,2)
+        While $EXTRACT(ch50,pos)'="" && instring {
+            Set ch=$EXTRACT(ch50,pos),ch2=$EXTRACT(ch50,pos+1)
             ; embedded quotes or end of string?
             If ch="""" {
                 If ch2="""" {
-                    Set n=n_..nextNotEOL(2)
+                    Set pos=pos+2 ; both sets of quotes
                 } Else {
                     Set instring=0
-                    Set q2=..nextNotEOL(1)
                 }
             } Else {
-                Set n=n_..nextNotEOL(1)
+                Set pos=pos+1
             }
         }
-        Set o=..newAtom("String",n)
+        Set o=..newAtom("String",..nextNotEOL(pos-1))
         Set o.start=q1
-        Set o.end=q2
+        Set o.end=..nextNotEOL(1) ; final quote
         Do subElement.AddPart(o)
         $$$BNFCOMMIT(subElement,ParentElement)
+        Set ok=1
+    
+        $$$DEBUGMethodEnd
     }
-    $$$DEBUGMethodEnd
     Quit ok
 }
 
@@ -641,67 +584,26 @@ Method VariableIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
     If ..codemode["SQL" Quit ..VariableIdentifierSQL(ParentElement)
 
     $$$DEBUGMethodBegin
-    ;$$$BNFPATH
-	;;$$$DEBUG("%path="_%path)
-    ;d ..skipWhiteSpaceAndComments()
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
     
-    Set value=""
-    If ..peek(1)="%" Set value=value_..nextNotEOL(1)
-    ; not a letter (or number)
-    Set ch=..peek(1)
-    ; no % so must start with a letter
-    If value="",ch?1A Set value=..nextNotEOL(1)
-    
-    Set ok=1
-    If value="" {
-        ;$$$DEBUG("checking identifier, ok=0")
+    Set ch50=..stream.PeekToEol()
+    Set pos=1
+    If $EXTRACT(ch50,pos)="%" Set pos=pos+1
+    If $EXTRACT(ch50,pos)?1A Set pos=pos+1
+    If pos>1 {
+        While ($EXTRACT(ch50,pos)?1AN) {
+            Set pos=pos+1
+        }
+        Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
+        Do ParentElement.AddPart(atom)
+        Set ok=1
+    } Else {
         Set ok=0
     }
-    If ok {
-        Set ch=..peek(1)
-        While (ch?1A) || (ch?1N)   {
-            Set value=value_..nextNotEOL(1)
-            Set ch=..peek(1)
-        }
-    
-        Set atom=..newAtom(ParentElement.type,value)
-        Do ParentElement.AddPart(atom)
-    }
-
     $$$DEBUGMethodEnd
     Quit ok
 }
 
-/*
-Method zzzIntrinsicfncall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
-{
-    Set retok=0
-	If ..peek(1)="$" {
-     ;   s retok=##super(ParentElement,.subElement)
-    }
-    Quit retok
-}
-*/
-/// intrinsicfncall ::= case_function_call
-/// | select_function_call
-/// | extract_function_call
-/// | piece_function_call
-/// | listitem_function_call
-/// | listupdate_function_call
-/// | increment_function_call
-/// | method_function_call
-/// | classmethod_function_call
-/// | zobjmethod_function_call
-/// | zobjclassmethod_function_call
-/// | text_function_call
-/// | bitlogic_function_call
-/// | expression_function_call
-/// | ('$' identifier function_parameter_list /* intrinsicfncall_parameter_list */ [ object_chain ])
-///  summary=F|F|F|F|F|F|F|F|F|F|F|F|F|F|(S&F&F&[F])
-///  type=group
-///  not=0
-/// identifier ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)'
 Method GlobalIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
     $$$DEBUGMethodBegin
@@ -752,12 +654,12 @@ Method ArrayParameterList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
     Quit retok
 }
 
-/// This is more complicated that the normal variable SQL, putting in a separate routine so that we can optimize them separately 
+/// This is more complicated than the normal variable SQL, putting in a separate routine so that we can optimize them separately 
 /// (don't mind losing a bit of speed here as it will be called less often)
 Method VariableIdentifierSQL(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
     $$$DEBUGMethodBegin
-    ;$$$BNFPATH
+    $$$BNFPATH
 	;;$$$DEBUG("%path="_%path)
     ;d ..skipWhiteSpaceAndComments()
     $$$BNFSTART(subElement)
@@ -775,49 +677,46 @@ Method VariableIdentifierSQL(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
     ; s x={"json":444}
     ; the json will be picked up by the json handler
     Set done=0,curly=0
-
-    If ..isString(subElement,"{") {
+    set ch50=..stream.PeekToEol()
+    set pos=1
+    If $e(ch50,pos,pos+2)="{*}" {
         Set curly=1
-        ; {*}
-        If ..isString(subElement,"*") {
-            If ..isString(subElement,"}") {
-                Set done=1
-            }
-        } Else {
-           Do:..needsWScheck ..skipWhiteSpaceAndComments() 
-            Set ch=..peek(1),value=""
-            While (ch?1A) || (ch?1N) || (ch="%") || (ch="*")  || (ch="_") || (ch="."){
-                Set value=value_..nextNotEOL(1)
-                Set ch=..peek(1)
-            }
-            If value'="" {
-                Set atom=..newAtom(ParentElement.type,value)
+        set atom=..newAtom(subElement.type,..nextNotEOL(3))
+        do subElement.AddPart(atom)
+        set done=1
+    } elseif $e(ch50,pos)="{" {
+        set curly=1
+        set pos=pos+1
+        Do:..needsWScheck ..skipWhiteSpaceAndComments() 
+        ; maybe we should split this up a bit, so that the field name has its own element we can deal with?
+        While ($e(ch50,pos)?1AN) || ($e(ch50,pos)="%") || ($e(ch50,pos)="*")  || ($e(ch50,pos)="_") || ($e(ch50,pos)="."){
+            set pos=pos+1
+        }
+        if $e(ch50,pos)="}" {
+            set pos=pos+1
+            If pos>3 {
+                ; added at least {x}
+                Set atom=..newAtom(subElement.type,..nextNotEOL(pos-1))
                 Do subElement.AddPart(atom)
-                If ..isString(subElement,"}") {
-                    Set done=1
-                }
+                Set done=1
             }
         }
     } Else {
         ; now we do the same as for a normal variable 
-        If ..peek(1)="%" Set value=..nextNotEOL(1)
-        ; not a letter (or number)
-        Set ch=..peek(1)
-        ; no % so must start with a letter
-        If value="",ch?1A Set value=..nextNotEOL(1)
-        
-        If value'="" {
-            Set ch=..peek(1)
-            While (ch?1A) || (ch?1N)   {
-                Set value=value_..nextNotEOL(1)
-                Set ch=..peek(1)
+        If $EXTRACT(ch50,pos)="%" Set pos=pos+1
+        If $EXTRACT(ch50,pos)?1A Set pos=pos+1
+        If pos>1 {
+            While ($EXTRACT(ch50,pos)?1AN) {
+                Set pos=pos+1
             }
-        
-            Set atom=..newAtom(ParentElement.type,value)
+            Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
             Do ParentElement.AddPart(atom)
             Set done=1
-        } 
+        } else {
+            set done=0
+        }
     }
+    ; {field} becomes a new element so we can do something with it later
     If curly {
         If done {
             $$$BNFCOMMIT(subElement,ParentElement)
@@ -829,37 +728,50 @@ Method VariableIdentifierSQL(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
     Quit done
 }
 
+Method IncludeIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+    $$$DEBUGMethodBegin
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+    Set ch50=..stream.PeekToEol()
+    Set pos=1
+    If $EXTRACT(ch50,pos)="%" Set pos=pos+1 ; starts with %
+    If $EXTRACT(ch50,pos)?1A Set pos=pos+1 ; or letter 
+    If pos>1 {
+        Set ok=1
+        While ($EXTRACT(ch50,pos)?1AN) || ($EXTRACT(ch50,pos)="."){
+            Set pos=pos+1
+        }
+        Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
+        Do ParentElement.AddPart(atom)
+    } Else {
+        Set ok=0
+    }
+    $$$DEBUGMethodEnd
+    Quit ok
+}
+
 /// identifier ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)'
+/// 
 Method MacroIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
     $$$DEBUGMethodBegin
-    ;$$$BNFPATH
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
-
-    Set ok=1
-    Set value=""
-    If ..peek(1)="%" Set value=..nextNotEOL(1)
-    ; not a letter (or number)
-    Set ch=..peek(1) 
-    ; no % so must start with a letter (or number)
-    If value="",ch?1AN Set value=..nextNotEOL(1)
-    
-    If value="" {
-        ;$$$DEBUG("checking identifier, ok=0")
+    Set ch50=..stream.PeekToEol()
+    Set pos=1
+    If $EXTRACT(ch50,pos)="%" Set pos=pos+1 ; starts with %
+    If $EXTRACT(ch50,pos)?1AN Set pos=pos+1 ; or letter or number
+    If pos>1 {
+        Set ok=1
+        While ($EXTRACT(ch50,pos)?1AN) {
+            Set pos=pos+1
+        }
+        Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
+        Do ParentElement.AddPart(atom)
+    } Else {
         Set ok=0
     }
-    If ok  {
-        Set ch=..peek(1)
-        While (ch?1A) || (ch?1N)   {
-            Set value=value_..nextNotEOL(1)
-            Set ch=..peek(1)
-        }
-    
-        Set atom=..newAtom(ParentElement.type,value)
-        Do ParentElement.AddPart(atom)
-    }
     $$$DEBUGMethodEnd
-    Quit 1
+    Quit ok
 }
 
 Method RoutineIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -869,27 +781,20 @@ Method RoutineIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
  
-    Set ok=1
-    Set value=""
-    If ..peek(1)="%" Set value=..nextNotEOL(1)
-    ; not a letter (or number)
-    Set ch=..peek(1)
-    ; no % so must start with a letter
-    If value="",ch?1A Set value=..nextNotEOL(1)
+    Set ok=0
+    set ch50=..stream.PeekToEol()
+    set pos=1
+    If $e(ch50,pos)="%" Set pos=pos+1
+    If $e(ch50,pos)?1A Set pos=pos+1
     
-    If value="" {
-        ;$$$DEBUG("checking identifier, ok=0")
-        Set ok=0
-    }
-    If ok {
-        Set ch=..peek(1)
-        While (ch?1A) || (ch?1N) || (ch=".")   {
-            Set value=value_..nextNotEOL(1)
-            Set ch=..peek(1)
+    If pos>1 {
+        While ($e(ch50,pos)?1AN) || ($e(ch50,pos)=".")   {
+            Set pos=pos+1
         }
     
-        Set atom=..newAtom(ParentElement.type,value)
+        Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
         Do ParentElement.AddPart(atom)
+        set ok=1
     }
     $$$DEBUGMethodEnd
     Quit ok
@@ -903,24 +808,21 @@ Method LabelIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 
     Set ok=1
-    Set value=""
-    If ..peek(1)="%" Set value=..nextNotEOL(1)
-    Set ch=..peek(1)
+    Set value="",pos=1
+    Set ch50=..stream.PeekToEol()
+    If $EXTRACT(ch50,pos)="%" Set pos=pos+1
     ; no % so must start with a letter or number
-    If value="",ch?1AN Set value=..nextNotEOL(1)
+    If $EXTRACT(ch50,pos)?1AN Set pos=pos+1
     
-    If value="" {
-        Set ok=0
-    }
-    If ok {
-        Set ch=..peek(1)
-        While (ch?1A) || (ch?1N)   {
-            Set value=value_..nextNotEOL(1)
-            Set ch=..peek(1)
-        }
-    
-        Set atom=..newAtom(ParentElement.type,value)
+    If pos>1 {
+        While $EXTRACT(ch50,pos)?1AN {
+            Set pos=pos+1
+        }    
+        Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
         Do ParentElement.AddPart(atom)
+        Set ok=1
+    } Else {
+        Set ok=0
     }
     $$$DEBUGMethodEnd
     Quit ok
@@ -932,46 +834,39 @@ Method ObjectMemberIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
     ;$$$BNFPATH
 
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
-
-    Set ok=1
-    If ..peek(1)="""" {
-        Set value=..nextNotEOL(1)
+    Set ch50=..stream.PeekToEol()
+    Set ok=0,pos=1
+    If $EXTRACT(ch50,pos)="""" {
+        Set pos=pos+1
         Set instring=1
-        While '..eof() && instring {
-            Set chs=..peek(2)
-            Set ch=$EXTRACT(chs,1),ch2=$EXTRACT(chs,2)
+        While $EXTRACT(ch50,pos)'="" && instring {
+            Set ch=$EXTRACT(ch50,pos),ch2=$EXTRACT(ch50,pos+1)
             ; embedded quotes or end of string?
             If ch="""" {
                 If ch2="""" {
-                    Set value=value_..nextNotEOL(2)
+                    Set pos=pos+2
                 } Else {
                     Set instring=0
-                    Set value=value_..nextNotEOL(1)
+                    Set pos=pos+1
                 }
             } Else {
-                Set value=value_..nextNotEOL(1)
+                Set pos=pos+1
             }
         }
+        Set value=..nextNotEOL(pos-1)
+        Set ok=1
     } Else {
-        Set value=""
-        If ..peek(1)="#" Set value=value_..nextNotEOL(1)
-        If ..peek(1)="%" Set value=value_..nextNotEOL(1)
-        ; not a letter (or number)
-        Set ch=..peek(1)
-        ; no % so must start with a letter
-        If value="",ch?1A Set value=..nextNotEOL(1)
+        Set hasStarted=0
+        If $EXTRACT(ch50,pos)="#" Set pos=pos+1
+        If $EXTRACT(ch50,pos)="%" Set pos=pos+1,hasStarted=1
+        If $EXTRACT(ch50,pos)?1A Set pos=pos+1,hasStarted=1
         
-        If value="" {
-            ;$$$DEBUG("checking identifier, ok=0")
-            Set ok=0
-            
-        }
-        If ok {
-            Set ch=..peek(1)
-            While (ch?1A) || (ch?1N)   {
-                Set value=value_..nextNotEOL(1)
-                Set ch=..peek(1)
+        If hasStarted {
+            While $EXTRACT(ch50,pos)?1AN {
+                Set pos=pos+1
             }
+            Set value=..nextNotEOL(pos-1)
+            Set ok=1
         }
     }
  
@@ -983,41 +878,37 @@ Method ObjectMemberIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
     Quit ok
 }
 
-// any_text_upto_close_bracket ::= 'code this'
-
+/// any_text_upto_close_bracket ::= 'code this'
 ///  summary=S
 ///  type=group
 Method AnyTextUptoCloseBracket(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
-
     $$$DEBUGMethodBegin
 	$$$BNFPATH
-	;$$$DEBUG("%path="_%path)
+    $$$BNFSTART(subElement)
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 
+    Set ch50=..stream.PeekToEol()
+    Set pos=1
     Set ok=1
-        $$$BNFSTART(subElement)
-
-        Set n=""
-        Set bracket=1
-        While '..eof() && (bracket>0) {
-            Set ch=..peek(1)
-            If ch="(" {
-                Set n=n_..nextNotEOL(1)
-                Set bracket=bracket+1
-            } ElseIf ch=")" {
-                If bracket>1 {
-                    Set n=n_..nextNotEOL(1)
-                }
-                Set bracket=bracket-1
-            } Else {
-                Set n=n_..nextNotEOL(1)
+    Set bracket=1
+    While $EXTRACT(ch50,pos)'="" && (bracket>0) {
+        Set ch=$EXTRACT(ch50,pos)
+        If ch="(" {
+            Set pos=pos+1
+            Set bracket=bracket+1
+        } ElseIf ch=")" {
+            If bracket>1 {
+                Set pos=pos+1
             }
+            Set bracket=bracket-1
+        } Else {
+            Set pos=pos+1
         }
-        Set o=..newAtom(subElement.type,n)
-        Do subElement.AddPart(o)
-        $$$BNFCOMMIT(subElement,ParentElement)
- 
+    }
+    Set o=..newAtom(subElement.type,..nextNotEOL(pos-1))
+    Do subElement.AddPart(o)
+    $$$BNFCOMMIT(subElement,ParentElement)
     $$$DEBUGMethodEnd
     Quit ok
 }
@@ -1075,7 +966,8 @@ Method SubExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 ///  not=0
 Method CloseBracket(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
-    If ..isStringSingle(")",.value)=0 Quit 0
+    ;If ..isStringSingle(")",.value)=0 Quit 0
+    if ..peek(1)'=")" quit 0
     $$$DEBUGMethodBegin
     Set atom=..newAtom("punctuation",..nextNotEOL(1))
     Do ParentElement.AddPart(atom)
@@ -1382,25 +1274,25 @@ Method ZzCommandWord(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
     Set keyword=..peekKeyword()
     Set UPP=$$$UPPER(keyword)
     $$$DEBUG("keyword="_keyword)
-	if UPP'?1"ZZ".AN Quit 0
+	If UPP'?1"ZZ".AN Quit 0
 	
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,UPP) {
-		set done=1 ; end compileRules
+	Set done=0 ; method start
+	If ..addKeyword(.subElement,UPP) {
+		Set done=1 ; end compileRules
 	}
 
-	if done {
+	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
+		Set ok=1
+	} Else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		Set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
-	quit ok
+	Quit ok
 }
 
 /// Skip over the next set of comments, return 1 if something was done or 0
@@ -1415,6 +1307,30 @@ Method skipComments(ch10 As %String) As %Boolean
     Set ch3=$EXTRACT(ch10,1,3)
     If ch3="##;" Set ..comment=..readLineComment("##;") Quit 1
     Quit 0
+}
+
+Method peekKeyword() As %String
+{
+    $$$DEBUGMethodBegin
+    If ..keyword="" {
+        Set word=""
+        ;Set ch50=..peek(50)
+        set ch50=$EXTRACT(..streaminput,..stream.pos,..stream.pos+50)
+        ; starts with a letter
+        If $EXTRACT(ch50,1)?1A {
+            Set i=2
+            ; carries on with a letter or number
+            While $EXTRACT(ch50,i)?1AN {
+                Set i=i+1
+            }
+            Set word=$EXTRACT(ch50,1,i-1)
+        } 
+        Set ..keyword=" "_word ; so that even null counts as being found
+    } Else {
+        Set word=$EXTRACT(..keyword,2,*) ; remove the space from the start so null is null
+    }
+    $$$DEBUGMethodEnd
+	Quit word
 }
 
 }

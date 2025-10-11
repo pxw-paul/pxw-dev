@@ -380,7 +380,7 @@ Method JsExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 Method skipComments(ch10 As %String) As %Boolean
 {
     Set ch4=$EXTRACT(ch10,1,4)
-    If ch4="<!--" Set ..comment=..readXMLBlockComment() Quit 1
+    If ch4="<!--" Set ..comment=..readBlockComment("<!--","-->") Quit 1
     Quit 0
 }
 
