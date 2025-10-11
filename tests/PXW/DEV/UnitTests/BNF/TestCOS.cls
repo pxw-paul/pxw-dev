@@ -1,6 +1,19 @@
 Class PXW.DEV.UnitTests.BNF.TestCOS Extends %UnitTest.TestCase
 {
 
+Method TestJsonString()
+{
+    s pmeth="JsonString"
+    s obj={"prop":"json string"}
+    do $$$AssertEquals(..parseAndFlat("""json string""",pmeth),"String:json string")
+
+    s obj={"prop":"json \"quoted\" string"}
+    do $$$AssertEquals(..parseAndFlat("""json \""quoted\"" string""",pmeth),"String:json \""quoted\"" string")
+
+    s obj={"prop":"json \\slash\\ string"}
+    do $$$AssertEquals(..parseAndFlat("""json \\slash\\ string""",pmeth),"String:json \\slash\\ string")
+}
+
 Method TestGlobalIdentifier()
 {
     ; valid names

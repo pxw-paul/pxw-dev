@@ -13,6 +13,7 @@ ClassMethod WorkOnAList(ObjList As %ListOfObjects(ELEMENTTYPE="PXW.DEV.UnitTests
     write obj.Prop1
 
     s json={"p1":1, "p2":"string", "p3":true, "p4":{ "p4a":"thing \"quoted\" thing"}}
+    s string="a string"
 }
 
 ClassMethod go()

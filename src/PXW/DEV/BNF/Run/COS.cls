@@ -500,40 +500,33 @@ Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 Method JsonString(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
     $$$DEBUGMethodBegin
-     Do:..needsWScheck ..skipWhiteSpaceAndComments()
-   
-	;$$$BNFPATH
-	;;$$$DEBUG("%path="_%path)
-    Set ok=1
-    Set openquote=..peek(1)
-    If openquote'="""" {
-        Set ok=0
-    }
-
-    If ok {
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+    If ..peek(1)="""" {
         $$$BNFSTART(subElement)
 
-        Set n=..nextNotEOL(1)
+        Set q1=..nextNotEOL(1)
+        set ch50=..stream.PeekToEol()
+        set pos=1
         Set instring=1
-        While '..eof() && instring {
-            Set chs=..peek(2)
-            Set ch=$EXTRACT(chs,1),ch2=$EXTRACT(chs,1,2)
-            ; embedded quotes or end of string?
-            ; I am not sure how these get encoded so sticking with COS "" for quotes in quotes
-            If ch2="\""" {
-                Set n=n_..nextNotEOL(2)
-                Continue
-            }
-            If ch="""" {
+        While $e(ch50,pos)'="" && instring {
+            If $EXTRACT(ch50,pos,pos+1)="\""" {
+                ; embedded quotes
+                set pos=pos+2
+            } elseif $EXTRACT(ch50,pos)="""" {
+                ; last quote
                 Set instring=0
-                Set n=n_..nextNotEOL(1)
             } Else {
-                Set n=n_..nextNotEOL(1)
+                set pos=pos+1
             }
         }
-        Set o=..newAtom("String",n)
-        Do subElement.AddPart(o)
+        Set atom=..newAtom("String",..nextNotEOL(pos-1))
+        set atom.start=q1
+        set atom.end=..nextNotEOL(1) ; q2
+        Do subElement.AddPart(atom)
         $$$BNFCOMMIT(subElement,ParentElement)
+        set ok=1
+    } else {
+        s ok=0
     }
     $$$DEBUGMethodEnd
     Quit ok
