@@ -887,6 +887,16 @@ Method writeCOSSqlBody(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compi
     Quit ""
 }
 
+Method writeCOSVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="VariableSet")
+{
+     if $isobject(..Analyser),$d(..Analyser.stringVarsElementFinal(+element)) {
+        set value=..Analyser.stringVarsElementFinal(+element)
+        if value'="" {
+           d ..wrapElementHTML(element,"","<span class='hiddencopy' onclick='copyTextToClipboard("""_$zconvert(value,"O","JS")_""");'>copy</span>")
+        }
+    }
+}
+
 /*method writeCOS(element As PXW.DEV.BNF.Elements.COS) AS PXW.DEV.BNF.Compilers.elementHandler(Type="")
 {
     q ""

@@ -18,6 +18,10 @@ Property nextStage As %Integer [ InitialExpression = 0 ];
 
 Parameter keywordAtomType = "CDEFKeyword";
 
+/**********************************************************************
+ Performance fiddles, to break the class definition (which can be huge)
+ into smaller bits (ie a single property or method)
+**********************************************************************/
 Method cheese(element As PXW.DEV.Element) As %Boolean
 {
 
@@ -48,16 +52,11 @@ Method full(element As PXW.DEV.Element) As %Boolean
     q retval
 }
 
-/// class_member_section ::= '{' class_member_list? '}'
-///  summary=S&?&S
-///  type=group
-///  not=0
 Method ClassMemberSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
 	If ..isStringSingle("{",.value)=0 Quit 0
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
-	;;$$$DEBUG("%path="_%path)
 	$$$BNFSTART(subElement)
 	Set done=0
 	; type=group, check=if, skip=1, skipall=0
@@ -84,23 +83,24 @@ Method ClassMemberSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	Quit ok
 }
 
-/// one_classMember ::= class_class_method
-/// | class_ForeignKey
-/// | class_index
-/// | class_method
-/// | class_property
-/// | class_parameter
-/// | class_projection
-/// | class_query
-/// | class_relationship
-/// | class_storage
-/// | class_trigger
-/// | class_view
-/// | class_xdata
-/// | class_client_method
-///  summary=F|F|F|F|F|F|F|F|F|F|F|F|F|F
-///  type=group
-///  not=0
+/***************************************************************************************
+ override stuff from super (not generated code)
+***************************************************************************************/
+Method skipComments(ch10 As %String) As %Boolean
+{
+    If ..commentMode="XML" {
+        If $EXTRACT(ch10,1,4)="<!--" Set ..comment=..readBlockComment("<!--","-->") Quit 1
+    } Else {
+        If $EXTRACT(ch10,1,3)="///" Set ..comment=..readLineComment("///") Quit 1
+        If $EXTRACT(ch10,1,2)="//" Set ..comment=..readLineComment("//") Quit 1
+        If $EXTRACT(ch10,1,2)="/*" Set ..comment=..readBlockComment("/*","*/") Quit 1
+    }
+    Quit 0
+}
+
+/***************************************************************************************
+ Rules that can be recovered if necessary (eg try to go to next class member
+***************************************************************************************/
 Method OneClassmember(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
     Set ..language="objectscript"
@@ -119,10 +119,6 @@ Method OneClassmember(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
     Quit ok
 }
 
-/// xdata_json ::= xdata_json_object | xdata_json_array | xdata_json_prim
-///  summary=F|F|F
-///  type=group
-///  not=0
 Method XdataJson(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
     Set ok=##super(ParentElement,.subElement)
@@ -134,55 +130,46 @@ Method XdataJson(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
     Quit ok
 }
 
-/// xdata_json_array_items ::= xdata_json (',' xdata_json)*
-///  summary=F&(S&F)
-///  type=group
-///  not=0
-Method XdataJsonArrayItems(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+/***************************************************************************************
+ Calls to other parsers (methods, queries etc)
+***************************************************************************************/
+Method ClassQueryBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
-    ; if empty array just quit (OK)
-    If ..isStringSingle("]") Quit 1
+   	#dim atom as PXW.DEV.Atom
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+    Set atom=..newAtom("SQLCodeBlock Begin","")
+    Do ParentElement.AddPart(atom)
 
-	Set ok=##super(ParentElement,.subElement)
-    Quit ok
-}
-
-/// class_language_name ::= 'cache' | 'basic' |  'javascript' | 'java' | 'mvbasic' | 'tsql' | 'cpp'
-///  summary=S|S|S|S|S|S|S
-///  type=group
-///  not=0
-Method ClassLanguageName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
-{
-	Set ok=##super(ParentElement,.subElement)
-    If ok=1 {
-        Set ..language=subElement.ToString(0)
+	Set parser=##class(PXW.DEV.BNF.Run.SQL).%New()
+	Set parser.stream=..stream
+    Do parser.skipWhiteSpaceAndComments()
+    ;$$$DEBUG("COS CODE BLOCK peeked "_parser.peek(1))
+	If parser.peek(1)="}" {
+		; its empty 
+		Set ..whitespace=parser.whitespace
+		Set ..comment=parser.comment
+		Set atom=..newAtom("SQLCodeBlock Empty","")
+		Do ParentElement.AddPart(atom)
+		Quit 1
+	}
+	If parser.QuerySpecification(subElement) {
+		Set ..whitespace=parser.whitespace
+		Set ..comment=parser.comment
+		Set atom=..newAtom("SQLCodeBlock End","")
+		Do subElement.AddPart(atom)
+		$$$BNFCOMMIT(subElement,ParentElement)
+        If ..peek(1)'="}" {
+            Do ..recover(ParentElement,.recsub,"{}","")
+        }
+ 
+		Quit 1
+	} Else {
+        $$$BNFROLLBACK(subElement)
+        Quit 0
     }
-    Quit ok
 }
 
-/// attribute_CodeModeType ::= 'call' | 'code' | 'expression' | 'objectgenerator' | 'generator'
-///  summary=S|S|S|S|S
-///  type=group
-///  not=0
-Method AttributeCodemodetype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
-{
-	Set ok=##super(ParentElement,.subElement)
-    If ok=1 {
-        Set ..codemode=subElement.ToString(0)
-    }
-    Quit ok
-}
-
-Method AttributeMimetype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
-{
-	Set ok=##super(ParentElement,.subElement)
-    If ok=1 {
-        Set ..mimetype=$PIECE(subElement.ToString(0),"=",2,*)
-    }
-    Quit ok
-}
-
-/// cos_code_block ::= 'NEEDS COS CODE BLOCK'
 Method CosCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean [ ProcedureBlock = 1 ]
 {
 	#dim atom as PXW.DEV.Atom
@@ -264,7 +251,6 @@ Method CosCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	}
 }
 
-/// cos_code_block ::= 'NEEDS COS SQL CODE BLOCK'
 Method CosCodeBlockSql(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean [ ProcedureBlock = 1 ]
 {
 	#dim atom as PXW.DEV.Atom
@@ -316,7 +302,6 @@ Method CosCodeBlockSql(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	}
 }
 
-/// cos_code_block ::= 'NEEDS COS SQL CODE BLOCK'
 Method CosCodeBlockSqlStorage(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean [ ProcedureBlock = 1 ]
 {
 	#dim atom as PXW.DEV.Atom
@@ -418,7 +403,6 @@ Method CosCodeBlockTrigger(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	}
 }
 
-/// cos_code_block ::= 'NEEDS COS CODE BLOCK'
 Method JavascriptCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean [ ProcedureBlock = 1 ]
 {
  	#dim atom as PXW.DEV.Atom
@@ -456,7 +440,6 @@ Method JavascriptCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
     Quit retok
 }
 
-/// expression ::= 'NEEDS EXPRESSION'
 Method Expression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
 	#dim atom as PXW.DEV.Atom
@@ -534,546 +517,6 @@ Method CosExpressionSql(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
     Quit ok
 }
 
-/// filename ::= 'NEEDS FILE NAME'
-///  summary=S
-///  type=group
-///  not=0
-Method Filename(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
-{
-    Do:..needsWScheck ..skipWhiteSpaceAndComments()
-
-    Set value=""
-    Set ch=..peek(1)
-    While (ch?1A) || (ch?1N) || (ch=".") || (ch="/") {
-        Set value=value_..next()
-        Set ch=..peek(1)
-    }
- 
-    Set atom=..newAtom("FileName",value)
-    Do ParentElement.AddPart(atom)
-    ;$$$DEBUG("checking identifier, ok=1")
-    ;zw atom
-    Quit 1
-}
-
-/// identifier ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)'
-Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
-{
-    $$$BNFPATH
-	;;$$$DEBUG("%path="_%path)
-
-    Do:..needsWScheck ..skipWhiteSpaceAndComments()
-
-    Set value=""
-    If ..peek(1)="%" Set value=..next()
-    If ..peek(1)="%" Set value=..next() ; EG %%OID
-    ; not a letter (or number)
-    Set ch=..peek(1)
-    ; no % so must start with a letter
-    If value="",ch?1A Set value=..next()
-    
-    If value="" {
-        $$$DEBUG("checking identifier, ok=0")
-        Quit 0
-    }
-    Set ch=..peek(1)
-    While (ch?1A) || (ch?1N) || (ch=".")  {
-        Set value=value_..next()
-        Set ch=..peek(1)
-    }
- 
-    Set atom=..newAtom(ParentElement.type,value)
-    Do ParentElement.AddPart(atom)
-    $$$DEBUG("checking identifier, ok=1")
-    Quit 1
-}
-
-/// class_item_identifier ::= string | identifier
-///  summary=F|F
-///  type=group
-///  not=0
-Method ClassItemIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
-{
-	Set ok=##super(ParentElement,.subElement)
-    If ok {
-        Set atom=subElement.FirstAtom()
-        If $PIECE(atom.type,":",1)="String" Set atom.type="ClassItemIdentifier"
-    }
-    Quit ok
-}
-
-/// identifier ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)'
-Method ClientIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
-{
-    $$$BNFPATH
-	;;$$$DEBUG("%path="_%path)
-
-    ;d ..skipWhiteSpaceAndComments()
-    Do:..needsWScheck ..skipWhiteSpaceAndComments()
-
-    Set value=""
-    If ..peek(1)="%" Set value=..next()
-    If ..peek(1)="%" Set value=..next() ; EG %%OID
-    If ..peek(1)="_" Set value=..next()
-    ; not a letter (or number)
-    Set ch=..peek(1)
-    ; no % so must start with a letter
-    If value="",ch?1A Set value=..next()
-    
-    If value="" {
-        $$$DEBUG("checking identifier, ok=0")
-        Quit 0
-    }
-    Set ch=..peek(1)
-    While (ch?1A) || (ch?1N) || (ch=".") || (ch="_") {
-        Set value=value_..next()
-        Set ch=..peek(1)
-    }
- 
-    Set atom=..newAtom("ClientIdentifier",value)
-    Do ParentElement.AddPart(atom)
-    $$$DEBUG("checking identifier, ok=1")
-    Quit 1
-}
-
-/// identifier ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)'
-Method XmlIdentifier(ParentElement As PXW.DEV.BNF.Element, Output subElement As PXW.DEV.BNF.Element) As %Boolean
-{
-    $$$BNFPATH
-	;;$$$DEBUG("%path="_%path)
-
-    ;d ..skipWhiteSpaceAndComments()
-    Do:..needsWScheck ..skipWhiteSpaceAndComments()
-
-    Set value=""
-    If ..peek(1)="_" Set value=..next()
-    ; not a letter (or number)
-    Set ch=..peek(1)
-    ; no % so must start with a letter
-    If value="",ch?1A Set value=..next()
-    
-    If value="" {
-        $$$DEBUG("checking identifier, ok=0")
-        Quit 0
-    }
-    Set ch=..peek(1)
-    While (ch?1A) || (ch?1N) || (ch="-") || (ch="_") || (ch=".")  {
-        Set value=value_..next()
-        Set ch=..peek(1)
-    }
- 
-    Set atom=..newAtom("XmlIdentifier",value)
-    Do ParentElement.AddPart(atom)
-    ;$$$DEBUG("checking identifier, ok=1")
-    ;zw atom
-    Quit 1
-}
-
-Method SqlFieldName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
-{
-    $$$BNFPATH
-	;;$$$DEBUG("%path="_%path)
-
-    Do:..needsWScheck ..skipWhiteSpaceAndComments()
-    If ..peek(1)="""" {
-        Set value=""      
-        Set value=value_..next()
-        While ..peek(1)'="""" {
-            Set value=value_..next()
-        }
-        Set value=value_..next()
-        Set atom=..newAtom("SqlFieldName",value)
-        Do ParentElement.AddPart(atom)
-    } Else {
-
-        Set value=""
-        If ..peek(1)="%" Set value=..next()
-        If ..peek(1)="%" Set value=..next() ; EG %%OID
-        If ..peek(1)="_" Set value=..next()
-        ; not a letter (or number)
-        Set ch=..peek(1)
-        ; no % so must start with a letter
-        If value="",ch?1A Set value=..next()
-        
-        If value="" {
-            $$$DEBUG("checking identifier, ok=0")
-            Quit 0
-        }
-        Set ch=..peek(1)
-        While (ch?1A) || (ch?1N) || (ch="_")  {
-            Set value=value_..next()
-            Set ch=..peek(1)
-        }
-    
-        Set atom=..newAtom("SqlFieldName",value)
-        Do ParentElement.AddPart(atom)
-        $$$DEBUG("checking identifier, ok=1")
-    }
-    Quit 1
-}
-
-Method SqlTableName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
-{
-    ;$$$BNFPATH
-	;;$$$DEBUG("%path="_%path)
-
-    Do:..needsWScheck ..skipWhiteSpaceAndComments()
-    If ..peek(1)="""" {
-        Set value=""
-        Set value=value_..next()
-        While ..peek(1)'="""" {
-            Set value=value_..next()
-        }
-        Set value=value_..next()
-        Set atom=..newAtom("SqlTableName",value)
-        Do ParentElement.AddPart(atom)
-    } Else {
-        Set value=""
-        If ..peek(1)="%" Set value=..next()
-        If ..peek(1)="%" Set value=..next() ; EG %%OID
-        If ..peek(1)="_" Set value=..next()
-        ; not a letter (or number)
-        Set ch=..peek(1)
-        ; no % so must start with a letter
-        If value="",ch?1A Set value=..next()
-        
-        If value="" {
-            $$$DEBUG("checking identifier, ok=0")
-            Quit 0
-        }
-        Set ch=..peek(1)
-        While (ch?1A) || (ch?1N) || (ch="_")  {
-            Set value=value_..next()
-            Set ch=..peek(1)
-        }
-    
-        Set atom=..newAtom("SqlTableName",value)
-        Do ParentElement.AddPart(atom)
-    }
-    Quit 1
-}
-
-Method AliasIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
-{
-    Do:..needsWScheck ..skipWhiteSpaceAndComments()
-
-    Set value=""
-    Set done=1
-    If ..peek(1)="""" {
-        Set value=value_..next(1)
-        While ..peek(1)'="""" {
-            Set value=value_..next(1)
-        }
-        Set value=value_..next(1)
-        Set done=1
-    } Else {
-
-        If ..peek(1)="%" Set value=..next()
-        ; not a letter (or number)
-        Set ch=..peek(1)
-        ; no % so must start with a letter
-        If value="",ch?1A Set value=..next()
-        
-        If value'="" {
-            Set ch=..peek(1)
-            While (ch?1A) || (ch?1N) || (ch=".") ||(ch="_")  {
-                Set value=value_..next()
-                ;zw value,..stream.pos
-                Set ch=..peek(1)
-            }
-            Set done=1
-        }
-    }
-    If done {
-        Set atom=..newAtom(ParentElement.type,value)
-        Do ParentElement.AddPart(atom)
-    }
-    Quit done
-}
-
-/// identifier ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)'
-Method ClassIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
-{
-    ;$$$BNFPATH
-	;;$$$DEBUG("%path="_%path)
-
-    Do:..needsWScheck ..skipWhiteSpaceAndComments()
-
-    Set value=""
-    If ..peek(1)="%" Set value=..next()
-    ; not a letter (or number)
-    Set ch=..peek(1)
-    ; no % so must start with a letter
-    If value="",ch?1A Set value=..next()
-    
-    If value="" {
-        $$$DEBUG("checking identifier, ok=0")
-        Quit 0
-    }
-    Set ch=..peek(1)
-    While (ch?1A) || (ch?1N) || (ch=".")  {
-        Set value=value_..next()
-		;zw value,..stream.pos
-        Set ch=..peek(1)
-    }
- 
-    Set atom=..newAtom(ParentElement.type,value)
-    Do ParentElement.AddPart(atom)
-
-    Quit 1
-}
-
-/// identifier ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)'
-Method VariableIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
-{
-    $$$DEBUGMethodBegin
-    ;$$$BNFPATH
-	;;$$$DEBUG("%path="_%path)
-
-    Do:..needsWScheck ..skipWhiteSpaceAndComments()
-
-    Set value=""
-    If ..peek(1)="%" Set value=..next()
-    ; not a letter (or number)
-    Set ch=..peek(1)
-    ; no % so must start with a letter
-    If value="",ch?1A Set value=..next()
-    
-    Set ok=1
-    If value="" {
-        ;$$$DEBUG("checking identifier, ok=0")
-        Set ok=0
-    }
-    If ok {
-        Set ch=..peek(1)
-        While (ch?1A) || (ch?1N)   {
-            Set value=value_..next()
-            Set ch=..peek(1)
-        }
-    
-        Set atom=..newAtom(ParentElement.type,value)
-        Do ParentElement.AddPart(atom)
-    }
-    $$$DEBUGMethodEnd
-    Quit ok
-}
-
-Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
-{
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	;$$$DEBUG("%path="_%path)
-	$$$BNFSTART(subElement)
-	Set done=0
-
-    Do:..needsWScheck ..skipWhiteSpaceAndComments()
-
-    Set n=""
-    ; -
-    While (..peek(1)="-") || (..peek(1)="+") {
-        Set n=n_..next()
-    }
-
-    ; -123
-    While (..peek(1)?1N) {
-        Set n=n_..next()
-    }
-
-    ; start with a .
-    If ..peek(2)?1"."1N {
-        Set n=n_..next(2)
-    }
-    
-    If n'="" {
-
-        ; -123.456
-        While (..peek(1)?1N) {
-            Set n=n_..next()
-        }
-
-        ; -123.456E
-        If (..peek(1)="E") || (..peek(1)="e") {
-            Set n=n_..next()
-            ; 123.456E-
-            If ..peek(1)="-"{
-                Set n=n_..next()
-            }
-
-            ; -123.456E-789
-            While (..peek(1)?1N) {
-                Set n=n_..next()
-            }
-        }
-
-        If n'="" {
-            Set atom=..newAtom("Number",n)
-            Do subElement.AddPart(atom)
-            Set done=1
-        }
-
-        If done {
-            $$$BNFCOMMIT(subElement,ParentElement)
-            Set ok=1
-        } Else {
-            $$$BNFROLLBACK(subElement)
-            Set ok=0
-        }
-    } Else {
-        Set ok=0
-    }
-	$$$DEBUGMethodEnd
-	Quit ok
-}
-
-Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
-{
-    $$$DEBUGMethodBegin
-     Do:..needsWScheck ..skipWhiteSpaceAndComments()
-   
-	;$$$BNFPATH
-	;;$$$DEBUG("%path="_%path)
-    Set ok=1
-    Set openquote=..peek(1)
-    If openquote'="""",openquote'="'" {
-        Set ok=0
-    }
-
-    If ok {
-        $$$BNFSTART(subElement)
-
-        Set n=..next()
-        Set instring=1
-        While '..eof() && instring {
-            Set chs=..peek(2)
-            Set ch=$EXTRACT(chs,1),ch2=$EXTRACT(chs,2)
-            ; embedded quotes or end of string?
-            ; I am not sure how these get encoded so sticking with COS "" for quotes in quotes
-            If ch=openquote {
-                If ch2=openquote {
-                    Set n=n_..next()_..next()
-                } Else {
-                    Set instring=0
-                    Set n=n_..next()
-                }
-            } Else {
-                Set n=n_..next()
-            }
-        }
-        Set o=..newAtom("String",n)
-        Do subElement.AddPart(o)
-        $$$BNFCOMMIT(subElement,ParentElement)
-    }
-    $$$DEBUGMethodEnd
-    Quit ok
-}
-
-Method JsonString(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
-{
-    $$$DEBUGMethodBegin
-     Do:..needsWScheck ..skipWhiteSpaceAndComments()
-   
-	;$$$BNFPATH
-	;;$$$DEBUG("%path="_%path)
-    Set ok=1
-    Set openquote=..peek(1)
-    If openquote'="""" {
-        Set ok=0
-    }
-
-    If ok {
-        $$$BNFSTART(subElement)
-
-        Set n=..next()
-        Set instring=1
-        While '..eof() && instring {
-            Set chs=..peek(2)
-            Set ch=$EXTRACT(chs,1),ch2=$EXTRACT(chs,1,2)
-            ; embedded quotes or end of string?
-            ; I am not sure how these get encoded so sticking with COS "" for quotes in quotes
-            If ch2="\""" {
-                Set n=n_..next()_..next()
-                Continue
-            }
-            If ch="""" {
-                Set instring=0
-                Set n=n_..next()
-            } Else {
-                Set n=n_..next()
-            }
-        }
-        Set o=..newAtom("String",n)
-        Do subElement.AddPart(o)
-        $$$BNFCOMMIT(subElement,ParentElement)
-    }
-    $$$DEBUGMethodEnd
-    Quit ok
-}
-
-/// class_query_body ::= text_brace_block
-///  summary=F
-///  type=group
-Method ClassQueryBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
-{
-   	#dim atom as PXW.DEV.Atom
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-    Set atom=..newAtom("SQLCodeBlock Begin","")
-    Do ParentElement.AddPart(atom)
-
-	Set parser=##class(PXW.DEV.BNF.Run.SQL).%New()
-	Set parser.stream=..stream
-    Do parser.skipWhiteSpaceAndComments()
-    ;$$$DEBUG("COS CODE BLOCK peeked "_parser.peek(1))
-	If parser.peek(1)="}" {
-		; its empty 
-		Set ..whitespace=parser.whitespace
-		Set ..comment=parser.comment
-		Set atom=..newAtom("SQLCodeBlock Empty","")
-		Do ParentElement.AddPart(atom)
-		Quit 1
-	}
-	If parser.QuerySpecification(subElement) {
-		Set ..whitespace=parser.whitespace
-		Set ..comment=parser.comment
-		Set atom=..newAtom("SQLCodeBlock End","")
-		Do subElement.AddPart(atom)
-		$$$BNFCOMMIT(subElement,ParentElement)
-        If ..peek(1)'="}" {
-            Do ..recover(ParentElement,.recsub,"{}","")
-        }
- 
-		Quit 1
-	} Else {
-        $$$BNFROLLBACK(subElement)
-        Quit 0
-    }
-}
-
-/// xml_content ::= text
-///  summary=F
-///  type=group
-Method XmlContent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
-{
-    $$$DEBUGMethodBegin
-    $$$BNFSTART(subElement)
-    Do:..needsWScheck ..skipWhiteSpaceAndComments()
-    
-    Set ok=0,n=""
-    While ('..eof()) && (..peek(1)'="<") {
-        Set n=n_..next()
-        Set ok=1
-    }
-    Set o=..newAtom(subElement.type,n)
-    Do subElement.AddPart(o)
-    $$$BNFCOMMIT(subElement,ParentElement)
-    $$$DEBUGMethodEnd
-    Quit ok
-}
-
-// xml_content ::= text
-
-///  summary=F
-///  type=group
 Method XdataText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
     ; is this really XML or JSON?
@@ -1119,46 +562,426 @@ Method XdataText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
     Quit ok
 }
 
-/// class_xdata ::= 'xdata' xdata_name [ '[' (xdata_attributes)* ']' ] '{' (xdata_text | xdata_xml | xdata_json )   /* ([xml_xml] [xml_data] [xdata_json] */ '}'
-///  summary=S&F&[S&(F)*&S]&S&(F|F|F)&S
-///  type=group
-///  not=0
-Method ClassXdata(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
-{
-	Set ..mimetype=""
-    Set ok=##super(ParentElement,.subElement)
-    
-    Quit ok
-}
-
-Method XmlCdataText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+/***************************************************************************************
+ IDENTIFIERS
+***************************************************************************************/
+Method AliasIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
     $$$DEBUGMethodBegin
-    $$$BNFSTART(subElement)
-    
-    Set ok=1,n=""
-    While ('..eof()) && (..peek(3)'="]]>") {
-        Set n=n_..next()
-        Set ok=1
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+
+    set ch50=..stream.PeekToEol()
+    Set done=1
+    set pos=1
+    If $e(ch50,pos)="""" {
+        Set pos=pos+1
+        While $e(ch50,pos)'="""" {
+            set pos=pos+1
+        }
+        set pos=pos+1 ; final " is all part of the alias
+        Set done=1
+    } Else {
+        If $e(ch50,pos)="%" Set pos=pos+1
+        If $e(ch50,pos)?1A set pos=pos+1
+        
+        If pos>1 {
+            While ($e(ch50,pos)?1AN) || ($e(ch50,pos)=".") ||($e(ch50,pos)="_")  {
+                set pos=pos+1
+            }
+            Set done=1
+        }
     }
- 
-    Set o=..newAtom(subElement.type,n)
-    Do subElement.AddPart(o)
-   
-    $$$BNFCOMMIT(subElement,ParentElement)
+    If done {
+        Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
+        Do ParentElement.AddPart(atom)
+    }
+    $$$DEBUGMethodEnd
+    Quit done
+}
+
+Method ClassIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+    $$$DEBUGMethodBegin
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+
+    set ch50=..stream.PeekToEol()
+    set pos=1
+    If $e(ch50,pos)="%" Set pos=pos+1
+    If $e(ch50,pos)?1A Set pos=pos+1
+    
+    if pos>1 {
+        While ($e(ch50,pos)?1AN) || ($e(ch50,pos)=".")  {
+            set pos=pos+1
+        }
+    
+        Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
+        Do ParentElement.AddPart(atom)
+        s ok=1
+    } else {
+        s ok=0
+    }
     $$$DEBUGMethodEnd
     Quit ok
 }
 
-/// xml_data ::= xml_tag_s_a xml_tag_ns_name (xml_attribute)* xml_tag_s_b ( (xml_data)* | xml_content ) xml_tag_e_a xml_tag_ns_name xml_tag_e_b
-///  summary=F&F&(F)&F&((F)|F)&F&F&F
-///  type=group
-Method XmlData(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+Method ClientIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	Set oldmode=..commentMode
-    Set ..commentMode="XML"
-    Set ok=##super(ParentElement,.subElement)
-    Set ..commentMode=oldmode
+    $$$DEBUGMethodBegin
+ 
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+
+    set ch50=..stream.PeekToEol()
+    set pos=1
+
+    If $e(ch50,pos)="%" set pos=pos+1
+    If $e(ch50,pos)="%" set pos=pos+1 ;EG %%OID
+    if $e(ch50,pos)="_" set pos=pos+1
+    If $e(ch50,pos)?1A Set pos=pos+1
+    
+    if pos>1 {
+        While ($e(ch50,pos)?1AN) || ($e(ch50,pos)=".") || ($e(ch50,pos)="_")  {
+            set pos=pos+1
+        }
+        Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
+        Do ParentElement.AddPart(atom)
+        set ok=1
+    }else {
+        set ok=0
+    }
+    $$$DEBUGMethodEnd
+    Quit ok
+}
+
+Method Filename(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+{
+    $$$DEBUGMethodBegin
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+
+    set ch50=..stream.PeekToEol()
+    set pos=1
+    While ($e(ch50,pos)?1AN) || ($e(ch50,pos)=".") || ($e(ch50,pos)="/") {
+        set pos=pos+1
+    }
+ 
+    Set atom=..newAtom("FileName",..nextNotEOL(pos-1))
+    Do ParentElement.AddPart(atom)
+
+    $$$DEBUGMethodEnd
+
+    Quit 1
+}
+
+/// Very general purpose should there be a different identifier method
+/// for each thing that is an identifier?
+Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+    $$$DEBUGMethodBegin
+ 
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+
+    set ch50=..stream.PeekToEol()
+    set pos=1
+
+    If $e(ch50,pos)="%" set pos=pos+1
+    If $e(ch50,pos)="%" set pos=pos+1 ; EG %%OID
+    If $e(ch50,pos)?1A Set pos=pos+1
+    
+    if pos>1 {
+        While ($e(ch50,pos)?1AN) || ($e(ch50,pos)=".")  {
+            set pos=pos+1
+        }
+ 
+        Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
+        Do ParentElement.AddPart(atom)
+        set ok=1
+    } else {
+        set ok=0
+    }
+    $$$DEBUGMethodEnd
+    Quit ok
+}
+
+Method VariableIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+    $$$DEBUGMethodBegin
+ 
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+
+    set ch50=..stream.PeekToEol()
+    set pos=1
+
+    If $e(ch50,pos)="%" set pos=pos+1
+    If $e(ch50,pos)="%" set pos=pos+1 ; EG %%OID
+    If $e(ch50,pos)?1A Set pos=pos+1
+    
+    if pos>1 {
+        While ($e(ch50,pos)?1AN) {
+            set pos=pos+1
+        }
+ 
+        Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
+        Do ParentElement.AddPart(atom)
+        set ok=1
+    } else {
+        set ok=0
+    }
+    $$$DEBUGMethodEnd
+    Quit ok
+}
+
+Method XmlIdentifier(ParentElement As PXW.DEV.BNF.Element, Output subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+    $$$DEBUGMethodBegin
+ 
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+
+    set ch50=..stream.PeekToEol()
+    set pos=1
+
+    If $e(ch50,pos)="_" set pos=pos+1
+    If $e(ch50,pos)?1A Set pos=pos+1
+    
+    if pos>1 {
+        While ($e(ch50,pos)?1AN) || ($e(ch50,pos)="-") || ($e(ch50,pos)="_")  || ($e(ch50,pos)=".") {
+            set pos=pos+1
+        }
+ 
+        Set atom=..newAtom("XmlIdentifier",..nextNotEOL(pos-1))
+        Do ParentElement.AddPart(atom)
+        set ok=1
+    } else {
+        set ok=0
+    }
+    $$$DEBUGMethodEnd
+    Quit ok
+}
+
+Method SqlFieldName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+    $$$DEBUGMethodBegin
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+    set ch50=..stream.PeekToEol()
+    set pos=1
+    If $e(ch50,pos)="""" {
+        set pos=pos+1
+        While $e(ch50,pos)'="""" {
+            set pos=pos+1
+        }
+        set pos=pos+1 ; last ", both sets of quotes end up being in the name, should we split those off?
+        set ok=1
+    } Else {
+        If $e(ch50,pos)="%" set pos=pos+1
+        If $e(ch50,pos)="%" set pos=pos+1 ; EG %%OID
+        If $e(ch50,pos)="_" set pos=pos+1
+        If $e(ch50,pos)?1A set pos=pos+1
+        
+        if pos>1 {
+            While ($e(ch50,pos)?1AN) || ($e(ch50,pos)="_")  {
+                set pos=pos+1
+            }
+            set ok=1
+        } else {
+            set ok=0
+        }
+    }
+    if ok {
+        Set atom=..newAtom("SqlFieldName",..nextNotEOL(pos-1))
+        Do ParentElement.AddPart(atom)
+    }
+    $$$DEBUGMethodEnd
+    Quit ok
+}
+
+Method SqlTableName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+
+    $$$DEBUGMethodBegin
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+    set ch50=..stream.PeekToEol()
+    set pos=1
+    If $e(ch50,pos)="""" {
+        set pos=pos+1
+        While $e(ch50,pos)'="""" {
+            set pos=pos+1
+        }
+        set pos=pos+1 ; last ", both sets of quotes end up being in the name, should we split those off?
+        set ok=1
+    } Else {
+        If $e(ch50,pos)="%" set pos=pos+1
+        If $e(ch50,pos)="%" set pos=pos+1 ; EG %%OID
+        If $e(ch50,pos)="_" set pos=pos+1
+        If $e(ch50,pos)?1A set pos=pos+1
+        
+        if pos>1 {
+            While ($e(ch50,pos)?1AN) || ($e(ch50,pos)="_")  {
+                set pos=pos+1
+            }
+            set ok=1
+        } else {
+            set ok=0
+        }
+    }
+    if ok {
+        Set atom=..newAtom("SqlTableName",..nextNotEOL(pos-1))
+        Do ParentElement.AddPart(atom)
+    }
+    $$$DEBUGMethodEnd
+    Quit ok
+}
+
+/***************************************************************************************
+ Numbers and strings
+***************************************************************************************/
+Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+{
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+    Set ch50=..stream.PeekToEol()
+    Set i=1,hasDigits=0
+    ; -
+    While ($EXTRACT(ch50,i)="-") || ($EXTRACT(ch50,i)="+") {
+        Set i=i+1
+    }
+
+    ; -123
+    While ($EXTRACT(ch50,i)?1N) {
+        Set i=i+1,hasDigits=1
+    }
+
+    ; start with a .
+    If $EXTRACT(ch50,i,i+1)?1"."1N {
+        Set i=i+2 ; . and number
+        Set hasDigits=1
+    }
+    
+    If hasDigits {
+    	$$$BNFSTART(subElement)
+    
+        ; -123.456
+        While ($EXTRACT(ch50,i)?1N) {
+            Set i=i+1
+        }
+
+        ; -123.456E
+        If ($EXTRACT(ch50,i)="E") || ($EXTRACT(ch50,i)="e") {
+            Set i=i+1
+            ; 123.456E-
+            If $EXTRACT(ch50,i)="-"{
+                Set i=i+1
+            }
+
+            ; -123.456E-789
+            While ($EXTRACT(ch50,i)?1N) {
+                Set i=i+1
+            }
+        }
+
+        Set atom=..newAtom("Number",..nextNotEOL(i-1))
+        Do subElement.AddPart(atom)
+        $$$BNFCOMMIT(subElement,ParentElement)
+        Set retok=1
+    } Else {
+        Set retok=0
+    }
+	$$$DEBUGMethodEnd
+	Quit retok
+}
+
+Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+{
+    $$$DEBUGMethodBegin
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+	#dim o as PXW.DEV.Atom
+    Set ok=0
+    set ch=..peek(1)
+    If (ch="""") || (ch="'") {
+        Set ok=0
+        $$$BNFSTART(subElement)
+        ; consume the quotes
+        Set q1=..nextNotEOL(1)
+        Set ch50=..stream.PeekToEoF() ; strings can be multi line
+        Set pos=1
+        Set instring=1
+        While $EXTRACT(ch50,pos)'="" && instring {
+            Set ch=$EXTRACT(ch50,pos),ch2=$EXTRACT(ch50,pos+1)
+            ; embedded quotes or end of string?
+            If ch=q1 {
+                If ch2=q1 {
+                    Set pos=pos+2 ; both sets of quotes
+                } Else {
+                    Set instring=0
+                }
+            } Else {
+                Set pos=pos+1
+            }
+        }
+        Set o=..newAtom("String",..next(pos-1))
+        Set o.start=q1
+        Set o.end=..nextNotEOL(1) ; final quote
+        Do subElement.AddPart(o)
+        $$$BNFCOMMIT(subElement,ParentElement)
+        Set ok=1
+    
+    }
+    $$$DEBUGMethodEnd
+    Quit ok
+}
+
+Method JsonString(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+{
+    $$$DEBUGMethodBegin
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+    If ..peek(1)="""" {
+        $$$BNFSTART(subElement)
+
+        Set q1=..nextNotEOL(1)
+        set ch50=..stream.PeekToEol()
+        set pos=1
+        Set instring=1
+        While $e(ch50,pos)'="" && instring {
+            If $EXTRACT(ch50,pos,pos+1)="\""" {
+                ; embedded quotes
+                set pos=pos+2
+            } elseif $EXTRACT(ch50,pos)="""" {
+                ; last quote
+                Set instring=0
+            } Else {
+                set pos=pos+1
+            }
+        }
+        Set atom=..newAtom("String",..nextNotEOL(pos-1))
+        set atom.start=q1
+        set atom.end=..nextNotEOL(1) ; q2
+        Do subElement.AddPart(atom)
+        $$$BNFCOMMIT(subElement,ParentElement)
+        set ok=1
+    } else {
+        s ok=0
+    }
+    $$$DEBUGMethodEnd
+    Quit ok
+}
+
+/***************************************************************************************
+ Things that cannot be properly defined in BNF
+***************************************************************************************/
+Method XdataJsonArrayItems(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+{
+    ; if empty array just quit (OK)
+    If ..isStringSingle("]") Quit 1
+
+	Set ok=##super(ParentElement,.subElement)
+    Quit ok
+}
+
+Method ClassItemIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+{
+	Set ok=##super(ParentElement,.subElement)
+    If ok {
+        Set atom=subElement.FirstAtom()
+        If $PIECE(atom.type,":",1)="String" Set atom.type="ClassItemIdentifier"
+    }
     Quit ok
 }
 
@@ -1168,8 +991,6 @@ Method TextInCurly(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
     $$$BNFSTART(subElement)
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
     
-	;$$$BNFPATH
-	;;$$$DEBUG("%path="_%path)
     Set ok=1,n=""
     While ('..eof()) && (..peek(1)'="}") {
         Set n=n_..next()
@@ -1181,16 +1002,94 @@ Method TextInCurly(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
     Quit ok
 }
 
-Method skipComments(ch10 As %String) As %Boolean
+Method XmlContent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
-    If ..commentMode="XML" {
-        If $EXTRACT(ch10,1,4)="<!--" Set ..comment=..readBlockComment("<!--","-->") Quit 1
-    } Else {
-        If $EXTRACT(ch10,1,3)="///" Set ..comment=..readLineComment("///") Quit 1
-        If $EXTRACT(ch10,1,2)="//" Set ..comment=..readLineComment("//") Quit 1
-        If $EXTRACT(ch10,1,2)="/*" Set ..comment=..readBlockComment("/*","*/") Quit 1
+    $$$DEBUGMethodBegin
+    $$$BNFSTART(subElement)
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+    
+    set ch500=..stream.PeekToEoF()
+    set pos=1
+    While ($e(ch500,pos)'="") && ($e(ch500,pos)'="<") {
+        set pos=pos+1
     }
-    Quit 0
+    if pos>1 {
+        Set o=..newAtom(subElement.type,..next(pos-1))
+        Do subElement.AddPart(o)
+        $$$BNFCOMMIT(subElement,ParentElement)
+        set ok=1
+    } else {
+        set ok=0
+    }
+    $$$DEBUGMethodEnd
+    Quit ok
+}
+
+Method XmlCdataText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+{
+    $$$DEBUGMethodBegin
+    $$$BNFSTART(subElement)
+    
+    set ch500=..stream.PeekToEoF()
+    set pos=1    
+    Set ok=1
+    While ($e(ch500,pos)'="") && ($e(ch500,pos,pos+2)'="]]>") {
+        set pos=pos+1
+    }
+ 
+    Set o=..newAtom(subElement.type,..next(pos-1))
+    Do subElement.AddPart(o)
+   
+    $$$BNFCOMMIT(subElement,ParentElement)
+    $$$DEBUGMethodEnd
+    Quit ok
+}
+
+/***************************************************************************************
+ Things that alter the state of the parser as we go
+***************************************************************************************/
+Method ClassLanguageName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+{
+	Set ok=##super(ParentElement,.subElement)
+    If ok=1 {
+        Set ..language=subElement.ToString(0)
+    }
+    Quit ok
+}
+
+Method AttributeCodemodetype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+{
+	Set ok=##super(ParentElement,.subElement)
+    If ok=1 {
+        Set ..codemode=subElement.ToString(0)
+    }
+    Quit ok
+}
+
+Method AttributeMimetype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+{
+	Set ok=##super(ParentElement,.subElement)
+    If ok=1 {
+        Set ..mimetype=$PIECE(subElement.ToString(0),"=",2,*)
+    }
+    Quit ok
+}
+
+Method ClassXdata(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+{
+	Set ..mimetype=""
+    Set ok=##super(ParentElement,.subElement)
+    
+    Quit ok
+}
+
+Method XmlData(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+{
+	Set oldmode=..commentMode
+    Set ..commentMode="XML"
+    Set ok=##super(ParentElement,.subElement)
+    Set ..commentMode=oldmode
+    Quit ok
 }
 
 }

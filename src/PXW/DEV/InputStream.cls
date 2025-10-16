@@ -38,7 +38,6 @@ ClassMethod NewString(Code As %String) As PXW.DEV.InputStream
 	Set reader.line=1
 	Set reader.col=0
 	Set reader.length=$LENGTH(Code)
-	;s %pxwstreams(+reader)=flat
 	Quit reader
 }
 
@@ -52,7 +51,6 @@ Method Next() As %String
 	} Else {
 		Set ..col=..col+1
 	}
-    ;s:..startOfLinePos>..lastStartOfLinePos ..lastStartOfLinePos=..startOfLinePos
     If ..pos>..lastPos {
 		Set ..lastPos=..pos,..nextCount=0
 	} Else {
@@ -62,6 +60,23 @@ Method Next() As %String
 		}
 	}
 	Quit ch
+}
+
+/// returns the string that contains only the given characters
+Method NextChars(ValidChars As %String) As %String
+{
+	Set pos=..pos
+	Set peek=$EXTRACT(..input,pos)
+    While (ValidChars[peek) && (peek'="")  {
+		Set pos=pos+1
+		Set peek=$EXTRACT(..input,pos)
+    }
+	If pos>..pos {
+		Set found=..NextMany(pos-..pos)
+	} Else {
+		Set found=""
+	}
+	Quit found
 }
 
 Method NextMany(number As %Integer = 1) As %String
@@ -86,7 +101,7 @@ Method NextMany(number As %Integer = 1) As %String
 	Quit found
 }
 
-/// Read a single char, the next char is NOT checked to see if it is an EOL, saves time, be sure you are not reading past eol
+/// Read some char, the next chars are NOT checked to see if it is an EOL, saves time, be sure you are not reading past eol
 Method NextNOTEol(number As %Integer) As %String
 {
 	Set ch=$EXTRACT(..input,..pos,..pos+number-1)
@@ -108,16 +123,16 @@ Method NextToEol() As %String
 {
 	Set eolpos=$FIND(..input,..eolChar,..pos)
 	; no eol so read whole string
-	If eolpos=0 {
+	If 'eolpos {
 		Set len=..length-..pos
 		Set found=$EXTRACT(..input,..pos,..pos+len)
 		Set ..pos=..pos+len+1
 		Set ..col=..col+len+1
 	} Else {
-		Set len=eolpos-..pos-2
-		Set found=$EXTRACT(..input,..pos,..pos+len)
-		Set ..pos=..pos+len+1
-		Set ..col=..col+len+1
+		Set len=eolpos-..pos-1
+		Set found=$EXTRACT(..input,..pos,..pos+len-1)
+		Set ..pos=..pos+len
+		Set ..col=..col+len
 	}
     If ..pos>..lastPos {
 		Set ..lastPos=..pos,..nextCount=0
@@ -130,66 +145,49 @@ Method NextToEol() As %String
 	Quit found
 }
 
-/// returns the string that contains only the given characters
-Method NextChars(ValidChars As %String) As %String
-{
-	Set pos=..pos
-	Set peek=$EXTRACT(..input,pos)
-    While (ValidChars[peek) && (peek'="")  {
-		Set pos=pos+1
-		Set peek=$EXTRACT(..input,pos)
-    }
-	If pos>..pos {
-		Set found=..NextMany(pos-..pos)
-	} Else {
-		Set found=""
-	}
-    If ..pos>..lastPos {
-		Set ..lastPos=..pos,..nextCount=0
-	} Else {
-		Set ..nextCount=..nextCount+1
-		If ..nextCount>..#nextCountLimit {
-			$$$ThrowStatus($$$ERROR(5001,"NextChars Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
-		}
-	}
-
-	Quit found
-}
-
 Method Peek(offsetStart As %Integer = 0, offsetEnd As %Integer = {offsetStart}) As %String
 {
 	q $EXTRACT(..input,..pos+offsetStart,..pos+offsetEnd)
-	;Set ch=$EXTRACT(..input,..pos+offsetStart,..pos+offsetEnd)
-	;Quit ch
 }
 
 /// returns the string to the EOL but NOT the eol char itself
 Method PeekToEol() As %String
 {
-	Set eolpos=$FIND(..input,..eolChar,..pos)
+	/*Set eolpos=$FIND(..input,..eolChar,..pos)
 	; no eol so read whole string
-	If eolpos=0 {
-		Set len=..length-..pos
-		Set found=$EXTRACT(..input,..pos,..pos+len)
+	If 'eolpos { 
+		Set found=$EXTRACT(..input,..pos,*)
 	} Else {
-		Set len=eolpos-..pos-2
-		Set found=$EXTRACT(..input,..pos,..pos+len)
-	}
+		set found=$EXTRACT(..input,..pos,eolpos-2)
+	}*/
+	s found=$p($EXTRACT(..input,..pos,*),..eolChar,1)
 	Quit found
 }
 
 /// returns the string to the EndString but NOT the EndString char itself
 Method PeekToString(EndString As %String) As %String
 {
-	Set eolpos=$FIND(..input,EndString,..pos)
+	/*Set eolpos=$FIND(..input,EndString,..pos)
 	; no end so read whole string
-	If eolpos=0 {
-		Set len=..length-..pos
-		Set found=$EXTRACT(..input,..pos,..pos+len)
+	If 'eolpos {
+		Set found=$EXTRACT(..input,..pos,*)
 	} Else {
-		Set len=eolpos-..pos-($LENGTH(EndString)+1)
-		Set found=$EXTRACT(..input,..pos,..pos+len)
-	} 
+		set found=$EXTRACT(..input,..pos,eolpos-($LENGTH(EndString)+1))
+	} */
+	s found=$p($EXTRACT(..input,..pos,*),EndString,1)
+	Quit found
+}
+
+Method PeekToEoF() As %String
+{
+	/*Set eolpos=$FIND(..input,..eolChar,..pos)
+	; no eol so read whole string
+	If 'eolpos { 
+		Set found=$EXTRACT(..input,..pos,*)
+	} Else {
+		set found=$EXTRACT(..input,..pos,eolpos-2)
+	}*/
+	s found=$EXTRACT(..input,..pos,*)
 	Quit found
 }
 
@@ -198,17 +196,6 @@ Method EOF() As %Boolean
 	Quit (..Peek()="")
 }
 
-/*
-Method GetBookmark(Output bm as %List) As %List
-{
-	s bm=$lb(..pos,..col,..line,..startOfLinePos)
-}
-
-Method GotoBookmark(bm As %List)
-{
-	s ..pos=$lg(bm,1),..col=$lg(bm,2),..line=$lg(bm,3),..startOfLinePos=$lg(bm,4)
-}
-*/
 Method Throw(msg As %String)
 {
 	Set sc=$$$ERROR(5001,msg_" line:"_..line_" col:"_..col)

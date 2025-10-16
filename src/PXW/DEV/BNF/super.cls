@@ -394,6 +394,24 @@ Method addKeyword(ParentElement As PXW.DEV.Element, Keyword As %String, Output f
     Quit ok
 }
 
+Method addRegex(ParentElement As PXW.DEV.Element = "", Regex As %String) As %Boolean
+{
+    $$$DEBUGMethodBegin
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+    
+    Set ch50=..stream.PeekToEol()
+    s locate=$locate(ch50,Regex,1,end)
+    i locate=1 {
+        Set atom=..newAtom(ParentElement.type,..nextNotEOL(end-1))
+        Do ParentElement.AddPart(atom)
+        Set ok=1
+    } Else {
+        Set ok=0
+    }
+    $$$DEBUGMethodEnd
+    q ok
+}
+
 Method addPunctuation(ParentElement As PXW.DEV.Element, Punctuation As %String, Output foundString As %String) As %Boolean
 {
     ;$$$DEBUGMethodBegin

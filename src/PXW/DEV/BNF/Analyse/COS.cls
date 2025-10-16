@@ -48,6 +48,21 @@ Property BadVars As %String [ MultiDimensional ];
 
 Property BadVarsUsed As %String [ MultiDimensional ];
 
+/// Temp store of strings if we can work out what they are.
+/// keyed by varname
+Property stringVars [ MultiDimensional ];
+
+/// Temp store of elements that are setting strings and their value (eg set str="a",str=str_"b" will have 2 entries one set to a on set to ab
+Property stringVarsElement [ MultiDimensional ];
+
+/// Temp store of the final element that sets the var
+/// (+element)=value
+Property stringVarsElementFinal [ MultiDimensional ];
+
+/// temp store for index of final 
+/// (var)=element
+Property stringVarsElementFinalIndex [ MultiDimensional ];
+
 Method %OnNew(ClassServer As PXW.DEV.Dictionary.ClassDefinitionObject = "") As %Status
 {
 	Set ..ClassServer=ClassServer
@@ -68,6 +83,8 @@ Method Reset()
 	Kill ..ParameterVariables
 	Kill ..DefinedMacros
 	Kill ..BadVarsUsed
+	Kill ..stringVars
+	Kill ..stringVarsElement
 	Set ..ShortCommand=0
 	Set ..QuitFound=0
 	Set ..MethodIsAbstract=0
@@ -261,12 +278,27 @@ Method checkSetItem(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.element
 	; work out what its being set to
 	set value=element.findFirstElementByType("SetExpression",0)
 	Set derivedtype=..DeriveTypeReturned(value)
+	set string=..SimplifyStringExpression(value)
 	Set var=""
 	For {
 		Set var=$ORDER(currentlySetting(var),1,velement)
 		Quit:var=""
 
 		d ..checkAndRecordVariableType(velement,var,derivedtype)
+
+		if string'="" {
+			set ..stringVars(var)=string
+			set ..stringVarsElement(+velement)=string
+
+			set oldE=$g(..stringVarsElementFinalIndex(var))
+			if $isobject(oldE) {
+				kill ..stringVarsElementFinal(+oldE)
+			}
+			set ..stringVarsElementFinal(+velement)=string
+			set ..stringVarsElementFinalIndex(var)=velement
+		} else {
+			kill ..stringVars(var)
+		}
 	}
 	Quit ""
 }
@@ -717,6 +749,93 @@ Method SimplifySubscripts(element As PXW.DEV.Element) As %String
 
 	}
 	Quit simple
+}
+
+/// Pass in an expression element, this will return:
+/// - if the expression is ONLY a variable (which could be an object with . etc or a global).
+/// the String if the expression is ONLY a string.
+/// the Number if the expression is ONLY a number.
+/// If there is anything else eg 1+1, then this is complex (for now) so it will return -.
+Method SimplifyStringExpression(ValueElement As PXW.DEV.Element, Output variableElement As PXW.DEV.Element) As %String
+{
+	#dim partE,factorE,primaryE,finalE,expressionE as PXW.DEV.Element
+
+	If ValueElement.type="Expression" {
+		Set expressionE=ValueElement
+	} Else {
+		Set expressionE=ValueElement.findFirstElementByType("Expression",0)
+	}
+	
+	; sql_"Select * from table where x="_xx_" and y=2"      as an expression looks like this:
+    ;Element=Expression PXW.DEV.BNF.Elements.COS @8724
+    ;.Element=Factor PXW.DEV.BNF.Elements.COS @8640
+    ;..Element=Primary PXW.DEV.BNF.Elements.COS @8256
+    ;...Element=Variable PXW.DEV.BNF.Elements.COS @8916
+    ;....type=Variable:/Expression/Factor/Primary/Variable
+    ;.... sql
+    ;.Element=Dyadicop PXW.DEV.BNF.Elements.COS @8939
+    ;..type=punctuation:/Expression/Dyadicop
+    ;.. _
+    ;.Element=Factor PXW.DEV.BNF.Elements.COS @8410
+    ;..Element=Primary PXW.DEV.BNF.Elements.COS @8273
+    ;...Element=String PXW.DEV.BNF.Elements.COS @8784
+    ;....type=String:/Expression/Factor/Primary
+    ;.... "Select * from table where x="
+    ;.Element=Dyadicop PXW.DEV.BNF.Elements.COS @8356
+    ;..type=punctuation:/Expression/Dyadicop
+    ;.. _
+    ;.Element=Factor PXW.DEV.BNF.Elements.COS @9127
+    ;..Element=Primary PXW.DEV.BNF.Elements.COS @8928
+    ;...Element=Variable PXW.DEV.BNF.Elements.COS @8435
+    ;....type=Variable:/Expression/Factor/Primary/Variable
+    ;.... xx
+    ;.Element=Dyadicop PXW.DEV.BNF.Elements.COS @8258
+    ;..type=punctuation:/Expression/Dyadicop
+    ;.. _
+    ;.Element=Factor PXW.DEV.BNF.Elements.COS @8498
+    ;..Element=Primary PXW.DEV.BNF.Elements.COS @8806
+    ;...Element=String PXW.DEV.BNF.Elements.COS @8654
+    ;....type=String:/Expression/Factor/Primary
+    ;.... " and y=2"	
+
+	set string="",isString=1
+	for i=1:1:expressionE.partsCount() {
+		set partE=expressionE.partsGetAt(i)
+		if $isobject(partE) {
+			if partE.type="Factor" {
+				set factorE=partE
+				set primaryE=factorE.partsGetAt(1)
+				if $ISOBJECT(primaryE),primaryE.type="Primary" {
+					set finalE=primaryE.partsGetAt(1)
+					if $isobject(finalE) {
+						if finalE.%IsA("PXW.DEV.Atom") zw finalE d partE.write()
+						set atom=finalE.FirstAtom()
+						if finalE.type="String" {
+							set string=string_atom.value
+						}
+						if finalE.type="Number" {
+							set string=string_atom.value
+						}
+						if finalE.type="SubExpression" {
+							set string=string_"?"
+						}
+						if finalE.type="Variable" {
+							set varname=atom.value
+							set string=string_$g(..stringVars(varname))
+						}
+					}
+				} else {
+					set isString=0 ; not primary thing
+				}
+			} elseif partE.type="Dyadicop",partE.ToString(0)="_" {
+				; concat is ok
+			} else {
+				set isString=0
+			}			
+		}
+	}
+	if isString=0 s string=""
+	Quit string
 }
 
 }

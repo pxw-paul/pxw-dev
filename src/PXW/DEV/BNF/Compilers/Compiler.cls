@@ -190,10 +190,20 @@ Method compileDefinition(Element As PXW.DEV.Element)
     Set ..CurrentMethod=method
     
     Set indent=1
-    Do ..compileQuickCheck(method,rulesE,indent)
-    Do ..compileMethodStart(method,indent,1)
-    Do ..compileRules(method,rulesE,indent)
-    Do ..compileMethodEnd(method,indent)
+    set summary=..summariseRules(rulesE)
+    if summary="R" {
+        ; regex is a special kind of rule, more like a subrule
+        s transaction=0,debug=1,copymode=1
+        Do ..compileQuickCheck(method,rulesE,indent)
+        Do ..compileMethodStart(method,indent,0,transaction,debug)
+        Do ..compileRules(method,rulesE,indent)
+        Do ..compileMethodEnd(method,indent,,transaction,debug,copymode)
+    } else {
+        Do ..compileQuickCheck(method,rulesE,indent)
+        Do ..compileMethodStart(method,indent,1)
+        Do ..compileRules(method,rulesE,indent)
+        Do ..compileMethodEnd(method,indent)
+    }
  	;$$$WRITE($$$Tab(indent)_"quit done")
 }
 
@@ -230,7 +240,7 @@ Method compileQuickCheck(Method As %Dictionary.MethodDefinition, RulesElement As
         if numberofK=1 {
             $$$WRITECR($$$Tab(indent)_"if '(..isKeyword("_wordlist_",.value)) { quit "_returnValue_" }")
         } else {
-            $$$WRITECR($$$Tab(indent)_"if '(..isKeywordInList($lb("_wordlist_"),.value)) { quit "_returnValue_" }")
+            $$$WRITECR($$$Tab(indent)_"if '(..isKeywordInList($lb("_wordlist_"),.value)) { quit "_returnValue_" /*1*/ }")
         }
     }  ElseIf (summary="P") {
         ; Punctuation single (eg ,)
@@ -238,7 +248,9 @@ Method compileQuickCheck(Method As %Dictionary.MethodDefinition, RulesElement As
         ; only 1 but doing the same as a list
         Set wordlist="",sep=""
         For i=1:1:$LISTLENGTH(listOfValues) Set wordlist=wordlist_sep_""""_$LISTGET(listOfValues,i)_"""",sep=","
-        $$$WRITECR($$$Tab(indent)_"if '(..isStringSingle("_wordlist_",.value)) { quit "_returnValue_" }")
+        $$$WRITECR($$$Tab(indent)_"if '(..isStringSingle("_wordlist_",.value)) { quit "_returnValue_" /*3 */ }")
+    } elseif (summary="R") {
+        ; no quick check for reg ex yet
     } ElseIf (summary?1"(P"0."|P"1")") || (summary?1"P"0."|P") {
         ; Punctuation list (P|P|P) or P|P|P
         Set Method.Description=Method.Description_$CHAR(13,10)_"summary values:"_$LISTTOSTRING(listOfValues)
@@ -265,7 +277,7 @@ Method compileQuickCheck(Method As %Dictionary.MethodDefinition, RulesElement As
                 ; only 1 but doing the same as a list
                 Set wordlist="",sep=""
                 For i=1:1:$LISTLENGTH(listOfValues) Set wordlist=wordlist_sep_""""_$LISTGET(listOfValues,i)_"""",sep=","
-                $$$WRITECR($$$Tab(indent)_"if '(..isStringSingle("_wordlist_",.value)) { quit "_returnValue_" }")
+                $$$WRITECR($$$Tab(indent)_"if '(..isStringSingle("_wordlist_",.value)) { quit "_returnValue_" /*4*/ }")
             } ElseIf (summary?1"(P"0."|P"1")") || (summary?1"P"0."|P") {
                 ; Punctuation list (P|P|P) or P|P|P
                 Set Method.Description=Method.Description_$CHAR(13,10)_"summary values:"_$LISTTOSTRING(listOfValues)
@@ -410,6 +422,8 @@ Method compileRule(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.El
             ;i word="class" break
             Set ..keywords($$$UPPER(atom.value))=1
             $$$WRITE("..addKeyword(."_subElementVar_","""_$$$UPPER(word)_""") ")
+        } elseif $$$UPPER($p(word,":",1))="REGEXP"{
+            $$$WRITE("..addRegex(."_subElementVar_","""_$p(word,":",2)_""") ")
         } Else {
             $$$WRITE("..addPunctuation(."_subElementVar_","""_word_""") ")
         }
@@ -718,7 +732,10 @@ Method summariseRule(Element As PXW.DEV.Element, listOfValues As %List = "") As 
                 ;i word="class" break
                 Set summary="K" ; keyword
                 Set listOfValues=listOfValues_$LISTBUILD($$$UPPER(word))
-            } Else {
+            } Elseif $p($$$UPPER(atom.value),":",1)="REGEXP" {
+                Set summary="R" ; REGEX
+                Set listOfValues=listOfValues_$LISTBUILD($$$UPPER(word)) ; needs to be upper because of things like i%
+            } else {
                 Set summary="P" ; punctuation
                 Set listOfValues=listOfValues_$LISTBUILD($$$UPPER(word)) ; needs to be upper because of things like i%
             }

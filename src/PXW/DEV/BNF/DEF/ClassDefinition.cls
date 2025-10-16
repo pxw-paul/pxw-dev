@@ -398,7 +398,7 @@ xml_attribute                       ::= [ xml_schema ':' ] xml_attribute_name '=
 xml_attribute_name                  ::= xml_identifier
 xml_attribute_value                 ::= string | number
 xml_content                         ::= text 
-xml_identifier                      ::= 'NEEDS XML identifier'
+xml_identifier                      ::= 'regexp:(\_|[a-zA-Z])[a-zA-Z0-9]\-\_\.*' /* _ or A followed by AN_.- */
 xml_xml                             ::= xml_tag_s_a '?xml' (xml_attribute)* '?' xml_tag_s_b
 
 xml_cdata                           ::= '<' '!' '[CDATA[' xml_cdata_text ']]' '>' /* special tag so not using xml_tag_s_a etc  and also spacing out as this is already stored in XML!*/
@@ -667,16 +667,16 @@ number                              ::= ['-'] ('regexp:[0-9]*' [ '.' 'regexp:[0-
 string                              ::= '""' | ('"' 'regexp:[^\"\r\n]*' '"')
 
 alias_identifier                    ::= 'NEED ALIAS IDENT'
-identifier                          ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)'
-variable_identifier                 ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)'
+identifier                          ::= 'regexp:(\%|[a-zA-Z])[a-zA-Z0-9]*' /* % or A followed by AN* */
+variable_identifier                 ::= 'regexp:(\%|[a-zA-Z])[a-zA-Z0-9]*' /* % or A followed by AN* */
 
-class_identifier                    ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)'
+class_identifier                    ::= 'regexp:(\%|[a-zA-Z])[a-zA-Z0-9\.]*' /* % or A followed by AN* */
 soap_identifier                     ::= identifier
 
 text                                ::= 'regexp:.*'
 text_in_curly                       ::= 'NEEDS TEXT IN CURLY'
 
-client_identifier                   ::= 'NEEDS CLIENT IDENTIFIER'
+client_identifier                   ::= 'regexp:(\%|\_|[a-zA-Z])[a-zA-Z0-9]\_\.*' /* _ or A followed by AN_.- */
 expression                          ::= 'NEEDS EXPRESSION'
 cos_expression_sql                  ::= 'NEEDS COS EXPRESSION SQL'
 

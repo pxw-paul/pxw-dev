@@ -1,4 +1,4 @@
-/// Created: 2025-10-11 17:49:08 PXW.DEV.BNF.Compilers.Compiler1
+/// Created: 2025-10-16 12:48:33 PXW.DEV.BNF.Compilers.Compiler1
 Class PXW.DEV.BNF.GEN.CSP Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 
@@ -40,7 +40,7 @@ Method CosExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 Method CosExpressionBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
-	if '(..isStringSingle("NEEDS COS EXPRESSION BODY",.value)) { quit 0 /* normal */ }
+	if '(..isStringSingle("NEEDS COS EXPRESSION BODY",.value)) { quit 0 /* normal */ /*3 */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -67,7 +67,7 @@ Method CosExpressionCompiletime(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 {
 	; rules summary P&C&P
 	; first rule summary P
-	if '(..isStringSingle("##(",.value)) { quit 0 /* normal */ }
+	if '(..isStringSingle("##(",.value)) { quit 0 /* normal */ /*4*/ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -98,7 +98,7 @@ Method CosExpressionOther(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 {
 	; rules summary P&C&P
 	; first rule summary P
-	if '(..isStringSingle("<%=",.value)) { quit 0 /* normal */ }
+	if '(..isStringSingle("<%=",.value)) { quit 0 /* normal */ /*4*/ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -129,7 +129,7 @@ Method CosExpressionRuntime(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 {
 	; rules summary P&C&P
 	; first rule summary P
-	if '(..isStringSingle("#(",.value)) { quit 0 /* normal */ }
+	if '(..isStringSingle("#(",.value)) { quit 0 /* normal */ /*4*/ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -234,7 +234,7 @@ Method CspAttribute15OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 {
 	; rules summary P&(C|(C&[P])|(C&P)|C|(P&[C])|C|C)
 	; first rule summary P
-	if '(..isStringSingle("=",.value)) { quit 1 /* not found is OK */ }
+	if '(..isStringSingle("=",.value)) { quit 1 /* not found is OK */ /*4*/ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"=")  {
@@ -339,7 +339,7 @@ Method CspAttribute19Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 {
 	; rules summary P&[C]
 	; first rule summary P
-	if '(..isStringSingle("#",.value)) { quit 0 /* normal */ }
+	if '(..isStringSingle("#",.value)) { quit 0 /* normal */ /*4*/ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"#")  {
@@ -389,7 +389,7 @@ Method CspDoctype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 {
 	; rules summary P&C&[K&C&C]&P
 	; first rule summary P
-	if '(..isStringSingle("<!DOCTYPE",.value)) { quit 0 /* normal */ }
+	if '(..isStringSingle("<!DOCTYPE",.value)) { quit 0 /* normal */ /*4*/ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -797,7 +797,7 @@ Method CspJavascriptBoth26Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 Method CspJavascriptBoth27Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P
-	if '(..isStringSingle("""TEXT/JAVASCRIPT""",.value)) { quit 0 /* normal */ }
+	if '(..isStringSingle("""TEXT/JAVASCRIPT""",.value)) { quit 0 /* normal */ /*3 */ }
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"""text/javascript""")  {
@@ -866,7 +866,7 @@ Method CspJavascriptBothopp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 Method CspJavascriptBothopp28Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P
-	if '(..isStringSingle("""TEXT/JAVASCRIPT""",.value)) { quit 0 /* normal */ }
+	if '(..isStringSingle("""TEXT/JAVASCRIPT""",.value)) { quit 0 /* normal */ /*3 */ }
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"""text/javascript""")  {
@@ -990,7 +990,7 @@ Method CspJavascriptText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 Method CspJavascriptText25Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P
-	if '(..isStringSingle("""TEXT/JAVASCRIPT""",.value)) { quit 0 /* normal */ }
+	if '(..isStringSingle("""TEXT/JAVASCRIPT""",.value)) { quit 0 /* normal */ /*3 */ }
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"""text/javascript""")  {
@@ -1272,7 +1272,7 @@ Method CspStartTag9Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 Method CspTagEA(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
-	if '(..isStringSingle("</",.value)) { quit 0 /* normal */ }
+	if '(..isStringSingle("</",.value)) { quit 0 /* normal */ /*3 */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1298,7 +1298,7 @@ Method CspTagEA(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 Method CspTagEB(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
-	if '(..isStringSingle(">",.value)) { quit 0 /* normal */ }
+	if '(..isStringSingle(">",.value)) { quit 0 /* normal */ /*3 */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1399,7 +1399,7 @@ Method CspTagNsName12OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 Method CspTagSA(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
-	if '(..isStringSingle("<",.value)) { quit 0 /* normal */ }
+	if '(..isStringSingle("<",.value)) { quit 0 /* normal */ /*3 */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1425,7 +1425,7 @@ Method CspTagSA(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 Method CspTagSB(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
-	if '(..isStringSingle(">",.value)) { quit 0 /* normal */ }
+	if '(..isStringSingle(">",.value)) { quit 0 /* normal */ /*3 */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1451,7 +1451,7 @@ Method CspTagSB(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 Method CspTagSC(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
-	if '(..isStringSingle("/>",.value)) { quit 0 /* normal */ }
+	if '(..isStringSingle("/>",.value)) { quit 0 /* normal */ /*3 */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1512,7 +1512,7 @@ Method CspXml20OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 {
 	; rules summary P&K
 	; first rule summary P
-	if '(..isStringSingle("-",.value)) { quit 1 /* not found is OK */ }
+	if '(..isStringSingle("-",.value)) { quit 1 /* not found is OK */ /*4*/ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"-")  {
@@ -1573,7 +1573,7 @@ Method CspXml22Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
-	if '(..isStringSingle("NEEDS IDENTIFIER",.value)) { quit 0 /* normal */ }
+	if '(..isStringSingle("NEEDS IDENTIFIER",.value)) { quit 0 /* normal */ /*3 */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1599,7 +1599,7 @@ Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 Method JavascriptBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
-	if '(..isStringSingle("NEEDS JS BODY",.value)) { quit 0 /* normal */ }
+	if '(..isStringSingle("NEEDS JS BODY",.value)) { quit 0 /* normal */ /*3 */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1625,7 +1625,7 @@ Method JavascriptBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 Method JsExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
-	if '(..isStringSingle("NEEDS JS EXPRESSION",.value)) { quit 0 /* normal */ }
+	if '(..isStringSingle("NEEDS JS EXPRESSION",.value)) { quit 0 /* normal */ /*3 */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1651,7 +1651,7 @@ Method JsExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
-	if '(..isStringSingle("NEEDS NUMBER",.value)) { quit 0 /* normal */ }
+	if '(..isStringSingle("NEEDS NUMBER",.value)) { quit 0 /* normal */ /*3 */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1677,7 +1677,7 @@ Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
-	if '(..isStringSingle("NEEDS STRING",.value)) { quit 0 /* normal */ }
+	if '(..isStringSingle("NEEDS STRING",.value)) { quit 0 /* normal */ /*3 */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1703,7 +1703,7 @@ Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 Method Text(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
-	if '(..isStringSingle("NEEDS TEXT",.value)) { quit 0 /* normal */ }
+	if '(..isStringSingle("NEEDS TEXT",.value)) { quit 0 /* normal */ /*3 */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1729,7 +1729,7 @@ Method Text(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 Method TextNoSpace(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P
-	if '(..isStringSingle("NEEDS TEXT",.value)) { quit 0 /* normal */ }
+	if '(..isStringSingle("NEEDS TEXT",.value)) { quit 0 /* normal */ /*3 */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)

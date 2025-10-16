@@ -73,7 +73,7 @@ ClassMethod inc(ServerName As %String, RoutineName As %String, Output object As 
 ClassMethod query(ServerName As %String, SQL As %String, Output object As %DynamicObject, parameters... As %String) As %Status
 {
     #dim request as %Net.HttpRequest
-    
+    ;zw SQL,parameters
     $$$DEBUGMethodBegin
     $$$DEBUG(SQL)
     

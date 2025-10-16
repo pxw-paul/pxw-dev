@@ -414,6 +414,8 @@ Method TestVariableIdendtifier()
 
     ; _ is not part of the name
     do $$$AssertEquals(..parseAndFlat("var_var2",pmeth),":var")
+    ; . is not part of the name
+    do $$$AssertEquals(..parseAndFlat("var.var2",pmeth),":var")
 
     ; return nothing, no valid name
     do $$$AssertEquals(..parseExpectFail("1",pmeth),0)

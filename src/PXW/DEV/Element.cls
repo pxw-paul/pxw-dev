@@ -8,7 +8,7 @@ Class PXW.DEV.Element Extends PXW.DEV.Particle
 /// nothing that extends COS should override this parameter
 Parameter Base = "PXW.DEV.Element";
 
-Property type As %String [ InitialExpression = {$ZCONVERT($CLASSNAME(),"U")} ];
+Property type As %String;
 
 /// property parts as temp.mylist;
 /// Property parts As list Of PXW.DEV.Particle [ Private ];
@@ -275,8 +275,8 @@ Method findElementsByClass(ClassName As %String, ByRef OuputArray As %String)
 /// eg https://www.w3schools.com/xml/xpath_syntax.asp
 /// NOT dealing with * for the time being, it makes life complicated, and we should know our own paths
 /// only supports 1 condition level check (because its all based on PIECES)
-///  eg; /p1/p2[sub1=xxx] is ok
-///      /p2/p2[sub1/sup2=xxx] will not work
+///  eg; p1/p2[sub1=xxx] is ok
+///      p2/p2[sub1/sup2=xxx] will not work
 Method findElementsXPath(Path As %String, ByRef OutputList As %Library.ListOfObjects(ELEMENTTYPE="PXW.DEV.Element"))
 {
 	#dim item1 as PXW.DEV.Element

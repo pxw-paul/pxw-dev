@@ -44,7 +44,7 @@ label_public_vars                   ::= '[' variable ( ',' variable )* ']'
 label_reference                     ::= (( label_identifier  | simple_indirection ) [ '^' [routine_env] ( routine_identifier  | simple_indirection) ])  /* lab^rouine */
                                         | ('^' [routine_env] (routine_identifier | simple_indirection) ) /* ^routine -- no label */
 label_identifier                    ::= [ '%' ] 'regexp:[0-9A-Za-z]+'
-routine_identifier                  ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)' 
+routine_identifier                  ::= 'regexp:(\%|[a-zA-Z])[a-zA-Z0-9]*' /* % or A followed by AN* */
 routine_env                         ::= '|' [ expression ] '|' 
 cos_directive                       ::= '#' ( cos_directive_define
                                         | cos_directive_dim
@@ -83,11 +83,11 @@ cos_directive_undef                 ::= 'undef' macro_identifier
 cos_directive_include_list          ::= '(' cos_directive_include_name ( ',' cos_directive_include_name )* ')'
 cos_directive_include_name          ::= include_identifier
 
-include_identifier                  ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)' 
+include_identifier                  ::= 'regexp:(\%|[a-zA-Z])[a-zA-Z0-9\.]*'
 
 dim_expression                      ::= expression
 
-class_identifier                    ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)' 
+class_identifier                    ::= 'regexp:(\%|[a-zA-Z])[a-zA-Z0-9\.]*)' 
 
 cos_command                         ::=  set_command
                                          | if_command
@@ -378,7 +378,8 @@ python_import                       ::= 'system' '.' 'python' '.' 'import' '(' s
 
 variable                            ::= variable_identifier [ array_parameter_list ] [ object_chain ]
 variable_set                        ::= variable_identifier [ array_parameter_list ] [ object_chain ]
-variable_identifier                 ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)'
+variable_identifier                 ::= 'regexp:(\%|[a-zA-Z])[a-zA-Z0-9]*' /* % or A followed by AN* */
+variable_identifier_pattern         ::= (['%'] | '?1A') '?AN'   /* EXPERIMENT % or A followed by AN* */
 array_parameter_list                ::= open_bracket  expression ( ',' expression )*  close_bracket
 
 object_chain99                        ::= '.' object_chain_item ( '.' object_chain_item )* 
@@ -386,7 +387,7 @@ object_chain                        ::= '.' object_member_identifier [ function_
 object_chain_no_dot                 ::= object_member_identifier [ function_parameter_list ] [ object_chain ]
 object_dot                          ::= '.' /* this exists simply so that extra checks can be coded on the generated method to check for white*/
 object_chain_item                   ::= object_member_identifier [ function_parameter_list ] 
-object_member_identifier           ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)'
+object_member_identifier            ::= 'regexp:(\%|\#|[a-zA-Z])[a-zA-Z0-9\.]*'
 
 
 number                              ::= ('regexp:[0-9]*' [ '.' 'regexp:[0-9]+'] [ ('e' | 'E' ) 'regexp:[0-9]+']) | ('.' 'regexp:[0-9]+' [ ('e' | 'E') 'regexp:[0-9]+'])  
@@ -394,7 +395,7 @@ number                              ::= ('regexp:[0-9]*' [ '.' 'regexp:[0-9]+'] 
 string                              ::= '""' | ('"' 'regexp:[^\"\r\n]*' '"')
 
 identifier                          ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)'
-global_identifier                          ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)'
+global_identifier                   ::= 'regexp:(\%|\$|[a-zA-Z])[a-zA-Z0-9\.]*' /* % or $ or A followed by AN. */
 
 post_conditional                    ::= ':' expression
 

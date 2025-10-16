@@ -156,48 +156,6 @@ Method Identifier(ParentElement As PXW.DEV.BNF.Element) As %Boolean
     Quit ok
 }
 
-Method zzzQualifiedIdentifier(ParentElement As PXW.DEV.Element) As %Boolean
-{
-    $$$DEBUGMethodBegin
-    ;$$$BNFPATH
-	;;$$$DEBUG("%path="_%path)
-
-    ;d ..skipWhiteSpaceAndComments()
-    Do:('..whitespace&&'..comment) ..skipWhiteSpaceAndComments()
-
-    Set value=""
-    Set ok=0
- 
-        If ..peek(1)="%" Set value=..next()
-        If ..peek(1)="%" Set value=..next()
-        ; not a letter (or number)
-        Set ch=..peek(1)
-        ; no % so must start with a letter
-        If value="",ch?1A Set value=..next()
-
-        Set ok=1    
-        If value="" {
-            $$$DEBUG("checking qualified identifier, ok=0")
-            Set ok=0
-        }
- 
-    If ok {
-
-        Set ch=..peek(1)
-        While (ch?1A) || (ch?1N) || (ch=".") || (ch="_")  {
-            Set value=value_..next()
-            Set ch=..peek(1)
-        }
-    
-        Set atom=..newAtom(ParentElement.type,value)
-        Do ParentElement.AddPart(atom)
-    }
-    ;$$$DEBUG("checking identifier, ok=1")
-    ;zw atom
-    $$$DEBUGMethodEnd
-    Quit ok
-}
-
 /// sql_number ::= 'NEED NUMBER'
 ///  summary=S
 ///  type=group
@@ -279,24 +237,6 @@ Method SqlString(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
     }
     $$$DEBUGMethodEnd
     Quit ok
-	/*if '(..isStringInList($lb("NEED STRING"),11,.value)) quit 0
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	;$$$DEBUG("%path="_%path)
-	s done=0
-	; type=group, check=if, skip=0, skipall=1
-	s dum=..next($l(value)),atom=..newAtom("keyword",value)
-	d ParentElement.AddPart(atom)
-	if 1	 {
-		set done=1
-	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	q ok*/
 }
 
 Method SqlCosVariable(ParentElement As PXW.DEV.BNF.Element) As %Library.Boolean
@@ -307,27 +247,22 @@ Method SqlCosVariable(ParentElement As PXW.DEV.BNF.Element) As %Library.Boolean
  	$$$BNFSTART(subElement)
     Set ok=0
  
-    ;d:..needsWScheck ..skipWhiteSpaceAndComments()
-    ;i ..isString(subElement,":") {
- 
-        
-        Set parser=##class(PXW.DEV.BNF.Run.COS).%New()
-        Set parser.stream=..stream
-        Set parser.codemode="COSSQL" ; not really true, should only be set for TRIGGERS but at this point we don't know where we are! and we should treat these as field names
-        Set parser.whitespace=..whitespace
-        Set parser.comment=..comment
-        ;d parser.skipWhiteSpaceAndComments()
-        If parser.Variable(subElement) {
-            Set ok=1
-        } 
-        If ok=1 {
-            Set ..whitespace=parser.whitespace
-            Set ..comment=parser.comment
-            $$$BNFCOMMIT(subElement,ParentElement)
-        } Else {
-            $$$BNFROLLBACK(subElement)
-        }
-    ;}
+    Set parser=##class(PXW.DEV.BNF.Run.COS).%New()
+    Set parser.stream=..stream
+    Set parser.codemode="COSSQL" ; not really true, should only be set for TRIGGERS but at this point we don't know where we are! and we should treat these as field names
+    Set parser.whitespace=..whitespace
+    Set parser.comment=..comment
+    ;d parser.skipWhiteSpaceAndComments()
+    If parser.Variable(subElement) {
+        Set ok=1
+    } 
+    If ok=1 {
+        Set ..whitespace=parser.whitespace
+        Set ..comment=parser.comment
+        $$$BNFCOMMIT(subElement,ParentElement)
+    } Else {
+        $$$BNFROLLBACK(subElement)
+    }
     $$$DEBUGMethodEnd
     Quit ok
 }

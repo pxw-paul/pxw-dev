@@ -368,7 +368,7 @@ ClassMethod WriteScripts()
 	Write "}",!
 
 
-	Write "function MakeStringsInteresting(id) {",!
+	Write "function MakeStringsInteresting() {",!
 	Write "    var objs=document.getElementsByTagName('span');",!
 	Write "    var clsOFF='unInteresting'",!
 	Write "    var clsHALF='quiteInteresting'",!
@@ -383,8 +383,8 @@ ClassMethod WriteScripts()
 	Write "      if (objs[i].className=='COSString') {",!
 	Write "          objs[i].className=objs[i].className+' '+clsON; //",! ;objs[i].className+' '+cls;",!
 	Write "      }",!
-	Write "      if (objs[i].className=='whitespace') {",!
-	Write "          objs[i].className=objs[i].className+' '+clsHALF; //",! ;objs[i].className+' '+cls;",!
+	Write "      if (objs[i].className=='hiddencopy') {",!
+	Write "          objs[i].className=objs[i].className='unhiddencopy';",! 
 	Write "      }",!
 	Write "    }",!
 	Write "}",!
@@ -463,6 +463,15 @@ ClassMethod WriteScripts()
 	}
 	>
 	*/
+}
+
+/// Write out extra styles here, the STYLE tags are already in place
+ClassMethod WriteStyles()
+{
+	&html<
+		.hiddencopy { display:none; }
+		.unhiddencopy { display:inline; color:silver; font-size:0.8em; }
+	>
 }
 
 }
