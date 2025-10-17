@@ -149,14 +149,14 @@ Method output2(html As %String, newLine As %Boolean = 0)
 
 Method begin()
 {
-    s %outputhtml=""
+    ;s %outputhtml=""
 	Do ..output("<pre>")
 }
 
 Method end()
 {
 	Do ..output("</pre>")
-    w:$g(%outputhtml)'="" %outputhtml s %outputhtml=""
+    ;w:$g(%outputhtml)'="" %outputhtml s %outputhtml=""
 }
 
 Method middle(element As PXW.DEV.Element)
@@ -172,7 +172,7 @@ Method writeElement(element As PXW.DEV.Element)
     #dim a as PXW.DEV.Atom
     #dim cref as PXW.DEV.Element
     /* CDEF */
-    $$$DEBUG("Begin "_$CLASSNAME()_":"_$p(element.type,":",1))
+    $$$DEBUG("Begin "_$CLASSNAME()_":"_$PIECE(element.type,":",1))
     $$$DEBUG("writeElement:"_element.type)
     Set oldXMLPath=..XMLPath
  
@@ -247,7 +247,7 @@ Method writeElement(element As PXW.DEV.Element)
 
     Do ##super(element)
     Set ..XMLPath=oldXMLPath
-    $$$DEBUG("End "_$CLASSNAME()_":"_$p(element.type,":",1))
+    $$$DEBUG("End "_$CLASSNAME()_":"_$PIECE(element.type,":",1))
 }
 
 Method writeElementBNF1(element As PXW.DEV.Element)
@@ -724,13 +724,13 @@ Method writeCOSVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Comp
         If classname'="" Do ..FollowObjectChainForType(element,classname)
 
         ; treat %parameter("xxx") as a parameter
-        if ..Analyser.CodeMode="OBJECTGENERATOR",variablename="%parameter" {
-            s arrayE=element.findFirstElementByType(("ArrayParameterList"),0)
-            if $isobject(arrayE) {
-                s parameter=..Analyser.SimplifySubscripts(arrayE)
+        If ..Analyser.CodeMode="OBJECTGENERATOR",variablename="%parameter" {
+            Set arrayE=element.findFirstElementByType(("ArrayParameterList"),0)
+            If $ISOBJECT(arrayE) {
+                Set parameter=..Analyser.SimplifySubscripts(arrayE)
                 ; is the paremeter a string
-                i parameter?1"""".AN1"""" {
-                    d ..wrapElementHTML(arrayE,"<a href='"_..HREFToClass(..This,$tr(parameter,"""",""))_"'>","</a>")
+                If parameter?1"""".AN1"""" {
+                    Do ..wrapElementHTML(arrayE,"<a href='"_..HREFToClass(..This,$TRANSLATE(parameter,"""",""))_"'>","</a>")
                 }
             }
         }
@@ -824,14 +824,14 @@ Method writeCOSCosDirectiveIncludeName(element As PXW.DEV.BNF.Elements.COS) As P
 Method writeCOSClassmethodMethod(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassmethodMethod")
 {
 
-    if $ISOBJECT(..Analyser) {
-        set expressionE=element.findFirstElementByType("Expression")
-        if $isobject(expressionE) {
-            set simple=..Analyser.SimplifyExpression(expressionE) 
+    If $ISOBJECT(..Analyser) {
+        Set expressionE=element.findFirstElementByType("Expression")
+        If $ISOBJECT(expressionE) {
+            Set simple=..Analyser.SimplifyExpression(expressionE) 
             ; its a string, so its a hard coded method name
-            if $e(simple,1)="""",$e(simple,*)="""" {
-                s mname=$tr(simple,"""","")
-                d ..wrapElementHTML(expressionE,"<a href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS","*",mname)_"'>","</a>")
+            If $EXTRACT(simple,1)="""",$EXTRACT(simple,*)="""" {
+                Set mname=$TRANSLATE(simple,"""","")
+                Do ..wrapElementHTML(expressionE,"<a href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS","*",mname)_"'>","</a>")
             }
         }
     }
@@ -889,12 +889,27 @@ Method writeCOSSqlBody(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compi
 
 Method writeCOSVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="VariableSet")
 {
-     if $isobject(..Analyser),$d(..Analyser.stringVarsElementFinal(+element)) {
-        set value=..Analyser.stringVarsElementFinal(+element)
-        if value'="" {
-           d ..wrapElementHTML(element,"","<span class='hiddencopy' onclick='copyTextToClipboard("""_$zconvert(value,"O","JS")_""");'>copy</span>")
+    #dim strElement as PXW.DEV.Element
+    If $ISOBJECT(..Analyser),$DATA(..Analyser.stringVarsElement(+element)) {
+        Set value=..Analyser.stringVarsElement(+element)
+        If value'="" {
+            set strElement=..Analyser.stringVarsElement(+element,"element")
+            ; try and format it so its similar to the format in the source code
+            set formatted="",line=0
+            for i=1:1:strElement.partsCount() {
+                s atom=strElement.partsGetAt(i)
+                i atom.line>line {
+                    if line>0 {
+                        s formatted=formatted_$c(13)
+                    }
+                }
+                s line=atom.line ; always update the line, its possible to go backwards!
+                set formatted=formatted_atom.value
+            }
+            Do ..wrapElementHTML(element,"","<span title='"_$zconvert(formatted,"O","HTML")_"' class='hiddencopy' onclick=""copyTextToClipboard('"_$ZCONVERT($ZCONVERT(formatted,"O","JS"),"O","HTML")_"');"">copy</span>")
         }
     }
+    Quit ""
 }
 
 /*method writeCOS(element As PXW.DEV.BNF.Elements.COS) AS PXW.DEV.BNF.Compilers.elementHandler(Type="")
@@ -1275,16 +1290,15 @@ Method writeCOSParameterChecks(ClassName As %String, MethodPath As %String, Elem
         If $ISOBJECT($GET(plist)) {
             Kill atoms
             Set p1=plist.GetAt(1)
-            Set flat=..flattenlist(p1,.atoms),f2=..flattenold(p1)
-            ;d p1.write() zw flat,f2,atoms
-            
+            Set flat=..flattenlist(p1,.atoms)
+
             ; "%Studio.Project:ProjectList
             ; flat=$lb($lb("String","%Studio.Project:ProjectList"))
             If atoms.Count()=1,$PIECE(atoms.GetAt(1).type,":",1)="String" {
                 Set val=atoms.GetAt(1).value
                 Set class=$PIECE(val,":",1)
                 Set query=$PIECE(val,":",2)
-                set a=atoms.GetAt(1)
+                Set a=atoms.GetAt(1)
                 Do ..wrapAtomHTML(a,"<a class='CDEFClassName' href='"_..HREFToClass(class,query)_"'>","</a>")
             }
 
@@ -1311,7 +1325,7 @@ Method writeCOSParameterChecks(ClassName As %String, MethodPath As %String, Elem
             ; flat=$lb($lb("keyword","classname"),$lb("keyword","$this"),$lb("String",":ProjectList"))
             If atoms.Count()=3,$$$UPPER(atoms.GetAt(1).value)="CLASSNAME",$PIECE(atoms.GetAt(3).type,":",1)="String" {
                 Set class=..This
-                Set query=$piece(atoms.GetAt(3).value,":",2)
+                Set query=$PIECE(atoms.GetAt(3).value,":",2)
                 Set a=atoms.GetAt(3)
                 Do ..wrapAtomHTML(a,"<a class='CDEFClassName' href='"_..HREFToClass(class,query)_"'>","</a>")
             }
@@ -1354,10 +1368,8 @@ ClassMethod flattenlist(Element As PXW.DEV.Element, AtomList As %Library.ListOfO
 	
     If '$ISOBJECT($GET(AtomList)) Set AtomList=##class(%Library.ListOfObjects).%New()
     
- 	Set list=""
-    ;if AtomList'="" w "new list" s AtomList=##class(%ListOfObjects).%New()
-	Set akey=""
-	Set sep=""
+ 	Set akey=""
+	Set list=""
     If Element.partsCount()=1 {
         Set single=1
     } Else {
@@ -1392,42 +1404,6 @@ ClassMethod flattenlist(Element As PXW.DEV.Element, AtomList As %Library.ListOfO
         ;Set str=str_"}"
     }
 	Quit list
-}
-
-ClassMethod flattenold(Element As PXW.DEV.Element) As %String
-{
-	#dim a as PXW.DEV.Atom
-	#dim e as PXW.DEV.Element
-	
- 	Set str=""
-	Set akey=""
-	Set sep=""
-    If Element.partsCount()=1 {
-        Set single=1
-    } Else {
-        Set single=0
-    }
-	If 'single {
-        Set str=str_Element.type_":{"
-    }
-	For  {
-		Set a=Element.partsGetNext(.akey)
-		Quit:akey=""
-
-        If a.%IsA("PXW.DEV.Element") {
-            Set str=str_sep_..flattenold(a)
-        } ElseIf $PIECE(a.type,":",1)="punctuation" {
-            Set str=str_sep_a.type_a.value
-        } Else {
-            Set str=str_sep_$PIECE(a.type,":",1)_":"_a.value
-        }
-		
-		Set sep=","
-	}
-	If 'single {
-        Set str=str_"}"
-    }
-	Quit str
 }
 
 Method FollowImplicitJoins(ColumnReference As PXW.DEV.Element, fulltable As %String)

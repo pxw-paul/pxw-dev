@@ -93,8 +93,8 @@ ClassMethod query(ServerName As %String, SQL As %String, Output object As %Dynam
     ; s sep="?"
     Set sc=handler.postAsObject(url,.object)
 
-    i $isobject(object),$isobject(object.status),object.status.summary'="" {
-        s sc=$$$ERROR(5001,object.status.summary)
+    If $ISOBJECT(object),$ISOBJECT(object.status),object.status.summary'="" {
+        Set sc=$$$ERROR(5001,object.status.summary)
     }
     ;d ..display(object)
     

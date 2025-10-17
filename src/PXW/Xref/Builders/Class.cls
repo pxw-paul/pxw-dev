@@ -37,6 +37,9 @@ Property SQLPaths As %String [ MultiDimensional ];
 
 Property SqlProgramAnalyser As PXW.DEV.BNF.Analyse.SQL;
 
+/// Fixed line number - used when the real line number cannot be resolved
+Property FixedLineNumber As %Integer;
+
 /// d ##class(PXW.Xref.Builders.Class).test()
 ClassMethod test()
 {
@@ -88,7 +91,7 @@ Method SaveAnalysis(atom As PXW.DEV.Atom, Description As %String) As %Status
 	Set adata.ItemKey1=..CalledByClassName
 	Set adata.ItemKey2=..CalledByItemName
 	Set adata.ItemType="CLS"
-	Set adata.LineNumber=atom.line
+	Set adata.LineNumber=$s(..FixedLineNumber:..FixedLineNumber,1:atom.line)
 	Set adata.Description=Description
 	;Set sc=adata.%Save()
 	;If $$$ISERR(sc) {
@@ -111,7 +114,7 @@ Method SaveCDEFCref(ItemKey1 As %String, LineNumber As %Integer, ItemKey2 As %St
 	Set xref.ItemType="CLS"
 	Set xref.ItemKey1=..ClassServer.FullClassName(ItemKey1,$PIECE(..CalledByClassName,".",1,*-1))
 	Set xref.ItemKey2=ik2
-    Set xref.LineNumber=LineNumber
+    Set xref.LineNumber=$s(..FixedLineNumber:..FixedLineNumber,1:LineNumber)
 	Set sc=$$$OK
 	If 'xref.AlreadyExists() {
 		Set sc=xref.%Save()
@@ -136,8 +139,8 @@ Method SaveCOSXref(ItemType As %String, ItemKey1 As %String, ItemKey2 As %String
 	Set xref.ItemKey1=$select(ItemKey1="*":ItemKey1,ItemType="CLS":..ClassServer.FullClassName(ItemKey1,$PIECE(..CalledByClassName,".",1,*-1)),1:ItemKey1)
 	Set xref.ItemKey2=ItemKey2
 	If $ISOBJECT(Atom) {
-		Set xref.CalledByKey3=Atom.line-..ClassElementLineNumber
-		Set xref.LineNumber=Atom.line
+		Set xref.CalledByKey3=$s(..FixedLineNumber:..FixedLineNumber,1:Atom.line)-..ClassElementLineNumber
+		Set xref.LineNumber=$s(..FixedLineNumber:..FixedLineNumber,1:Atom.line)
 	} Else {
 		Set xref.LineNumber=0
 	}
@@ -189,8 +192,8 @@ Method SaveSQLXref(ItemType As %String, ItemKey1 As %String, ItemKey2 As %String
 	Set xref.CalledByKey2=$SELECT($GET(CalledByKey2)'="":CalledByKey2,1:..CalledByItemName)
 
 	If $ISOBJECT(Atom) {
-		Set xref.CalledByKey3=Atom.line-..ClassElementLineNumber
-		Set xref.LineNumber=Atom.line ;+..LineOffset
+		Set xref.CalledByKey3=$s(..FixedLineNumber:..FixedLineNumber,1:Atom.line)-..ClassElementLineNumber
+		Set xref.LineNumber=$s(..FixedLineNumber:..FixedLineNumber,1:Atom.line)
 	} Else {
 		Set xref.LineNumber=0
 	}
@@ -455,6 +458,57 @@ Method xrefCOSVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compi
 
 	}
 	Quit ""
+}
+
+Method xrefCOSVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="VariableSet")
+{
+	 if $isobject(..Analyser),$d(..Analyser.stringVarsElementLast(+element)) {
+        set varname=..Analyser.stringVarsElementLast(+element)
+		set value=$g(..Analyser.stringVars(varname))
+        if value'="" {
+			; does it look like it might be sql?
+			s normValue=$$$UPPER($tr(value,$c(13,9),"  "))
+			s selectfound=$FIND(normValue,"SELECT ")
+			s fromfound=$FIND(normValue,"FROM ")
+			if selectfound,fromfound>selectfound {
+				; its being treated as SQL so format it a bit (the simplify deals with array of strings not quite right for this function)
+				; try and format it so its similar to the format in the source code
+				set strElement=..Analyser.stringVarsElement(+element,"element")
+				; try and format it so its similar to the format in the source code
+				set formatted="",line=0
+				for i=1:1:strElement.partsCount() {
+					s atom=strElement.partsGetAt(i)
+					i atom.line>line {
+						if line>0 {
+							s formatted=formatted_$c(13)
+						}
+					}
+					s line=atom.line ; always update the line, its possible to go backwards!
+					set formatted=formatted_atom.value
+				}
+				;
+				Set parser=##class(PXW.DEV.BNF.Run.SQL).%New()
+				Set parser.stream=##class(PXW.DEV.InputStream).NewString(formatted)
+				Set sqlelement=##class(PXW.DEV.Element).%New()
+				set atom=element.FirstAtom()
+				if parser.SqlProgram(sqlelement) {
+					if sqlelement.partsCount()>0 {
+						set newXrefer=..%ConstructClone(0)
+						set newXrefer.FixedLineNumber=atom.line
+						Do newXrefer.xrefElement(sqlelement)
+						If newXrefer.ERROR'="" {
+							d ..SaveAnalysis(atom,"SQL String parse error "_..ERROR)
+						}
+						If 'parser.stream.EOF() d ..SaveAnalysis(atom,"SQL String parse incomplete: "_parser.stream.Peek(0,20))
+					} else {
+						d ..SaveAnalysis(atom,"SQL String found no elements")
+					}
+				} else {
+					d ..SaveAnalysis(atom,"SQL String cannot be parsed")
+				}
+			}
+        }
+    }
 }
 
 Method xrefCOSClassmethodMethod(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassmethodMethod")

@@ -59,13 +59,13 @@ ClassMethod GetClassToLoad(cls As %String, path As %String, Output bookmark As %
 			Set ocls=cls
 			Set (bookmark,method)=$PIECE(path,".",*)
 		}
-		if ocls'="" {
+		If ocls'="" {
 			; try as a direct class, or as a table
-			set classname=ClassServer.GetClassName(ocls)
-			if classname="" {
-				set classname=ClassServer.GetClassNameFromTableName(ocls)
+			Set classname=ClassServer.GetClassName(ocls)
+			If classname="" {
+				Set classname=ClassServer.GetClassNameFromTableName(ocls)
 			}
-			set ocls=classname
+			Set ocls=classname
 		}
 		Set bookmark=$TRANSLATE(bookmark,"#","") ; remove # from parameter
 	}
@@ -113,8 +113,8 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 	If +Debug=1 $$$DEBUGNew(##class(PXW.Tools.Debugger).%ClassName(1))
 	If Debug["$FILE" $$$DEBUGNew(##class(PXW.Debuggers.BasicToFile).%ClassName(1)) 
 	If Debug["$PATHS" Set showPaths=1,%path="" ; no need to set any output its just for tooltips
-	if Debug["$TIME" $$$DEBUGNew(##class(PXW.Tools.DebugTiming).%ClassName(1))
-	If Debug["$XREF" set forceXref=1
+	If Debug["$TIME" $$$DEBUGNew(##class(PXW.Tools.DebugTiming).%ClassName(1))
+	If Debug["$XREF" Set forceXref=1
 	
 	Set sc=output.ClassServer.GetClassStudioText(ClassName,.text,.linesOfCode,.timestamp)
 	Set zh(1,"load")=$ZHOROLOG-zh,zh=$ZHOROLOG
@@ -147,12 +147,12 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 		Set zh(4,"render")=$ZHOROLOG-zh,zh=$ZHOROLOG
 
 		Set element=##class(PXW.DEV.Element).%New()
-		i Debug'="$TIME" $$$DEBUGPause
+		If Debug'="$TIME" $$$DEBUGPause
 		While x.cheese(element) {
 			$$$DEBUGResume
 			Do output.middle(element)
 			Set element=##class(PXW.DEV.Element).%New()
-			i Debug'="$TIME" $$$DEBUGPause
+			If Debug'="$TIME" $$$DEBUGPause
 			;zw output.Analyser
 		}
 		$$$DEBUGResume
@@ -183,7 +183,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 	If Debug["$TIME" {
 		
 		Set s="" For  Set s=$ORDER(%pxwstrings(s),1,n) Quit:s=""  Set %pxwstringsX(n,s)=""
-		Write "<pre>" ZWrite %pxwstrings,%pxwstringsX,%pxw1,%RBCOUNT zw $$$debugObject Write "</pre>"
+		Write "<pre>" ZWrite %pxwstrings,%pxwstringsX,%pxw1,%RBCOUNT ZWrite $$$debugObject Write "</pre>"
 		Set totaltime=0,totalcalls=0
 		Set rs=##clasS(%Library.ResultSet).%New("PXW.Tools.DebugTiming:SelectResults")
 		$$$THROWONERROR(sc,rs.%Execute())
@@ -220,7 +220,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 		ZWrite %pxwdebug
 	}
 
-	zw %peek
+	ZWrite %peek
 	;zw %atoms
 	;d %session.EndSession()
 	;zw zh
@@ -375,16 +375,19 @@ ClassMethod WriteScripts()
 	Write "    var clsON='veryInteresting'",!
 	Write "    for (var i=0; i<objs.length; i++) {",!
 	Write "      if (objs[i].className=='EmbeddedCOS') {",!
-	Write "          objs[i].className=objs[i].className+' '+clsOFF; //",! ;objs[i].className+' '+cls;",!
+	Write "          objs[i].className=objs[i].className+' '+clsOFF; //",!
 	Write "      }",!
 	Write "      if (objs[i].className=='EmbeddedPython') {",!
-	Write "          objs[i].className=objs[i].className+' '+clsOFF; //",! ;objs[i].className+' '+cls;",!
+	Write "          objs[i].className=objs[i].className+' '+clsOFF; //",!
 	Write "      }",!
 	Write "      if (objs[i].className=='COSString') {",!
-	Write "          objs[i].className=objs[i].className+' '+clsON; //",! ;objs[i].className+' '+cls;",!
+	Write "          objs[i].className=objs[i].className+' '+clsON; //",! 
+	Write "      }",!
+	Write "      if (objs[i].className=='whitespace') {",!
+	Write "          objs[i].className=objs[i].className+' '+clsHALF; //",! 
 	Write "      }",!
 	Write "      if (objs[i].className=='hiddencopy') {",!
-	Write "          objs[i].className=objs[i].className='unhiddencopy';",! 
+	Write "          objs[i].className='unhiddencopy';",! 
 	Write "      }",!
 	Write "    }",!
 	Write "}",!

@@ -619,7 +619,6 @@ Method PatternMatch(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
     $$$BNFPATH
     $$$BNFSTART(subElement)
     
-    Set pat=""
     If peek="'?" {
         Set atom=..newAtom("punctuation",..nextNotEOL(2))
     } Else {
@@ -630,7 +629,7 @@ Method PatternMatch(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
     ; allowed spaces directly after ?
     Do ..skipWhiteSpaceAndComments()
 
-	Set ok=1,bracket=0,patternN=0,instring=0,indirection=0,retok=1
+	Set ok=1,bracket=0,instring=0,indirection=0,retok=1
 
     ; ?@indirect is special case
     If ..peek(1)="@" Set ok=0,indirection=1

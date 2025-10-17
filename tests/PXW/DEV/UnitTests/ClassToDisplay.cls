@@ -12,162 +12,26 @@ ClassMethod WorkOnAList(ObjList As %ListOfObjects(ELEMENTTYPE="PXW.DEV.UnitTests
     set string=string_" and more"
     set string=string_" and some expression "_(xxx+1)_"."
     set another="prefixed "_string
-    q another
+    set str(a)="string 1"
+    set str(b)="string 2"
+    set sql="SELECT top 100 * from pxw_xref.data where itemtype='GBL'"
+    set qry($i(qry))="select itemkey1"
+    set qry($i(qry))="from pxw_xref.data"
+    set qry($i(qry))="where itemtype='GBL'"
+
+    d ..ele(.part) w part.type
+    d ..atom(.part) w part.type
+    d ##class(PXW.DEV.UnitTests.ClassToDisplay).ele(.part) w part.type
+
+    q another_sql
 }
 
-/*
-ClassMethod IfDone()
+ClassMethod ele(Output ele As PXW.DEV.Element)
 {
-    #define record(%name) s t=$zh-zh,t(t)=%name w !,%name,?10,t
-    s max=100000000
-    s done=1
-    s zh=$zh 
-    f i=1:1:max {
-        i ''done {
-            ;
-        }
-    }
-    $$$record("''done")
-
-    s zh=$zh 
-    f i=1:1:max {
-        i done {
-            ;
-        }
-    }
-    $$$record("done")
-
-
-    s zh=$zh 
-    f i=1:1:max {
-        i done=1 {
-            ;
-        }
-    }
-    $$$record("done=1")
-
-    s zh=$zh 
-    f i=1:1:max {
-        i +done {
-            ;
-        }
-    }
-    $$$record("+done")
-
-
-    s zh=$zh 
-    f i=1:1:max {
-        i done>0 {
-            ;
-        }
-    }
-    $$$record("done>0")
-
-    s zh=$zh 
-    f i=1:1:max {
-        i 'done {
-            ;
-        } else {
-            ;
-        }
-    }
-    $$$record("'done else")
-    zw t
 }
 
-ClassMethod IfDoneFlag()
+ClassMethod atom(Output atom As PXW.DEV.Atom)
 {
-    #define record(%name) s t=$zh-zh,t(t)=%name w !,%name,?10,t
-    s max=10000000
-    s done=1
-    s zh=$zh 
-    f i=1:1:max {
-        s ok=0
-        i done {
-            s ok=1
-        }
-    }
-    $$$record("set 0 if done(1) set 1")
-
-    s zh=$zh 
-    s done=1
-    f i=1:1:max {
-        i done {
-            s ok=1
-        } else {
-            s ok=0
-        }
-    }
-    $$$record("if done(1) set 1 else set 0")
-
-    s zh=$zh 
-    s done=1
-    f i=1:1:max {
-        i 'done {
-            s ok=0
-        } else {
-            s ok=1
-        }
-    }
-    $$$record("if 'done(1) set 0 else set 1")
-
-    s zh=$zh 
-    s done=0
-    f i=1:1:max {
-        i done {
-            s ok=1
-        } else {
-            s ok=0
-        }
-    }
-    $$$record("if done(0) set 1 else set 0")
-
-    s zh=$zh 
-    s done=0
-    f i=1:1:max {
-        i 'done {
-            s ok=0
-        } else {
-            s ok=1
-        }
-    }
-    $$$record("if 'done(0) set 0 else set 1")
-
-    zw t
 }
 
-ClassMethod go()
-{
-    s string="+++"
-    s pos=1
-    s locate=$locate(string,"(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)",pos,end,val)
-    zw string,locate,pos,end,val
-    w $e(string,pos,end)_".",!
-
-    #define record(%name) s t=$zh-zh,t(t)=%name w %name,?15,t,!
-    s max=100000000
-
-    s ok=0
-    s zh=$zh 
-    f i=1:1:max {
-        s ok=1
-    }
-    $$$record("s ok=1")
-
-    s ok=0
-    s zh=$zh 
-    f i=1:1:max {
-        s:'ok ok=1
-    }
-    $$$record("s:'ok ok=1")
-
-    s ok=0
-    s zh=$zh 
-    f i=1:1:max {
-        i 'ok { s ok=1 }
-    }
-    $$$record("i 'ok { s ok=1 }")
-    zw t
-}
-*/
 }

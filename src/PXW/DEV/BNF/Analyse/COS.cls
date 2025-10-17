@@ -18,7 +18,7 @@ Property ParameterVariables As %String [ MultiDimensional ];
 /// The return type of the current method
 Property ReturnType As %String;
 
-Property ReturnTypeElement As PXW.DEV.Element;
+Property ReturnTypeElement As PXW.DEV.BNF.Elements.COS;
 
 /// Set this when a quit from method is found
 Property QuitFound As %Boolean;
@@ -30,10 +30,10 @@ Property MethodIsAbstract As %Boolean;
 Property ClassServer As PXW.DEV.Dictionary.ClassDefinitionObject;
 
 /// VariablesSet(varname)=element ; means the variable is set, and the element is the variable element that set it
-Property VariablesSet As PXW.DEV.Element [ MultiDimensional ];
+Property VariablesSet As PXW.DEV.BNF.Elements.COS [ MultiDimensional ];
 
 /// VariablesUsed(varname)=element ; means the variable is used, and the element is the variable element that set it, element may be null
-Property VariablesUsed As PXW.DEV.Element [ MultiDimensional ];
+Property VariablesUsed As PXW.DEV.BNF.Elements.COS [ MultiDimensional ];
 
 /// Set by codemode attribute (generator etc)
 Property CodeMode As %String;
@@ -57,11 +57,7 @@ Property stringVarsElement [ MultiDimensional ];
 
 /// Temp store of the final element that sets the var
 /// (+element)=value
-Property stringVarsElementFinal [ MultiDimensional ];
-
-/// temp store for index of final 
-/// (var)=element
-Property stringVarsElementFinalIndex [ MultiDimensional ];
+Property stringVarsElementLast [ MultiDimensional ];
 
 Method %OnNew(ClassServer As PXW.DEV.Dictionary.ClassDefinitionObject = "") As %Status
 {
@@ -124,7 +120,7 @@ Method checkElement(element As PXW.DEV.Element)
 {
 	#dim a as PXW.DEV.Atom
 
-	do ..GenericRedirect(element)
+	Do ..GenericRedirect(element)
 
 	Set akey=""
 	For  {
@@ -138,7 +134,7 @@ Method checkElement(element As PXW.DEV.Element)
 
 	; AFTER full analysis we can flag a couple of things
 	If element.type="OneClassmember" {
-		do ..checkOneClassMemeberFINAL(element)
+		Do ..checkOneClassMemeberFINAL(element)
 	}
 }
 
@@ -151,23 +147,23 @@ Method IsExtension(Classname As %String, SuperClass As %String) As %Boolean
 	Quit 0
 }
 
-Method checkOneClassMember(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="OneClassmember")
+Method checkOneClassMember(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="OneClassmember")
 {
-	do ..Reset()
-	quit ""
+	Do ..Reset()
+	Quit ""
 }
 
-Method checkReturnTypeClassReference(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="ReturnTypeClassReference")
+Method checkReturnTypeClassReference(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ReturnTypeClassReference")
 {
 	Set crE=element.findFirstElementByType("ClassReference")
 	If $ISOBJECT(crE) {
 		Set ..ReturnType=crE.ToString(0)
 		Set ..ReturnTypeElement=element
 	}
-	quit ""
+	Quit ""
 }
 
-Method checkCosCommand(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosCommand")
+Method checkCosCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosCommand")
 {
 	Set directiveE=element.findFirstElementByType("CosDirective")
 	; directives count as a command (is this right?) but start with a # atom so would end up being counted as short
@@ -184,7 +180,7 @@ Method checkCosCommand(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.elem
 	Quit ""
 }
 
-Method checkFormalSpecItem(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="FormalSpecItem")
+Method checkFormalSpecItem(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="FormalSpecItem")
 {
 	#dim itemE as PXW.DEV.Element
 	/*
@@ -223,16 +219,16 @@ Method checkFormalSpecItem(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.
 		  get String
 	*/
 	; for listOfObjects we want to know the element type if there is one
-	s elementType=""
-	d element.findElementsXPath("AsTypeClassReference/TypeClassReference/TypeParameters/TypeParametersList/TypeParameterItem[ClassItemIdentifier=ELEMENTTYPE]/String",.listOfElementTypes)
-	f i=1:1:listOfElementTypes.Count() { 
-		s itemE=listOfElementTypes.GetAt(i)
-		s atom=itemE.FirstAtom()
-		s elementType=$tr(atom.value,"""","")
+	Set elementType=""
+	Do element.findElementsXPath("AsTypeClassReference/TypeClassReference/TypeParameters/TypeParametersList/TypeParameterItem[ClassItemIdentifier=ELEMENTTYPE]/String",.listOfElementTypes)
+	For i=1:1:listOfElementTypes.Count() { 
+		Set itemE=listOfElementTypes.GetAt(i)
+		Set atom=itemE.FirstAtom()
+		Set elementType=$TRANSLATE(atom.value,"""","")
 	}
 
 	Set modeE=element.findFirstElementByType("FormalSpecMode",0)
-	Set mode=$S($ISOBJECT(modeE):modeE.ToString(0),1:"")
+	Set mode=$SELECT($ISOBJECT(modeE):modeE.ToString(0),1:"")
 	Set varE=element.findFirstElementByType("VariableSet",0)
 	If $ISOBJECT(varE) {
 		Set var=varE.ToString(0)
@@ -242,7 +238,7 @@ Method checkFormalSpecItem(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.
 		If type'="" {
 			Set ..VariablesTypes(var)=type
 			Set ..DimmedTypes(var)=type ; count the formal spec definition as the dimmed type (definitive)
-			if elementType'="" {
+			If elementType'="" {
 				Set ..VariablesTypes(var,"ELEMENTTYPE")=elementType
 				Set ..DimmedTypes(var,"ELEMENTTYPE")=elementType ; count the formal spec definition as the dimmed type (definitive)
 			}
@@ -257,10 +253,11 @@ Method checkFormalSpecItem(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.
 	Quit ""
 }
 
-Method checkSetItem(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="SetItem")
+Method checkSetItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="SetItem")
 {
 	; work out what is being set
-	do element.findElementsXPath("SetValueExpression/VariableSet",.variablelist)
+	
+	Do element.findElementsXPath("SetValueExpression/VariableSet",.variablelist)
 	For i=1:1:variablelist.Count() {
 		Set varE=variablelist.GetAt(i)
 		Set var=varE.ToString(0)
@@ -268,45 +265,81 @@ Method checkSetItem(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.element
 		; if its JUST a variable then we are interested in keeping track of it
 		If varE.partsCount()=1 {
 			Set ..VariablesSet(var)=varE
+			Set currentStringVars(var)=varE
 		} Else {
 			; its an array or some sort of object.property, so its a var being used
 			Set varname=varE.FirstAtom().ToString(0)
 			Set ..VariablesUsed(varname)=varE
+			Set currentStringVars(varname)=varE
+			Set currentStringVarsArray(varname)=varE
 		}
 	}
 
 	; work out what its being set to
-	set value=element.findFirstElementByType("SetExpression",0)
+	Set value=element.findFirstElementByType("SetExpression",0)
 	Set derivedtype=..DeriveTypeReturned(value)
-	set string=..SimplifyStringExpression(value)
 	Set var=""
 	For {
 		Set var=$ORDER(currentlySetting(var),1,velement)
 		Quit:var=""
 
-		d ..checkAndRecordVariableType(velement,var,derivedtype)
+		Do ..checkAndRecordVariableType(velement,var,derivedtype)
+	}
 
-		if string'="" {
-			set ..stringVars(var)=string
-			set ..stringVarsElement(+velement)=string
+	Set string=..SimplifyStringExpressionAsElement(value,.stringElement)
+	Set var=""
+	For {
+		Set var=$ORDER(currentStringVars(var),1,velement)
+		Quit:var=""
 
-			set oldE=$g(..stringVarsElementFinalIndex(var))
-			if $isobject(oldE) {
-				kill ..stringVarsElementFinal(+oldE)
+		If string'="" {
+			; array so treat as concatenate string
+			If $DATA(currentStringVarsArray(var)) {
+				Set string=$GET(..stringVars(var))_string
+				Set oldStrElement=$GET(..stringVars(var,"element"))
+				If $ISOBJECT(oldStrElement) {
+					Set newStrElement=oldStrElement.%ConstructClone(0)
+					Do newStrElement.partsCopy(oldStrElement)
+					Do newStrElement.partsCopy(stringElement)
+					Set stringElement=newStrElement
+				}
 			}
-			set ..stringVarsElementFinal(+velement)=string
-			set ..stringVarsElementFinalIndex(var)=velement
-		} else {
-			kill ..stringVars(var)
+
+			; we need to store quite a few copies of this keyed by various things
+			; these are the current/final state of things
+			; stringVars(varname)=string                	; simple string stored on the variable name  - this is current the view of the string
+			; stringVars(varname,"element")=stringElement   ; the string stored as an element
+			; stringVars(varname,"last")=variableElement   	; a pointer to the last element that updated this string
+			;
+			; these are store by the source element so contains the "history" of how the string is constructed
+			; stringVarsElement(variableElement)=string      				; simple string stored on the source object element
+			; stringVarsElement(variableElement,"element")=stringElement   ; the string stored as an element
+			;
+			; this final bit is an index to hold just the final state of things keyed by source element, 
+			; this is so we can look up to see if this is the last time the string was updated, so we know its complete.
+			; stringVarsElementLast(variableElement)=varname	; an index to show its the last one, it does not need to be set to anything
+
+			Set oldLast=$GET(..stringVars(var,"last"))
+			If $ISOBJECT(oldLast) {
+				Kill ..stringVarsElementLast(+oldLast)  
+			}
+			Set ..stringVars(var)=string
+			Set ..stringVars(var,"last")=velement
+			Set ..stringVars(var,"element")=stringElement
+			Set ..stringVarsElement(+velement)=string
+			Set ..stringVarsElement(+velement,"element")=stringElement
+			Set ..stringVarsElementLast(+velement)=var
+		} Else {
+			Kill ..stringVars(var)
 		}
 	}
 	Quit ""
 }
 
-Method checkAndRecordVariableType(VariableElement As PXW.DEV.Element, Variable As %String, DerivedType As %String)
+Method checkAndRecordVariableType(VariableElement As PXW.DEV.BNF.Elements.COS, Variable As %String, DerivedType As %String)
 {
 
-	s var=Variable,derivedtype=DerivedType,velement=VariableElement
+	Set var=Variable,derivedtype=DerivedType,velement=VariableElement
 		Set dimmedtype=..FullClassName($GET(..DimmedTypes(var)))
 		Set currenttype=..FullClassName($GET(..VariablesTypes(var)))
 		If dimmedtype'="",derivedtype'="",dimmedtype'=derivedtype {
@@ -331,7 +364,7 @@ Method checkAndRecordVariableType(VariableElement As PXW.DEV.Element, Variable A
 		}
 }
 
-Method checkVariable(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="Variable")
+Method checkVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="Variable,ByrefVariable")
 {
 	;  variable name part is the only bit we are interested in
 	Set varname=element.FirstAtom().ToString(0)
@@ -346,7 +379,7 @@ Method checkVariable(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.elemen
 	Quit ""
 }
 
-Method checkObjectVariable(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="ObjectVariable")
+Method checkObjectVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ObjectVariable")
 {
 	;  variable name part is the only bit we are interested in
 	Set varname=element.FirstAtom().ToString(0)
@@ -354,7 +387,7 @@ Method checkObjectVariable(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.
 	Quit ""
 }
 
-Method checkCosDirectiveDefine(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosDirectiveDefine")
+Method checkCosDirectiveDefine(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosDirectiveDefine")
 {
 	Set nameE=element.findFirstElementByType("CosDirectiveDefineName")
 	If $ISOBJECT(nameE) {
@@ -364,7 +397,7 @@ Method checkCosDirectiveDefine(element As PXW.DEV.Element) As PXW.DEV.BNF.Compil
 	Quit ""
 }
 
-Method checkCosDirectiveDimItem(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosDirectiveDimItem")
+Method checkCosDirectiveDimItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosDirectiveDimItem")
 {
 	Set classele=element.findFirstElementByType("ClassReference")
 	If $ISOBJECT(classele) {
@@ -378,7 +411,19 @@ Method checkCosDirectiveDimItem(element As PXW.DEV.Element) As PXW.DEV.BNF.Compi
 	Quit ""
 }
 
-Method checkQuitCommand(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="QuitCommand")
+Method checkCosDoItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="DoItem")
+{
+	If element.partsCount()>0 {
+		; treat this like a method call so we get the byref things set
+		; eg Do ..method(.var1,.var2)
+		Set variableElement=element.partsGetAt(1)
+		; not really interested in the return type, we just want the method checked for byref 
+		Set rettype=..DeriveTypeReturned(variableElement)
+	}	
+	Quit ""
+}
+
+Method checkQuitCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="QuitCommand")
 {
 	Set quitexpE=element.findFirstElementByType("QuitExpression",1)
 	If $ISOBJECT(quitexpE) {
@@ -409,7 +454,7 @@ Method checkQuitCommand(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.ele
 	Quit ""
 }
 
-Method checkReturnCommand(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="ReturnCommand")
+Method checkReturnCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ReturnCommand")
 {
 	Set quitexpE=element.findFirstElementByType("ReturnExpression",1)
 	If $ISOBJECT(quitexpE) {
@@ -440,7 +485,7 @@ Method checkReturnCommand(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.e
 	Quit ""
 }
 
-Method checkOneClassMemeberFINAL(element As PXW.DEV.Element)
+Method checkOneClassMemeberFINAL(element As PXW.DEV.BNF.Elements.COS)
 {
 	Set var=$CHAR($ASCII("%")+1) ; skip over % variables, we don't care if they are used they might be used in deeper, untrackable ways
 	For  {
@@ -455,16 +500,16 @@ Method checkOneClassMemeberFINAL(element As PXW.DEV.Element)
 	}
 
 	/// Non abstract method where there is a return type but no quit to match it
-	IF $$$LOWER(..CodeMode)'="expression",'..MethodIsAbstract,..ReturnType'="",..QuitFound=0 {
-		if $$$LOWER(..CodeMode)["generator" {
-			do ..AddElementWarning(..ReturnTypeElement,"GeneratOR method should return %Status, even if the generatED code doesn't.")
-		} else {
-			do ..AddElementWarning(..ReturnTypeElement,"No Quit for method that has a ReturnType")
+	If $$$LOWER(..CodeMode)'="expression",'..MethodIsAbstract,..ReturnType'="",..QuitFound=0 {
+		If $$$LOWER(..CodeMode)["generator" {
+			Do ..AddElementWarning(..ReturnTypeElement,"GeneratOR method should return %Status, even if the generatED code doesn't.")
+		} Else {
+			Do ..AddElementWarning(..ReturnTypeElement,"No Quit for method that has a ReturnType")
 		}
 	}
 }
 
-Method checkAttributeCodeModeType(element As PXW.DEV.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="AttributeCodemodetype")
+Method checkAttributeCodeModeType(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="AttributeCodemodetype")
 {
 	; if [codemode=objectgenerator] then the ReturnType of the method for analysis purposes is %Status
 	Set codemode=$$$UPPER(element.ToString(0))
@@ -472,7 +517,7 @@ Method checkAttributeCodeModeType(element As PXW.DEV.Element) As PXW.DEV.BNF.Com
 	If codemode="OBJECTGENERATOR" {
 		Set ..ReturnType="%Library.Status"
 		Set ..ReturnTypeElement=element
-	} elseIf codemode="GENERATOR" {
+	} ElseIf codemode="GENERATOR" {
 		Set ..ReturnType="%Library.Status"
 		Set ..ReturnTypeElement=element
 		Set ..VariablesUsed("%code")="" ; % vars are not checked anyway, but leaving here in case this changes in the future
@@ -482,52 +527,52 @@ Method checkAttributeCodeModeType(element As PXW.DEV.Element) As PXW.DEV.BNF.Com
 
 Method checkMethodAttribute(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="MethodAttribute")
 {
-	set attribE=element.findFirstElementByType("AttributeAbstract")
-	if $isobject(attribE) {
-		set ..MethodIsAbstract=1
+	Set attribE=element.findFirstElementByType("AttributeAbstract")
+	If $ISOBJECT(attribE) {
+		Set ..MethodIsAbstract=1
 	}
 	Quit ""
 }
 
-Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName As %String, ElementTypeClassName As %String = "") As %String
+Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, StartClassName As %String, ElementTypeClassName As %String = "") As %String
 {
-	#dim fpE,fparamsE as PXW.DEV.Element
+	#dim fpE,fparamsE as PXW.DEV.BNF.Elements.COS
 
-	Set lastthing=""
     Set type=StartClassName
     Set classname=StartClassName
     Set objectchain=ParentElement.findFirstElementByType("ObjectChain",0)
 	If '$ISOBJECT(objectchain) Set objectchain=ParentElement.findFirstElementByType("ObjectChainNoDot",0)
     While $ISOBJECT(objectchain) {
-		s fspec=""
+		;d objectchain.write()
+		Set fspec=""
         ; the objectchain has the "." and the name
         Set propertyname=objectchain.ToStringAtomsOnly(0)
 		Set propertyname=$SELECT($EXTRACT(propertyname,1)=".":$PIECE(propertyname,".",2),1:propertyname)
 		
 		; special case for List.Get methods where we know the element type already
-		if propertyname?1"Get".AN,ElementTypeClassName'="" {
-			s type=ElementTypeClassName
-		} else {
+		If propertyname?1"Get".AN,ElementTypeClassName'="" {
+			Set type=ElementTypeClassName
+		} Else {
 			Set found=..ClassServer.GetPropertyDetails(classname,propertyname,.type)
 			Set:'found type=..ClassServer.GetMethodReturnType(classname,propertyname,.fspec)
 		}
-		if fspec'="" {
+		If fspec'="" {
 			;d objectchain.write()
 			;zw fspec,type
-			s fparamsE=objectchain.findFirstElementByType("FunctionParameterList",0)
-			s fpk="",count=0
-			f  {
-				s fpE=fparamsE.findNextElement(.fpk)
-				q:fpk=""
-				s count=count+1
-				i fpE.type="FunctionParameter" {
-					s byrefE=fpE.findFirstElementByType("ByrefVariable",0)
-					i $ISOBJECT(byrefE) {
-						s var=byrefE.ToString(0)
-						i var'="" {
-							s btype=$lg($lg(fspec,count),2)
-							i btype'="" {
-								d ..checkAndRecordVariableType(byrefE,var,btype)
+			Set fparamsE=objectchain.findFirstElementByType("FunctionParameterList",0)
+			Set fpk="",count=0
+			For  {
+				Set fpE=fparamsE.findNextElement(.fpk)
+				Quit:fpk=""
+				Set count=count+1
+				If fpE.type="FunctionParameter" {
+					Set byrefE=fpE.findFirstElementByType("ByrefVariable",0)
+					If $ISOBJECT(byrefE) {
+						Set var=byrefE.ToString(0)
+						If var'="" {
+							Set btype=$LISTGET($LISTGET(fspec,count),2)
+							If btype'="" {
+								Do ..checkAndRecordVariableType(byrefE,var,btype)
 							}
 						}
 					}
@@ -543,9 +588,9 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName
 }
 
 /// Returns the name of the class of the type of thing
-Method DeriveTypeReturned(ValueElement As PXW.DEV.Element) As %String
+Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 {
-	#dim element as PXW.DEV.Element
+	#dim element as PXW.DEV.BNF.Elements.COS
 
 	; some kind of set with indirection so type cannot be derived
 	; S @x
@@ -557,11 +602,16 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.Element) As %String
 		Set expression=ValueElement.findFirstElementByType("Expression",0)
 	}
 
-	Set simple=..SimplifyExpression(expression,.variableElement)
-	If simple'="-" Quit "" ; it's a number or string
-	
-	If '$ISOBJECT(variableElement) Quit "" ; its something else we cannot deal with
+	// If we call from a DO then there is no expression
+	If $ISOBJECT(expression),expression.type="Expression" {
+		Set simple=..SimplifyExpression(expression,.variableElement)
+		If simple'="-" Quit "" ; it's a number or string
+	} Else {
+		Set variableElement=ValueElement
+	}
 
+	If '$ISOBJECT(variableElement) Quit "" ; its something else we cannot deal with
+	
 	Set finaltype=""
     ; looking for ##class
 	If variableElement.type="Classexpr" {
@@ -588,7 +638,6 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.Element) As %String
 			If classname'=""	Set finaltype=..FollowObjectChainForType(variableElement,classname,elementtype)
 		}
 	}
-	$$$DEBUG("variable="_finaltype)
 	If finaltype'="" Quit finaltype
 
 	; this is not quite right but expressions are sooo complicated, need a generic
@@ -624,7 +673,7 @@ Method FullClassName(name As %String) As %String
 /// the String if the expression is ONLY a string.
 /// the Number if the expression is ONLY a number.
 /// If there is anything else eg 1+1, then this is complex (for now) so it will return -.
-Method SimplifyExpression(expressionElement As PXW.DEV.Element, Output variableElement As PXW.DEV.Element) As %String
+Method SimplifyExpression(expressionElement As PXW.DEV.BNF.Elements.COS, Output variableElement As PXW.DEV.BNF.Elements.COS) As %String
 {
 
 	; var+1 as an expression looks like this:
@@ -756,9 +805,9 @@ Method SimplifySubscripts(element As PXW.DEV.Element) As %String
 /// the String if the expression is ONLY a string.
 /// the Number if the expression is ONLY a number.
 /// If there is anything else eg 1+1, then this is complex (for now) so it will return -.
-Method SimplifyStringExpression(ValueElement As PXW.DEV.Element, Output variableElement As PXW.DEV.Element) As %String
+Method SimplifyStringExpression(ValueElement As PXW.DEV.BNF.Elements.COS, Output variableElement As PXW.DEV.BNF.Elements.COS) As %String
 {
-	#dim partE,factorE,primaryE,finalE,expressionE as PXW.DEV.Element
+	#dim partE,factorE,primaryE,finalE,expressionE as PXW.DEV.BNF.Elements.COS
 
 	If ValueElement.type="Expression" {
 		Set expressionE=ValueElement
@@ -798,43 +847,149 @@ Method SimplifyStringExpression(ValueElement As PXW.DEV.Element, Output variable
     ;....type=String:/Expression/Factor/Primary
     ;.... " and y=2"	
 
-	set string="",isString=1
-	for i=1:1:expressionE.partsCount() {
-		set partE=expressionE.partsGetAt(i)
-		if $isobject(partE) {
-			if partE.type="Factor" {
-				set factorE=partE
-				set primaryE=factorE.partsGetAt(1)
-				if $ISOBJECT(primaryE),primaryE.type="Primary" {
-					set finalE=primaryE.partsGetAt(1)
-					if $isobject(finalE) {
-						if finalE.%IsA("PXW.DEV.Atom") zw finalE d partE.write()
-						set atom=finalE.FirstAtom()
-						if finalE.type="String" {
-							set string=string_atom.value
+	Set string="",isString=1,line=0
+	For i=1:1:expressionE.partsCount() {
+		Set partE=expressionE.partsGetAt(i)
+		If $ISOBJECT(partE) {
+			If partE.type="Factor" {
+				Set factorE=partE
+				Set primaryE=factorE.partsGetAt(1)
+				If $ISOBJECT(primaryE),primaryE.type="Primary" {
+					Set finalE=primaryE.partsGetAt(1)
+					If $ISOBJECT(finalE) {
+						Set atom=finalE.FirstAtom()
+						If atom.line>line {
+							If line>0 {
+								Set string=string_$CHAR(13)
+							}
+							Set line=atom.line
 						}
-						if finalE.type="Number" {
-							set string=string_atom.value
-						}
-						if finalE.type="SubExpression" {
-							set string=string_"?"
-						}
-						if finalE.type="Variable" {
-							set varname=atom.value
-							set string=string_$g(..stringVars(varname))
+						If finalE.type="String" {
+							Set string=string_atom.value
+						} ElseIf finalE.type="Number" {
+							Set string=string_atom.value
+						} ElseIf finalE.type="SubExpression" {
+							Set string=string_"?"
+						} ElseIf finalE.type="Variable" {
+							Set varname=atom.value
+							Set string=string_$GET(..stringVars(varname))
+						} Else {
+							Set string=string_"?"
 						}
 					}
-				} else {
-					set isString=0 ; not primary thing
+				} Else {
+					Set isString=0 ; not primary thing
 				}
-			} elseif partE.type="Dyadicop",partE.ToString(0)="_" {
+			} ElseIf partE.type="Dyadicop",partE.ToString(0)="_" {
 				; concat is ok
-			} else {
-				set isString=0
+			} Else {
+				Set isString=0
 			}			
 		}
 	}
-	if isString=0 s string=""
+	If isString=0 Set string=""
+	If string="?" Set string=""
+	Quit string
+}
+
+/// Returns a simplifed, decoded, string from the given expression.
+/// EG. 
+/// "a"_"b"      we get "ab" back
+/// "a"_var_"b"  if we already know what var is then (xxx) we get that back "axxxb"
+/// "a"_(complex thing)_"b" we get "a?b"
+/// It will also add these atoms to the variableElement, so that we can do more with it later if necessary
+Method SimplifyStringExpressionAsElement(ValueElement As PXW.DEV.BNF.Elements.COS, Output variableElement As PXW.DEV.BNF.Elements.COS) As %String
+{
+	#dim partE,factorE,primaryE,finalE,expressionE as PXW.DEV.BNF.Elements.COS
+
+	If ValueElement.type="Expression" {
+		Set expressionE=ValueElement
+	} Else {
+		Set expressionE=ValueElement.findFirstElementByType("Expression",0)
+	}
+	Set variableElement=##class(PXW.DEV.Element).%New()
+	
+	; sql_"Select * from table where x="_xx_" and y=2"      as an expression looks like this:
+    ;Element=Expression PXW.DEV.BNF.Elements.COS @8724
+    ;.Element=Factor PXW.DEV.BNF.Elements.COS @8640
+    ;..Element=Primary PXW.DEV.BNF.Elements.COS @8256
+    ;...Element=Variable PXW.DEV.BNF.Elements.COS @8916
+    ;....type=Variable:/Expression/Factor/Primary/Variable
+    ;.... sql
+    ;.Element=Dyadicop PXW.DEV.BNF.Elements.COS @8939
+    ;..type=punctuation:/Expression/Dyadicop
+    ;.. _
+    ;.Element=Factor PXW.DEV.BNF.Elements.COS @8410
+    ;..Element=Primary PXW.DEV.BNF.Elements.COS @8273
+    ;...Element=String PXW.DEV.BNF.Elements.COS @8784
+    ;....type=String:/Expression/Factor/Primary
+    ;.... "Select * from table where x="
+    ;.Element=Dyadicop PXW.DEV.BNF.Elements.COS @8356
+    ;..type=punctuation:/Expression/Dyadicop
+    ;.. _
+    ;.Element=Factor PXW.DEV.BNF.Elements.COS @9127
+    ;..Element=Primary PXW.DEV.BNF.Elements.COS @8928
+    ;...Element=Variable PXW.DEV.BNF.Elements.COS @8435
+    ;....type=Variable:/Expression/Factor/Primary/Variable
+    ;.... xx
+    ;.Element=Dyadicop PXW.DEV.BNF.Elements.COS @8258
+    ;..type=punctuation:/Expression/Dyadicop
+    ;.. _
+    ;.Element=Factor PXW.DEV.BNF.Elements.COS @8498
+    ;..Element=Primary PXW.DEV.BNF.Elements.COS @8806
+    ;...Element=String PXW.DEV.BNF.Elements.COS @8654
+    ;....type=String:/Expression/Factor/Primary
+    ;.... " and y=2"	
+
+	Set string="",isString=1
+	For i=1:1:expressionE.partsCount() {
+		Set partE=expressionE.partsGetAt(i)
+		If $ISOBJECT(partE) {
+			If partE.type="Factor" {
+				Set factorE=partE
+				Set primaryE=factorE.partsGetAt(1)
+				If $ISOBJECT(primaryE),primaryE.type="Primary" {
+					Set finalE=primaryE.partsGetAt(1)
+					If $ISOBJECT(finalE) {
+						Set atom=finalE.FirstAtom()
+						Set newatom=atom.%ConstructClone(0)
+						Set newatom.start=""
+						Set newatom.end=""
+						Set newatom.type="String"
+						If finalE.type="String" {
+							Set newatom.value=$REPLACE(atom.value,"""""","""") ; store without encode quotes
+							Set string=string_newatom.value
+							Do variableElement.AddPart(newatom)
+						} ElseIf finalE.type="Number" {
+							Set string=string_atom.value
+							Do variableElement.AddPart(newatom)
+						} ElseIf finalE.type="SubExpression" {
+							Set string=string_"?"
+							Set newatom.value="?"
+							Do variableElement.AddPart(newatom)
+						} ElseIf finalE.type="Variable" {
+							Set varname=atom.value
+							Set string=string_$GET(..stringVars(varname))
+							Set varElem=$GET(..stringVars(varname,"element"))
+							Do:$ISOBJECT(varElem) variableElement.partsCopy(varElem)
+						} Else {
+							Set string=string_"?"
+							Set newatom.value="?"
+							Do variableElement.AddPart(newatom)
+						}
+					}
+				} Else {
+					Set isString=0 ; not primary thing
+				}
+			} ElseIf partE.type="Dyadicop",partE.ToString(0)="_" {
+				; concat is ok
+			} Else {
+				Set isString=0
+			}			
+		}
+	}
+	If isString=0 Set string=""
+	If string="?" Set string=""
 	Quit string
 }
 

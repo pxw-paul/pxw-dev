@@ -125,15 +125,15 @@ Method writeAtom(atom As PXW.DEV.Atom, preValue As %String = "", postValue As %S
 		Set postValue=postValue_"</span>"
 	}
 	
-	s out=""
-    For i=1:1:+$GET(..pre(+atom)) set out=out_$GET(..pre(+atom,i))
-    set out=out_preValue_..html(atom.start)
-	    For i=1:1:+$GET(..preI(+atom)) set out=out_$GET(..preI(+atom,i))
-	    set out=out_..html(atom.value)
-	    For i=+$GET(..postI(+atom)):-1:1 set out=out_$GET(..postI(+atom,i))
-	set out=out_..html(atom.end)_postValue
-    For i=+$GET(..post(+atom)):-1:1 set out=out_$GET(..post(+atom,i))
-	d ..output(out)
+	Set out=""
+    For i=1:1:+$GET(..pre(+atom)) Set out=out_$GET(..pre(+atom,i))
+    Set out=out_preValue_..html(atom.start)
+	    For i=1:1:+$GET(..preI(+atom)) Set out=out_$GET(..preI(+atom,i))
+	    Set out=out_..html(atom.value)
+	    For i=+$GET(..postI(+atom)):-1:1 Set out=out_$GET(..postI(+atom,i))
+	Set out=out_..html(atom.end)_postValue
+    For i=+$GET(..post(+atom)):-1:1 Set out=out_$GET(..post(+atom,i))
+	Do ..output(out)
 }
 
 Method GenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator ]

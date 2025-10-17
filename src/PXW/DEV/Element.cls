@@ -203,7 +203,7 @@ Method findNextElement(ByRef key As %Integer) As PXW.DEV.Element
 
 Method countElements() As %Integer
 {
-	Set count=0,k=""
+	Set count=0,k="",xx=3
 	While $ISOBJECT(..findNextElement(.k)) {
 		Set count=count+1
 	}

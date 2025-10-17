@@ -47,9 +47,9 @@ Method cheese(element As PXW.DEV.Element) As %Boolean
 
 Method full(element As PXW.DEV.Element) As %Boolean
 {
-    s ..lowmem=0
-    s retval=..ClassDefinition(element)
-    q retval
+    Set ..lowmem=0
+    Set retval=..ClassDefinition(element)
+    Quit retval
 }
 
 Method ClassMemberSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
@@ -570,23 +570,23 @@ Method AliasIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
     $$$DEBUGMethodBegin
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 
-    set ch50=..stream.PeekToEol()
+    Set ch50=..stream.PeekToEol()
     Set done=1
-    set pos=1
-    If $e(ch50,pos)="""" {
+    Set pos=1
+    If $EXTRACT(ch50,pos)="""" {
         Set pos=pos+1
-        While $e(ch50,pos)'="""" {
-            set pos=pos+1
+        While $EXTRACT(ch50,pos)'="""" {
+            Set pos=pos+1
         }
-        set pos=pos+1 ; final " is all part of the alias
+        Set pos=pos+1 ; final " is all part of the alias
         Set done=1
     } Else {
-        If $e(ch50,pos)="%" Set pos=pos+1
-        If $e(ch50,pos)?1A set pos=pos+1
+        If $EXTRACT(ch50,pos)="%" Set pos=pos+1
+        If $EXTRACT(ch50,pos)?1A Set pos=pos+1
         
         If pos>1 {
-            While ($e(ch50,pos)?1AN) || ($e(ch50,pos)=".") ||($e(ch50,pos)="_")  {
-                set pos=pos+1
+            While ($EXTRACT(ch50,pos)?1AN) || ($EXTRACT(ch50,pos)=".") ||($EXTRACT(ch50,pos)="_")  {
+                Set pos=pos+1
             }
             Set done=1
         }
@@ -604,21 +604,21 @@ Method ClassIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
     $$$DEBUGMethodBegin
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 
-    set ch50=..stream.PeekToEol()
-    set pos=1
-    If $e(ch50,pos)="%" Set pos=pos+1
-    If $e(ch50,pos)?1A Set pos=pos+1
+    Set ch50=..stream.PeekToEol()
+    Set pos=1
+    If $EXTRACT(ch50,pos)="%" Set pos=pos+1
+    If $EXTRACT(ch50,pos)?1A Set pos=pos+1
     
-    if pos>1 {
-        While ($e(ch50,pos)?1AN) || ($e(ch50,pos)=".")  {
-            set pos=pos+1
+    If pos>1 {
+        While ($EXTRACT(ch50,pos)?1AN) || ($EXTRACT(ch50,pos)=".")  {
+            Set pos=pos+1
         }
     
         Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
         Do ParentElement.AddPart(atom)
-        s ok=1
-    } else {
-        s ok=0
+        Set ok=1
+    } Else {
+        Set ok=0
     }
     $$$DEBUGMethodEnd
     Quit ok
@@ -630,23 +630,23 @@ Method ClientIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
  
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 
-    set ch50=..stream.PeekToEol()
-    set pos=1
+    Set ch50=..stream.PeekToEol()
+    Set pos=1
 
-    If $e(ch50,pos)="%" set pos=pos+1
-    If $e(ch50,pos)="%" set pos=pos+1 ;EG %%OID
-    if $e(ch50,pos)="_" set pos=pos+1
-    If $e(ch50,pos)?1A Set pos=pos+1
+    If $EXTRACT(ch50,pos)="%" Set pos=pos+1
+    If $EXTRACT(ch50,pos)="%" Set pos=pos+1 ;EG %%OID
+    If $EXTRACT(ch50,pos)="_" Set pos=pos+1
+    If $EXTRACT(ch50,pos)?1A Set pos=pos+1
     
-    if pos>1 {
-        While ($e(ch50,pos)?1AN) || ($e(ch50,pos)=".") || ($e(ch50,pos)="_")  {
-            set pos=pos+1
+    If pos>1 {
+        While ($EXTRACT(ch50,pos)?1AN) || ($EXTRACT(ch50,pos)=".") || ($EXTRACT(ch50,pos)="_")  {
+            Set pos=pos+1
         }
         Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
         Do ParentElement.AddPart(atom)
-        set ok=1
-    }else {
-        set ok=0
+        Set ok=1
+    }Else {
+        Set ok=0
     }
     $$$DEBUGMethodEnd
     Quit ok
@@ -657,10 +657,10 @@ Method Filename(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
     $$$DEBUGMethodBegin
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 
-    set ch50=..stream.PeekToEol()
-    set pos=1
-    While ($e(ch50,pos)?1AN) || ($e(ch50,pos)=".") || ($e(ch50,pos)="/") {
-        set pos=pos+1
+    Set ch50=..stream.PeekToEol()
+    Set pos=1
+    While ($EXTRACT(ch50,pos)?1AN) || ($EXTRACT(ch50,pos)=".") || ($EXTRACT(ch50,pos)="/") {
+        Set pos=pos+1
     }
  
     Set atom=..newAtom("FileName",..nextNotEOL(pos-1))
@@ -679,23 +679,23 @@ Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
  
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 
-    set ch50=..stream.PeekToEol()
-    set pos=1
+    Set ch50=..stream.PeekToEol()
+    Set pos=1
 
-    If $e(ch50,pos)="%" set pos=pos+1
-    If $e(ch50,pos)="%" set pos=pos+1 ; EG %%OID
-    If $e(ch50,pos)?1A Set pos=pos+1
+    If $EXTRACT(ch50,pos)="%" Set pos=pos+1
+    If $EXTRACT(ch50,pos)="%" Set pos=pos+1 ; EG %%OID
+    If $EXTRACT(ch50,pos)?1A Set pos=pos+1
     
-    if pos>1 {
-        While ($e(ch50,pos)?1AN) || ($e(ch50,pos)=".")  {
-            set pos=pos+1
+    If pos>1 {
+        While ($EXTRACT(ch50,pos)?1AN) || ($EXTRACT(ch50,pos)=".")  {
+            Set pos=pos+1
         }
  
         Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
         Do ParentElement.AddPart(atom)
-        set ok=1
-    } else {
-        set ok=0
+        Set ok=1
+    } Else {
+        Set ok=0
     }
     $$$DEBUGMethodEnd
     Quit ok
@@ -707,23 +707,23 @@ Method VariableIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
  
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 
-    set ch50=..stream.PeekToEol()
-    set pos=1
+    Set ch50=..stream.PeekToEol()
+    Set pos=1
 
-    If $e(ch50,pos)="%" set pos=pos+1
-    If $e(ch50,pos)="%" set pos=pos+1 ; EG %%OID
-    If $e(ch50,pos)?1A Set pos=pos+1
+    If $EXTRACT(ch50,pos)="%" Set pos=pos+1
+    If $EXTRACT(ch50,pos)="%" Set pos=pos+1 ; EG %%OID
+    If $EXTRACT(ch50,pos)?1A Set pos=pos+1
     
-    if pos>1 {
-        While ($e(ch50,pos)?1AN) {
-            set pos=pos+1
+    If pos>1 {
+        While ($EXTRACT(ch50,pos)?1AN) {
+            Set pos=pos+1
         }
  
         Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
         Do ParentElement.AddPart(atom)
-        set ok=1
-    } else {
-        set ok=0
+        Set ok=1
+    } Else {
+        Set ok=0
     }
     $$$DEBUGMethodEnd
     Quit ok
@@ -735,22 +735,22 @@ Method XmlIdentifier(ParentElement As PXW.DEV.BNF.Element, Output subElement As 
  
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 
-    set ch50=..stream.PeekToEol()
-    set pos=1
+    Set ch50=..stream.PeekToEol()
+    Set pos=1
 
-    If $e(ch50,pos)="_" set pos=pos+1
-    If $e(ch50,pos)?1A Set pos=pos+1
+    If $EXTRACT(ch50,pos)="_" Set pos=pos+1
+    If $EXTRACT(ch50,pos)?1A Set pos=pos+1
     
-    if pos>1 {
-        While ($e(ch50,pos)?1AN) || ($e(ch50,pos)="-") || ($e(ch50,pos)="_")  || ($e(ch50,pos)=".") {
-            set pos=pos+1
+    If pos>1 {
+        While ($EXTRACT(ch50,pos)?1AN) || ($EXTRACT(ch50,pos)="-") || ($EXTRACT(ch50,pos)="_")  || ($EXTRACT(ch50,pos)=".") {
+            Set pos=pos+1
         }
  
         Set atom=..newAtom("XmlIdentifier",..nextNotEOL(pos-1))
         Do ParentElement.AddPart(atom)
-        set ok=1
-    } else {
-        set ok=0
+        Set ok=1
+    } Else {
+        Set ok=0
     }
     $$$DEBUGMethodEnd
     Quit ok
@@ -760,31 +760,31 @@ Method SqlFieldName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 {
     $$$DEBUGMethodBegin
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
-    set ch50=..stream.PeekToEol()
-    set pos=1
-    If $e(ch50,pos)="""" {
-        set pos=pos+1
-        While $e(ch50,pos)'="""" {
-            set pos=pos+1
+    Set ch50=..stream.PeekToEol()
+    Set pos=1
+    If $EXTRACT(ch50,pos)="""" {
+        Set pos=pos+1
+        While $EXTRACT(ch50,pos)'="""" {
+            Set pos=pos+1
         }
-        set pos=pos+1 ; last ", both sets of quotes end up being in the name, should we split those off?
-        set ok=1
+        Set pos=pos+1 ; last ", both sets of quotes end up being in the name, should we split those off?
+        Set ok=1
     } Else {
-        If $e(ch50,pos)="%" set pos=pos+1
-        If $e(ch50,pos)="%" set pos=pos+1 ; EG %%OID
-        If $e(ch50,pos)="_" set pos=pos+1
-        If $e(ch50,pos)?1A set pos=pos+1
+        If $EXTRACT(ch50,pos)="%" Set pos=pos+1
+        If $EXTRACT(ch50,pos)="%" Set pos=pos+1 ; EG %%OID
+        If $EXTRACT(ch50,pos)="_" Set pos=pos+1
+        If $EXTRACT(ch50,pos)?1A Set pos=pos+1
         
-        if pos>1 {
-            While ($e(ch50,pos)?1AN) || ($e(ch50,pos)="_")  {
-                set pos=pos+1
+        If pos>1 {
+            While ($EXTRACT(ch50,pos)?1AN) || ($EXTRACT(ch50,pos)="_")  {
+                Set pos=pos+1
             }
-            set ok=1
-        } else {
-            set ok=0
+            Set ok=1
+        } Else {
+            Set ok=0
         }
     }
-    if ok {
+    If ok {
         Set atom=..newAtom("SqlFieldName",..nextNotEOL(pos-1))
         Do ParentElement.AddPart(atom)
     }
@@ -797,31 +797,31 @@ Method SqlTableName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 
     $$$DEBUGMethodBegin
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
-    set ch50=..stream.PeekToEol()
-    set pos=1
-    If $e(ch50,pos)="""" {
-        set pos=pos+1
-        While $e(ch50,pos)'="""" {
-            set pos=pos+1
+    Set ch50=..stream.PeekToEol()
+    Set pos=1
+    If $EXTRACT(ch50,pos)="""" {
+        Set pos=pos+1
+        While $EXTRACT(ch50,pos)'="""" {
+            Set pos=pos+1
         }
-        set pos=pos+1 ; last ", both sets of quotes end up being in the name, should we split those off?
-        set ok=1
+        Set pos=pos+1 ; last ", both sets of quotes end up being in the name, should we split those off?
+        Set ok=1
     } Else {
-        If $e(ch50,pos)="%" set pos=pos+1
-        If $e(ch50,pos)="%" set pos=pos+1 ; EG %%OID
-        If $e(ch50,pos)="_" set pos=pos+1
-        If $e(ch50,pos)?1A set pos=pos+1
+        If $EXTRACT(ch50,pos)="%" Set pos=pos+1
+        If $EXTRACT(ch50,pos)="%" Set pos=pos+1 ; EG %%OID
+        If $EXTRACT(ch50,pos)="_" Set pos=pos+1
+        If $EXTRACT(ch50,pos)?1A Set pos=pos+1
         
-        if pos>1 {
-            While ($e(ch50,pos)?1AN) || ($e(ch50,pos)="_")  {
-                set pos=pos+1
+        If pos>1 {
+            While ($EXTRACT(ch50,pos)?1AN) || ($EXTRACT(ch50,pos)="_")  {
+                Set pos=pos+1
             }
-            set ok=1
-        } else {
-            set ok=0
+            Set ok=1
+        } Else {
+            Set ok=0
         }
     }
-    if ok {
+    If ok {
         Set atom=..newAtom("SqlTableName",..nextNotEOL(pos-1))
         Do ParentElement.AddPart(atom)
     }
@@ -894,7 +894,7 @@ Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 	#dim o as PXW.DEV.Atom
     Set ok=0
-    set ch=..peek(1)
+    Set ch=..peek(1)
     If (ch="""") || (ch="'") {
         Set ok=0
         $$$BNFSTART(subElement)
@@ -936,28 +936,28 @@ Method JsonString(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
         $$$BNFSTART(subElement)
 
         Set q1=..nextNotEOL(1)
-        set ch50=..stream.PeekToEol()
-        set pos=1
+        Set ch50=..stream.PeekToEol()
+        Set pos=1
         Set instring=1
-        While $e(ch50,pos)'="" && instring {
+        While $EXTRACT(ch50,pos)'="" && instring {
             If $EXTRACT(ch50,pos,pos+1)="\""" {
                 ; embedded quotes
-                set pos=pos+2
-            } elseif $EXTRACT(ch50,pos)="""" {
+                Set pos=pos+2
+            } ElseIf $EXTRACT(ch50,pos)="""" {
                 ; last quote
                 Set instring=0
             } Else {
-                set pos=pos+1
+                Set pos=pos+1
             }
         }
         Set atom=..newAtom("String",..nextNotEOL(pos-1))
-        set atom.start=q1
-        set atom.end=..nextNotEOL(1) ; q2
+        Set atom.start=q1
+        Set atom.end=..nextNotEOL(1) ; q2
         Do subElement.AddPart(atom)
         $$$BNFCOMMIT(subElement,ParentElement)
-        set ok=1
-    } else {
-        s ok=0
+        Set ok=1
+    } Else {
+        Set ok=0
     }
     $$$DEBUGMethodEnd
     Quit ok
@@ -1008,18 +1008,18 @@ Method XmlContent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
     $$$BNFSTART(subElement)
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
     
-    set ch500=..stream.PeekToEoF()
-    set pos=1
-    While ($e(ch500,pos)'="") && ($e(ch500,pos)'="<") {
-        set pos=pos+1
+    Set ch500=..stream.PeekToEoF()
+    Set pos=1
+    While ($EXTRACT(ch500,pos)'="") && ($EXTRACT(ch500,pos)'="<") {
+        Set pos=pos+1
     }
-    if pos>1 {
+    If pos>1 {
         Set o=..newAtom(subElement.type,..next(pos-1))
         Do subElement.AddPart(o)
         $$$BNFCOMMIT(subElement,ParentElement)
-        set ok=1
-    } else {
-        set ok=0
+        Set ok=1
+    } Else {
+        Set ok=0
     }
     $$$DEBUGMethodEnd
     Quit ok
@@ -1030,11 +1030,11 @@ Method XmlCdataText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
     $$$DEBUGMethodBegin
     $$$BNFSTART(subElement)
     
-    set ch500=..stream.PeekToEoF()
-    set pos=1    
+    Set ch500=..stream.PeekToEoF()
+    Set pos=1    
     Set ok=1
-    While ($e(ch500,pos)'="") && ($e(ch500,pos,pos+2)'="]]>") {
-        set pos=pos+1
+    While ($EXTRACT(ch500,pos)'="") && ($EXTRACT(ch500,pos,pos+2)'="]]>") {
+        Set pos=pos+1
     }
  
     Set o=..newAtom(subElement.type,..next(pos-1))

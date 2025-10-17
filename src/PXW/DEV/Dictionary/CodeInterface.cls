@@ -58,15 +58,15 @@ Method List(SearchName As %String) As %RegisteredObject [ Abstract ]
 /// The default behaviour of this is to treat ResultSet as a result set. If your List method returns something else you will need to override this.
 Method ListNext(ResultSet As %RegisteredObject, Output SubType As %String, Output Name As %String, Output TimeChanged As %String, Output ID As %String) As %Boolean
 {
-    s next=ResultSet.%Next()
-    i next {
-        s SubType=ResultSet.%Get("SubType")
-        s Name=ResultSet.%Get("Name")
-        s TimeChanged=ResultSet.%Get("TimeChanged")
-        s ID=ResultSet.%Get("ID")
-        i ID="" s ID=Name
+    Set next=ResultSet.%Next()
+    If next {
+        Set SubType=ResultSet.%Get("SubType")
+        Set Name=ResultSet.%Get("Name")
+        Set TimeChanged=ResultSet.%Get("TimeChanged")
+        Set ID=ResultSet.%Get("ID")
+        If ID="" Set ID=Name
     }
-    q next
+    Quit next
 }
 
 Method Load(Name As %String, Output Text As %String, Output LastUpdateTime As %TimeStamp) As %Status [ Abstract ]

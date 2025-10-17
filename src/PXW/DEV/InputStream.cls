@@ -147,7 +147,7 @@ Method NextToEol() As %String
 
 Method Peek(offsetStart As %Integer = 0, offsetEnd As %Integer = {offsetStart}) As %String
 {
-	q $EXTRACT(..input,..pos+offsetStart,..pos+offsetEnd)
+	Quit $EXTRACT(..input,..pos+offsetStart,..pos+offsetEnd)
 }
 
 /// returns the string to the EOL but NOT the eol char itself
@@ -160,7 +160,7 @@ Method PeekToEol() As %String
 	} Else {
 		set found=$EXTRACT(..input,..pos,eolpos-2)
 	}*/
-	s found=$p($EXTRACT(..input,..pos,*),..eolChar,1)
+	Set found=$PIECE($EXTRACT(..input,..pos,*),..eolChar,1)
 	Quit found
 }
 
@@ -174,7 +174,7 @@ Method PeekToString(EndString As %String) As %String
 	} Else {
 		set found=$EXTRACT(..input,..pos,eolpos-($LENGTH(EndString)+1))
 	} */
-	s found=$p($EXTRACT(..input,..pos,*),EndString,1)
+	Set found=$PIECE($EXTRACT(..input,..pos,*),EndString,1)
 	Quit found
 }
 
@@ -187,7 +187,7 @@ Method PeekToEoF() As %String
 	} Else {
 		set found=$EXTRACT(..input,..pos,eolpos-2)
 	}*/
-	s found=$EXTRACT(..input,..pos,*)
+	Set found=$EXTRACT(..input,..pos,*)
 	Quit found
 }
 

@@ -184,21 +184,21 @@ Method compileDefinition(Element As PXW.DEV.Element)
     ;d rulesE.write()
     
     Set method=..NewMethod(mname)
-    set method.Final=0
-    set method.Private=0
+    Set method.Final=0
+    Set method.Private=0
     Set method.Description=Element.ToString(" ")
     Set ..CurrentMethod=method
     
     Set indent=1
-    set summary=..summariseRules(rulesE)
-    if summary="R" {
+    Set summary=..summariseRules(rulesE)
+    If summary="R" {
         ; regex is a special kind of rule, more like a subrule
-        s transaction=0,debug=1,copymode=1
+        Set transaction=0,debug=1,copymode=1
         Do ..compileQuickCheck(method,rulesE,indent)
         Do ..compileMethodStart(method,indent,0,transaction,debug)
         Do ..compileRules(method,rulesE,indent)
         Do ..compileMethodEnd(method,indent,,transaction,debug,copymode)
-    } else {
+    } Else {
         Do ..compileQuickCheck(method,rulesE,indent)
         Do ..compileMethodStart(method,indent,1)
         Do ..compileRules(method,rulesE,indent)
@@ -222,24 +222,24 @@ Method compileQuickCheck(Method As %Dictionary.MethodDefinition, RulesElement As
         Set Method.Description=Method.Description_$CHAR(13,10)_"summary values:"_$LISTTOSTRING(listOfValues)
         Set wordlist="",sep=""
         For i=1:1:$LISTLENGTH(listOfValues) Set wordlist=wordlist_sep_""""_$LISTGET(listOfValues,i)_"""",sep=","
-        if $LISTLENGTH(listOfValues)=1 {
+        If $LISTLENGTH(listOfValues)=1 {
             $$$WRITECR($$$Tab(indent)_"if '(..isKeyword("_wordlist_",.value)) { quit "_returnValue_" }")
-        } else {
+        } Else {
             $$$WRITECR($$$Tab(indent)_"if '(..isKeywordInList($lb("_wordlist_"),.value)) { quit "_returnValue_" }")
         }
-    } elseif (summary?1"(K"0."|K"1")&"1.E) || (summary?1"K"0."|K"1"&"1.E) {
+    } ElseIf (summary?1"(K"0."|K"1")&"1.E) || (summary?1"K"0."|K"1"&"1.E) {
          ; similar to above but with something else after
         ; Keyword list (K|K|K)&... or K|K|K&...
-        s numberofK=$l($p(summary,"&",1),"|")
-        s keywords=$list(listOfValues,1,numberofK)
+        Set numberofK=$LENGTH($PIECE(summary,"&",1),"|")
+        Set keywords=$LIST(listOfValues,1,numberofK)
         Set Method.Description=Method.Description_$CHAR(13,10)_"summary values:"_$LISTTOSTRING(keywords)
         Set wordlist="",sep=""
         For i=1:1:numberofK Set wordlist=wordlist_sep_""""_$LISTGET(listOfValues,i)_"""",sep=","
         ; It may end up doing this twice: once on the main method and then again when the keywords are processed in the submethod (above)
         ; but I think the benefit of doing this check before the submethod is even called is worth it.
-        if numberofK=1 {
+        If numberofK=1 {
             $$$WRITECR($$$Tab(indent)_"if '(..isKeyword("_wordlist_",.value)) { quit "_returnValue_" }")
-        } else {
+        } Else {
             $$$WRITECR($$$Tab(indent)_"if '(..isKeywordInList($lb("_wordlist_"),.value)) { quit "_returnValue_" /*1*/ }")
         }
     }  ElseIf (summary="P") {
@@ -249,7 +249,7 @@ Method compileQuickCheck(Method As %Dictionary.MethodDefinition, RulesElement As
         Set wordlist="",sep=""
         For i=1:1:$LISTLENGTH(listOfValues) Set wordlist=wordlist_sep_""""_$LISTGET(listOfValues,i)_"""",sep=","
         $$$WRITECR($$$Tab(indent)_"if '(..isStringSingle("_wordlist_",.value)) { quit "_returnValue_" /*3 */ }")
-    } elseif (summary="R") {
+    } ElseIf (summary="R") {
         ; no quick check for reg ex yet
     } ElseIf (summary?1"(P"0."|P"1")") || (summary?1"P"0."|P") {
         ; Punctuation list (P|P|P) or P|P|P
@@ -333,8 +333,8 @@ Method NewMethod(Name As %String, Element As PXW.DEV.Element) As %Dictionary.Met
     Set method.FormalSpec="ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element"
     Set method.ReturnType="%Boolean"
     ; Most methods will be sub methods (repeat groups etc) these should not be overridden, and should be private
-    set method.Final=1
-    set method.Private=1
+    Set method.Final=1
+    Set method.Private=1
     ;
     If $ISOBJECT($GET(Element)) Set method.Description=Element.ToString(" ")
     Quit method
@@ -422,8 +422,8 @@ Method compileRule(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.El
             ;i word="class" break
             Set ..keywords($$$UPPER(atom.value))=1
             $$$WRITE("..addKeyword(."_subElementVar_","""_$$$UPPER(word)_""") ")
-        } elseif $$$UPPER($p(word,":",1))="REGEXP"{
-            $$$WRITE("..addRegex(."_subElementVar_","""_$p(word,":",2)_""") ")
+        } ElseIf $$$UPPER($PIECE(word,":",1))="REGEXP"{
+            $$$WRITE("..addRegex(."_subElementVar_","""_$PIECE(word,":",2)_""") ")
         } Else {
             $$$WRITE("..addPunctuation(."_subElementVar_","""_word_""") ")
         }
@@ -732,10 +732,10 @@ Method summariseRule(Element As PXW.DEV.Element, listOfValues As %List = "") As 
                 ;i word="class" break
                 Set summary="K" ; keyword
                 Set listOfValues=listOfValues_$LISTBUILD($$$UPPER(word))
-            } Elseif $p($$$UPPER(atom.value),":",1)="REGEXP" {
+            } ElseIf $PIECE($$$UPPER(atom.value),":",1)="REGEXP" {
                 Set summary="R" ; REGEX
                 Set listOfValues=listOfValues_$LISTBUILD($$$UPPER(word)) ; needs to be upper because of things like i%
-            } else {
+            } Else {
                 Set summary="P" ; punctuation
                 Set listOfValues=listOfValues_$LISTBUILD($$$UPPER(word)) ; needs to be upper because of things like i%
             }

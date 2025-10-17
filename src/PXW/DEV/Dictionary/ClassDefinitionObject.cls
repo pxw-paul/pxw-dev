@@ -108,10 +108,10 @@ Method ListClassDetailsLike(ClassLike As %String, escape As %String = "", listHi
 	Set sql=sql_"	WHERE 1=1"
 	If $DATA(ClassLike) {
         Set sql=sql_"	  AND cc.name LIKE ?"
-        Set parameters($i(parameters))=ClassLike
+        Set parameters($INCREMENT(parameters))=ClassLike
 	    If escape'="" {
             Set sql=sql_" ESCAPE ?"
-            Set parameters($i(parameters))=escape
+            Set parameters($INCREMENT(parameters))=escape
 	    }
     }
     If listHidden {
@@ -130,7 +130,7 @@ Method ListClassDetailsLike(ClassLike As %String, escape As %String = "", listHi
         Set exlike=$LISTGET(..ExcludeClassesLike,i)
         If exlike'="" {
             Set sql=sql_" AND (cc.name NOT LIKE ?"
-            Set parameters($i(parameters))=exlike
+            Set parameters($INCREMENT(parameters))=exlike
        	    If exlike["\" {
     		    Set sql=sql_" ESCAPE '\'"
             }
@@ -294,7 +294,7 @@ Method ListProperyDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierRS
     Set sql=sql_"SELECT parent,Name,RuntimeType,SQLFieldName,Collection,Type,Origin "
     Set sql=sql_"FROM %Dictionary.CompiledProperty "
     Set sql=sql_"WHERE parent=?"
-    Set parameters($i(parameters))=ClassName
+    Set parameters($INCREMENT(parameters))=ClassName
 	Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj,parameters...)
 	If $$$ISERR(qsc) $$$ThrowStatus(qsc)
  	Set rs=##class(PXW.DEV.Dictionary.AtelierRS).%New(obj)
@@ -325,7 +325,7 @@ Method ListParameterDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierR
     Set sql=sql_"SELECT parent,Name,Type,Origin "
     Set sql=sql_"FROM %Dictionary.CompiledParameter "
     Set sql=sql_"WHERE parent= ? "
-    Set parameters($i(parameters))=ClassName
+    Set parameters($INCREMENT(parameters))=ClassName
 	Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj,parameters...)
 	If $$$ISERR(qsc) $$$ThrowStatus(qsc)
  	Set rs=##class(PXW.DEV.Dictionary.AtelierRS).%New(obj)
@@ -352,7 +352,7 @@ Method ListMethodDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierRS
     Set sql=sql_"SELECT parent,Name,ReturnType,Origin,Stub,FormalSpecParsed " ; stub is undocumented but it seems to be "source name.method name.source type (i=index,a=property)
     Set sql=sql_"FROM %Dictionary.CompiledMethod "
     Set sql=sql_"WHERE parent=?"
-    Set parameters($i(parameters))=ClassName
+    Set parameters($INCREMENT(parameters))=ClassName
     Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj,parameters...)
 	If $$$ISERR(qsc) $$$ThrowStatus(qsc)
  	Set rs=##class(PXW.DEV.Dictionary.AtelierRS).%New(obj)
@@ -368,7 +368,7 @@ Method CacheListMethodDetails(ClassName As %String)
         Set mname=rs.%Get("Name")
         Set stub=rs.%Get("Stub")
         Set rt=rs.%Get("ReturnType")
-        set fs=rs.%Get("FormalSpecParsed")
+        Set fs=rs.%Get("FormalSpecParsed")
         Set data=$LISTBUILD(mname,rt,rs.%Get("Origin"),stub,fs)
         Set ^PXW.Cache("CDEF",..Namespace,$$$UPPER(cn),"GMD",$$$UPPER(mname))=data
     }
@@ -382,7 +382,7 @@ Method ListIndexDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierRS
     Set sql=sql_"SELECT parent,Name,TypeClass,Origin " ; stub is undocumented but it seems to be "source name.method name.source type (i=index,a=property)
     Set sql=sql_"FROM %Dictionary.CompiledIndex "
     Set sql=sql_"WHERE parent=?"
-    Set parameters($i(parameters))=ClassName
+    Set parameters($INCREMENT(parameters))=ClassName
     Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj,parameters...)
 	If $$$ISERR(qsc) $$$ThrowStatus(qsc)
  	Set rs=##class(PXW.DEV.Dictionary.AtelierRS).%New(obj)
@@ -410,7 +410,7 @@ Method ListQueryDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierRS
     Set sql=sql_"SELECT parent,Name,Type,Origin " ; stub is undocumented but it seems to be "source name.method name.source type (i=index,a=property)
     Set sql=sql_"FROM %Dictionary.CompiledQuery "
     Set sql=sql_"WHERE parent=?"
-    Set parameters($i(parameters))=ClassName
+    Set parameters($INCREMENT(parameters))=ClassName
     Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj,parameters...)
 	If $$$ISERR(qsc) $$$ThrowStatus(qsc)
  	Set rs=##class(PXW.DEV.Dictionary.AtelierRS).%New(obj)
@@ -484,7 +484,7 @@ Method GetPropertyDetails(ClassName As %String, Name As %String, Output RuntimeT
     ;s data=$lb(pname,rs.%Get("RuntimeType"),psqlname,
     ;                    rs.%Get("Collection"),rs.%Get("Type"))            
    
-    Set data=$select(ufield'="":$GET(^PXW.Cache("CDEF",..Namespace,$$$UPPER(fcn),"GPD","propertyname",ufield)),1:"")
+    Set data=$SELECT(ufield'="":$GET(^PXW.Cache("CDEF",..Namespace,$$$UPPER(fcn),"GPD","propertyname",ufield)),1:"")
     If data="" Quit 0
 
 	Set RuntimeType=$LISTGET(data,2)
@@ -534,7 +534,7 @@ Method GetMethodDetails(ClassName As %String, Name As %String, Output ReturnType
 
     Do ..CacheIfNecessary(fcn,"GMD")
 	  
-    Set data=$select(ufield'="":$GET(^PXW.Cache("CDEF",..Namespace,$$$UPPER(fcn),"GMD",ufield)),1:"")
+    Set data=$SELECT(ufield'="":$GET(^PXW.Cache("CDEF",..Namespace,$$$UPPER(fcn),"GMD",ufield)),1:"")
     Set ReturnType=$LISTGET(data,2)
     Set Origin=$LISTGET(data,3)
     Set Stub=$LISTGET(data,4)
@@ -641,11 +641,11 @@ Method ListClassDetails(ClassName As %String = "", SQLTableName As %String = "")
     Set sql=sql_" WHERE "
     If ClassName'="" {
         Set sql=sql_" Name = ?"
-        Set parameters($i(parameters))=ClassName
+        Set parameters($INCREMENT(parameters))=ClassName
     }
     If SQLTableName'="" {
         Set sql=sql_" UPPER(SqlQualifiedNameQ) =UPPER(?)"
-        Set parameters($i(parameters))=SQLTableName
+        Set parameters($INCREMENT(parameters))=SQLTableName
     }
 	Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj,parameters...)
 	If $$$ISERR(qsc) $$$ThrowStatus(qsc)
@@ -904,8 +904,8 @@ ClassMethod FindNamespaceFromIRISNameSpace(IRISNameSpace As %String) As %String 
             left outer join PXW_DEV_Dictionary.AtelierSettings  as atel on atel.ServerName =cdef.AtelierSettings
             where atel.Namespace=:IRISNameSpace
             )
-    I SQLCODE'=0 s ns=""
-    q ns
+    If SQLCODE'=0 Set ns=""
+    Quit ns
 }
 
 Storage Default

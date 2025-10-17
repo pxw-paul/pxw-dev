@@ -170,9 +170,9 @@ Method next(number As %Integer = 1) As %String
 
 Method nextChars(chars As %String) As %String
 {
-    set value=..stream.NextChars(chars)
-    set ..keyword=""
-    q value
+    Set value=..stream.NextChars(chars)
+    Set ..keyword=""
+    Quit value
 }
 
 Method nextNotEOL(number As %Integer) As %String
@@ -400,8 +400,8 @@ Method addRegex(ParentElement As PXW.DEV.Element = "", Regex As %String) As %Boo
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
     
     Set ch50=..stream.PeekToEol()
-    s locate=$locate(ch50,Regex,1,end)
-    i locate=1 {
+    Set locate=$LOCATE(ch50,Regex,1,end)
+    If locate=1 {
         Set atom=..newAtom(ParentElement.type,..nextNotEOL(end-1))
         Do ParentElement.AddPart(atom)
         Set ok=1
@@ -409,7 +409,7 @@ Method addRegex(ParentElement As PXW.DEV.Element = "", Regex As %String) As %Boo
         Set ok=0
     }
     $$$DEBUGMethodEnd
-    q ok
+    Quit ok
 }
 
 Method addPunctuation(ParentElement As PXW.DEV.Element, Punctuation As %String, Output foundString As %String) As %Boolean
@@ -474,10 +474,10 @@ Method skipWhiteSpaceAndComments()
         ;        
 readNextLoop		
         ;Set ch10=..peek(10),ch=$EXTRACT(ch10,1)
-        set ch10=$EXTRACT(..streaminput,..stream.pos,..stream.pos+9),ch=$e(ch10,1)
+        Set ch10=$EXTRACT(..streaminput,..stream.pos,..stream.pos+9),ch=$EXTRACT(ch10,1)
         ;If '..eof(),ws[ch Set ..whitespace=..newAtom("whitespace",..nextChars(.ws)) Goto readNextLoop
         If ws[ch,ch'="" Set ..whitespace=..newAtom("whitespace",..nextChars(.ws)) Goto readNextLoop
-        If ..skipComments(.ch10) set ..keyword="" Goto readNextLoop
+        If ..skipComments(.ch10) Set ..keyword="" Goto readNextLoop
         Set ..needsWScheck=0
     }
 
@@ -555,7 +555,7 @@ Method readBlockComment(StartMarker As %String = "/*", EndMarker As %String = "*
 	Set o=..newAtom("blockcomment")
 	Set o.start=..stream.NextNOTEol($LENGTH(StartMarker))
 	Set p=..stream.PeekToString(EndMarker)
-    set n=..stream.NextMany($LENGTH(p))
+    Set n=..stream.NextMany($LENGTH(p))
 	If n'="" Set o.end=..stream.NextNOTEol($LENGTH(EndMarker)) ; put the */ in the block
 	Set o.value=n
     $$$DEBUGMethodEnd
