@@ -476,9 +476,9 @@ job_command                         ::= ('job' | 'j') [ post_conditional ] job_a
 job_arguments                       ::= job_argument ( ',' job_argument )*
 job_argument                        ::= job_call [ job_process_parameters ] [ job_timeout_spec ]
 job_call                            ::= ( label_reference [ function_parameter_list ] ) 
-                                        | ( '$' class_expression )
-                                        | this_object 
-                                        | classmethod_function_call
+                                        | class_expression
+                                        | this_object
+                                        | ( '$' classmethod_function_call )
 job_process_parameters              ::= ':' ( job_process_parameters_inbrackets | job_process_parameters_nobrackets )
 
 job_process_parameters_inbrackets   ::= '('  ( job_nspace_param 
