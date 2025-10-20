@@ -549,8 +549,6 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, Start
 			Set:'found type=..ClassServer.GetMethodReturnType(classname,propertyname,.fspec)
 		}
 		If fspec'="" {
-			;d objectchain.write()
-			;zw fspec,type
 			Set fparamsE=objectchain.findFirstElementByType("FunctionParameterList",0)
 			Set fpk="",count=0
 			For  {
