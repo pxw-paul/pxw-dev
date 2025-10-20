@@ -76,7 +76,7 @@ ClassMethod SelectResultsExecute(ByRef qHandle As %Binary) As %Status
 {
     #dim debug as PXW.Tools.DebugTiming
 
-    s debug=$g($$$debugObject)
+    Set debug=$GET($$$debugObject)
     If debug="" Quit $$$ERROR(5001,"No debugger object found (%pxwdeb)")
     If 'debug.%IsA(..%ClassName(1)) Quit $$$ERROR(5001,"Debugger object is not a Timing one")
     ;m %pxwdebug.times=%pxwdebtimes

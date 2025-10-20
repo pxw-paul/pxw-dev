@@ -203,7 +203,7 @@ Method findNextElement(ByRef key As %Integer) As PXW.DEV.Element
 
 Method countElements() As %Integer
 {
-	Set count=0,k="",xx=3
+	Set count=0,k=""
 	While $ISOBJECT(..findNextElement(.k)) {
 		Set count=count+1
 	}
@@ -296,7 +296,7 @@ Method findElementsXPath(Path As %String, ByRef OutputList As %Library.ListOfObj
 	; list1 from above builds list2, list1 is reset to list2 and it runs again
 	; if the step is * this means anything will do (look deep)
 	; otherwise just look a the next level
-	Set stepI=stepI+1,deep=0
+	Set stepI=stepI+1
 	For si=stepI:1:$LENGTH(Path,"/") {
 		Set step2=$PIECE(Path,"/",si)
 		Set stepField=$PIECE(step2,"[",1),stepCondition=$PIECE($PIECE(step2,"[",2,*),"]",1)

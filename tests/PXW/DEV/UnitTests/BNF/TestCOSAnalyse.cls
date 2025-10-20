@@ -1,6 +1,37 @@
 Class PXW.DEV.UnitTests.BNF.TestCOSAnalyse Extends %UnitTest.TestCase
 {
 
+Method TestByrefTypeDerive()
+{
+
+    ; all parameters
+    Set code=" Set ct=##class(PXW.DEV.Dictionary.CodeType).%OpenId(CodeType,cc,.sc)"
+    Set element=..parse(code,"CosCodeBlock","PXW.DEV.BNF.Run.COS")
+    Set analyse=##class(PXW.DEV.BNF.Analyse.COS).%New()
+    Set analyse.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace("LOCAL_USER")
+    Do analyse.checkElement(element)
+    do $$$AssertEquals($G(analyse.VariablesTypes("ct")),"PXW.DEV.Dictionary.CodeType")
+    do $$$AssertEquals($G(analyse.VariablesTypes("sc")),"%Library.Status")
+   
+    ; missing parameter
+    Set code=" Set ct=##class(PXW.DEV.Dictionary.CodeType).%OpenId(CodeType,,.sc)"
+    Set element=..parse(code,"CosCodeBlock","PXW.DEV.BNF.Run.COS")
+    Set analyse=##class(PXW.DEV.BNF.Analyse.COS).%New()
+    Set analyse.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace("LOCAL_USER")
+    Do analyse.checkElement(element)
+    do $$$AssertEquals($G(analyse.VariablesTypes("ct")),"PXW.DEV.Dictionary.CodeType")
+    do $$$AssertEquals($G(analyse.VariablesTypes("sc")),"%Library.Status")
+
+    ; dynamic
+    Set code=" #dim obj as %Library.DynamicObject"_$c(13)
+    set code=code_" set v=obj.thing1.subthing"
+    Set element=..parse(code,"CosCodeBlock","PXW.DEV.BNF.Run.COS")
+    Set analyse=##class(PXW.DEV.BNF.Analyse.COS).%New()
+    Set analyse.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace("LOCAL_USER")
+    Do analyse.checkElement(element)
+    do $$$AssertEquals($G(analyse.VariablesTypes("v")),"") ; cannot be determined
+}
+
 Method TestVariableStrings()
 {
     #dim element as PXW.DEV.Element

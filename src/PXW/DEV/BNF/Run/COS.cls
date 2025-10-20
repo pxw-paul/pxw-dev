@@ -103,8 +103,6 @@ Method VariableIdentifierSQL(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 
-    Set value=""
-
     ; we need to allow:
     ; s x={*}
     ; s x={field}
@@ -1294,6 +1292,30 @@ Method ZzCommandWord(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	}
 	$$$DEBUGMethodEnd
 	Quit ok
+}
+
+/// This is used to insert a place holder element when there is a bit of code like this
+///  s x=..method(p1,,p3)
+/// the missing p2 ends up with an "EmptyParameter" in it so that it can be counted later 
+Method EmptyParameter(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+    $$$DEBUGMethodBegin
+	Do:..needsWScheck ..skipWhiteSpaceAndComments()
+    If ..peek(1)="," {
+        Set ok=1 
+    } Else {
+        Set ok=0
+    }
+    If ok {
+        $$$BNFSTART(subElement)
+        ; commit checks that the sub element has something in it, so forcing here
+        ;$$$BNFCOMMIT(subElement,ParentElement)
+        Do ParentElement.AddPart(subElement)
+        $$$DEBUG("EmptyParameter committed")
+    }
+    $$$DEBUG("Empty="_ok)
+    $$$DEBUGMethodEnd
+    Quit ok
 }
 
 }

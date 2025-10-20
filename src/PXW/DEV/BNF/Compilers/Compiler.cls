@@ -24,7 +24,7 @@ Method %OnNew(inputText As %String) As %Status
 
 // d ##class(PXW.DEV.BNF.Compiler).goload("PXW.DEV.BNF.DEF.COS","PXW.DEV.BNF.GEN.COSauto")
 
-ClassMethod goload(DEFClass As %String = "", DestinationClass As %String, forceVersion As %Integer = "") As %Status
+ClassMethod goload(DEFClass As %String = "", DestinationClass As %String, forceVersion As %String = "") As %Status
 {
     #dim compiler as PXW.DEV.BNF.Compilers.Compiler
 

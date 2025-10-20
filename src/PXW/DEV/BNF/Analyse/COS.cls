@@ -15,9 +15,10 @@ Property DimmedTypes As %String [ MultiDimensional ];
 /// ..ParameterVariables(varname)=type
 Property ParameterVariables As %String [ MultiDimensional ];
 
-/// The return type of the current method
+/// The return type (string) of the current method
 Property ReturnType As %String;
 
+/// The return type Element of the current method
 Property ReturnTypeElement As PXW.DEV.BNF.Elements.COS;
 
 /// Set this when a quit from method is found
@@ -41,22 +42,29 @@ Property CodeMode As %String;
 /// ..DefinedMacros(macroname)=""
 Property DefinedMacros As %String [ MultiDimensional ];
 
-/// flag to stop many single letter commands showing as problems in a single analysis
+/// Flag to stop many single letter commands showing as problems in a single analysis
 Property ShortCommand As %Boolean;
 
+/// List of variables that count as "bad" - ie keywords
 Property BadVars As %String [ MultiDimensional ];
 
+/// List of variables that count as "bad" - ie keywords that have been used
 Property BadVarsUsed As %String [ MultiDimensional ];
 
 /// Temp store of strings if we can work out what they are.
-/// keyed by varname
+/// stringVars(varname)=string value text
+/// stringVars(varname,"element")=string value as element
 Property stringVars [ MultiDimensional ];
 
 /// Temp store of elements that are setting strings and their value (eg set str="a",str=str_"b" will have 2 entries one set to a on set to ab
+/// stringVars(+element)=string value text
+/// stringVars(+element,"element")=string value as element
+/// The element is the element that points to the variable being set (ie set STR="a" points to STR)
 Property stringVarsElement [ MultiDimensional ];
 
 /// Temp store of the final element that sets the var
 /// (+element)=value
+/// (+element,"element")=value as element
 Property stringVarsElementLast [ MultiDimensional ];
 
 Method %OnNew(ClassServer As PXW.DEV.Dictionary.ClassDefinitionObject = "") As %Status
@@ -147,13 +155,13 @@ Method IsExtension(Classname As %String, SuperClass As %String) As %Boolean
 	Quit 0
 }
 
-Method checkOneClassMember(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="OneClassmember")
+Method checkCDEFOneClassMember(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="OneClassmember")
 {
 	Do ..Reset()
 	Quit ""
 }
 
-Method checkReturnTypeClassReference(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ReturnTypeClassReference")
+Method checkCosReturnTypeClassReference(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ReturnTypeClassReference")
 {
 	Set crE=element.findFirstElementByType("ClassReference")
 	If $ISOBJECT(crE) {
@@ -163,6 +171,7 @@ Method checkReturnTypeClassReference(element As PXW.DEV.BNF.Elements.ClassDefini
 	Quit ""
 }
 
+/// Look for short commands.
 Method checkCosCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosCommand")
 {
 	Set directiveE=element.findFirstElementByType("CosDirective")
@@ -180,7 +189,7 @@ Method checkCosCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compi
 	Quit ""
 }
 
-Method checkFormalSpecItem(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="FormalSpecItem")
+Method checkCDEFFormalSpecItem(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="FormalSpecItem")
 {
 	#dim itemE as PXW.DEV.Element
 	/*
@@ -253,7 +262,10 @@ Method checkFormalSpecItem(element As PXW.DEV.BNF.Elements.ClassDefinition) As P
 	Quit ""
 }
 
-Method checkSetItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="SetItem")
+/// When setting a variable keep track of what is being set to what, enabling a derivation of what variable holds what.
+/// Also keep track of what string variables being set. This enables things like looking for code within string
+/// that is executed in directly (especially sql)
+Method checkCosSetItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="SetItem")
 {
 	; work out what is being set
 	
@@ -286,6 +298,7 @@ Method checkSetItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compiler
 		Do ..checkAndRecordVariableType(velement,var,derivedtype)
 	}
 
+	; work out if this is being set to a string, we can "easily" keep track of these
 	Set string=..SimplifyStringExpressionAsElement(value,.stringElement)
 	Set var=""
 	For {
@@ -317,7 +330,8 @@ Method checkSetItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compiler
 			;
 			; this final bit is an index to hold just the final state of things keyed by source element, 
 			; this is so we can look up to see if this is the last time the string was updated, so we know its complete.
-			; stringVarsElementLast(variableElement)=varname	; an index to show its the last one, it does not need to be set to anything
+			; stringVarsElementLast(variableElement)=varname					; an index to show its the last one, it does not need to be set to anything
+			; stringVarsElementLast(variableElement,"element")=stringElement	; an index to show its the last one, it does not need to be set to anything
 
 			Set oldLast=$GET(..stringVars(var,"last"))
 			If $ISOBJECT(oldLast) {
@@ -329,6 +343,7 @@ Method checkSetItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compiler
 			Set ..stringVarsElement(+velement)=string
 			Set ..stringVarsElement(+velement,"element")=stringElement
 			Set ..stringVarsElementLast(+velement)=var
+			Set ..stringVarsElementLast(+velement,"element")=stringElement
 		} Else {
 			Kill ..stringVars(var)
 		}
@@ -339,32 +354,34 @@ Method checkSetItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compiler
 Method checkAndRecordVariableType(VariableElement As PXW.DEV.BNF.Elements.COS, Variable As %String, DerivedType As %String)
 {
 
-	Set var=Variable,derivedtype=DerivedType,velement=VariableElement
-		Set dimmedtype=..FullClassName($GET(..DimmedTypes(var)))
-		Set currenttype=..FullClassName($GET(..VariablesTypes(var)))
-		If dimmedtype'="",derivedtype'="",dimmedtype'=derivedtype {
-			If (..IsExtension(derivedtype,dimmedtype)=0) && (..IsExtension(dimmedtype,derivedtype)=0) {
-				Do ..AddElementWarning(velement,"Derived type of "_var_" ("_derivedtype_") differs to dimmed type ("_dimmedtype_")")
-			}
+	Set var=Variable
+	Set velement=VariableElement
+	Set derivedtype=..FullClassName(DerivedType)
+	Set dimmedtype=..FullClassName($GET(..DimmedTypes(var)))
+	Set currenttype=..FullClassName($GET(..VariablesTypes(var)))
+	If dimmedtype'="",derivedtype'="",dimmedtype'=derivedtype {
+		If (..IsExtension(derivedtype,dimmedtype)=0) && (..IsExtension(dimmedtype,derivedtype)=0) {
+			Do ..AddElementWarning(velement,"Derived type of "_var_" ("_derivedtype_") differs to dimmed type ("_dimmedtype_")")
 		}
-		; assume the programmer is right, i.e. prefer the dimmed type
-		Set finaltype=..FullClassName($SELECT(dimmedtype'="":dimmedtype,1:derivedtype))
+	}
+	; assume the programmer is right, i.e. prefer the dimmed type
+	Set finaltype=..FullClassName($SELECT(dimmedtype'="":dimmedtype,1:derivedtype))
 
-		If currenttype'="",finaltype'="",currenttype'=finaltype {
-			; if the current type is a superclass of the new type then this is allowed
-			If ..IsExtension(finaltype,currenttype) {
-				; not an error
-			} Else {
-				Do ..AddElementWarning(velement,"Change of type on "_var_" from "_currenttype_" to "_finaltype)
-			}
+	If currenttype'="",finaltype'="",currenttype'=finaltype {
+		; if the current type is a superclass of the new type then this is allowed
+		If ..IsExtension(finaltype,currenttype) || ..IsExtension(currenttype,finaltype){
+			; not an error
+		} Else {
+			Do ..AddElementWarning(velement,"Change of type on "_var_" from "_currenttype_" to "_finaltype)
 		}
-		; we have a type so remember it, dont bother storing when it went to null, thats normally not useful
-		If finaltype'="" {
-			Set ..VariablesTypes(var)=finaltype
-		}
+	}
+	; we have a type so remember it, dont bother storing when it went to null, thats normally not useful
+	If finaltype'="" {
+		Set ..VariablesTypes(var)=finaltype
+	}
 }
 
-Method checkVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="Variable,ByrefVariable")
+Method checkCosVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="Variable,ByrefVariable")
 {
 	;  variable name part is the only bit we are interested in
 	Set varname=element.FirstAtom().ToString(0)
@@ -379,7 +396,7 @@ Method checkVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compile
 	Quit ""
 }
 
-Method checkObjectVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ObjectVariable")
+Method checkCosObjectVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ObjectVariable")
 {
 	;  variable name part is the only bit we are interested in
 	Set varname=element.FirstAtom().ToString(0)
@@ -418,45 +435,20 @@ Method checkCosDoItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compil
 		; eg Do ..method(.var1,.var2)
 		Set variableElement=element.partsGetAt(1)
 		; not really interested in the return type, we just want the method checked for byref 
-		Set rettype=..DeriveTypeReturned(variableElement)
+		do ..DeriveTypeReturned(variableElement)
 	}	
 	Quit ""
 }
 
-Method checkQuitCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="QuitCommand")
+Method checkCosQuitCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="QuitCommand,ReturnCommand")
 {
-	Set quitexpE=element.findFirstElementByType("QuitExpression",1)
-	If $ISOBJECT(quitexpE) {
-		Set derivedtype=..DeriveTypeReturned(quitexpE)
-		If derivedtype="" {
-			If quitexpE.ToString(0)="""""" {
-				; if the return value is null ("") then this is always ok
-				Set derivedtype=..ReturnType
-			} Else {
-				If ..ClassServer.GetClassDetails(..ReturnType,.classtype) {
-					If $$$UPPER(classtype)="DATATYPE" {
-						Set derivedtype=..ReturnType
-					}
-				}
-			}
-		}
-		If ..ReturnType="" {
-			Do ..AddElementWarning(element,"return type is not set, derived type="_derivedtype)
-		} ElseIf  ..FullClassName(..ReturnType)'=..FullClassName(derivedtype) {
-			If ..IsExtension(derivedtype,..ReturnType) {
-				; the derived type EXTENDS the expected type, which is fine
-			} Else {
-				Do ..AddElementWarning(element,"return type="_..ReturnType_", derived type="_derivedtype)
-			}
-		}
-		Set ..QuitFound=1
+	if element.type="QuitCommand" {
+		Set quitexpE=element.findFirstElementByType("QuitExpression",1)	
+	} elseif element.type="ReturnCommand" {
+		Set quitexpE=element.findFirstElementByType("ReturnExpression",1)
+	} else {
+		set quitexpE=""
 	}
-	Quit ""
-}
-
-Method checkReturnCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ReturnCommand")
-{
-	Set quitexpE=element.findFirstElementByType("ReturnExpression",1)
 	If $ISOBJECT(quitexpE) {
 		Set derivedtype=..DeriveTypeReturned(quitexpE)
 		If derivedtype="" {
@@ -474,8 +466,8 @@ Method checkReturnCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Co
 		If ..ReturnType="" {
 			Do ..AddElementWarning(element,"return type is not set, derived type="_derivedtype)
 		} ElseIf  ..FullClassName(..ReturnType)'=..FullClassName(derivedtype) {
-			If ..IsExtension(derivedtype,..ReturnType) {
-				; the derived type EXTENDS the expected type, which is fine
+			If (..IsExtension(..FullClassName(..ReturnType),..FullClassName(derivedtype))) || (..IsExtension(..FullClassName(derivedtype),..FullClassName(..ReturnType))) {
+				; the derived type subclass of the expected type, which is fine
 			} Else {
 				Do ..AddElementWarning(element,"return type="_..ReturnType_", derived type="_derivedtype)
 			}
@@ -509,7 +501,7 @@ Method checkOneClassMemeberFINAL(element As PXW.DEV.BNF.Elements.COS)
 	}
 }
 
-Method checkAttributeCodeModeType(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="AttributeCodemodetype")
+Method checkCDEFAttributeCodeModeType(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="AttributeCodemodetype")
 {
 	; if [codemode=objectgenerator] then the ReturnType of the method for analysis purposes is %Status
 	Set codemode=$$$UPPER(element.ToString(0))
@@ -525,7 +517,7 @@ Method checkAttributeCodeModeType(element As PXW.DEV.BNF.Elements.ClassDefinitio
 	Quit ""
 }
 
-Method checkMethodAttribute(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="MethodAttribute")
+Method checkCDEFMethodAttribute(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="MethodAttribute")
 {
 	Set attribE=element.findFirstElementByType("AttributeAbstract")
 	If $ISOBJECT(attribE) {
@@ -594,7 +586,8 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 
 	; some kind of set with indirection so type cannot be derived
 	; S @x
-	If ValueElement="" Quit ""
+	if '$isobject(ValueElement) quit ""
+	if 'ValueElement.%IsA("PXW.DEV.Element") quit ""
 
 	If ValueElement.type="Expression" {
 		Set expression=ValueElement
@@ -620,7 +613,6 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 			Set classnameele=hhclass.findFirstElementByType("ClassReference",0)
 			Set classname=classnameele.ToString(0)
 			Set finaltype=..FollowObjectChainForType(hhclass,classname)
-			$$$DEBUG("hhclass="_finaltype)
 		} 
 	}
     If finaltype'="" Quit finaltype
@@ -655,7 +647,6 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 			}
 		}
 	}
-	$$$DEBUG("thisobject="_finaltype)
 	If finaltype'="" Quit finaltype
 
 	Quit finaltype
@@ -664,7 +655,12 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 Method FullClassName(name As %String) As %String
 {
 	If name="" Quit ""
-	Set fullname=..ClassServer.FullClassName(name)
+	if $isobject(..ClassServer) {
+		Set fullname=..ClassServer.FullClassName(name)
+	} else {
+		set fullname=name
+	}
+	
 	Quit fullname
 }
 
@@ -757,36 +753,11 @@ Method SimplifyExpression(expressionElement As PXW.DEV.BNF.Elements.COS, Output 
 /// where - means its a variable 
 ///       "string" is a constant string
 ///       222 is a constant number
-/// The subscripts are delimited by : because , has other uses in the xref api 
-/// 
-/// 
-/// This especially hilights the case for dedicated special objects that
-/// can be built to hold specific things (ie a list of parameters)
-/// or at least a "fixed" sub element type for repeat groups (rather that the random names assigned now)
-/// This is an instance method because in the future we might want to check the VALUE of variables
-/// - it doesn't now, but planning ahead...
+/// The subscripts are delimited by : 
 Method SimplifySubscripts(element As PXW.DEV.Element) As %String
 {
 	Set simple=""
 	If (element.type="SubscriptParameterList") || (element.type="ArrayParameterList") {
-		/*;Set bracket=element.partsGetAt(1)
-		Set first=element.partsGetAt(2)
-		If $ISOBJECT(first) {
-			Set type=..SimplifyExpression(first)
-			Set simple=simple_type
-
-			Set others=element.partsGetAt(3) ; the repeat group
-			If $ISOBJECT(others),others.%IsA("PXW.DEV.Element") {
-				For i=2:2:others.partsCount() {
-					Set exp=others.partsGetAt(i)
-					If $ISOBJECT(exp) {
-						Set type=..SimplifyExpression(exp)
-						Set simple=simple_":"_type
-					}
-				}
-			}
-		}
-		*/
 		Set sep=""
 		For i=1:1:element.partsCount() {
 			Set exp=element.partsGetAt(i)
@@ -800,114 +771,22 @@ Method SimplifySubscripts(element As PXW.DEV.Element) As %String
 	Quit simple
 }
 
-/// Pass in an expression element, this will return:
-/// - if the expression is ONLY a variable (which could be an object with . etc or a global).
-/// the String if the expression is ONLY a string.
-/// the Number if the expression is ONLY a number.
-/// If there is anything else eg 1+1, then this is complex (for now) so it will return -.
-Method SimplifyStringExpression(ValueElement As PXW.DEV.BNF.Elements.COS, Output variableElement As PXW.DEV.BNF.Elements.COS) As %String
-{
-	#dim partE,factorE,primaryE,finalE,expressionE as PXW.DEV.BNF.Elements.COS
-
-	If ValueElement.type="Expression" {
-		Set expressionE=ValueElement
-	} Else {
-		Set expressionE=ValueElement.findFirstElementByType("Expression",0)
-	}
-	
-	; sql_"Select * from table where x="_xx_" and y=2"      as an expression looks like this:
-    ;Element=Expression PXW.DEV.BNF.Elements.COS @8724
-    ;.Element=Factor PXW.DEV.BNF.Elements.COS @8640
-    ;..Element=Primary PXW.DEV.BNF.Elements.COS @8256
-    ;...Element=Variable PXW.DEV.BNF.Elements.COS @8916
-    ;....type=Variable:/Expression/Factor/Primary/Variable
-    ;.... sql
-    ;.Element=Dyadicop PXW.DEV.BNF.Elements.COS @8939
-    ;..type=punctuation:/Expression/Dyadicop
-    ;.. _
-    ;.Element=Factor PXW.DEV.BNF.Elements.COS @8410
-    ;..Element=Primary PXW.DEV.BNF.Elements.COS @8273
-    ;...Element=String PXW.DEV.BNF.Elements.COS @8784
-    ;....type=String:/Expression/Factor/Primary
-    ;.... "Select * from table where x="
-    ;.Element=Dyadicop PXW.DEV.BNF.Elements.COS @8356
-    ;..type=punctuation:/Expression/Dyadicop
-    ;.. _
-    ;.Element=Factor PXW.DEV.BNF.Elements.COS @9127
-    ;..Element=Primary PXW.DEV.BNF.Elements.COS @8928
-    ;...Element=Variable PXW.DEV.BNF.Elements.COS @8435
-    ;....type=Variable:/Expression/Factor/Primary/Variable
-    ;.... xx
-    ;.Element=Dyadicop PXW.DEV.BNF.Elements.COS @8258
-    ;..type=punctuation:/Expression/Dyadicop
-    ;.. _
-    ;.Element=Factor PXW.DEV.BNF.Elements.COS @8498
-    ;..Element=Primary PXW.DEV.BNF.Elements.COS @8806
-    ;...Element=String PXW.DEV.BNF.Elements.COS @8654
-    ;....type=String:/Expression/Factor/Primary
-    ;.... " and y=2"	
-
-	Set string="",isString=1,line=0
-	For i=1:1:expressionE.partsCount() {
-		Set partE=expressionE.partsGetAt(i)
-		If $ISOBJECT(partE) {
-			If partE.type="Factor" {
-				Set factorE=partE
-				Set primaryE=factorE.partsGetAt(1)
-				If $ISOBJECT(primaryE),primaryE.type="Primary" {
-					Set finalE=primaryE.partsGetAt(1)
-					If $ISOBJECT(finalE) {
-						Set atom=finalE.FirstAtom()
-						If atom.line>line {
-							If line>0 {
-								Set string=string_$CHAR(13)
-							}
-							Set line=atom.line
-						}
-						If finalE.type="String" {
-							Set string=string_atom.value
-						} ElseIf finalE.type="Number" {
-							Set string=string_atom.value
-						} ElseIf finalE.type="SubExpression" {
-							Set string=string_"?"
-						} ElseIf finalE.type="Variable" {
-							Set varname=atom.value
-							Set string=string_$GET(..stringVars(varname))
-						} Else {
-							Set string=string_"?"
-						}
-					}
-				} Else {
-					Set isString=0 ; not primary thing
-				}
-			} ElseIf partE.type="Dyadicop",partE.ToString(0)="_" {
-				; concat is ok
-			} Else {
-				Set isString=0
-			}			
-		}
-	}
-	If isString=0 Set string=""
-	If string="?" Set string=""
-	Quit string
-}
-
 /// Returns a simplifed, decoded, string from the given expression.
 /// EG. 
 /// "a"_"b"      we get "ab" back
 /// "a"_var_"b"  if we already know what var is then (xxx) we get that back "axxxb"
 /// "a"_(complex thing)_"b" we get "a?b"
-/// It will also add these atoms to the variableElement, so that we can do more with it later if necessary
-Method SimplifyStringExpressionAsElement(ValueElement As PXW.DEV.BNF.Elements.COS, Output variableElement As PXW.DEV.BNF.Elements.COS) As %String
+/// It will also add these atoms to the stringElement, so that we can do more with it later if necessary
+Method SimplifyStringExpressionAsElement(ValueElement As PXW.DEV.BNF.Elements.COS, Output stringElement As PXW.DEV.BNF.Elements.COS) As %String
 {
 	#dim partE,factorE,primaryE,finalE,expressionE as PXW.DEV.BNF.Elements.COS
-
+	Set stringElement=##class(PXW.DEV.Element).%New()
+	if '$ISOBJECT(ValueElement) quit ""
 	If ValueElement.type="Expression" {
 		Set expressionE=ValueElement
 	} Else {
 		Set expressionE=ValueElement.findFirstElementByType("Expression",0)
 	}
-	Set variableElement=##class(PXW.DEV.Element).%New()
 	
 	; sql_"Select * from table where x="_xx_" and y=2"      as an expression looks like this:
     ;Element=Expression PXW.DEV.BNF.Elements.COS @8724
@@ -959,23 +838,23 @@ Method SimplifyStringExpressionAsElement(ValueElement As PXW.DEV.BNF.Elements.CO
 						If finalE.type="String" {
 							Set newatom.value=$REPLACE(atom.value,"""""","""") ; store without encode quotes
 							Set string=string_newatom.value
-							Do variableElement.AddPart(newatom)
+							Do stringElement.AddPart(newatom)
 						} ElseIf finalE.type="Number" {
 							Set string=string_atom.value
-							Do variableElement.AddPart(newatom)
+							Do stringElement.AddPart(newatom)
 						} ElseIf finalE.type="SubExpression" {
 							Set string=string_"?"
 							Set newatom.value="?"
-							Do variableElement.AddPart(newatom)
+							Do stringElement.AddPart(newatom)
 						} ElseIf finalE.type="Variable" {
 							Set varname=atom.value
 							Set string=string_$GET(..stringVars(varname))
 							Set varElem=$GET(..stringVars(varname,"element"))
-							Do:$ISOBJECT(varElem) variableElement.partsCopy(varElem)
+							Do:$ISOBJECT(varElem) stringElement.partsCopy(varElem)
 						} Else {
 							Set string=string_"?"
 							Set newatom.value="?"
-							Do variableElement.AddPart(newatom)
+							Do stringElement.AddPart(newatom)
 						}
 					}
 				} Else {

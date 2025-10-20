@@ -237,10 +237,11 @@ general_intrinsic                   ::= any_keyword function_parameter_list  [ o
 intrinsicfncall_parameter_list      ::= open_bracket [expression] ( ',' [expression]  )*  close_bracket
 intrinsicfncall_parameter           ::= expression
 
-function_parameter_list             ::= open_bracket [ [function_parameter] ( ',' [function_parameter] )* ] ['...'] close_bracket
-function_parameter_list_items ::= [ [function_parameter] ( ',' [function_parameter] )* ] ['...']
-function_parameter                  ::= ( '.' ( this_object_direct_property | simple_indirection | byref_variable )) | expression 
+function_parameter_list             ::= open_bracket [ function_parameter? ( ',' function_parameter? )* ] ['...'] close_bracket
+function_parameter_list_items       ::= [ function_parameter? ( ',' function_parameter? )* ] ['...']
+function_parameter                  ::= ( '.' ( this_object_direct_property | simple_indirection | byref_variable )) | expression | empty_parameter
 byref_variable                      ::= variable_set /* maybe set_value_expression would be better, but requires more careful check on analysis */
+empty_parameter                     ::= 'SPECIAL'
 
 intrinsicfncall_set                 ::= '$' (special_intrinsic_set | general_intrinsic_set )
 special_intrinsic_set               ::= extract_function_call_set

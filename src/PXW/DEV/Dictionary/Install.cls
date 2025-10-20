@@ -85,26 +85,6 @@ ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, Ate
     Quit sc
 }
 
-ClassMethod SetupUT(NamespaceName As %String, AtelierServerName As %String) As %Status
-{
-    Set sc=$$$OK
-    ; code interfaces
-    Set:$$$ISOK(sc) sc=##class(PXW.Tools.UnitTest.UTInterface).RegisterType()
-    ; html display pages
-    Set:$$$ISOK(sc) sc=##class(PXW.Tools.UnitTest.UTCase).RegisterType()
-
-    If $$$ISOK(sc) {
-        Set interface=##class(PXW.Tools.UnitTest.UTInterface).OpenNamespace(NamespaceName)
-        If '$ISOBJECT(interface) {
-            Set interface=##class(PXW.Tools.UnitTest.UTInterface).%New()
-            Set interface.Namespace=##class(PXW.DEV.Dictionary.Namespace).%OpenId(NamespaceName)
-        }
-        Set interface.AtelierSettings=##class(PXW.DEV.Dictionary.AtelierSettings).%OpenId(AtelierServerName)
-        Set sc=interface.%Save()
-    }
-    Quit sc
-}
-
 /// d ##class(PXW.DEV.Dictionary.Install).GenAll()
 ClassMethod GenAll()
 {
@@ -145,6 +125,19 @@ ClassMethod ExportGEN()
             Set cls=$LISTGET(classes,i)
             Write !,"Exporting "_package_cls_".CLS to "_genroot_cls_".cls"
             Do $SYSTEM.OBJ.ExportUDL(package_cls_".CLS",genroot_cls_".cls")
+        }
+    }
+}
+
+ClassMethod UpdateRegisterIndex()
+{
+    #dim rs as %SQL.StatementResult
+    Set rs=##class(%SQL.Statement).%ExecDirect(,"SELECT ID FROM PXW_DEV_Dictionary.CodeInterface")
+    While rs.%Next() {
+        Set interface=##class(PXW.DEV.Dictionary.CodeInterface).%OpenId(rs.%Get(("ID")))
+        Set sc=interface.RegisterType()
+        If $$$ISERR(sc) {
+            Write !,"ID=",! Do $SYSTEM.OBJ.DisplayError(sc)
         }
     }
 }

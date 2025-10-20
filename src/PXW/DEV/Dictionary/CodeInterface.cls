@@ -27,6 +27,7 @@ ClassMethod RegisterType() As %Status
         If (obj.InterfaceClass=..%ClassName(1)) {
             Set obj.Description=..#CodeTypeDescription
             Set sc=obj.%Save()
+            Set:$$$ISOK(sc) sc=##class(PXW.DEV.Dictionary.CodeTypeIndex).RegisterType("CodeInterface",codetype,..%ClassName(1))
         } Else {
             Set sc=$$$ERROR(5001,"CodeType ("_codetype_") already registered to "_obj.InterfaceClass)
         }

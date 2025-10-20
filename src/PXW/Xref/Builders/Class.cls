@@ -91,7 +91,7 @@ Method SaveAnalysis(atom As PXW.DEV.Atom, Description As %String) As %Status
 	Set adata.ItemKey1=..CalledByClassName
 	Set adata.ItemKey2=..CalledByItemName
 	Set adata.ItemType="CLS"
-	Set adata.LineNumber=$s(..FixedLineNumber:..FixedLineNumber,1:atom.line)
+	Set adata.LineNumber=$SELECT(..FixedLineNumber:..FixedLineNumber,1:atom.line)
 	Set adata.Description=Description
 	;Set sc=adata.%Save()
 	;If $$$ISERR(sc) {
@@ -114,7 +114,7 @@ Method SaveCDEFCref(ItemKey1 As %String, LineNumber As %Integer, ItemKey2 As %St
 	Set xref.ItemType="CLS"
 	Set xref.ItemKey1=..ClassServer.FullClassName(ItemKey1,$PIECE(..CalledByClassName,".",1,*-1))
 	Set xref.ItemKey2=ik2
-    Set xref.LineNumber=$s(..FixedLineNumber:..FixedLineNumber,1:LineNumber)
+    Set xref.LineNumber=$SELECT(..FixedLineNumber:..FixedLineNumber,1:LineNumber)
 	Set sc=$$$OK
 	If 'xref.AlreadyExists() {
 		Set sc=xref.%Save()
@@ -136,11 +136,11 @@ Method SaveCOSXref(ItemType As %String, ItemKey1 As %String, ItemKey2 As %String
 	Set xref.ItemType=ItemType
 	; for xref to classes set the full spec of the class - maybe a new method needed for CLS and others
 	; * is a special case where we know the method but not the class (eg $classmethod)
-	Set xref.ItemKey1=$select(ItemKey1="*":ItemKey1,ItemType="CLS":..ClassServer.FullClassName(ItemKey1,$PIECE(..CalledByClassName,".",1,*-1)),1:ItemKey1)
+	Set xref.ItemKey1=$SELECT(ItemKey1="*":ItemKey1,ItemType="CLS":..ClassServer.FullClassName(ItemKey1,$PIECE(..CalledByClassName,".",1,*-1)),1:ItemKey1)
 	Set xref.ItemKey2=ItemKey2
 	If $ISOBJECT(Atom) {
-		Set xref.CalledByKey3=$s(..FixedLineNumber:..FixedLineNumber,1:Atom.line)-..ClassElementLineNumber
-		Set xref.LineNumber=$s(..FixedLineNumber:..FixedLineNumber,1:Atom.line)
+		Set xref.CalledByKey3=$SELECT(..FixedLineNumber:..FixedLineNumber,1:Atom.line)-..ClassElementLineNumber
+		Set xref.LineNumber=$SELECT(..FixedLineNumber:..FixedLineNumber,1:Atom.line)
 	} Else {
 		Set xref.LineNumber=0
 	}
@@ -150,7 +150,7 @@ Method SaveCOSXref(ItemType As %String, ItemKey1 As %String, ItemKey2 As %String
 		Set sc=xref.%Save()
 		If $$$ISERR(sc) {
 			$$$DEBUG($EXTRACT($SYSTEM.Status.GetErrorText(sc),1,100))
-		} else {
+		} Else {
 			$$$DEBUG("Saved "_xref.%Id())
 		}
 	}
@@ -192,8 +192,8 @@ Method SaveSQLXref(ItemType As %String, ItemKey1 As %String, ItemKey2 As %String
 	Set xref.CalledByKey2=$SELECT($GET(CalledByKey2)'="":CalledByKey2,1:..CalledByItemName)
 
 	If $ISOBJECT(Atom) {
-		Set xref.CalledByKey3=$s(..FixedLineNumber:..FixedLineNumber,1:Atom.line)-..ClassElementLineNumber
-		Set xref.LineNumber=$s(..FixedLineNumber:..FixedLineNumber,1:Atom.line)
+		Set xref.CalledByKey3=$SELECT(..FixedLineNumber:..FixedLineNumber,1:Atom.line)-..ClassElementLineNumber
+		Set xref.LineNumber=$SELECT(..FixedLineNumber:..FixedLineNumber,1:Atom.line)
 	} Else {
 		Set xref.LineNumber=0
 	}
@@ -443,15 +443,15 @@ Method xrefCOSVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compi
 		}
 
         ; treat %parameter("xxx") as a parameter
-        if ..Analyser.CodeMode="OBJECTGENERATOR",variablename="%parameter" {
-            s arrayE=element.findFirstElementByType(("ArrayParameterList"),0)
-            if $isobject(arrayE) {
-                s parameter=..Analyser.SimplifySubscripts(arrayE)
+        If ..Analyser.CodeMode="OBJECTGENERATOR",variablename="%parameter" {
+            Set arrayE=element.findFirstElementByType(("ArrayParameterList"),0)
+            If $ISOBJECT(arrayE) {
+                Set parameter=..Analyser.SimplifySubscripts(arrayE)
                 ; is the paremeter a string
-                i parameter?1"""".AN1"""" {
-					s atom=arrayE.FirstAtom()
+                If parameter?1"""".AN1"""" {
+					Set atom=arrayE.FirstAtom()
                     ;d ..wrapElementHTML(arrayE,"<a href='"_..HREFToClass(..This,$tr(parameter,"""",""))_"'","</a>")
-					d ..SaveCOSXref("CLS",..CalledByClassName,$tr(parameter,"""",""),"%parameter",atom)
+					Do ..SaveCOSXref("CLS",..CalledByClassName,$TRANSLATE(parameter,"""",""),"%parameter",atom)
                 }
             }
         }
@@ -462,68 +462,74 @@ Method xrefCOSVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compi
 
 Method xrefCOSVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="VariableSet")
 {
-	 if $isobject(..Analyser),$d(..Analyser.stringVarsElementLast(+element)) {
-        set varname=..Analyser.stringVarsElementLast(+element)
-		set value=$g(..Analyser.stringVars(varname))
-        if value'="" {
+	If $ISOBJECT(..Analyser),$DATA(..Analyser.stringVarsElementLast(+element)) {
+        Set varname=..Analyser.stringVarsElementLast(+element)
+		Set value=$GET(..Analyser.stringVars(varname))
+        If value'="" {
 			; does it look like it might be sql?
-			s normValue=$$$UPPER($tr(value,$c(13,9),"  "))
-			s selectfound=$FIND(normValue,"SELECT ")
-			s fromfound=$FIND(normValue,"FROM ")
-			if selectfound,fromfound>selectfound {
+			Set normValue=$$$UPPER($TRANSLATE(value,$CHAR(13,9),"  "))
+			Set selectfound=$FIND(normValue,"SELECT ")
+			Set fromfound=$FIND(normValue,"FROM ")
+			If selectfound,fromfound>selectfound {
 				; its being treated as SQL so format it a bit (the simplify deals with array of strings not quite right for this function)
 				; try and format it so its similar to the format in the source code
-				set strElement=..Analyser.stringVarsElement(+element,"element")
+				Set strElement=..Analyser.stringVarsElement(+element,"element")
 				; try and format it so its similar to the format in the source code
-				set formatted="",line=0
-				for i=1:1:strElement.partsCount() {
-					s atom=strElement.partsGetAt(i)
-					i atom.line>line {
-						if line>0 {
-							s formatted=formatted_$c(13)
+				Set formatted="",line=0
+				For i=1:1:strElement.partsCount() {
+					Set atom=strElement.partsGetAt(i)
+					If atom.line>line {
+						If line>0 {
+							Set formatted=formatted_$CHAR(13)
 						}
 					}
-					s line=atom.line ; always update the line, its possible to go backwards!
-					set formatted=formatted_atom.value
+					Set line=atom.line ; always update the line, its possible to go backwards!
+					Set formatted=formatted_atom.value
 				}
 				;
 				Set parser=##class(PXW.DEV.BNF.Run.SQL).%New()
 				Set parser.stream=##class(PXW.DEV.InputStream).NewString(formatted)
 				Set sqlelement=##class(PXW.DEV.Element).%New()
-				set atom=element.FirstAtom()
-				if parser.SqlProgram(sqlelement) {
-					if sqlelement.partsCount()>0 {
-						set newXrefer=..%ConstructClone(0)
-						set newXrefer.FixedLineNumber=atom.line
-						Do newXrefer.xrefElement(sqlelement)
-						If newXrefer.ERROR'="" {
-							d ..SaveAnalysis(atom,"SQL String parse error "_..ERROR)
+				Set atom=element.FirstAtom()
+				; parsing a made up string as if it COULD be SQL, anything could happen so just try it
+				Try {
+					If parser.SqlProgram(sqlelement) {
+						If sqlelement.partsCount()>0 {
+							Set newXrefer=..%ConstructClone(0)
+							Set newXrefer.FixedLineNumber=atom.line
+							Do newXrefer.xrefElement(sqlelement)
+							If newXrefer.ERROR'="" {
+								Do ..SaveAnalysis(atom,"SQL String parse error "_..ERROR)
+							}
+							If 'parser.stream.EOF() Do ..SaveAnalysis(atom,"SQL String parse incomplete: "_parser.stream.Peek(0,20))
+						} Else {
+							Do ..SaveAnalysis(atom,"SQL String found no elements")
 						}
-						If 'parser.stream.EOF() d ..SaveAnalysis(atom,"SQL String parse incomplete: "_parser.stream.Peek(0,20))
-					} else {
-						d ..SaveAnalysis(atom,"SQL String found no elements")
+					} Else {
+						Do ..SaveAnalysis(atom,"SQL String cannot be parsed")
 					}
-				} else {
-					d ..SaveAnalysis(atom,"SQL String cannot be parsed")
+				} Catch e {
+					Do ..SaveAnalysis(atom,"SQL String cannot be parsed, error:"_$SYSTEM.Status.GetErrorText(e.AsStatus()))
 				}
 			}
         }
     }
+	Quit ""
 }
 
 Method xrefCOSClassmethodMethod(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassmethodMethod")
 {
 
-    if $ISOBJECT(..Analyser) {
-        set expressionE=element.findFirstElementByType("Expression")
-        if $isobject(expressionE) {
-            set simple=..Analyser.SimplifyExpression(expressionE) 
+    If $ISOBJECT(..Analyser) {
+        Set expressionE=element.findFirstElementByType("Expression")
+        If $ISOBJECT(expressionE) {
+            Set simple=..Analyser.SimplifyExpression(expressionE) 
             ; its a string, so its a hard coded method name
-            if $e(simple,1)="""",$e(simple,*)="""" {
-                s mname=$tr(simple,"""","")
+            If $EXTRACT(simple,1)="""",$EXTRACT(simple,*)="""" {
+                Set mname=$TRANSLATE(simple,"""","")
                 ;d ..wrapElementHTML(expressionE,"<a href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS","*",mname)_"'>","</a>")
-				s atom=expressionE.FirstAtom()
-				d ..SaveCOSXref("CLS","*",mname,"$classmethod",atom)
+				Set atom=expressionE.FirstAtom()
+				Do ..SaveCOSXref("CLS","*",mname,"$classmethod",atom)
             }
         }
     }
@@ -812,7 +818,6 @@ Method SQLInternalXREF(Element As PXW.DEV.Element, table As %String = "", column
 
 Method xrefCOSParameterChecks(ClassName As %String, MethodPath As %String, Element As PXW.DEV.Element)
 {
-	;w !,"hello "_ClassName_" "_MethodPath
 	; NOTE that METHOD PATH HAS NO LEADING DOT HERE
     If ClassName="%Library.ResultSet",MethodPath="%New" {
         Set paramsE=Element.findFirstElementByType("FunctionParameterList")
@@ -821,7 +826,6 @@ Method xrefCOSParameterChecks(ClassName As %String, MethodPath As %String, Eleme
             Kill atoms
             Set p1=plist.GetAt(1)
             Set flat=..flattenlist(p1,.atoms)
-            ;d p1.write() zw flat,f2,atoms
             
             ; "%Studio.Project:ProjectList
             ; flat=$lb($lb("String","%Studio.Project:ProjectList"))
@@ -829,8 +833,8 @@ Method xrefCOSParameterChecks(ClassName As %String, MethodPath As %String, Eleme
                 Set val=atoms.GetAt(1).value
                 Set class=$PIECE(val,":",1)
                 Set query=$PIECE(val,":",2)
-				set a=atoms.GetAt(1)
-                do ..SaveCOSXref("CLS",class,query,"ResultSet",a)
+				Set a=atoms.GetAt(1)
+                Do ..SaveCOSXref("CLS",class,query,"ResultSet",a)
             }
 
             ; ..%ClassName(1)_":ProjectList"
@@ -839,7 +843,7 @@ Method xrefCOSParameterChecks(ClassName As %String, MethodPath As %String, Eleme
                 Set class=..CalledByClassName
                 Set query=$PIECE(atoms.GetAt(3).value,":",2)
                 Set a=atoms.GetAt(3)
-                do ..SaveCOSXref("CLS",class,query,"ResultSet",a)
+                Do ..SaveCOSXref("CLS",class,query,"ResultSet",a)
             }
             
             ; ..%ClassName(1)_":"_"ProjectList"
@@ -848,7 +852,7 @@ Method xrefCOSParameterChecks(ClassName As %String, MethodPath As %String, Eleme
                 Set class=..CalledByClassName
                 Set query=atoms.GetAt(4).value
                 Set a=atoms.GetAt(4)
-                do ..SaveCOSXref("CLS",class,query,"ResultSet",a)
+                Do ..SaveCOSXref("CLS",class,query,"ResultSet",a)
 
             }
             
@@ -856,9 +860,9 @@ Method xrefCOSParameterChecks(ClassName As %String, MethodPath As %String, Eleme
             ; flat=$lb($lb("keyword","classname"),$lb("keyword","$this"),$lb("String",":ProjectList"))
             If atoms.Count()=3,$$$UPPER(atoms.GetAt(1).value)="CLASSNAME",$PIECE(atoms.GetAt(3).type,":",1)="String" {
                 Set class=..CalledByClassName
-                Set query=$piece(atoms.GetAt(3).value,":",2)
+                Set query=$PIECE(atoms.GetAt(3).value,":",2)
                 Set a=atoms.GetAt(3)
-                do ..SaveCOSXref("CLS",class,query,"ResultSet",a)
+                Do ..SaveCOSXref("CLS",class,query,"ResultSet",a)
             }
             
             ; $classname($this)_":"_"ProjectList"
@@ -867,7 +871,7 @@ Method xrefCOSParameterChecks(ClassName As %String, MethodPath As %String, Eleme
                 Set class=..CalledByClassName
                 Set query=atoms.GetAt(4).value
                 Set a=atoms.GetAt(4)
-                do ..SaveCOSXref("CLS",class,query,"ResultSet",a)
+                Do ..SaveCOSXref("CLS",class,query,"ResultSet",a)
             }
             
             ; $classname()_":ProjectList"
@@ -876,7 +880,7 @@ Method xrefCOSParameterChecks(ClassName As %String, MethodPath As %String, Eleme
                 Set class=..CalledByClassName
                 Set query=$PIECE(atoms.GetAt(2).value,":",2)
                 Set a=atoms.GetAt(2)
-                do ..SaveCOSXref("CLS",class,query,"ResultSet",a)
+                Do ..SaveCOSXref("CLS",class,query,"ResultSet",a)
             }
 
             ; $classname()_":"_"ProjectList"
@@ -885,7 +889,7 @@ Method xrefCOSParameterChecks(ClassName As %String, MethodPath As %String, Eleme
                 Set class=..CalledByClassName
                 Set query=atoms.GetAt(3).value
                 Set a=atoms.GetAt(3)
-                do ..SaveCOSXref("CLS",class,query,"ResultSet",a)
+                Do ..SaveCOSXref("CLS",class,query,"ResultSet",a)
             }
 
         }
@@ -893,6 +897,13 @@ Method xrefCOSParameterChecks(ClassName As %String, MethodPath As %String, Eleme
 }
 
 /// This method needs to be somewhere that XREF and HTML can access. Part of the analyser maybe?
+/// It takes an element that is a list of things (eg a method call parameters) and 
+/// flattens them for easy examination. 
+/// EG:
+///  ..%ClassName(1)_":ProjectList"
+///  flat = $lb($lb("ObjectChainNoDot","%ClassName"),$lb("Number","1"),$lb("String",":ProjectList"))
+/// 
+/// It might be better to use the xpath functions now, instead of this, but leaving alone. 
 ClassMethod flattenlist(Element As PXW.DEV.Element, AtomList As %Library.ListOfObjects) As %List
 {
 	#dim a as PXW.DEV.Atom
@@ -901,9 +912,7 @@ ClassMethod flattenlist(Element As PXW.DEV.Element, AtomList As %Library.ListOfO
     If '$ISOBJECT($GET(AtomList)) Set AtomList=##class(%Library.ListOfObjects).%New()
     
  	Set list=""
-    ;if AtomList'="" w "new list" s AtomList=##class(%ListOfObjects).%New()
 	Set akey=""
-	Set sep=""
     If Element.partsCount()=1 {
         Set single=1
     } Else {

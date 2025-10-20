@@ -186,7 +186,7 @@ Method WriteStyles()
 	.COSVariable { color:var(--fgCodeVariable);}
 	.COSVariableSet { color:var(--fgCodeVariable); font-weight:bold; }
 	.COSVariableParameter { color: var(--fgCodeArgument);}
-	.COSVariableParameterSet { color: var(--fgCodeVariable); font-weight:bold;}
+	.COSVariableParameterSet { color: var(--fgCodeArgument); font-weight:bold;}
 
 	.COSString { color: var(--fgCodeString); }
 	.COSNumber { color: var(--fgCodeNumber); }

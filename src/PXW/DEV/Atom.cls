@@ -75,15 +75,15 @@ Method writeDebug(indent As %String)
 /// Find the left-most comment which could be before some whitespace.
 Method getComment(atcomment As %Boolean = 0) As PXW.DEV.Atom
 {
-    if $ISOBJECT(..whitespace) s found=..whitespace.getComment(0) i $isobject(found) q found
-    if $ISOBJECT(..comment) s found=..comment.getComment(1) i $isobject(found) q found
-    if atcomment q $this
-    quit ""
+    If $ISOBJECT(..whitespace) Set found=..whitespace.getComment(0) If $ISOBJECT(found) Quit found
+    If $ISOBJECT(..comment) Set found=..comment.getComment(1) If $ISOBJECT(found) Quit found
+    If atcomment Quit $THIS
+    Quit ""
 }
 
 Method clearComment()
 {
-	If $ISOBJECT(..comment) set ..comment=""
+	If $ISOBJECT(..comment) Set ..comment=""
 	If $ISOBJECT(..whitespace) Do ..whitespace.clearComment()
 }
 

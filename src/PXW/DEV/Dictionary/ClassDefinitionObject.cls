@@ -546,7 +546,7 @@ Method GetMethodDetails(ClassName As %String, Name As %String, Output ReturnType
 
 Method GetMethodReturnType(ClassName As %String, Name As %String, Output FormalSpecParsed) As %String
 {
-    If ClassName="" Quit 0
+    If ClassName="" Quit ""
 
     ;s fcn=..FullClassName(ClassName)
 
@@ -638,13 +638,13 @@ Method ListClassDetails(ClassName As %String = "", SQLTableName As %String = "")
     Set sql=sql_"SELECT Name,ClassType,Super,PrimarySuper,to_char($piece(TimeChanged,'.',1),'YYYY-MM-DD HH24:MI:SS') as TimeChanged"
     Set sql=sql_",SqlQualifiedNameQ,IncludeCodeAll,IncludeMGenAll,PropertyClass,ClassType as SubType"
     Set sql=sql_" FROM %Dictionary.CompiledClass "
-    Set sql=sql_" WHERE "
+    Set sql=sql_" WHERE 1=1 "
     If ClassName'="" {
-        Set sql=sql_" Name = ?"
+        Set sql=sql_" AND Name = ?"
         Set parameters($INCREMENT(parameters))=ClassName
     }
     If SQLTableName'="" {
-        Set sql=sql_" UPPER(SqlQualifiedNameQ) =UPPER(?)"
+        Set sql=sql_" AND UPPER(SqlQualifiedNameQ) =UPPER(?)"
         Set parameters($INCREMENT(parameters))=SQLTableName
     }
 	Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj,parameters...)

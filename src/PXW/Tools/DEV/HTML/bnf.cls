@@ -893,20 +893,20 @@ Method writeCOSVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.C
     If $ISOBJECT(..Analyser),$DATA(..Analyser.stringVarsElement(+element)) {
         Set value=..Analyser.stringVarsElement(+element)
         If value'="" {
-            set strElement=..Analyser.stringVarsElement(+element,"element")
+            Set strElement=..Analyser.stringVarsElement(+element,"element")
             ; try and format it so its similar to the format in the source code
-            set formatted="",line=0
-            for i=1:1:strElement.partsCount() {
-                s atom=strElement.partsGetAt(i)
-                i atom.line>line {
-                    if line>0 {
-                        s formatted=formatted_$c(13)
+            Set formatted="",line=0
+            For i=1:1:strElement.partsCount() {
+                Set atom=strElement.partsGetAt(i)
+                If atom.line>line {
+                    If line>0 {
+                        Set formatted=formatted_$CHAR(13)
                     }
                 }
-                s line=atom.line ; always update the line, its possible to go backwards!
-                set formatted=formatted_atom.value
+                Set line=atom.line ; always update the line, its possible to go backwards!
+                Set formatted=formatted_atom.value
             }
-            Do ..wrapElementHTML(element,"","<span title='"_$zconvert(formatted,"O","HTML")_"' class='hiddencopy' onclick=""copyTextToClipboard('"_$ZCONVERT($ZCONVERT(formatted,"O","JS"),"O","HTML")_"');"">copy</span>")
+            Do ..wrapElementHTML(element,"","<span title='"_$ZCONVERT(formatted,"O","HTML")_"' class='hiddencopy' onclick=""copyTextToClipboard('"_$ZCONVERT($ZCONVERT(formatted,"O","JS"),"O","HTML")_"');"">copy</span>")
         }
     }
     Quit ""

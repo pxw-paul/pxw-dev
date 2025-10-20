@@ -486,8 +486,8 @@ Method TestClassmethod()
     Do $$$AssertEquals(..parseAndFlat("classmethod(classvar,""MethodName"")",pmeth),"ClassmethodFunctionCall:{Keyword:classmethod,(,Variable:classvar,,,String:MethodName,)}")
     Do $$$AssertEquals(..parseAndFlat("classmethod(classvar,""MethodName"",p1)",pmeth),"ClassmethodFunctionCall:{Keyword:classmethod,(,Variable:classvar,,,String:MethodName,,,Variable:p1,)}")    
     Do $$$AssertEquals(..parseAndFlat("classmethod(classvar,""MethodName"",p1,p2)",pmeth),"ClassmethodFunctionCall:{Keyword:classmethod,(,Variable:classvar,,,String:MethodName,,,FunctionParameterListItems:{Variable:p1,,,Variable:p2},)}")
-    Do $$$AssertEquals(..parseAndFlat("classmethod(classvar,""MethodName"",p1,p2,,p4)",pmeth),"ClassmethodFunctionCall:{Keyword:classmethod,(,Variable:classvar,,,String:MethodName,,,FunctionParameterListItems:{Variable:p1,,,Variable:p2,,,,,Variable:p4},)}")
-    Do $$$AssertEquals(..parseAndFlat("classmethod(classvar,""MethodName"",p1,p2,,p4,p5...)",pmeth),"ClassmethodFunctionCall:{Keyword:classmethod,(,Variable:classvar,,,String:MethodName,,,FunctionParameterListItems:{Variable:p1,,,Variable:p2,,,,,Variable:p4,,,Variable:p5,...},)}")
+    Do $$$AssertEquals(..parseAndFlat("classmethod(classvar,""MethodName"",p1,p2,,p4)",pmeth),"ClassmethodFunctionCall:{Keyword:classmethod,(,Variable:classvar,,,String:MethodName,,,FunctionParameterListItems:{Variable:p1,,,Variable:p2,,,EmptyParameter:{},,,Variable:p4},)}")
+    Do $$$AssertEquals(..parseAndFlat("classmethod(classvar,""MethodName"",p1,p2,,p4,p5...)",pmeth),"ClassmethodFunctionCall:{Keyword:classmethod,(,Variable:classvar,,,String:MethodName,,,FunctionParameterListItems:{Variable:p1,,,Variable:p2,,,EmptyParameter:{},,,Variable:p4,,,Variable:p5,...},)}")
 }
 
 Method TestGlobal()
