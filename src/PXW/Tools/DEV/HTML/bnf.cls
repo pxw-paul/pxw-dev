@@ -912,6 +912,17 @@ Method writeCOSVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.C
     Quit ""
 }
 
+Method writeJSCosMethodReference(element As PXW.DEV.BNF.Elements.JS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosMethodReference")
+{
+    s method=element.ToString(0)
+    ; method in ..this class
+    i method?1".."1.E {
+        do ..wrapElementHTML(element,"<a class='CDEFMember' href='"_..HREFToClass(..This,$p(method,"..",2))_"'>","</a>")
+    } else {
+        do ..wrapElementHTML(element,"<a class='CDEFMember' href='"_..HREFToClass($p(method,".",1,*-1),$p(method,".",*))_"'>","</a>")
+    }
+}
+
 /*method writeCOS(element As PXW.DEV.BNF.Elements.COS) AS PXW.DEV.BNF.Compilers.elementHandler(Type="")
 {
     q ""

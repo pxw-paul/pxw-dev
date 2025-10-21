@@ -53,7 +53,7 @@ Method VariableIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 {
     /*$$$DEBUGMethodBegin
     if '$isobject(..matcher) {
-        s ..matcher=##class(%Regex.Matcher).%New("(\%|[a-zA-Z])[a-zA-Z0-9]*")
+        s ..matcher=##class(%Regex.Matcher).%New("[%a-zA-Z][a-zA-Z0-9]*")
         s ..matcher.Text=..streaminput
     }
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
@@ -68,9 +68,10 @@ Method VariableIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
     $$$DEBUGMethodEnd
     Quit ok
     */
-    If ..codemode["SQL" Quit ..VariableIdentifierSQL(ParentElement)
 
-    $$$DEBUGMethodBegin
+   $$$DEBUGMethodBegin
+   If ..codemode["SQL" Quit ..VariableIdentifierSQL(ParentElement)
+
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
     
     Set ch50=..stream.PeekToEol()

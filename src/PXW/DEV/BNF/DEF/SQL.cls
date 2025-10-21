@@ -144,7 +144,7 @@ insert_set					::= column_reference '=' sql_expression
 
 update_command				::= 'UPDATE' (update_keyword)* direct_table ( ('SET' update_set (',' update_set)* ) 
 																			 | ( update_columns (('VALUES' update_values) | select_command) )
-																		   ) [where_clause]
+																		   ) [from_clause] [where_clause]
 update_set					::= column_reference '=' sql_expression
 
 update_keyword				::= '%NOCHECK' | '%NOFPLAN' | '%NOINDEX' | '%NOJOURN' | '%NOLOCK' | '%NOTRIGGER' | '%PROFILE_ALL' | '%PROFILE_ALL'

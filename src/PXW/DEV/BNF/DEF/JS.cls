@@ -525,11 +525,11 @@ cos_expression_compiletime          ::= '##(' cos_expression_body ')##'
 cos_expression_runtime              ::= '#(' cos_expression_body ')#'
 ocos_expression_server               ::= '#server(' '..' identifier '(' [ expression_sequence ]  ')' ')#'
 ocos_expression_call                 ::= '#call(' '..' identifier '(' [ expression_sequence ]  ')' ')#'
-cos_expression_server               ::= '#server(' cos_expression_body ')#'
-cos_expression_call                 ::= '#call(' cos_expression_body ')#'
-cos_expression_other                ::= '<%=' cos_expression_body '%>'
+cos_expression_server               ::= '#server(' cos_method_reference '(' [ expression_sequence ]  ')' ')#'
+cos_expression_call                 ::= '#call(' cos_method_reference '(' [ expression_sequence ]  ')' ')#'
+cos_expression_other                ::= '<%=' cos_expression_body '%>' 
 cos_expression_body                 ::= 'NEEDS COS EXPRESSION BODY'
-
+cos_method_reference                ::= 'NEEDS class_reference.method OR ..method'
 is_not_Line_Terminator              ::= 'NEEDS is_not_Line_Terminator'
 
     ]]></data>

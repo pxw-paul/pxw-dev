@@ -581,15 +581,21 @@ Method AliasIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
         Set pos=pos+1 ; final " is all part of the alias
         Set done=1
     } Else {
-        If $EXTRACT(ch50,pos)="%" Set pos=pos+1
-        If $EXTRACT(ch50,pos)?1A Set pos=pos+1
-        
-        If pos>1 {
-            While ($EXTRACT(ch50,pos)?1AN) || ($EXTRACT(ch50,pos)=".") ||($EXTRACT(ch50,pos)="_")  {
-                Set pos=pos+1
-            }
-            Set done=1
+        ; An alias can be anything including space!
+        ; Keep going until we reach a comma or close curly
+        ;If $EXTRACT(ch50,pos)="%" Set pos=pos+1
+        ;If $EXTRACT(ch50,pos)?1A Set pos=pos+1
+        ;
+        ;If pos>1 {
+        ;    While ($EXTRACT(ch50,pos)?1AN) || ($EXTRACT(ch50,pos)=".") ||($EXTRACT(ch50,pos)="_")  {
+        ;        Set pos=pos+1
+        ;    }
+        ;    Set done=1
+        ;}
+        while $EXTRACT(ch50,pos)'="", $EXTRACT(ch50,pos)'=",", $EXTRACT(ch50,pos)'="}" {
+            s pos=pos+1
         }
+        set done=1
     }
     If done {
         Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))

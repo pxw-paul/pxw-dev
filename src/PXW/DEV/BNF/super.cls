@@ -556,7 +556,7 @@ Method readBlockComment(StartMarker As %String = "/*", EndMarker As %String = "*
 	Set o.start=..stream.NextNOTEol($LENGTH(StartMarker))
 	Set p=..stream.PeekToString(EndMarker)
     Set n=..stream.NextMany($LENGTH(p))
-	If n'="" Set o.end=..stream.NextNOTEol($LENGTH(EndMarker)) ; put the */ in the block
+	Set o.end=..stream.NextNOTEol($LENGTH(EndMarker)) ; put the */ in the block
 	Set o.value=n
     $$$DEBUGMethodEnd
 	Quit o

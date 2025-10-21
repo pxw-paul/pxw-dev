@@ -397,6 +397,23 @@ Method CosExpressionBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
     Quit done
 }
 
+Method CosMethodReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+{
+	#dim atom as PXW.DEV.Atom
+	$$$DEBUGMethodBegin
+    $$$BNFPATH
+	$$$BNFSTART(subElement)
+
+    ; read all up to the (
+    set mref=..stream.PeekToString("(")
+    set atom=..newAtom(subElement.type,..nextNotEOL($l(mref)))
+    do subElement.AddPart(atom)
+    do ParentElement.AddPart(subElement)
+    set done=1 
+    $$$DEBUGMethodEnd
+    Quit done
+}
+
 ///  regular_expression_literal ::= 'NEED regex literal'
 /// summary values:NEED REGEX LITERAL
 /// summary=P

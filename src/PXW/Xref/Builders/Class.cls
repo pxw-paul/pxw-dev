@@ -470,7 +470,9 @@ Method xrefCOSVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Co
 			Set normValue=$$$UPPER($TRANSLATE(value,$CHAR(13,9),"  "))
 			Set selectfound=$FIND(normValue,"SELECT ")
 			Set fromfound=$FIND(normValue,"FROM ")
-			If selectfound,fromfound>selectfound {
+			set bracketFound=$FIND(normValue,"(")
+			; want a select followed by a from, but if there is a bracket then the select should be before to exclude partial subquery strings eg "and id in (select id from ...)"
+			If selectfound,fromfound>selectfound,((bracketFound=0)||(selectfound<bracketFound)) {
 				; its being treated as SQL so format it a bit (the simplify deals with array of strings not quite right for this function)
 				; try and format it so its similar to the format in the source code
 				Set strElement=..Analyser.stringVarsElement(+element,"element")
@@ -495,7 +497,12 @@ Method xrefCOSVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Co
 				Try {
 					If parser.SqlProgram(sqlelement) {
 						If sqlelement.partsCount()>0 {
-							Set newXrefer=..%ConstructClone(0)
+							Set newXrefer=..%New()
+							Set newXrefer.CalledByItemName=..CalledByItemName
+							Set newXrefer.CalledByClassName=..CalledByClassName
+							Set newXrefer.ClassElementLineNumber=..ClassElementLineNumber
+							set newXrefer.Analyser=..Analyser
+							Set newXrefer.ClassServer=..ClassServer
 							Set newXrefer.FixedLineNumber=atom.line
 							Do newXrefer.xrefElement(sqlelement)
 							If newXrefer.ERROR'="" {
@@ -534,6 +541,20 @@ Method xrefCOSClassmethodMethod(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.
         }
     }
     Quit ""
+}
+
+Method xrefJSCosMethodReference(element As PXW.DEV.BNF.Elements.JS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosMethodReference")
+{
+    s method=element.ToString(0)
+	s atom=element.FirstAtom()
+    ; method in ..this class
+    i method?1".."1.E {
+        ;do ..wrapElementHTML(element,"<a class='CDEFMember' href='"_..HREFToClass(..This,$p(method,"..",2))_"'>","</a>")
+		do ..SaveCOSXref("CLS",..CalledByClassName,$p(method,"..",2),"JScall",atom)
+    } else {
+        ;do ..wrapElementHTML(element,"<a class='CDEFMember' href='"_..HREFToClass($p(method,"..",1),$p(method,"..",2))_"'>","</a>")
+		do ..SaveCOSXref("CLS",$p(method,".",1,*-1),$p(method,".",*),"JScall",atom)
+    }
 }
 
 Method xrefCOSGlobal(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="GlobalRef,GlobalRefs,GlobalRefSet")

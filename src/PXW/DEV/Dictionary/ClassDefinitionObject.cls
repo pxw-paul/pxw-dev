@@ -349,9 +349,9 @@ Method ListMethodDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierRS
     $$$DEBUGMethodBegin
  	Set server=..AtelierSettings.ServerName
 	Set sql=""
-    Set sql=sql_"SELECT parent,Name,ReturnType,Origin,Stub,FormalSpecParsed " ; stub is undocumented but it seems to be "source name.method name.source type (i=index,a=property)
-    Set sql=sql_"FROM %Dictionary.CompiledMethod "
-    Set sql=sql_"WHERE parent=?"
+    Set sql=sql_"SELECT parent,Name,ReturnType,Origin,Stub,' ' || FormalSpecParsed as fsp" ; stub is undocumented but it seems to be "source name.method name.source type (i=index,a=property)
+    Set sql=sql_" FROM %Dictionary.CompiledMethod "
+    Set sql=sql_" WHERE parent=?"
     Set parameters($INCREMENT(parameters))=ClassName
     Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj,parameters...)
 	If $$$ISERR(qsc) $$$ThrowStatus(qsc)
@@ -368,7 +368,7 @@ Method CacheListMethodDetails(ClassName As %String)
         Set mname=rs.%Get("Name")
         Set stub=rs.%Get("Stub")
         Set rt=rs.%Get("ReturnType")
-        Set fs=rs.%Get("FormalSpecParsed")
+        Set fs=$e(rs.%Get("fsp"),2,*) ; remove leading " " because atelier does not like the encoded list (in v2)
         Set data=$LISTBUILD(mname,rt,rs.%Get("Origin"),stub,fs)
         Set ^PXW.Cache("CDEF",..Namespace,$$$UPPER(cn),"GMD",$$$UPPER(mname))=data
     }
