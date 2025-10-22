@@ -1,4 +1,4 @@
-/// Created: 2025-10-20 19:00:00 PXW.DEV.BNF.Compilers.Compiler1
+/// Created: 2025-10-22 08:10:46 PXW.DEV.BNF.Compilers.Compiler1
 Class PXW.DEV.BNF.GEN.JS Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 
@@ -2075,12 +2075,12 @@ Method CosExpressionBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	quit ok
 }
 
-///  cos_expression_call ::= '#call(' cos_expression_body ')#'
+///  cos_expression_call ::= '#call(' cos_method_reference '(' [ expression_sequence ] ')' ')#'
 /// summary values:#CALL(
-/// summary=P&C&P
+/// summary=P&C&P&[C]&P&P
 Method CosExpressionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&C&P
+	; rules summary P&C&P&[C]&P&P
 	; first rule summary P
 	if '(..isStringSingle("#CALL(",.value)) { quit 0 /* normal */ /*4*/ }
 	$$$DEBUGMethodBegin
@@ -2088,9 +2088,15 @@ Method CosExpressionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"#call(")  {
-		if ..CosExpressionBody(.subElement,.addedElement)  {
-			if ..addPunctuation(.subElement,")#")  {
-				set done=1 ; end compileRules
+		if ..CosMethodReference(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,"(")  {
+				if $S(..ExpressionSequence(.subElement,.addedElement) :1,1:1) {
+					if ..addPunctuation(.subElement,")")  {
+						if ..addPunctuation(.subElement,")#")  {
+							set done=1 ; end compileRules
+						}
+					}
+				}
 			}
 		}
 	}
@@ -2199,12 +2205,12 @@ Method CosExpressionRuntime(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	quit ok
 }
 
-///  cos_expression_server ::= '#server(' cos_expression_body ')#'
+///  cos_expression_server ::= '#server(' cos_method_reference '(' [ expression_sequence ] ')' ')#'
 /// summary values:#SERVER(
-/// summary=P&C&P
+/// summary=P&C&P&[C]&P&P
 Method CosExpressionServer(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&C&P
+	; rules summary P&C&P&[C]&P&P
 	; first rule summary P
 	if '(..isStringSingle("#SERVER(",.value)) { quit 0 /* normal */ /*4*/ }
 	$$$DEBUGMethodBegin
@@ -2212,11 +2218,43 @@ Method CosExpressionServer(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"#server(")  {
-		if ..CosExpressionBody(.subElement,.addedElement)  {
-			if ..addPunctuation(.subElement,")#")  {
-				set done=1 ; end compileRules
+		if ..CosMethodReference(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,"(")  {
+				if $S(..ExpressionSequence(.subElement,.addedElement) :1,1:1) {
+					if ..addPunctuation(.subElement,")")  {
+						if ..addPunctuation(.subElement,")#")  {
+							set done=1 ; end compileRules
+						}
+					}
+				}
 			}
 		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0 ; normal rollback
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  cos_method_reference ::= 'NEEDS class_reference.method OR ..method'
+/// summary values:NEEDS CLASS_REFERENCE.METHOD OR ..METHOD
+/// summary=P
+Method CosMethodReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary P
+	if '(..isStringSingle("NEEDS CLASS_REFERENCE.METHOD OR ..METHOD",.value)) { quit 0 /* normal */ /*3 */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"NEEDS class_reference.method OR ..method")  {
+		set done=1 ; end compileRules
 	}
 
 	if done {

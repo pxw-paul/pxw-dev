@@ -319,6 +319,7 @@ special_variable                    ::= '$' ('DEVICE' -- Contains user-specified
                                           | 'JOB' -- Contains the ID of the current process.
                                           | 'J' -- Contains the ID of the current process.
                                           | 'KEY' -- Contains the terminator character from the most recent READ.
+                                          | 'MNV' -- no idea what this is
                                           | 'NAMESPACE' -- Contains the namespace for the current stack level.
                                           | 'PRINCIPAL' -- Contains the ID of the principal I/O device.
                                           | 'P'
@@ -373,6 +374,12 @@ special_variable                    ::= '$' ('DEVICE' -- Contains user-specified
                                           | 'ZU' --
                                           | 'ZVERSION' -- Contains a string describing the current version of InterSystems IRIS.
                                           | 'ZV'
+                                          | 'MVNV' | 'MVNAM' | 'MVANS' | 'MVCOMMAND' | 'MVCONV' | 'MVDATE' | 'MVDAY' | 'MVDICT' | 'MVFILENAME' 
+                                          | 'MVFM' | 'MVFM' | 'MVFORMAT' | 'MVHEADER' | 'MVID' | 'MVLEVEL' | 'MVMONTH' | 'MVNB' | 'MVND' 
+                                          | 'MVNI' | 'MVNS' | 'MVPARASENTENCE' | 'MVRECORD' | 'MVSELECTED' | 'MVSENTENCE' | 'MVSM' | 'MVSTDFIL'
+                                          | 'MVSVM' | 'MVSYSRETCODE' | 'MVTIME' |'MVTM' | 'MVTTY' | 'MVUSERRETCODE' | 'MVVM' | 'MVYEAR'
+                                          | 'MVERRORS' | 'MVFOOTER' | 'MVMORESUBVALUES' | 'MVMOREVALUES' | 'MVOPTIONS' | 'MVPROCERRORS'
+                                          | 'MVPROCNAME' | 'MVPROCPIB' | 'MVPROCPIBOFF' | 'MVPROCPOB' | 'MVPROCSIB' | 'MVPROCSIBOFF' | 'MVPROCSOB'
                                           ) /* should this be just a general "read anything" ?*/
 
 /* Special function that we want to deal with  - need to make it so we can extend this without changing this bnf - different apps may want to look for something else. */

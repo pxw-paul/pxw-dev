@@ -1,4 +1,4 @@
-/// Created: 2025-10-20 19:00:06 PXW.DEV.BNF.Compilers.Compiler1
+/// Created: 2025-10-22 08:10:51 PXW.DEV.BNF.Compilers.Compiler1
 Class PXW.DEV.BNF.GEN.SQL Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 
@@ -7394,12 +7394,12 @@ Method UpdateColumns62Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	quit ok
 }
 
-///  update_command ::= 'UPDATE' (update_keyword)* direct_table ( ('SET' update_set (',' update_set)* ) | ( update_columns (('VALUES' update_values) | select_command) ) ) [where_clause]
+///  update_command ::= 'UPDATE' (update_keyword)* direct_table ( ('SET' update_set (',' update_set)* ) | ( update_columns (('VALUES' update_values) | select_command) ) ) [from_clause] [where_clause]
 /// summary values:UPDATE
-/// summary=K&(?4punctuation:4?)*&C&((K&C&(?4punctuation:4?)*)|(C&((K&C)|C)))&[C]
+/// summary=K&(?4punctuation:4?)*&C&((K&C&(?4punctuation:4?)*)|(C&((K&C)|C)))&[C]&[C]
 Method UpdateCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&(?4punctuation:4?)*&C&((K&C&(?4punctuation:4?)*)|(C&((K&C)|C)))&[C]
+	; rules summary K&(?4punctuation:4?)*&C&((K&C&(?4punctuation:4?)*)|(C&((K&C)|C)))&[C]&[C]
 	if '(..isKeyword("UPDATE",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -7409,8 +7409,10 @@ Method UpdateCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		if ..UpdateCommand52RepZero(.subElement,.addedElement)  {
 			if ..DirectTable(.subElement,.addedElement)  {
 				if ..UpdateCommand54Sub(.subElement,.addedElement)  {
-					if $S(..WhereClause(.subElement,.addedElement) :1,1:1) {
-						set done=1 ; end compileRules
+					if $S(..FromClause(.subElement,.addedElement) :1,1:1) {
+						if $S(..WhereClause(.subElement,.addedElement) :1,1:1) {
+							set done=1 ; end compileRules
+						}
 					}
 				}
 			}
