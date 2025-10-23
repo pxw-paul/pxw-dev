@@ -1,11 +1,11 @@
 Include PXW.Debuggers.Macros
 
-Class PXW.DEV.BNF.Analyse.Python Extends %RegisteredObject
+Class PXW.DEV.BNF.Analyse.Python Extends PXW.DEV.BNF.Analyse.analyser
 {
 
-Property This As %String;
+Parameter CodeType = "CLS";
 
-Property ThisMethod As %String;
+Parameter Language = "PYTHON";
 
 /// Keep track of variable types passed in as parameters
 /// ..ParameterVariables(varname)=type

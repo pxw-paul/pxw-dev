@@ -23,7 +23,9 @@ ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, Ate
     Set:$$$ISOK(sc) sc=##class(PXW.Tools.DEV.Routine).RegisterType()
     ; cross reference builders
     Set:$$$ISOK(sc) sc=##class(PXW.Xref.Builders.Class).RegisterType()
-
+    ; code analysers
+    Set:$$$ISOK(sc) sc=##class(PXW.DEV.BNF.Analyse.COS).RegisterType()
+    
     
     If $$$ISOK(sc) {
         Set namespace=##class(PXW.DEV.Dictionary.Namespace).%OpenId(NamespaceName)

@@ -1,8 +1,9 @@
-Class PXW.DEV.BNF.Analyse.SQL Extends %RegisteredObject
+Class PXW.DEV.BNF.Analyse.SQL Extends PXW.DEV.BNF.Analyse.analyser
 {
 
-/// Name of the class where the SQL belongs
-Property This As %String;
+Parameter CodeType = "CLS";
+
+Parameter Language = "SQL";
 
 Property ClassServer As PXW.DEV.Dictionary.ClassDefinitionObject;
 
@@ -88,7 +89,7 @@ Method SqlProgramCheck(element As PXW.DEV.Element)
         Do ..WithCommand(element)
     }
     If element.type="SelectCommand" {
-        Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
+        set sqlanalyse=..%New(..ClassServer)
         Set sqlanalyse.This=..This
         Merge sqlanalyse.withReferences=..withReferences
         Do sqlanalyse.checkElement(element)

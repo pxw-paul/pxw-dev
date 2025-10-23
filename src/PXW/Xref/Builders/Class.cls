@@ -25,6 +25,7 @@ Property ERROR As %String;
 /// the object that will act as the class data server
 Property ClassServer As PXW.DEV.Dictionary.ClassDefinitionObject;
 
+/// Property/Method etc
 Property ThisItemType As %String;
 
 /// Are we in a view
@@ -333,10 +334,12 @@ Method xrefCDEFClassReference(element As PXW.DEV.BNF.Elements.ClassDefinition) A
 
 Method xrefCDEFOneClassmember(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="OneClassmember")
 {
-	Set ..Analyser=##class(PXW.DEV.BNF.Analyse.COS).%New(..ClassServer)
+	set ..Analyser=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..#CodeType,"COS")
+	set ..Analyser.ClassServer=..ClassServer
 	Set ..Analyser.This=..CalledByClassName
 	If ..Analyser Do ..Analyser.checkElement(element)
 
+	; method,query,property etc
 	Set item=element.partsGetAt(1)
 	Set typeE=item.partsGetAt(1)
 	Set ..ThisItemType=typeE.ToString(0)
@@ -609,8 +612,10 @@ Method xrefCOS(element as PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.ele
 */
 Method xrefSQLProgram(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="QuerySpecification")
 {
+	#dim sqlanalyse as PXW.DEV.BNF.Analyse.analyser
     If ..SqlProgramAnalyser="" {
-		Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
+	    Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..#CodeType,"SQL")
+    	Set sqlanalyse.ClassServer=..ClassServer
     	Set sqlanalyse.This=..CalledByClassName
     	Set sqlanalyse.SqlProgram=1
     	Do sqlanalyse.checkElement(element)
@@ -622,12 +627,17 @@ Method xrefSQLProgram(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compil
 Method xrefSQLSelectCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="SelectCommand")
 {
 	#dim cref as PXW.DEV.Element
+	#dim sqlanalyse as PXW.DEV.BNF.Analyse.analyser
 	Do ..SQLInternalXREF(element)
     If $ISOBJECT(..SqlProgramAnalyser) {
         Set sqlanalyse=$GET(..SqlProgramAnalyser.SelectCommandAnalysis(+element))
     } Else {
+		set sqlanalyse=""
+	} 
+	if sqlanalyse="" {
         ; certain types of subquery are not being coverded by the program analyse yet, so treat separately for now
-        Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
+	    Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..#CodeType,"SQL")
+    	Set sqlanalyse.ClassServer=..ClassServer
         Set sqlanalyse.This=..CalledByClassName
         Do sqlanalyse.checkElement(element)
     }
@@ -679,7 +689,9 @@ Method xrefSQLSelectCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.
 
 Method xrefSQLInsertCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="InsertCommand")
 {
-	Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
+	#dim sqlanalyse as PXW.DEV.BNF.Analyse.analyser
+    Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..#CodeType,"SQL")
+    Set sqlanalyse.ClassServer=..ClassServer
 	Set sqlanalyse.This=..CalledByClassName
 	Do sqlanalyse.checkElement(element)
 	Set columnNameE=""
@@ -701,7 +713,9 @@ Method xrefSQLInsertCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.
 
 Method xrefSQLDeleteCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="DeleteCommand")
 {
-	Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
+	#dim sqlanalyse as PXW.DEV.BNF.Analyse.analyser
+    Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..#CodeType,"SQL")
+    Set sqlanalyse.ClassServer=..ClassServer
 	Set sqlanalyse.This=..CalledByClassName
 	Do sqlanalyse.checkElement(element)
 	Set columnNameE=""

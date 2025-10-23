@@ -1,7 +1,11 @@
 Include PXW.Debuggers.Macros
 
-Class PXW.DEV.BNF.Analyse.COS Extends PXW.DEV.BNF.Compilers.analyser
+Class PXW.DEV.BNF.Analyse.COS Extends PXW.DEV.BNF.Analyse.analyser
 {
+
+Parameter CodeType = "CLS";
+
+Parameter Language = "COS";
 
 /// Keep track of variable types 
 /// ..VariableTypes(varname)=type
@@ -112,15 +116,6 @@ Method IsParameterVariable(var As %String) As %Boolean
 	If var="" Quit 0
 	If $DATA(i%ParameterVariables(var)) Quit 1
 	Quit 0
-}
-
-Method AddElementWarning(element As PXW.DEV.Element, text As %String)
-{
-	; errors will be reported on atoms
-	Set a=element.FirstAtom()
-	If $ISOBJECT(a) {
-		Set ..ElementWarnings(+a)=$GET(..ElementWarnings(+a))_text_" "
-	}
 }
 
 /// best to analyse the entire codeblock all at once.

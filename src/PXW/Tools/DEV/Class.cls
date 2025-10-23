@@ -105,6 +105,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 	#dim ele,element as PXW.DEV.Element
 	Set zh=$ZHOROLOG
     Set output=##class(PXW.Tools.DEV.HTML.bnf).%New()
+	set output.ThisType=..#CodeType
 	Set output.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)
 
 	Set showPaths=0,forceXref=0

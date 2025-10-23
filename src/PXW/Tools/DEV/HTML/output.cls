@@ -15,7 +15,8 @@ Property This As %String;
 /// Name of the sub thing being written
 Property ThisMethod As %String;
 
-Property Analyser As PXW.DEV.BNF.Compilers.analyser;
+/// THIS SHOULD NOT BE HERE
+Property Analyser As PXW.DEV.BNF.Analyse.analyser;
 
 Property WriteMode As %Boolean [ InitialExpression = 1 ];
 

@@ -1,5 +1,9 @@
-Class PXW.DEV.BNF.Compilers.analyser Extends %RegisteredObject
+Class PXW.DEV.BNF.Analyse.analyser Extends %RegisteredObject
 {
+
+Parameter CodeType;
+
+Parameter Language;
 
 /// Name of the class being analysed
 Property This As %String;
@@ -10,6 +14,32 @@ Property ThisMethod As %String;
 /// Warnings assigned to elements
 /// ..ElementWarnings(+elementid)="text of the warning"
 Property ElementWarnings As %String [ MultiDimensional ];
+
+Method AddElementWarning(element As PXW.DEV.Element, text As %String)
+{
+	; errors will be reported on atoms
+	Set a=element.FirstAtom()
+	If $ISOBJECT(a) {
+		Set ..ElementWarnings(+a)=$GET(..ElementWarnings(+a))_text_" "
+	}
+}
+
+ClassMethod RegisterType() As %Status
+{
+    Set sc=$$$OK 
+    Set codetype=..#CodeType
+    If codetype'="" {
+        Set sc=##class(PXW.DEV.Dictionary.CodeTypeIndex).RegisterType("Analyse:"_..#Language,codetype,..%ClassName(1))
+    }
+    Quit sc
+}
+
+ClassMethod NewForLanguage(CodeType As %String, Language As %String) As PXW.DEV.BNF.Analyse.analyser
+{
+	#dim obj as PXW.DEV.BNF.Analyse.analyser
+	s obj=##class(PXW.DEV.Dictionary.CodeTypeIndex).NewClassForUsage("Analyse:"_Language,CodeType)
+	q obj
+}
 
 Method GenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator ]
 {

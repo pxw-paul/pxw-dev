@@ -42,6 +42,18 @@ ClassMethod GetClassForUsage(Usage As %String, CodeTypeName As %String) As %Stri
     Quit ""
 }
 
+ClassMethod NewClassForUsage(Usage As %String, CodeTypeName As %String)
+{
+	#dim obj as PXW.DEV.BNF.Compilers.analyser
+	s class=..GetClassForUsage(Usage,CodeTypeName)
+	if class'="" {
+        s obj=$classmethod(class,"%New")
+    } else {
+        s obj=""
+    }
+	q obj
+}
+
 Storage Default
 {
 <Data name="CodeTypeIndexDefaultData">

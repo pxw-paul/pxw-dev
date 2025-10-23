@@ -565,8 +565,9 @@ Method writeCDEFTypeClassReference(element As PXW.DEV.BNF.Elements.ClassDefiniti
 
 Method writeCDEFOneClassMember2(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="OneClassmember")
 {
-    Set ..Analyser=##class(PXW.DEV.BNF.Analyse.COS).%New(..ClassServer)
+    set ..Analyser=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..ThisType,"COS")
     Set ..Analyser.This=..This
+    set ..Analyser.ClassServer=..ClassServer
     Do ..Analyser.checkElement(element)
     Quit ""
 }
@@ -1006,8 +1007,10 @@ Method writeSQLJoin(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compiler
 
 Method writeSQLProgram(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="QuerySpecification")
 {
+    #dim sqlanalyse as PXW.DEV.BNF.Analyse.SQL
     If ..SqlProgramAnalyser="" {
-        Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
+        Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..ThisType,"SQL")
+        Set sqlanalyse.ClassServer=..ClassServer
         Set sqlanalyse.This=..This
         Set sqlanalyse.SqlProgram=1
         Do sqlanalyse.checkElement(element)
@@ -1021,9 +1024,13 @@ Method writeSQLSelectCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
     #dim subAnalyser as PXW.DEV.BNF.Analyse.SQL
     If $ISOBJECT(..SqlProgramAnalyser) {
         Set sqlanalyse=$GET(..SqlProgramAnalyser.SelectCommandAnalysis(+element))
-    } Else {
-        ; certain types of subquery are not being coverded by the program analyse yet, so treat separately for now
-        Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
+    } else {
+        set sqlanalyse=""
+    }
+    if sqlanalyse="" {
+        ; certain types of subquery are not being covered by the program analyse yet, so treat separately for now
+        Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..ThisType,"SQL")
+        Set sqlanalyse.ClassServer=..ClassServer
         Set sqlanalyse.This=..This
         Do sqlanalyse.checkElement(element)
     }
@@ -1031,7 +1038,6 @@ Method writeSQLSelectCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
     While sqlanalyse.NextColumnReference(.cref,.fulltable,.fieldname) {
         Set aliasNameE=cref.findFirstElementByType("AliasName",1) ; hmm, in a group, can we promote in bnf?
         Set columnNameE=cref.findFirstElementByType("ColumnName",0)
-        ;zw cref,fulltable,fieldname
         If $ISOBJECT(..SqlProgramAnalyser) {
             If fulltable'="",$DATA(..SqlProgramAnalyser.withReferences(fulltable)) {
                 Set fulltable=""
@@ -1057,7 +1063,10 @@ Method writeSQLSelectCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
 
 Method writeSQLInsertCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="InsertCommand")
 {
-    Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
+    ;Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
+    #dim sqlanalyse as PXW.DEV.BNF.Analyse.SQL
+    Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..ThisType,"SQL")
+    Set sqlanalyse.ClassServer=..ClassServer
     Set sqlanalyse.This=..This
     Do sqlanalyse.checkElement(element)
     Set columnNameE=""
@@ -1081,7 +1090,10 @@ Method writeSQLInsertCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
 
 Method writeSQL(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="")
 {
-    Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
+    ;Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
+    #dim sqlanalyse as PXW.DEV.BNF.Analyse.SQL
+    Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..ThisType,"SQL")
+    Set sqlanalyse.ClassServer=..ClassServer
     Set sqlanalyse.This=..This
     Do sqlanalyse.checkElement(element)
     Set columnNameE=""
