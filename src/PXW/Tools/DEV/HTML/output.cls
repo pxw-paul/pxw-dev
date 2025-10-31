@@ -15,9 +15,6 @@ Property This As %String;
 /// Name of the sub thing being written
 Property ThisMethod As %String;
 
-/// THIS SHOULD NOT BE HERE
-Property Analyser As PXW.DEV.BNF.Analyse.analyser;
-
 Property WriteMode As %Boolean [ InitialExpression = 1 ];
 
 /// Does this need things like the PRE tags?
@@ -53,6 +50,14 @@ Method wrapAtomHTML(atom As PXW.DEV.Atom, pre As %String, post As %String)
 {
     Set n=$GET(..pre(+atom)),n=n+1,..pre(+atom,n)=pre,..pre(+atom)=n
     Set n=$GET(..post(+atom)),n=n+1,..post(+atom,n)=post,..post(+atom)=n
+}
+
+/// eg an atom=2@PXW.DEV.Atom
+/// orefNumber is just the 2
+Method wrapObjectRefHTML(orefNumber, pre As %String, post As %String)
+{
+    Set n=$GET(..pre(orefNumber)),n=n+1,..pre(orefNumber,n)=pre,..pre(orefNumber)=n
+    Set n=$GET(..post(orefNumber)),n=n+1,..post(orefNumber,n)=post,..post(orefNumber)=n
 }
 
 Method wrapElementHTML(element As PXW.DEV.Element, pre As %String, post As %String)
@@ -117,12 +122,6 @@ Method writeAtom(atom As PXW.DEV.Atom, preValue As %String = "", postValue As %S
 	; add hilite on whitespace (OR ANYTHING) that is NOT going over more than 1 line
 	If ..HiLiteLine'="",atom.line=..HiLiteLine,atom.value'[$CHAR(13) {
 		Set preValue="<span class='hilite'>"_preValue
-		Set postValue=postValue_"</span>"
-	}
-	
-	If $ISOBJECT(..Analyser),$DATA(..Analyser.ElementWarnings(+atom)) {
-		Set line=..Analyser.ElementWarnings(+atom)
-		Set preValue="<span class='"_..#WarningClass_"' title='"_$ZCONVERT(line,"O","HTML")_"'>"_preValue
 		Set postValue=postValue_"</span>"
 	}
 	

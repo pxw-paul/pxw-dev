@@ -565,10 +565,17 @@ Method writeCDEFTypeClassReference(element As PXW.DEV.BNF.Elements.ClassDefiniti
 
 Method writeCDEFOneClassMember2(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="OneClassmember")
 {
-    set ..Analyser=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..ThisType,"COS")
+    Set ..Analyser=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..ThisType,"COS")
     Set ..Analyser.This=..This
-    set ..Analyser.ClassServer=..ClassServer
+    Set ..Analyser.ClassServer=..ClassServer
     Do ..Analyser.checkElement(element)
+
+    Set akey=""
+    For  {
+        Set akey=$ORDER(..Analyser.ElementWarnings(akey),1,line)
+        Quit:akey=""
+        Do ..wrapObjectRefHTML(akey,"<span class='"_..#WarningClass_"' title='"_$ZCONVERT(line,"O","HTML")_"'>","</span>")
+    }
     Quit ""
 }
 
@@ -915,12 +922,12 @@ Method writeCOSVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.C
 
 Method writeJSCosMethodReference(element As PXW.DEV.BNF.Elements.JS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosMethodReference")
 {
-    s method=element.ToString(0)
+    Set method=element.ToString(0)
     ; method in ..this class
-    i method?1".."1.E {
-        do ..wrapElementHTML(element,"<a class='CDEFMember' href='"_..HREFToClass(..This,$p(method,"..",2))_"'>","</a>")
-    } else {
-        do ..wrapElementHTML(element,"<a class='CDEFMember' href='"_..HREFToClass($p(method,".",1,*-1),$p(method,".",*))_"'>","</a>")
+    If method?1".."1.E {
+        Do ..wrapElementHTML(element,"<a class='CDEFMember' href='"_..HREFToClass(..This,$PIECE(method,"..",2))_"'>","</a>")
+    } Else {
+        Do ..wrapElementHTML(element,"<a class='CDEFMember' href='"_..HREFToClass($PIECE(method,".",1,*-1),$PIECE(method,".",*))_"'>","</a>")
     }
 }
 
@@ -1024,10 +1031,10 @@ Method writeSQLSelectCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
     #dim subAnalyser as PXW.DEV.BNF.Analyse.SQL
     If $ISOBJECT(..SqlProgramAnalyser) {
         Set sqlanalyse=$GET(..SqlProgramAnalyser.SelectCommandAnalysis(+element))
-    } else {
-        set sqlanalyse=""
+    } Else {
+        Set sqlanalyse=""
     }
-    if sqlanalyse="" {
+    If sqlanalyse="" {
         ; certain types of subquery are not being covered by the program analyse yet, so treat separately for now
         Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..ThisType,"SQL")
         Set sqlanalyse.ClassServer=..ClassServer

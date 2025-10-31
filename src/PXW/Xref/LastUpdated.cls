@@ -35,8 +35,8 @@ ClassMethod OpenOrNew(NameSpace As %String, ItemType As %String, ItemKey1 As %St
 
 Method NeedsUpdate(CheckTime As %TimeStamp) As %Boolean
 {
-    If ..LastUpdate="" Quit 1
     If CheckTime="" Quit 1
+    If ..LastUpdate="" Quit 1
     If ..BuildStatus'="",$$$ISERR(..BuildStatus) Quit 1
     Set ct=..LastUpdateNormalize(CheckTime)
     If ct]..LastUpdate Quit 1

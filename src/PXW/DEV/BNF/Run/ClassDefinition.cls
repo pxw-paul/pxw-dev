@@ -412,6 +412,7 @@ Method JavascriptCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
     Do ParentElement.AddPart(atom)
 
 	Set parser=##class(PXW.DEV.BNF.Run.JS).%New()
+    Set parser.codeMode="ClientMethod"
 	Set parser.stream=..stream
     Do parser.skipWhiteSpaceAndComments()
     ;$$$DEBUG("COS CODE BLOCK peeked "_parser.peek(1))

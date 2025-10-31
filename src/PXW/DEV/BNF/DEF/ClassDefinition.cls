@@ -214,9 +214,6 @@ parameter_default_simple            ::= [ '+' ] number | string
 parameter_default_expression        ::= '{' expression '}'
 
 method_body                         ::= cos_code_block
-//                                        | javascript_code_block
-//                                        | sql_code_block
-//                                        | html_code_block
 
 class_ForeignKey                    ::= 'foreignkey' foreignkey_name [ '(' key_props ')' ] 'references' class_reference [ '(' [ref_props] ')' ] [ foreignKey_attribute_list ] ';' 
 foreignkey_name                     ::= class_item_identifier

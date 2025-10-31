@@ -4,6 +4,8 @@ Class PXW.DEV.BNF.Run.JS Extends PXW.DEV.BNF.GEN.JS
 /// Set to CDEF, COS
 Property commentMode As %String [ InitialExpression = "JS" ];
 
+Property codeMode As %String [ InitialExpression = "CSP" ];
+
 ///  statement_List ::= statement*
 /// summary=(?4Call:4?)*
 Method Statement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -288,6 +290,8 @@ Method skipComments(ch10 As %String) As %Boolean
 
 Method StringLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
+    i ..codeMode="ClientMethod" q ..ClientMethodStringLiteral(ParentElement,.subElement)
+
     $$$DEBUGMethodBegin
     $$$BNFSTART(subElement)
     $$$BNFPATH
@@ -331,6 +335,69 @@ Method StringLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
                         Set n=n_..next(2)
                     } Else {
                         Set cos=1
+                    }
+                } ElseIf ch=marker {
+                    Set instring=0
+                    Set o.end=..next()
+                } Else {
+                    Set n=n_..next()
+                }
+            }
+            Set o.value=n
+            Do subElement.AddPart(o)
+            If cos {
+                Do ..CosExpression(subElement,.cosSubElement) 
+            }
+        }
+    }
+    If ok {
+ 
+        Do ParentElement.AddPart(subElement)
+    }
+    
+    ;$$$DEBUG("checking identifier, ok=1")
+    ;zw atom
+    $$$DEBUGMethodEnd
+    Quit ok
+}
+
+Method ClientMethodStringLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+    $$$DEBUGMethodBegin
+    $$$BNFSTART(subElement)
+    $$$BNFPATH
+	;$$$DEBUG("%path="_%path)
+
+    ;d ..skipWhiteSpaceAndComments()
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+    Set ok=0
+    Set char=..peek(1)
+    If char="""" Set ok=1
+    If char="'" Set ok=1
+
+    Set instring=1 ; 1 means started, 2=continuation (after code expression)
+    If ok {
+        While '..eof() && instring {
+            Set o=..newAtom("String")
+            Set n=""
+            If instring=1 {
+                Set o.start=..next()
+                ;Set n=""
+                Set marker=o.start
+                Set instring=2
+            }
+            Set cos=0
+            While '..eof() && instring && 'cos {
+                Set ch=..peek(1),ch2=$EXTRACT(..peek(2),2)
+                
+                If ch="\" {
+                    ; escaped marker (' or ")
+                    If ch2=marker {
+                        Set n=n_..next(2) ; \"
+                    } ElseIf ch2="\" {
+                        Set n=n_..next(2) ; \\
+                    } Else {
+                        Set n=n_..next()
                     }
                 } ElseIf ch=marker {
                     Set instring=0

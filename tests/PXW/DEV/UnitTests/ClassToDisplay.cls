@@ -8,10 +8,10 @@ Property Prop2 As %Integer [ Aliases = {property two ,p2}, SqlComputeCode = { s 
 /**/
 ClassMethod WorkOnAList(ObjList As %ListOfObjects(ELEMENTTYPE="PXW.DEV.UnitTests.ClassToDisplay",CLASSNAMEINOID=1)) As %Status
 {
-	#dim x as PXW.Xref.Data
+	#dim x as %XML.ImportHandler
 	;
  	set sql="SELECT * FROM PXW_XREF.Data WHERE ITEMKEY1=?"
-
+	w $o(arr(""),1,var)
 	#dim sc as PXW.Xref.Data
 	s x=##class(PXW.Xref.Data).%OpenId(1,,.sc)
 	w sc

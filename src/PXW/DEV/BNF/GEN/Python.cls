@@ -1,4 +1,4 @@
-/// Created: 2025-10-22 08:10:47 PXW.DEV.BNF.Compilers.Compiler2
+/// Created: 2025-10-31 09:11:57 PXW.DEV.BNF.Compilers.Compiler2
 Class PXW.DEV.BNF.GEN.Python Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 

@@ -127,10 +127,15 @@ ClassMethod GetCount(NameSpace As %String, ItemType As %String = "", ItemKey1 As
 {
 	/*#dim rs as %SQL.StatementResult*/
 		Set count=""
+
 		Set rs=..GetCountFunc(NameSpace,ItemType,ItemKey1,ItemKey2,CalledByCommand)
+		
 		If rs.%Next() {
 			Set count=+rs.%Get("Number")
 		}
+		
+		
+		
 		Quit count
 }
 

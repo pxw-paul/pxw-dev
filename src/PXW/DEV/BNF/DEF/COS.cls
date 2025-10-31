@@ -221,6 +221,7 @@ special_intrinsic                   ::= case_function_call
                                         | select_function_call
                                         | extract_function_call
                                         | piece_function_call
+                                        | order_function_call
                                         | listitem_function_call
                                         | listupdate_function_call
                                         | increment_function_call
@@ -763,12 +764,13 @@ bitlogic_expression                  ::= (expression ('|' | '&' | '^' |'~')* )*
 vector_function_call               ::= 'vector' open_bracket expression [ ',' star_parameter [ ',' star_parameter ] ] close_bracket
 vector_function_call_set           ::= 'vector' open_bracket set_value_expression  ',' expression ',' expression close_bracket
 
+order_function_call                 ::= ('order' | 'o') open_bracket expression [',' expression [ ',' variable_set ] ] close_bracket
 
 text_function_call                  ::= ('text') open_bracket label_reference close_bracket
 
 star_parameter                      ::= ('*' [expression]) | expression
 
-increment_function_call             ::= ('increment' | 'i') '(' variable_set [',' expression ] ')'
+increment_function_call             ::= ('increment' | 'i') '(' (variable_set | global_ref_set) [',' expression ] ')'
 
 method_function_call                ::= 'method' open_bracket classmethod_class ',' classmethod_method [ ',' function_parameter_list_items ] close_bracket [ object_chain ]
 classmethod_function_call           ::= 'classmethod' open_bracket classmethod_class ',' classmethod_method [ ',' function_parameter_list_items ] close_bracket [ object_chain ]
