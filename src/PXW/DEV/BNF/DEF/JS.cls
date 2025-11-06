@@ -326,11 +326,13 @@ factor                              ::= ( monadicop )* primary [ '++' | '--'] /*
 monadicop                           ::= "++" | "--" | "+" | "-" | "~" | "!"
 
 dyadicop                            ::= ('?' single_expression ':') | '===' | '>>>' | '!==' 
+                                        | cos_gt_lt /* in an expression like if (x>0) sometimes people do a &gt; to get round embedded <> issues, %CSP.Util.HTMLDashboardPane */
                                         | '**' |'??' | '<<' | '>>' | '<=' | '>=' | '==' | '!=' | '&&' | '||' | '+=' | '-=' | '*='
                                         | '*' | '/' | '%' | '+' | '-'  | '&' | '^' | '|' | '=' | '<' 
                                         | ('>' is_not_Line_Terminator) /* checking for > on its own at the end of embedded js */
                                         | cos_expression_runtime /* sometimes there is an expression for a operator, in particular < or >, EnsPortal.StartStopFrame */
                                         | "InstanceOf" /* | "In" */
+cos_gt_lt   ::= '&gt;' | '&lt;' /* might want to override this to enable/disable it? or flag it up as something odd? */
 
 primary ::= anonymous_Function 
     | cos_expression

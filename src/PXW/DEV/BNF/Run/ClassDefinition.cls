@@ -206,6 +206,12 @@ Method CosCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
         }
     }
 
+    If $$$UPPER(..language)="MVBASIC" {
+        ; NOT CODED YET
+            Do ..recover(ParentElement,.subElement,"{}","") ; NOT WORKING AS EXPECTED!
+            Quit 1
+    }
+
 	Set parser=##class(PXW.DEV.BNF.Run.COS).%New()
 	Set parser.stream=..stream
     Do parser.skipWhiteSpaceAndComments()

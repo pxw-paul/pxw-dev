@@ -87,6 +87,7 @@ Method ToString(wspace As %String = "") As %String
 	Quit str
 }
 
+/// Return the value of the atoms without following paths to any elements
 Method ToStringAtomsOnly(wspace As %String = "") As %String
 {
  

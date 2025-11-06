@@ -1,4 +1,4 @@
-/// Created: 2025-10-31 09:11:50 PXW.DEV.BNF.Compilers.Compiler1
+/// Created: 2025-11-04 17:25:31 PXW.DEV.BNF.Compilers.Compiler1
 Class PXW.DEV.BNF.GEN.CSP Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 
@@ -396,7 +396,7 @@ Method CspDoctype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"<!DOCTYPE")  {
 		if ..CspAttribute(.subElement,.addedElement)  {
-			if ..CspDoctype23OptGrp(.subElement,.addedElement)  {
+			if ..CspDoctype26OptGrp(.subElement,.addedElement)  {
 				if ..addPunctuation(.subElement,">")  {
 					set done=1 ; end compileRules
 				}
@@ -418,7 +418,7 @@ Method CspDoctype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 /// 
 /// summary values:PUBLIC
 /// summary=K&C&C
-Method CspDoctype23OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method CspDoctype26OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K&C&C
 	if '(..isKeyword("PUBLIC",.value)) { quit 1 /* not found is OK */ }
@@ -664,7 +664,7 @@ Method CspJavascript(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		if ..addKeyword(.subElement,"SCRIPT")  {
 			if ..addKeyword(.subElement,"LANGUAGE")  {
 				if ..addPunctuation(.subElement,"=")  {
-					if ..CspJavascript24Sub(.subElement,.addedElement)  {
+					if ..CspJavascript27Sub(.subElement,.addedElement)  {
 						if ..CspTagSB(.subElement,.addedElement)  {
 							if ..JavascriptBody(.subElement,.addedElement)  {
 								if ..CspTagEA(.subElement,.addedElement)  {
@@ -695,7 +695,7 @@ Method CspJavascript(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 /// 'javascript' | '"javascript"' | "'javascript'"
 /// summary=K|P|P
-Method CspJavascript24Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method CspJavascript27Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K|P|P
 	$$$BNFSTART(subElement)
@@ -731,10 +731,10 @@ Method CspJavascriptBoth(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 		if ..addKeyword(.subElement,"SCRIPT")  {
 			if ..addKeyword(.subElement,"LANGUAGE")  {
 				if ..addPunctuation(.subElement,"=")  {
-					if ..CspJavascriptBoth26Sub(.subElement,.addedElement)  {
+					if ..CspJavascriptBoth29Sub(.subElement,.addedElement)  {
 						if ..addKeyword(.subElement,"TYPE")  {
 							if ..addPunctuation(.subElement,"=")  {
-								if ..CspJavascriptBoth27Sub(.subElement,.addedElement)  {
+								if ..CspJavascriptBoth30Sub(.subElement,.addedElement)  {
 									if ..CspTagSB(.subElement,.addedElement)  {
 										if ..JavascriptBody(.subElement,.addedElement)  {
 											if ..CspTagEA(.subElement,.addedElement)  {
@@ -768,7 +768,7 @@ Method CspJavascriptBoth(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 /// 'javascript' | '"javascript"' | "'javascript'"
 /// summary=K|P|P
-Method CspJavascriptBoth26Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method CspJavascriptBoth29Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K|P|P
 	$$$BNFSTART(subElement)
@@ -794,7 +794,7 @@ Method CspJavascriptBoth26Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 /// '"text/javascript"'
 /// summary values:""TEXT/JAVASCRIPT""
 /// summary=P
-Method CspJavascriptBoth27Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method CspJavascriptBoth30Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P
 	if '(..isStringSingle("""TEXT/JAVASCRIPT""",.value)) { quit 0 /* normal */ /*3 */ }
@@ -825,10 +825,10 @@ Method CspJavascriptBothopp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 		if ..addKeyword(.subElement,"SCRIPT")  {
 			if ..addKeyword(.subElement,"TYPE")  {
 				if ..addPunctuation(.subElement,"=")  {
-					if ..CspJavascriptBothopp28Sub(.subElement,.addedElement)  {
+					if ..CspJavascriptBothopp31Sub(.subElement,.addedElement)  {
 						if ..addKeyword(.subElement,"LANGUAGE")  {
 							if ..addPunctuation(.subElement,"=")  {
-								if ..CspJavascriptBothopp29Sub(.subElement,.addedElement)  {
+								if ..CspJavascriptBothopp32Sub(.subElement,.addedElement)  {
 									if ..CspTagSB(.subElement,.addedElement)  {
 										if ..JavascriptBody(.subElement,.addedElement)  {
 											if ..CspTagEA(.subElement,.addedElement)  {
@@ -863,7 +863,7 @@ Method CspJavascriptBothopp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 /// '"text/javascript"'
 /// summary values:""TEXT/JAVASCRIPT""
 /// summary=P
-Method CspJavascriptBothopp28Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method CspJavascriptBothopp31Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P
 	if '(..isStringSingle("""TEXT/JAVASCRIPT""",.value)) { quit 0 /* normal */ /*3 */ }
@@ -883,7 +883,7 @@ Method CspJavascriptBothopp28Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 
 /// 'javascript' | '"javascript"' | "'javascript'"
 /// summary=K|P|P
-Method CspJavascriptBothopp29Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method CspJavascriptBothopp32Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K|P|P
 	$$$BNFSTART(subElement)
@@ -955,7 +955,7 @@ Method CspJavascriptText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 		if ..addKeyword(.subElement,"SCRIPT")  {
 			if ..addKeyword(.subElement,"TYPE")  {
 				if ..addPunctuation(.subElement,"=")  {
-					if ..CspJavascriptText25Sub(.subElement,.addedElement)  {
+					if ..CspJavascriptText28Sub(.subElement,.addedElement)  {
 						if ..CspTagSB(.subElement,.addedElement)  {
 							if ..JavascriptBody(.subElement,.addedElement)  {
 								if ..CspTagEA(.subElement,.addedElement)  {
@@ -987,7 +987,7 @@ Method CspJavascriptText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 /// '"text/javascript"'
 /// summary values:""TEXT/JAVASCRIPT""
 /// summary=P
-Method CspJavascriptText25Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method CspJavascriptText28Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P
 	if '(..isStringSingle("""TEXT/JAVASCRIPT""",.value)) { quit 0 /* normal */ /*3 */ }
@@ -1005,7 +1005,7 @@ Method CspJavascriptText25Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	quit ok
 }
 
-///  csp_page ::= (csp_xml | csp_element | csp_end_tag | csp_content )*
+///  csp_page ::= (csp_xml | csp_xml_question | csp_element | csp_end_tag | csp_content )*
 /// summary=(?4punctuation:4?)*
 Method CspPage(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
@@ -1029,7 +1029,7 @@ Method CspPage(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 	quit ok
 }
 
-///  (csp_xml | csp_element | csp_end_tag | csp_content )*
+///  (csp_xml | csp_xml_question | csp_element | csp_end_tag | csp_content )*
 Method CspPage1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
@@ -1046,14 +1046,16 @@ Method CspPage1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	quit ok
 }
 
-/// csp_xml | csp_element | csp_end_tag | csp_content
-/// summary=C|C|C|C
+/// csp_xml | csp_xml_question | csp_element | csp_end_tag | csp_content
+/// summary=C|C|C|C|C
 Method CspPage2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary C|C|C|C
+	; rules summary C|C|C|C|C
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..CspXml(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..CspXmlQuestion(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..CspElement(.subElement,.addedElement)  {
 		set done=1 ; or
@@ -1071,7 +1073,7 @@ Method CspPage2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	quit ok
 }
 
-///  csp_page_mandatory ::= (csp_xml | csp_element | csp_end_tag | csp_content )+
+///  csp_page_mandatory ::= (csp_xml | csp_xml_question | csp_element | csp_end_tag | csp_content )+
 /// summary=(?4punctuation:4?)+
 Method CspPageMandatory(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
@@ -1095,7 +1097,7 @@ Method CspPageMandatory(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	quit ok
 }
 
-///  (csp_xml | csp_element | csp_end_tag | csp_content )+
+///  (csp_xml | csp_xml_question | csp_element | csp_end_tag | csp_content )+
 Method CspPageMandatory3RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
@@ -1113,14 +1115,16 @@ Method CspPageMandatory3RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	quit ok
 }
 
-/// csp_xml | csp_element | csp_end_tag | csp_content
-/// summary=C|C|C|C
+/// csp_xml | csp_xml_question | csp_element | csp_end_tag | csp_content
+/// summary=C|C|C|C|C
 Method CspPageMandatory4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary C|C|C|C
+	; rules summary C|C|C|C|C
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..CspXml(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..CspXmlQuestion(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..CspElement(.subElement,.addedElement)  {
 		set done=1 ; or
@@ -1551,6 +1555,104 @@ Method CspXml21RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 /// csp_attribute
 /// summary=C
 Method CspXml22Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary C
+	set subElement=ParentElement
+	set done=0 ; method start
+	if ..CspAttribute(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		set ok=1
+	} else {
+		set ok=0 ; normal rollback
+	}
+	quit ok
+}
+
+///  csp_xml_question ::= csp_tag_s_a '?' identifier ['-' 'stylesheet'] (csp_attribute)* '?' csp_tag_s_b
+/// summary=C&P&C&[P&K]&(?4punctuation:4?)*&P&C
+Method CspXmlQuestion(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary C&P&C&[P&K]&(?4punctuation:4?)*&P&C
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..CspTagSA(.subElement,.addedElement)  {
+		if ..addPunctuation(.subElement,"?")  {
+			if ..Identifier(.subElement,.addedElement)  {
+				if ..CspXmlQuestion23OptGrp(.subElement,.addedElement)  {
+					if ..CspXmlQuestion24RepZero(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,"?")  {
+							if ..CspTagSB(.subElement,.addedElement)  {
+								set done=1 ; end compileRules
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0 ; normal rollback
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+/// 
+/// summary values:-
+/// summary=P&K
+Method CspXmlQuestion23OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&K
+	; first rule summary P
+	if '(..isStringSingle("-",.value)) { quit 1 /* not found is OK */ /*4*/ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"-")  {
+		if ..addKeyword(.subElement,"STYLESHEET")  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+///  (csp_attribute)*
+Method CspXmlQuestion24RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary ?4punctuation:4?
+	set subElement=ParentElement
+	set done=0 ; method start
+	while ..CspXmlQuestion25Sub(.subElement,.addedElement)  {
+		set done=1
+	}
+	if done {
+		set ok=1
+	} else {
+		set ok=1 /* nothing found is ok in RZ */
+	}
+	quit ok
+}
+
+/// csp_attribute
+/// summary=C
+Method CspXmlQuestion25Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C
 	set subElement=ParentElement

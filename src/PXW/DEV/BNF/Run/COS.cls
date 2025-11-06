@@ -7,6 +7,9 @@ Property bracketStack As %String [ MultiDimensional ];
 
 Property bracketDepth As %Integer;
 
+/// In stop at eol mode, if we meet a ##continue then continue onto the next line
+Property stopAtEOLContinue As %Boolean [ InitialExpression = 0 ];
+
 /* Overrides of the main super class that normally does the interaction with the input stream */
 /// Skip over the next set of comments, return 1 if something was done or 0
 Method skipComments(ch10 As %String) As %Boolean
@@ -20,6 +23,84 @@ Method skipComments(ch10 As %String) As %Boolean
     Set ch3=$EXTRACT(ch10,1,3)
     If ch3="##;" Set ..comment=..readLineComment("##;") Quit 1
     Quit 0
+}
+
+Method readLineComment(start As %String) As PXW.DEV.Atom
+{
+    $$$DEBUGMethodBegin
+	Set o=..newAtom("linecomment")
+	Set o.start=..stream.NextNOTEol($LENGTH(start)) 
+	Set n=""
+    Do {
+        Set morecomments=0
+        if '..stopAtEOLContinue {
+            Set n=n_..stream.NextToEol()
+            ; now look to see if the NEXT line has the same type of comment
+            ; if it does then add all that to this comment
+            Set next50=..peek(50)
+            ; 
+            If $EXTRACT($ZSTRIP(next50,"<WC"),1,$LENGTH(start))=start {
+                Set ws=$CHAR(32,9,13,10,160)
+                Set n=n_..stream.NextChars(ws)
+                Set morecomments=1
+            }
+        } else {
+            ; ##continue on the end of the comment? leave it there so its picked up as a eol if necessary
+            set line=..stream.PeekToEol()
+            if $$$UPPER(line)["##CONTINUE" {
+                set foundat=$find($$$UPPER(line),"##CONTINUE")
+                set line=$e(line,1,foundat-11) ; 11=$l(##contine)+1
+                set n=n_..next($l(line))
+                $$$DEBUG("ReadLineComment stopAtEOLContinue contains ##continue, n="_n)
+            }
+        }
+    } While morecomments
+
+	Set o.value=n
+    $$$DEBUGMethodEnd
+	Quit o
+}
+
+/// methods in here need to do a DIRECT lookup on ..text
+Method skipWhiteSpaceAndComments()
+{
+    #define isWS(%x) $c(32,9,13,10,160)[%x
+    $$$DEBUGMethodBegin
+
+    if ..stopAtEOLContinue {
+        ; stop at eol is assumed
+        Set ws=$CHAR(32,9,160)
+readNextLoop2		
+        Set ch10=$EXTRACT(..streaminput,..stream.pos,..stream.pos+9),ch=$EXTRACT(ch10,1)
+        If ws[ch,ch'="" Set ..whitespace=..newAtom("whitespace",..nextChars(.ws)) Goto readNextLoop2
+        If ..skipComments(.ch10) Set ..keyword="" Goto readNextLoop2
+        ;read ##contine and trailing spaces and CR at end of line, this is complicated!
+        if $$$UPPER(ch10)="##CONTINUE" {
+            set ..whitespace=..newAtom("whitespace",..next(10))
+            Set ch10=$EXTRACT(..streaminput,..stream.pos,..stream.pos+9),ch=$EXTRACT(ch10,1)
+            If ws[ch,ch'="" Set ..whitespace=..newAtom("whitespace",..nextChars(.ws)) $$$DEBUG("Stripping trailing spaces")
+            if ..peek(1)=$c(13) set ..whitespace=..newAtom("whitespace",..next(1)) $$$DEBUG("Going to start of next line")
+            g readNextLoop2
+        }
+        $$$DEBUG("End of stopAtEOLContinue")
+        Set ..needsWScheck=0
+
+    } else {
+        If '..stopAtWhitespace {
+            If ..stopAtEOL { 
+                Set ws=$CHAR(32,9,160)
+            } Else {
+                Set ws=$CHAR(32,9,13,10,160)
+            }
+readNextLoop		
+            Set ch10=$EXTRACT(..streaminput,..stream.pos,..stream.pos+9),ch=$EXTRACT(ch10,1)
+            If ws[ch,ch'="" Set ..whitespace=..newAtom("whitespace",..nextChars(.ws)) Goto readNextLoop
+            If ..skipComments(.ch10) Set ..keyword="" Goto readNextLoop
+            Set ..needsWScheck=0
+        }
+    }
+    $$$DEBUGMethodEnd 
+    Quit
 }
 
 Method peekKeyword() As %String
@@ -178,7 +259,7 @@ Method ClassIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
     ; any others work, so hard coding CLASSNAME only
     ;property RawContent As %String(MAXLEN = 10000) [ Calculated, ReadOnly, SqlComputeCode = { Set {RawContent}=##class({%%CLASSNAME}).getContentAsString({ID}) }, SqlComputed, Transient ];    
     If $EXTRACT(ch50,1,13)="{%%CLASSNAME}" {
-        Set atom=..newAtom(ParentElement.type,..nextNotEOL(13))
+        Set atom=..newAtom("ClassIdentifier",..nextNotEOL(13))
         Do ParentElement.AddPart(atom)
         Set retok=1
     } ElseIf $EXTRACT(ch50,pos)="""" {
@@ -189,7 +270,7 @@ Method ClassIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
             Set value=value_..nextNotEOL(1)
         }
         Set quote2=..nextNotEOL(1)
-        Set atom=..newAtom(ParentElement.type,value)
+        Set atom=..newAtom("ClassIdentifier",value)
         Set atom.start=quote1
         Set atom.end=quote2
         Do ParentElement.AddPart(atom)
@@ -203,7 +284,7 @@ Method ClassIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
             While ($EXTRACT(ch50,pos)?1AN) || ($EXTRACT(ch50,pos)=".")  {
                 Set pos=pos+1
             }        
-            Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
+            Set atom=..newAtom("ClassIdentifier",..nextNotEOL(pos-1))
             Do ParentElement.AddPart(atom)
             Set retok=1
         }
@@ -228,7 +309,7 @@ Method GlobalIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
         While ($EXTRACT(ch50,pos)?1AN) || ($EXTRACT(ch50,pos)=".")  {
             Set pos=pos+1
         }    
-        Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
+        Set atom=..newAtom("GlobalIdentifier",..nextNotEOL(pos-1))
         Do ParentElement.AddPart(atom)
         Set ok=1
     } Else {
@@ -252,7 +333,7 @@ Method IncludeIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
         While ($EXTRACT(ch50,pos)?1AN) || ($EXTRACT(ch50,pos)="."){
             Set pos=pos+1
         }
-        Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
+        Set atom=..newAtom("IncludeIdentifier",..nextNotEOL(pos-1))
         Do ParentElement.AddPart(atom)
     } Else {
         Set ok=0
@@ -277,7 +358,7 @@ Method LabelIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
         While $EXTRACT(ch50,pos)?1AN {
             Set pos=pos+1
         }    
-        Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
+        Set atom=..newAtom("LabelIdentifier",..nextNotEOL(pos-1))
         Do ParentElement.AddPart(atom)
         Set ok=1
     } Else {
@@ -300,7 +381,7 @@ Method MacroIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
         While ($EXTRACT(ch50,pos)?1AN) {
             Set pos=pos+1
         }
-        Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
+        Set atom=..newAtom("MacroIdentifier",..nextNotEOL(pos-1))
         Do ParentElement.AddPart(atom)
     } Else {
         Set ok=0
@@ -352,7 +433,7 @@ Method ObjectMemberIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
     }
  
     If ok {
-        Set atom=..newAtom(ParentElement.type,value)
+        Set atom=..newAtom("ObjectMemberIdentifier",value)
         Do ParentElement.AddPart(atom)
     }
     $$$DEBUGMethodEnd
@@ -376,7 +457,7 @@ Method RoutineIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
             Set pos=pos+1
         }
     
-        Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
+        Set atom=..newAtom("RoutineIdentifier",..nextNotEOL(pos-1))
         Do ParentElement.AddPart(atom)
         Set ok=1
     } Else {
@@ -909,6 +990,10 @@ Method OneCosStatement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	;$$$BNFPATH
 	$$$BNFSTART(subElement)
 
+    ; for recovery we need a way of stopping, so end of file or end of code block means no statement
+    i ..eof()  q 0 
+    i ..peek(1)="}" q 0
+
     Set label=..LabelDefinition(subElement)
     ; check to see if the label is on a line on its own
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
@@ -922,10 +1007,18 @@ Method OneCosStatement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
     } Else {
         If ..stream.col>0 Set command=..CosCommand(subElement)
     }
+    $$$DEBUG("Label="_label_" dots="_dots_" directive="_directive_" command="_command)
     If label || dots || directive || command {
         $$$BNFCOMMIT(subElement,ParentElement)
         Set retok=1
     } Else {
+        ;if ..stopAtEOLContinue {
+        ;    $$$BNFROLLBACK(subElement)
+        ;    Set retok=0
+        ;} else {
+        ;    do ..recover(ParentElement,.recElement,"{}",$lb($c(13)))
+        ;    set retok=1
+        ;}
         $$$BNFROLLBACK(subElement)
         Set retok=0
     }
@@ -948,21 +1041,28 @@ Method Naked(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 {
     $$$DEBUGMethodBegin
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
-
+    $$$DEBUG("Naked peek:"_..peek(20))
+    $$$DEBUG("Naked whitespace:"_..whitespace)
+    if ..whitespace $$$DEBUG("Naked whitespace:"_$tr(..whitespace.value,$c(32,9,13),"stc"))
     ; in single line mode and no white space found then we must be at the end of line
     ; eg: f x=1:1:10 d
     ; and therefore IS naked
     If ..stopAtEOL,'$ISOBJECT(..whitespace) {
+        $$$DEBUG("Naked 1")
         Set retok=1
     } ElseIf  ..stopAtEOL,$ISOBJECT(..whitespace),..peek(1)=$CHAR(13) {
+        $$$DEBUG("Naked 2")
         Set retok=1
     } ElseIf ..peek(1)="{" {
+        $$$DEBUG("Naked 3")
         ; code block does not count as naked
         Set retok=0
     } ElseIf ..peek(1)="}" {
+        $$$DEBUG("Naked 4")
         ; immediate end to code block does count as naked
         Set retok=1
     } Else {
+        $$$DEBUG("Naked 6")
         Set ch=$EXTRACT(..whitespace.value,1,2)
         Set chspc=$TRANSLATE(ch,$CHAR(9)," ") ; turn tabs into spaces for checking
         Set retok=0
@@ -974,7 +1074,7 @@ Method Naked(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
             If $EXTRACT(ch,1)=$CHAR(13) Set retok=1 ; naked
         }
     }
-    ;$$$DEBUG("Naked="_retok)
+    $$$DEBUG("Naked="_retok)
     $$$DEBUGMethodEnd
     Quit retok
 }
@@ -1056,6 +1156,17 @@ Method CommandListEol(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
     Set ..stopAtEOL=1
     Set retok=##super(ParentElement,.subElement)
     Set ..stopAtEOL=oldmode
+    Set ..needsWScheck=1
+    Quit retok
+}
+
+Method CommandListEolContinue(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+{
+    Set oldmode=..stopAtEOL,oldmodeContinue=..stopAtEOLContinue
+    Set ..stopAtEOL=1
+    set ..stopAtEOLContinue=1
+    set retok=##super(ParentElement,.subElement)
+    Set ..stopAtEOL=oldmode,..stopAtEOLContinue=oldmodeContinue
     Set ..needsWScheck=1
     Quit retok
 }
@@ -1200,7 +1311,9 @@ Method CosCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
             ; we can only allow 1 letter in each item in the list
             Set retok=..recover(ParentElement,.recSub,"{}",$LISTBUILD($CHAR(13),"<","]"))
         } Else {
+            $$$DEBUG("RECOVERING "_..stream.PeekToEol())
             Set retok=..recover(ParentElement,.recSub,"{}",$LISTBUILD($CHAR(9)," ",$CHAR(13)))
+            $$$DEBUG("RECOVERED ("_retok_")"_..stream.PeekToEol())
         }
     }
     ;i retok=0 break

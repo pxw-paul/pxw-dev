@@ -20,6 +20,8 @@ sql_program					::= query_specification
 								| close_command
 								| delete_command
 								| CHECKPRIV_command
+								| drop_command
+								| (  select_into_variable '=' call_command ) /* special case of :x=call func() */
 
 query_specification         ::= [with_command ] select_command ( union select_command )*
 subquery_specification 		::= select_command ( union select_command )*
@@ -71,6 +73,7 @@ direct_table_noalias		::= table_name
 index_reference				::= [ table_reference_noalias '.' ] identifier
 index_reference_list		::= index_reference ( ',' index_reference )*
 
+drop_command				::= 'DROP' ( 'VIEW' | 'TABLE' ) direct_table
 
 table_as_clause                   ::= [ 'AS' ] alias_name
 
@@ -168,7 +171,7 @@ checkpriv_objpriv			::= '%ALTER' | 'DELETE' | 'SELECT' | 'INSERT' | 'UPDATE' | '
 
 call_command				::= 'CALL' stored_proc_call
 
-sql_special_variable					::= 'NULL' | '?' | '$H'  | '$ZNSPACE' | '$NAMESPACE'
+sql_special_variable					::= 'NULL' | '?' | '$H'  | '$ZNSPACE' | '$NAMESPACE' | '$USERNAME'
 										  
 /* expression */
 sql_expression                       ::= sql_factor ( sql_dyadicop sql_factor )*  /* using star as an expression on its own not strictly correct but good enough?*/

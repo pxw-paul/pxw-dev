@@ -18,20 +18,20 @@ Method TestGlobalIdentifier()
 {
     ; valid names
     Set pmeth="GlobalIdentifier"
-    Do $$$AssertEquals(..parseAndFlat("x",pmeth),":x")
-    Do $$$AssertEquals(..parseAndFlat("ab.cde",pmeth),":ab.cde")
-    Do $$$AssertEquals(..parseAndFlat("ab1",pmeth),":ab1")
-    Do $$$AssertEquals(..parseAndFlat("ab1cde",pmeth),":ab1cde")
-    Do $$$AssertEquals(..parseAndFlat("%",pmeth),":%")
-    Do $$$AssertEquals(..parseAndFlat("%abc",pmeth),":%abc")
-    Do $$$AssertEquals(..parseAndFlat("%123",pmeth),":%123")
+    Do $$$AssertEquals(..parseAndFlat("x",pmeth),"GlobalIdentifier:x")
+    Do $$$AssertEquals(..parseAndFlat("ab.cde",pmeth),"GlobalIdentifier:ab.cde")
+    Do $$$AssertEquals(..parseAndFlat("ab1",pmeth),"GlobalIdentifier:ab1")
+    Do $$$AssertEquals(..parseAndFlat("ab1cde",pmeth),"GlobalIdentifier:ab1cde")
+    Do $$$AssertEquals(..parseAndFlat("%",pmeth),"GlobalIdentifier:%")
+    Do $$$AssertEquals(..parseAndFlat("%abc",pmeth),"GlobalIdentifier:%abc")
+    Do $$$AssertEquals(..parseAndFlat("%123",pmeth),"GlobalIdentifier:%123")
 
-    Do $$$AssertEquals(..parseAndFlat("$LOCK",pmeth),":$LOCK")
+    Do $$$AssertEquals(..parseAndFlat("$LOCK",pmeth),"GlobalIdentifier:$LOCK")
 
 
     ; invalid names these just return the % which is a valid name
-    Do $$$AssertEquals(..parseAndFlat("%%a",pmeth),":%")
-    Do $$$AssertEquals(..parseAndFlat("%%",pmeth),":%")
+    Do $$$AssertEquals(..parseAndFlat("%%a",pmeth),"GlobalIdentifier:%")
+    Do $$$AssertEquals(..parseAndFlat("%%",pmeth),"GlobalIdentifier:%")
 
     ; return nothing, no valid name
     Do $$$AssertEquals(..parseExpectFail("1",pmeth),0)
@@ -89,17 +89,17 @@ Method TestIncludeIdentifier()
 {
     ; valid names
     Set pmeth="IncludeIdentifier"
-    Do $$$AssertEquals(..parseAndFlat("x",pmeth),":x")
-    Do $$$AssertEquals(..parseAndFlat("ab.cde",pmeth),":ab.cde")
-    Do $$$AssertEquals(..parseAndFlat("ab1",pmeth),":ab1")
-    Do $$$AssertEquals(..parseAndFlat("ab1cde",pmeth),":ab1cde")
-    Do $$$AssertEquals(..parseAndFlat("%",pmeth),":%")
-    Do $$$AssertEquals(..parseAndFlat("%abc",pmeth),":%abc")
-    Do $$$AssertEquals(..parseAndFlat("%123",pmeth),":%123")
+    Do $$$AssertEquals(..parseAndFlat("x",pmeth),"IncludeIdentifier:x")
+    Do $$$AssertEquals(..parseAndFlat("ab.cde",pmeth),"IncludeIdentifier:ab.cde")
+    Do $$$AssertEquals(..parseAndFlat("ab1",pmeth),"IncludeIdentifier:ab1")
+    Do $$$AssertEquals(..parseAndFlat("ab1cde",pmeth),"IncludeIdentifier:ab1cde")
+    Do $$$AssertEquals(..parseAndFlat("%",pmeth),"IncludeIdentifier:%")
+    Do $$$AssertEquals(..parseAndFlat("%abc",pmeth),"IncludeIdentifier:%abc")
+    Do $$$AssertEquals(..parseAndFlat("%123",pmeth),"IncludeIdentifier:%123")
 
     ; invalid names these just return the % which is a valid name
-    Do $$$AssertEquals(..parseAndFlat("%%a",pmeth),":%")
-    Do $$$AssertEquals(..parseAndFlat("%%",pmeth),":%")
+    Do $$$AssertEquals(..parseAndFlat("%%a",pmeth),"IncludeIdentifier:%")
+    Do $$$AssertEquals(..parseAndFlat("%%",pmeth),"IncludeIdentifier:%")
 
     ; return nothing, no valid name
     Do $$$AssertEquals(..parseExpectFail("1",pmeth),0)
@@ -112,17 +112,17 @@ Method TestRoutineIdentifier()
 {
     ; valid names
     Set pmeth="RoutineIdentifier"
-    Do $$$AssertEquals(..parseAndFlat("x",pmeth),":x")
-    Do $$$AssertEquals(..parseAndFlat("ab.cde",pmeth),":ab.cde")
-    Do $$$AssertEquals(..parseAndFlat("ab1",pmeth),":ab1")
-    Do $$$AssertEquals(..parseAndFlat("ab1cde",pmeth),":ab1cde")
-    Do $$$AssertEquals(..parseAndFlat("%",pmeth),":%")
-    Do $$$AssertEquals(..parseAndFlat("%abc",pmeth),":%abc")
-    Do $$$AssertEquals(..parseAndFlat("%123",pmeth),":%123")
+    Do $$$AssertEquals(..parseAndFlat("x",pmeth),"RoutineIdentifier:x")
+    Do $$$AssertEquals(..parseAndFlat("ab.cde",pmeth),"RoutineIdentifier:ab.cde")
+    Do $$$AssertEquals(..parseAndFlat("ab1",pmeth),"RoutineIdentifier:ab1")
+    Do $$$AssertEquals(..parseAndFlat("ab1cde",pmeth),"RoutineIdentifier:ab1cde")
+    Do $$$AssertEquals(..parseAndFlat("%",pmeth),"RoutineIdentifier:%")
+    Do $$$AssertEquals(..parseAndFlat("%abc",pmeth),"RoutineIdentifier:%abc")
+    Do $$$AssertEquals(..parseAndFlat("%123",pmeth),"RoutineIdentifier:%123")
 
     ; invalid names these just return the % which is a valid name
-    Do $$$AssertEquals(..parseAndFlat("%%a",pmeth),":%")
-    Do $$$AssertEquals(..parseAndFlat("%%",pmeth),":%")
+    Do $$$AssertEquals(..parseAndFlat("%%a",pmeth),"RoutineIdentifier:%")
+    Do $$$AssertEquals(..parseAndFlat("%%",pmeth),"RoutineIdentifier:%")
 
     ; return nothing, no valid name
     Do $$$AssertEquals(..parseExpectFail("1",pmeth),0)
@@ -195,24 +195,24 @@ Method TestClassIdentifier()
 
     ; valid names
     ;##class(x)
-    Do $$$AssertEquals(..parseAndFlat("x",pmeth),":x")
+    Do $$$AssertEquals(..parseAndFlat("x",pmeth),"ClassIdentifier:x")
     ;##class(abcde)
-    Do $$$AssertEquals(..parseAndFlat("abcde",pmeth),":abcde")
+    Do $$$AssertEquals(..parseAndFlat("abcde",pmeth),"ClassIdentifier:abcde")
     ;##class(abc.de)
-    Do $$$AssertEquals(..parseAndFlat("abc.de",pmeth),":abc.de")
+    Do $$$AssertEquals(..parseAndFlat("abc.de",pmeth),"ClassIdentifier:abc.de")
     ;##class(ab1)
-    Do $$$AssertEquals(..parseAndFlat("ab1",pmeth),":ab1")
+    Do $$$AssertEquals(..parseAndFlat("ab1",pmeth),"ClassIdentifier:ab1")
     ;ab1.cde
-    Do $$$AssertEquals(..parseAndFlat("ab1.cde",pmeth),":ab1.cde")
+    Do $$$AssertEquals(..parseAndFlat("ab1.cde",pmeth),"ClassIdentifier:ab1.cde")
     ;%String
-    Do $$$AssertEquals(..parseAndFlat("%String",pmeth),":%String")
+    Do $$$AssertEquals(..parseAndFlat("%String",pmeth),"ClassIdentifier:%String")
     ;%String1
-    Do $$$AssertEquals(..parseAndFlat("%String1",pmeth),":%String1")
+    Do $$$AssertEquals(..parseAndFlat("%String1",pmeth),"ClassIdentifier:%String1")
     ;%Library.String
-    Do $$$AssertEquals(..parseAndFlat("%Library.String",pmeth),":%Library.String")
+    Do $$$AssertEquals(..parseAndFlat("%Library.String",pmeth),"ClassIdentifier:%Library.String")
 
     ; {%%CLASSNAME} special case
-    Do $$$AssertEquals(..parseAndFlat("{%%CLASSNAME}",pmeth),":{%%CLASSNAME}")
+    Do $$$AssertEquals(..parseAndFlat("{%%CLASSNAME}",pmeth),"ClassIdentifier:{%%CLASSNAME}")
 
     ; return nothing, no valid name
     Do $$$AssertEquals(..parseExpectFail("%",pmeth),0)
@@ -246,32 +246,32 @@ Method TestObjectMemberIdentifier()
     ;s obj.%1=1
     ;s obj.pmeth="VariableIdentifier"
     ;s obj.x=1
-    Do $$$AssertEquals(..parseAndFlat("x",pmeth),":x")
+    Do $$$AssertEquals(..parseAndFlat("x",pmeth),"ObjectMemberIdentifier:x")
     ;s obj.abcde=1
-    Do $$$AssertEquals(..parseAndFlat("abcde",pmeth),":abcde")
+    Do $$$AssertEquals(..parseAndFlat("abcde",pmeth),"ObjectMemberIdentifier:abcde")
     ;s obj.ab1=1
-    Do $$$AssertEquals(..parseAndFlat("ab1",pmeth),":ab1")
+    Do $$$AssertEquals(..parseAndFlat("ab1",pmeth),"ObjectMemberIdentifier:ab1")
     ;s obj.ab1cde=1
-    Do $$$AssertEquals(..parseAndFlat("ab1cde",pmeth),":ab1cde")
+    Do $$$AssertEquals(..parseAndFlat("ab1cde",pmeth),"ObjectMemberIdentifier:ab1cde")
     ;s obj.%=1
-    Do $$$AssertEquals(..parseAndFlat("%",pmeth),":%")
+    Do $$$AssertEquals(..parseAndFlat("%",pmeth),"ObjectMemberIdentifier:%")
     ;s obj.%abc=1
-    Do $$$AssertEquals(..parseAndFlat("%abc",pmeth),":%abc")
+    Do $$$AssertEquals(..parseAndFlat("%abc",pmeth),"ObjectMemberIdentifier:%abc")
     ;s obj.%123=1
-    Do $$$AssertEquals(..parseAndFlat("%123",pmeth),":%123")
+    Do $$$AssertEquals(..parseAndFlat("%123",pmeth),"ObjectMemberIdentifier:%123")
 
     ;s obj."funny name"=1
-    Do $$$AssertEquals(..parseAndFlat("""funny name""",pmeth),":""funny name""")
+    Do $$$AssertEquals(..parseAndFlat("""funny name""",pmeth),"ObjectMemberIdentifier:""funny name""")
 
     ; parameter name
-    Do $$$AssertEquals(..parseAndFlat("#pname",pmeth),":#pname")
-    Do $$$AssertEquals(..parseAndFlat("#%pname",pmeth),":#%pname")
-    Do $$$AssertEquals(..parseAndFlat("#%1",pmeth),":#%1")
-    Do $$$AssertEquals(..parseAndFlat("#%1a1a",pmeth),":#%1a1a")
+    Do $$$AssertEquals(..parseAndFlat("#pname",pmeth),"ObjectMemberIdentifier:#pname")
+    Do $$$AssertEquals(..parseAndFlat("#%pname",pmeth),"ObjectMemberIdentifier:#%pname")
+    Do $$$AssertEquals(..parseAndFlat("#%1",pmeth),"ObjectMemberIdentifier:#%1")
+    Do $$$AssertEquals(..parseAndFlat("#%1a1a",pmeth),"ObjectMemberIdentifier:#%1a1a")
 
     ; invalid names these just return the % which is a valid name
-    Do $$$AssertEquals(..parseAndFlat("%%a",pmeth),":%")
-    Do $$$AssertEquals(..parseAndFlat("%%",pmeth),":%")
+    Do $$$AssertEquals(..parseAndFlat("%%a",pmeth),"ObjectMemberIdentifier:%")
+    Do $$$AssertEquals(..parseAndFlat("%%",pmeth),"ObjectMemberIdentifier:%")
 
     ; return nothing, no valid name
     Do $$$AssertEquals(..parseExpectFail("1",pmeth),0)
@@ -476,6 +476,17 @@ Method TestIncrement()
     Set pmeth="Intrinsicfncall"
     Do $$$AssertEquals(..parseAndFlat("$increment(x)",pmeth),"Intrinsicfncall:{$,IncrementFunctionCall:{Keyword:increment,(,VariableSet:x,)}}")
     Do $$$AssertEquals(..parseAndFlat("$i(x)",pmeth),"Intrinsicfncall:{$,IncrementFunctionCall:{Keyword:i,(,VariableSet:x,)}}")
+
+    Do $$$AssertEquals(..parseAndFlat("$i(^global)",pmeth),"Intrinsicfncall:{$,IncrementFunctionCall:{Keyword:i,(,GlobalRefFull:{^,GlobalIdentifier:global},)}}")
+}
+
+Method TestText()
+{
+    Set pmeth="Intrinsicfncall"
+    Do $$$AssertEquals(..parseAndFlat("$text(lab)",pmeth),"Intrinsicfncall:{$,TextFunctionCall:{Keyword:text,(,LabelIdentifier:lab,)}}")
+    Do $$$AssertEquals(..parseAndFlat("$t(lab^rou)",pmeth),"Intrinsicfncall:{$,TextFunctionCall:{Keyword:t,(,TextLabelReference:{LabelIdentifier:lab,^,RoutineIdentifier:rou},)}}")
+    Do $$$AssertEquals(..parseAndFlat("$t(lab+1^rou)",pmeth),"Intrinsicfncall:{$,TextFunctionCall:{Keyword:t,(,TextLabelReference:{LabelIdentifier:lab,+,Number:1,^,RoutineIdentifier:rou},)}}")
+    Do $$$AssertEquals(..parseAndFlat("$t(+0^rou)",pmeth),"Intrinsicfncall:{$,TextFunctionCall:{Keyword:t,(,TextLabelReference:{+,Number:0,^,RoutineIdentifier:rou},)}}")
 }
 
 Method TestClassmethod()
@@ -492,7 +503,7 @@ Method TestClassmethod()
 
 Method TestGlobal()
 {
-    Do $$$AssertEquals(..parseAndFlat(" s x=^aglob(""string key"",1)"),"SetCommand:{Keyword:s,SetItem:{VariableSet:x,=,GlobalRefFull:{^,GlobalName:aglob,SubscriptParameterList:{(,String:string key,,,Number:1,)}}}}")
+    Do $$$AssertEquals(..parseAndFlat(" s x=^aglob(""string key"",1)"),"SetCommand:{Keyword:s,SetItem:{VariableSet:x,=,GlobalRefFull:{^,GlobalIdentifier:aglob,SubscriptParameterList:{(,String:string key,,,Number:1,)}}}}")
 }
 
 /*

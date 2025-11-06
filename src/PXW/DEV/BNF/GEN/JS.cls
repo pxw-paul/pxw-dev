@@ -1,4 +1,4 @@
-/// Created: 2025-10-31 09:11:55 PXW.DEV.BNF.Compilers.Compiler1
+/// Created: 2025-11-04 17:25:36 PXW.DEV.BNF.Compilers.Compiler1
 Class PXW.DEV.BNF.GEN.JS Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 
@@ -2242,6 +2242,34 @@ Method CosExpressionServer(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	quit ok
 }
 
+///  cos_gt_lt ::= '&gt;' | '&lt;'
+/// summary values:&GT;,&LT;
+/// summary=P|P
+Method CosGtLt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary P|P
+	if '(..isStringInList($lb("&GT;","&LT;"),4,.value)) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"&gt;")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"&lt;")  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0 ; normal rollback
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
 ///  cos_method_reference ::= 'NEEDS class_reference.method OR ..method'
 /// summary values:NEEDS CLASS_REFERENCE.METHOD OR ..METHOD
 /// summary=P
@@ -2524,11 +2552,11 @@ Method Dot(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF
 	quit ok
 }
 
-///  dyadicop ::= ('?' single_expression ':') | '===' | '>>>' | '!==' | '**' |'??' | '<<' | '>>' | '<=' | '>=' | '==' | '!=' | '&&' | '||' | '+=' | '-=' | '*=' | '*' | '/' | '%' | '+' | '-' | '&' | '^' | '|' | '=' | '<' | ('>' is_not_Line_Terminator) | cos_expression_runtime | "InstanceOf"
-/// summary=(P&C&P)|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|(P&C)|C|K
+///  dyadicop ::= ('?' single_expression ':') | '===' | '>>>' | '!==' | cos_gt_lt | '**' |'??' | '<<' | '>>' | '<=' | '>=' | '==' | '!=' | '&&' | '||' | '+=' | '-=' | '*=' | '*' | '/' | '%' | '+' | '-' | '&' | '^' | '|' | '=' | '<' | ('>' is_not_Line_Terminator) | cos_expression_runtime | "InstanceOf"
+/// summary=(P&C&P)|P|P|P|C|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|(P&C)|C|K
 Method Dyadicop(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary (P&C&P)|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|(P&C)|C|K
+	; rules summary (P&C&P)|P|P|P|C|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|(P&C)|C|K
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -2540,6 +2568,8 @@ Method Dyadicop(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	} elseif ..addPunctuation(.subElement,">>>")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(.subElement,"!==")  {
+		set done=1 ; or
+	} elseif ..CosGtLt(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..addPunctuation(.subElement,"**")  {
 		set done=1 ; or

@@ -28,7 +28,9 @@ cos_code_block                      ::= one_cos_statement ( one_cos_statement )*
 cos_code_block_sql                  ::= one_cos_Statement_sql ( one_cos_statement_sql)*
 cos_code_block_sql_storage          ::= one_cos_Statement_sql ( one_cos_statement_sql)*
 cos_code_block_trigger              ::= one_cos_statement ( one_cos_statement )*
-                                  
+
+/* this looks like it allows multiple labels per line but it has been overridden to deal with this properly, 
+  this is really just a template definition */
 one_cos_statement                   ::= [ label_definition ] ('.')* cos_command 
 one_cos_statement_sql               ::= ('.')* cos_command  /* in SQLCompute mode line labels are not allowed, and variables can be {*} or {field} */
 
@@ -65,6 +67,7 @@ cos_directive                       ::= '#' ( cos_directive_define
 cos_directive_defonearg             ::= 'def1arg' cos_directive_define_name [ array_parameter_list ] [cos_directive_define_subst] /* text_to_eol_continue */
 cos_directive_define                ::= 'define' cos_directive_define_name [ array_parameter_list ] [cos_directive_define_subst]  /*[ text_to_eol_continue]*/
 cos_directive_define_name           ::= macro_identifier
+cos_directive_define_subst_new      ::= [ command_list_eol_continue | expression_list ] 
 cos_directive_define_subst          ::= [command_list_eol | expression_list ] text_to_eol_continue 
 cos_directive_dim                   ::= 'dim' cos_directive_dim_item (',' cos_directive_dim_item )* /*Studio and VSCode do not allow multiple dims on one line, but the compiler does not complain (unless there is an =) and some intersystems code has it! %Installer.Invoke  */
 cos_directive_dim_item              ::= variable_set [(',' variable_set )*] [ 'as' [('array' | 'list') 'of'] class_reference ] [ '=' dim_expression ] 
@@ -147,6 +150,7 @@ cos_command                         ::=  set_command
 
 command_list                        ::= cos_command ( cos_command )*
 command_list_eol                    ::= cos_command ( cos_command )* /* needs to stop at end of line */
+command_list_eol_continue           ::= cos_command ( cos_command )* /* needs to stop at end of line and look for ##continue*/
 
 comment                             ::= line_comment
                                         | block_comment
@@ -230,6 +234,7 @@ special_intrinsic                   ::= case_function_call
                                         | zobjmethod_function_call
                                         | zobjclassmethod_function_call
                                         | text_function_call
+                                        | query_function_call
                                         | bitlogic_function_call  
                                         | vector_function_call
 general_intrinsic                   ::= any_keyword function_parameter_list  [ object_chain ]
@@ -250,6 +255,7 @@ special_intrinsic_set               ::= extract_function_call_set
                                         | listitem_function_call_set
                                         | listbuild_function_call_set
                                         | vector_function_call_set
+                                        | mv_function_set
 general_intrinsic_set               ::= any_keyword function_parameter_list  [ object_chain ]
  
 
@@ -281,8 +287,10 @@ Subscript_Indirection               ::= '@' term '@'  subscript_parameter_list
 subscript_parameter_list                ::= '(' expression ( ',' expression )*  ')'
 
 global_ref_set                       ::= global_ref_naked | global_ref_full
-global_ref                           ::= global_ref_naked | global_ref_full
+global_ref                           ::= global_ref_macro | global_ref_special | global_ref_naked | global_ref_full 
 global_ref_full                      ::= '^' [ global_ref_env  | global_ref_env_two ] (macrocall |  global_name ) [subscript_parameter_list]
+global_ref_special                   ::= '^$' [ global_ref_env  | global_ref_env_two ] (macrocall |  global_name ) [subscript_parameter_list]
+global_ref_macro                     ::= '^' macrocall [subscript_parameter_list]
 global_ref_naked                     ::= '^' subscript_parameter_list
 global_ref_env                       ::= '|' [ expression ] '|' 
 global_ref_env_two                   ::= '[' primary [ ',' primary ] ']' /* for now we use primary, expression uses [] which confuse the expression (where ] is a valid operator) */
@@ -375,7 +383,7 @@ special_variable                    ::= '$' ('DEVICE' -- Contains user-specified
                                           | 'ZU' --
                                           | 'ZVERSION' -- Contains a string describing the current version of InterSystems IRIS.
                                           | 'ZV'
-                                          | 'MVNV' | 'MVNAM' | 'MVANS' | 'MVCOMMAND' | 'MVCONV' | 'MVDATE' | 'MVDAY' | 'MVDICT' | 'MVFILENAME' 
+                                          | 'MVAM' | 'MVNV' | 'MVNAM' | 'MVANS' | 'MVCOMMAND' | 'MVCONV' | 'MVDATE' | 'MVDAY' | 'MVDICT' | 'MVFILENAME' 
                                           | 'MVFM' | 'MVFM' | 'MVFORMAT' | 'MVHEADER' | 'MVID' | 'MVLEVEL' | 'MVMONTH' | 'MVNB' | 'MVND' 
                                           | 'MVNI' | 'MVNS' | 'MVPARASENTENCE' | 'MVRECORD' | 'MVSELECTED' | 'MVSENTENCE' | 'MVSM' | 'MVSTDFIL'
                                           | 'MVSVM' | 'MVSYSRETCODE' | 'MVTIME' |'MVTM' | 'MVTTY' | 'MVUSERRETCODE' | 'MVVM' | 'MVYEAR'
@@ -440,7 +448,7 @@ do_command                          ::= ('do' | 'd') ( do_while | do_label )
 do_label                            ::= [ post_conditional ] ( naked | do_item_list)
 do_while                            ::= '{' [ cos_code_block ] '}' 'while' expression_list
 do_item_list                        ::= do_item ( ',' do_item)*
-do_item                             ::=  (object_variable)
+do_item                             ::=  object_variable
                                           | this_object 
                                           | simple_indirection 
                                           | ( label_reference [ function_parameter_list ] ) 
@@ -449,8 +457,6 @@ do_item                             ::=  (object_variable)
                                           | intrinsicfncall /* not all of these are "valid" but it should be ok here */
                                           | classexpr 
                                           | ( '(' expression ')' [ object_chain ])
-
-do_while_command                    ::= ('do' | 'd') '{' [ cos_code_block ] '}' 'while' expression_list
 
 for_command                         ::= ('for' | 'f') [ for_parameters ] for_loop_statement
 for_loop_statement                  ::= ( '{' [ cos_command] [ cos_code_block ] '}' ) | (naked | command_list_eol )
@@ -673,7 +679,7 @@ zallocate_type                      ::= '#' '"' ( 'S' | 'E' | 'I' | 'D' )+ '"'
 zallocate_timeout                   ::= ':' expression
 zallocatename                       ::= text // all to next , \t\r\n;#:
 
-zbreak_command                      ::= ('zbreak' | 'zb') [ post_conditional ] [ '/' identifier [ ':' identifier ] ] /* much more possible but are they used in real life? */
+zbreak_command                      ::= ('zbreak' | 'zb') [ post_conditional ] [ (('/' identifier) | '$') [ ':' ( identifier | string ) [ ':' expression [ ':' expression ] ] ] ] /* much more possible and could do with naming, but are they used in real life? */
 
 zdeallocate_command                 ::= 'zdeallocate' [post_conditional ] [ zdeallocate_parameter ( ',' zdeallocate_parameter)* ] [ else_block ]
 zdeallocate_parameter               ::= [ '+' | '-' ] zdeallocatename_list [ zdeallocate_timeout ]
@@ -766,7 +772,11 @@ vector_function_call_set           ::= 'vector' open_bracket set_value_expressio
 
 order_function_call                 ::= ('order' | 'o') open_bracket expression [',' expression [ ',' variable_set ] ] close_bracket
 
-text_function_call                  ::= ('text') open_bracket label_reference close_bracket
+text_function_call                  ::= ('text' | 't') open_bracket text_label_reference close_bracket
+text_label_reference                ::= (( (label_identifier [ '+' expression ]) | ('+' expression) | simple_indirection ) [ '^' [routine_env] ( routine_identifier  | simple_indirection) ])  /* lab^rouine */
+                                        | ('^' [routine_env] (routine_identifier | simple_indirection) ) /* ^routine -- no label */
+
+query_function_call                 ::= ('query' | 'q') open_bracket expression [',' expression [ ',' variable_set ] ] close_bracket
 
 star_parameter                      ::= ('*' [expression]) | expression
 
@@ -783,6 +793,9 @@ select_function_call                ::= ('select' | 's') '(' select_clauses ')' 
 select_clauses                      ::= select_clause ( ',' select_clause )*
 select_clause_default               ::= '1' ':' expression
 select_clause                       ::= expression ':' expression
+
+    /* NO IDEA ABOUT MV, guessing!, from docs: SET $MV(dynval,-1::1)="" // appends 2nd delimiter */
+mv_function_set                     ::= 'mv' open_bracket variable_set ',' expression [ '::' expression ] [ ',' expression [ ',' expression ] ] close_bracket
 
 expression_function_call            ::= '##expression' function_parameter_list  /* function? or more similar to macro? */
 safeexpression_function_call        ::= '##safeexpression' function_parameter_list  /* function? or more similar to macro? */

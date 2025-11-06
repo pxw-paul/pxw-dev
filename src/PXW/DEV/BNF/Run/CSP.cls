@@ -47,6 +47,8 @@ Method TextNoSpace(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
     $$$BNFSTART(subElement)
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
     
+    If $ISOBJECT(..whitespace) Quit 0
+    
     ; reached a mismatched > so at the end?
     If ..peek(1)=">" Quit 0
 

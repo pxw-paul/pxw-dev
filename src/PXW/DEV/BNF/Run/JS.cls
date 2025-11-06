@@ -303,6 +303,7 @@ Method StringLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
     Set char=..peek(1)
     If char="""" Set ok=1
     If char="'" Set ok=1
+    if char="`" set ok=1
 
     Set instring=1 ; 1 means started, 2=continuation (after code expression)
     If ok {
@@ -374,6 +375,7 @@ Method ClientMethodStringLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef sub
     Set char=..peek(1)
     If char="""" Set ok=1
     If char="'" Set ok=1
+    if char="`" set ok=1
 
     Set instring=1 ; 1 means started, 2=continuation (after code expression)
     If ok {

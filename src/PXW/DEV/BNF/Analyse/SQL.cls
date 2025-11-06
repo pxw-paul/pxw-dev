@@ -150,10 +150,8 @@ Method SelectCommand(element As PXW.DEV.Element)
             For ti=1:1:tableelements.Count() {
                 Set tablename="",tablealias=" "
                 Set tref=tableelements.GetAt(ti)
-                ;w "<pre>tref="_tref.ToString(0)_"</pre>"
                 Set tablenameE=tref.findFirstElementByType("TableName")
                 If $ISOBJECT(tablenameE) Set tablename=tablenameE.ToString(0)
-                ;w "<pre>" d tablenameE.write() zw tablename w "</pre>"
                 Set tablealiasE=tref.findFirstElementByType("AliasName")
                 If $ISOBJECT(tablealiasE) Set tablealias=tablealiasE.ToString(0)
                 Set tables(tablealias)=tablename
@@ -196,13 +194,11 @@ Method SelectCommand(element As PXW.DEV.Element)
                 Set colE=derivedColumns.GetAt(ci)
                 Set colname="unknown"_ci
                 Do ..GetDerivedColumnInfo(colE,.colname,.cref)
-                ;zw colE,colname
                 Set fulltable=..FindTable(cref,.tables)
                 Set ..SelectedColumnsByName(colname)=fulltable
             }
         }
     }
-    ;w "<pre>" zw $this w "</pre>"
 }
 
 /// Pass in an element of type DerivedColumn and a default name. 
