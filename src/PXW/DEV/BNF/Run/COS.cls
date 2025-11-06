@@ -819,17 +819,21 @@ Method HtmlBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	Set parser=##class(PXW.DEV.BNF.Run.CSP).%New()
 	Set parser.stream=..stream
     Do parser.skipWhiteSpaceAndComments()
-    ;$$$DEBUG("COS CODE BLOCK peeked "_parser.peek(1))
-	If parser.CspPageMandatory(subElement) {
+    If parser.CspPageMandatory(subElement) {
         Set ..whitespace=parser.whitespace
         Set ..comment=parser.comment
         Set atom=..newAtom("CSPCodeBlock End","")
         Do subElement.AddPart(atom)
         $$$BNFCOMMIT(subElement,ParentElement)
+        ; if we get here the next thing must be a > so check
+        if ..peek(1)'=">" {
+            Set recretok=..recover(ParentElement,.recsub,"<>","")
+        }
         Set retok=1
 	} Else {
-         Set recretok=..recover(ParentElement,.recsub,"<>","")
-        $$$DEBUG("RECOVERED htmlbody:"_recretok)
+        ;$$$DEBUG("HTMLBody RECOVER:"_..peek(20))
+        Set recretok=..recover(ParentElement,.recsub,"<>","")
+        ;$$$DEBUG("RECOVERED htmlbody:"_recretok)
         Set retok=1
     }
     $$$DEBUGMethodEnd
@@ -864,6 +868,10 @@ Method JsBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
         Set atom=..newAtom("JavascriptCodeBlock End","")
         Do subElement.AddPart(atom)
         $$$BNFCOMMIT(subElement,ParentElement)
+        ; if we get here the next thing must be a > so check
+        if ..peek(1)'=">" {
+            Set recretok=..recover(ParentElement,.recsub,"<>","")
+        }
         Set retok=1
     } Else {
         Do ..recover(ParentElement,.recsub,"<>","")
@@ -987,7 +995,7 @@ Method AmpOp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 Method OneCosStatement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean [ ProcedureBlock = 1 ]
 {
     $$$DEBUGMethodBegin
-	;$$$BNFPATH
+	$$$BNFPATH
 	$$$BNFSTART(subElement)
 
     ; for recovery we need a way of stopping, so end of file or end of code block means no statement
@@ -1005,9 +1013,9 @@ Method OneCosStatement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
     If ..stream.col=0 {
         Set directive=..CosDirective(subElement)
     } Else {
-        If ..stream.col>0 Set command=..CosCommand(subElement)
+        If ..stream.col>0 Set command=..CosCommandOrMacro(subElement)
     }
-    $$$DEBUG("Label="_label_" dots="_dots_" directive="_directive_" command="_command)
+    ;$$$DEBUG("Label="_label_" dots="_dots_" directive="_directive_" command="_command)
     If label || dots || directive || command {
         $$$BNFCOMMIT(subElement,ParentElement)
         Set retok=1
@@ -1016,8 +1024,8 @@ Method OneCosStatement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
         ;    $$$BNFROLLBACK(subElement)
         ;    Set retok=0
         ;} else {
-        ;    do ..recover(ParentElement,.recElement,"{}",$lb($c(13)))
-        ;    set retok=1
+            do ..recover(ParentElement,.recElement,"{}",$lb($c(13)))
+            set retok=1
         ;}
         $$$BNFROLLBACK(subElement)
         Set retok=0
@@ -1311,9 +1319,9 @@ Method CosCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
             ; we can only allow 1 letter in each item in the list
             Set retok=..recover(ParentElement,.recSub,"{}",$LISTBUILD($CHAR(13),"<","]"))
         } Else {
-            $$$DEBUG("RECOVERING "_..stream.PeekToEol())
-            Set retok=..recover(ParentElement,.recSub,"{}",$LISTBUILD($CHAR(9)," ",$CHAR(13)))
-            $$$DEBUG("RECOVERED ("_retok_")"_..stream.PeekToEol())
+            ;$$$DEBUG("RECOVERING "_..stream.PeekToEol())
+            ;Set retok=..recover(ParentElement,.recSub,"{}",$LISTBUILD($CHAR(9)," ",$CHAR(13)))
+            ;$$$DEBUG("RECOVERED ("_retok_")"_..stream.PeekToEol())
         }
     }
     ;i retok=0 break

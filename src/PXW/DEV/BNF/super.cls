@@ -517,6 +517,8 @@ Method newAtom(type As %String, value As %String = "") As PXW.DEV.Atom
     }
     Set ..needsWScheck=1
     Set %atoms=$GET(%atoms)+1
+    set %atomadded=a.type_"="_a.value
+    set %next50=..peek(50)
     Quit a
 }
 
@@ -570,6 +572,7 @@ Method readBlockComment(StartMarker As %String = "/*", EndMarker As %String = "*
 Method recover(ParentElement As PXW.DEV.Element, ByRef subElement As PXW.DEV.Element, Match As %String, StopAtList As %List) As %Boolean
 {
 	$$$DEBUGMethodBegin
+    $$$BNFPATH
     #dim a as %CSP.Broker
 	Set subElement=##class(PXW.DEV.Element).%New()
 	Set subElement.type="recover"
@@ -577,8 +580,9 @@ Method recover(ParentElement As PXW.DEV.Element, ByRef subElement As PXW.DEV.Ele
     Set matchcount=0 
 	Set ok=0
 	Set r=""
+    $$$DEBUG("RECOVER START AT:"_..peek(20))
     ; find where we are now (pos) up to the point of failure (lastPos)
-    While '..eof(),..stream.pos<..stream.lastPos,$LISTFIND(StopAtList,..peek(1))=0,matchcount>=0 {
+    While '..eof(),..stream.pos<..stream.lastPos,..recoverStopAt(StopAtList)=0,matchcount>=0 {
         If Match'="" {
             If ..peek(1)=$EXTRACT(Match,1) Set matchcount=matchcount+1
             If ..peek(1)=$EXTRACT(Match,2) Set matchcount=matchcount-1
@@ -598,7 +602,7 @@ Method recover(ParentElement As PXW.DEV.Element, ByRef subElement As PXW.DEV.Ele
     
     ; now find from the point of failure up to the next recovery point (a mismatch of {}  or a specific char)
     Set ok=0,r=""
-	While '..eof(),$LISTFIND(StopAtList,..peek(1))=0,matchcount>=0 {
+	While '..eof(),..recoverStopAt(StopAtList),matchcount>=0 {
         If ..peek(1)=$EXTRACT(Match,1) Set matchcount=matchcount+1
         If ..peek(1)=$EXTRACT(Match,2) Set matchcount=matchcount-1
         If matchcount>=0 {
@@ -611,9 +615,26 @@ Method recover(ParentElement As PXW.DEV.Element, ByRef subElement As PXW.DEV.Ele
 		Do subElement.AddPart(atom)
 		Do ParentElement.AddPart(subElement)
 	}	
+    $$$DEBUG("RECOVER END AT:"_..peek(20))
 	$$$DEBUGMethodEnd
     ; recover always is true?
 	Quit ok
+}
+
+Method recoverStopAt(StopAtList As %List)
+{
+    s stop=$LISTFIND(StopAtList,..peek(1))
+    ;$$$DEBUG("Stop="_stop_":"_..peek(1))
+    q stop
+    s stop=0
+    f i=1:1:$ll(StopAtList) {
+        set stop=$lg(StopAtList,i)
+        set peek=..peek($l(stop))
+        if $$$UPPER(peek)=$$$UPPER(stop) {
+            set stop=1
+        }
+    }
+    q stop
 }
 
 }

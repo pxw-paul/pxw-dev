@@ -10,6 +10,11 @@ ClassMethod WorkOnAList(ObjList As %ListOfObjects(ELEMENTTYPE="PXW.DEV.UnitTests
 {
 	#dim p as %CSP.Util.HTMLDashboardPane
 	#dim x as %XML.ImportHandler
+	#dim r as %Library.AbstractResultSet
+	#define mac s x=1
+	s y=2
+	$$$mac
+	s z=3
 }
 
 ClassMethod ele(Output ele As PXW.DEV.Element)

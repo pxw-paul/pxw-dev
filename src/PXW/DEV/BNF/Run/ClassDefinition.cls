@@ -198,7 +198,7 @@ Method CosCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
             Set ..comment=pyparser.comment
             Set atom=..newAtom("CosCodeBlock End","")
             Do ParentElement.AddPart(atom)
-		    Quit 1
+ 		    Quit 1
         } Else {
             Do ..recover(ParentElement,.subElement,"{}","") ; NOT WORKING AS EXPECTED!
             ;;$$$BNFROLLBACK(subElement)
@@ -236,6 +236,10 @@ Method CosCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
             Set ..comment=parser.comment
             Set atom=..newAtom("CosCodeBlock End","")
             Do ParentElement.AddPart(atom)
+           ; next thing must be a "}" so check
+            if ..peek(1)'="}" {
+                Do ..recover(ParentElement,.recElement,"{}","")
+            }
 		    Quit 1
         } Else {
             $$$BNFROLLBACK(subElement)
@@ -249,6 +253,10 @@ Method CosCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
             Set ..comment=parser.comment
             Set atom=..newAtom("CosCodeBlock End","")
             Do ParentElement.AddPart(atom)
+           ; next thing must be a "}" so check
+            if ..peek(1)'="}" {
+                Do ..recover(ParentElement,.recElement,"{}","")
+            }
             Quit 1
         } Else {
             $$$BNFROLLBACK(subElement)

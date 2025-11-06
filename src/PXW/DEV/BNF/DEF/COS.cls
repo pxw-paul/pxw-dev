@@ -31,8 +31,8 @@ cos_code_block_trigger              ::= one_cos_statement ( one_cos_statement )*
 
 /* this looks like it allows multiple labels per line but it has been overridden to deal with this properly, 
   this is really just a template definition */
-one_cos_statement                   ::= [ label_definition ] ('.')* cos_command 
-one_cos_statement_sql               ::= ('.')* cos_command  /* in SQLCompute mode line labels are not allowed, and variables can be {*} or {field} */
+one_cos_statement                   ::= [ label_definition ] ('.')* cos_command_or_macro
+one_cos_statement_sql               ::= ('.')* cos_command_or_macro  /* in SQLCompute mode line labels are not allowed, and variables can be {*} or {field} */
 
 label_definition                    ::= label_identifier [ label_formal_specification ] [ label_scope ] [ '{' [cos_code_block] '}']
 label_formal_specification          ::= '(' [ label-formal-param-list ]  ')'
@@ -40,7 +40,7 @@ label-formal-param-list             ::= label-one-formal-param ( ',' label-one-f
 label-one-formal-param              ::= [ '&' ] label-param-name [ label-param-default-value ]
 label-param-default-value           ::= '=' expression
 label-param-name                    ::= variable_set /*identifier*/
-label_scope                         ::= ( [ label_public_vars ] 'public' | 'private' | 'methodimpl'  ) /*'{' [ command_list ] '}'*/
+label_scope                         ::= ( [ label_public_vars ] 'public' | 'private' | 'methodimpl'  )
 label_public_vars                   ::= '[' label_public_vars_list? ']'
 label_public_vars_list              ::= variable ( ',' variable )* 
 
@@ -67,8 +67,8 @@ cos_directive                       ::= '#' ( cos_directive_define
 cos_directive_defonearg             ::= 'def1arg' cos_directive_define_name [ array_parameter_list ] [cos_directive_define_subst] /* text_to_eol_continue */
 cos_directive_define                ::= 'define' cos_directive_define_name [ array_parameter_list ] [cos_directive_define_subst]  /*[ text_to_eol_continue]*/
 cos_directive_define_name           ::= macro_identifier
-cos_directive_define_subst_new      ::= [ command_list_eol_continue | expression_list ] 
-cos_directive_define_subst          ::= [command_list_eol | expression_list ] text_to_eol_continue 
+cos_directive_define_subst          ::= [ command_list_eol_continue | expression_list ] text_to_eol_continue 
+cos_directive_define_subst_old      ::= [command_list_eol | expression_list ] text_to_eol_continue 
 cos_directive_dim                   ::= 'dim' cos_directive_dim_item (',' cos_directive_dim_item )* /*Studio and VSCode do not allow multiple dims on one line, but the compiler does not complain (unless there is an =) and some intersystems code has it! %Installer.Invoke  */
 cos_directive_dim_item              ::= variable_set [(',' variable_set )*] [ 'as' [('array' | 'list') 'of'] class_reference ] [ '=' dim_expression ] 
 cos_directive_else                  ::= 'else'
@@ -93,6 +93,7 @@ dim_expression                      ::= expression
 
 class_identifier                    ::= 'regexp:(\%|[a-zA-Z])[a-zA-Z0-9\.]*)' 
 
+cos_command_or_macro                ::= cos_command | macrocall
 cos_command                         ::=  set_command
                                          | if_command
                                          | quit_command
@@ -125,7 +126,7 @@ cos_command                         ::=  set_command
                                          | while_command
                                          | write_command
                                          | xecute_command
-                                         | macrocall
+                                         /*| macrocall*/
                                          | cos_directive
                                          | zallocate_command
                                          | zbreak_command
@@ -149,7 +150,8 @@ cos_command                         ::=  set_command
                                          | ZZ_COMMAND
 
 command_list                        ::= cos_command ( cos_command )*
-command_list_eol                    ::= cos_command ( cos_command )* /* needs to stop at end of line */
+command_list_eol                    ::= cos_command_or_macro ( cos_command_or_macro )* /* needs to stop at end of line */
+/* continue version is only called from macro definition (rename?) so does not worry about macros too much */
 command_list_eol_continue           ::= cos_command ( cos_command )* /* needs to stop at end of line and look for ##continue*/
 
 comment                             ::= line_comment
@@ -459,7 +461,7 @@ do_item                             ::=  object_variable
                                           | ( '(' expression ')' [ object_chain ])
 
 for_command                         ::= ('for' | 'f') [ for_parameters ] for_loop_statement
-for_loop_statement                  ::= ( '{' [ cos_command] [ cos_code_block ] '}' ) | (naked | command_list_eol )
+for_loop_statement                  ::= ( '{' [ cos_command_or_macro ] [ cos_code_block ] '}' ) | (naked | command_list_eol )
 for_parameters                      ::= for_parameter ( ',' for_parameter )*
 for_parameter                       ::= lvalue_expression '=' for_loop_specifier_list
 for_loop_specifier_list             ::= for_loop_specifier ( ',' for_loop_specifier )*

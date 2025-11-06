@@ -414,6 +414,12 @@ Method writeCDEFMethod(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.D
     Quit ""
 }
 
+Method writeCDEFClassClientMethod(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassClientMethod")
+{
+    Do ..wrapElementHTML(element,"<span class='EmbeddedJS'>","</span>")
+    quit ""
+}
+
 Method writeCDEFClassQuery(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassQuery")
 {
     Set ..SqlProgramAnalyser=""

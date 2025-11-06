@@ -278,7 +278,7 @@ Method JavascriptBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
     Do parser.skipWhiteSpaceAndComments()
 
     $$$DEBUG("Javascript language normal")
-    If parser.StatementList(subElement) {
+    if parser.StatementList(subElement) { 
         $$$BNFCOMMIT(subElement,ParentElement)
         Set ..whitespace=parser.whitespace
         Set ..comment=parser.comment

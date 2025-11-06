@@ -11,10 +11,13 @@ Property codeMode As %String [ InitialExpression = "CSP" ];
 Method Statement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
+    
     ; if the code is embedded then we need to stop at:
-    If ..peek(1)="<" Quit 0 ; </script>?
+    if ..eof() quit 0
+    If ..peek(2)="</" Quit 0 ; </script>?
     If ..peek(1)=">" Quit 0 ; &js<  >
     If ..peek(1)="}" Quit 0 ; } end of method
+    
     Set ok=##super(ParentElement,.subElement)
     If 'ok {
         Do ..recover(ParentElement,.recsub,"{}",$LISTBUILD($CHAR(13)))
@@ -22,6 +25,15 @@ Method Statement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
     }
 
 	Quit ok
+}
+
+///  dyadicop ::= ('?' single_expression ':') | '===' | '>>>' | '!==' | cos_gt_lt | '**' |'??' | '<<' | '>>' | '<=' | '>=' | '==' | '!=' | '&&' | '||' | '+=' | '-=' | '*=' | '*' | '/' | '%' | '+' | '-' | '&' | '^' | '|' | '=' | '<' | ('>' is_not_Line_Terminator) | cos_expression_runtime | "InstanceOf"
+/// summary=(P&C&P)|P|P|P|C|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|(P&C)|C|K
+Method Dyadicop(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; don't like this!
+    i ..peek(2)="</" q 0 ; reached a </ so treat as end of file
+    q ##super(ParentElement,.subElement)
 }
 
 /// eos ::= SemiColon
@@ -38,6 +50,13 @@ Method Eos(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF
     If $ISOBJECT(..whitespace),..whitespace.ToString(0)[$CHAR(13) {
         Quit 1
     }
+
+    ; </script> counts as end of file if embedded
+    $$$DEBUG("EOS peek:"_..peek(20))
+    If ..peek(2)="</" {
+        Quit 1
+    }
+
     If ..peek(1)="}" {
         Quit 1 ; do not consume
     }
