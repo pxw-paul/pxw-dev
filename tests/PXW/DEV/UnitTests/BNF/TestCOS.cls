@@ -1,5 +1,15 @@
+Include (PXW.Debuggers.Macros, PXW.DEV.BNF.macros)
+
 Class PXW.DEV.UnitTests.BNF.TestCOS Extends %UnitTest.TestCase
 {
+
+ClassMethod aTestOneCosStatement()
+{
+    $$$DEBUGNew("")
+    s pmeth="CosCodeBlock"
+    s ele=##class(PXW.DEV.UnitTests.BNF.TestCOS).parse(" S x=$lg(x,2).prop"_$c(13)_" s y=2",pmeth) 
+    d ele.write()
+}
 
 Method TestJsonString()
 {

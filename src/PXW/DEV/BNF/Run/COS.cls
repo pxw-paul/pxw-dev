@@ -1006,29 +1006,43 @@ Method OneCosStatement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
     ; check to see if the label is on a line on its own
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 
-    Set dots=0
-   	While (..isString(subElement,".")) { Set dots=1 }
-
-    Set directive=0,command=0
-    If ..stream.col=0 {
-        Set directive=..CosDirective(subElement)
-    } Else {
-        If ..stream.col>0 Set command=..CosCommandOrMacro(subElement)
+    ; only allow dots after whitespace
+    ; if there is a label then we can have dots (not sure if thats true, or wise)
+    ; if there is no label then the dots must be first thing on the line (ie whitespace contains cr)
+    Set dots=0,invaliddot=0
+   if $isobject(..whitespace) {
+        set newline=(..whitespace.value[$CHAR(13))
+        if label || newline {
+   	        While (..isString(subElement,".")) { Set dots=1 }
+        } else {
+            if ..peek(1)="." {
+                set invaliddot=1
+            }
+        } 
+    } else {
+        if ..peek(1)="." {
+               set invaliddot=1
+        }
     }
-    ;$$$DEBUG("Label="_label_" dots="_dots_" directive="_directive_" command="_command)
-    If label || dots || directive || command {
-        $$$BNFCOMMIT(subElement,ParentElement)
-        Set retok=1
-    } Else {
-        ;if ..stopAtEOLContinue {
-        ;    $$$BNFROLLBACK(subElement)
-        ;    Set retok=0
-        ;} else {
-            do ..recover(ParentElement,.recElement,"{}",$lb($c(13)))
+
+    i invaliddot {
+        ; this is messy, there must be a cleaner bit of logic for all this invalid dot stuff!
+        do ..recover(ParentElement,.recElement,"{}",$lb($c(32),$c(9),$c(160),$c(13)))
+        set retok=1
+    } else {
+        Set directive=0,command=0
+        If ..stream.col=0 {
+            Set directive=..CosDirective(subElement)
+        } Else {
+            If ..stream.col>0 Set command=..CosCommandOrMacro(subElement)
+        }
+        If label || dots || directive || command {
+            $$$BNFCOMMIT(subElement,ParentElement)
+            Set retok=1
+        } Else {
+            do ..recover(ParentElement,.recElement,"{}",$lb($c(32),$c(9),$c(160),$c(13)))
             set retok=1
-        ;}
-        $$$BNFROLLBACK(subElement)
-        Set retok=0
+        }
     }
 
     $$$DEBUGMethodEnd

@@ -582,7 +582,7 @@ Method recover(ParentElement As PXW.DEV.Element, ByRef subElement As PXW.DEV.Ele
 	Set r=""
     $$$DEBUG("RECOVER START AT:"_..peek(20))
     ; find where we are now (pos) up to the point of failure (lastPos)
-    While '..eof(),..stream.pos<..stream.lastPos,..recoverStopAt(StopAtList)=0,matchcount>=0 {
+    While '..eof(),..stream.pos<..stream.lastPos,matchcount>=0 {
         If Match'="" {
             If ..peek(1)=$EXTRACT(Match,1) Set matchcount=matchcount+1
             If ..peek(1)=$EXTRACT(Match,2) Set matchcount=matchcount-1
@@ -598,11 +598,13 @@ Method recover(ParentElement As PXW.DEV.Element, ByRef subElement As PXW.DEV.Ele
 	If ok {
 		Set atom=..newAtom("ERROR",r)
 		Do subElement.AddPart(atom)
-	}	
+	}
+    $$$DEBUG("RECOVER MID AT:"_..peek(20))
+    	
     
     ; now find from the point of failure up to the next recovery point (a mismatch of {}  or a specific char)
     Set ok=0,r=""
-	While '..eof(),..recoverStopAt(StopAtList),matchcount>=0 {
+	While '..eof(),'..recoverStopAt(StopAtList),matchcount>=0 {
         If ..peek(1)=$EXTRACT(Match,1) Set matchcount=matchcount+1
         If ..peek(1)=$EXTRACT(Match,2) Set matchcount=matchcount-1
         If matchcount>=0 {
@@ -623,14 +625,11 @@ Method recover(ParentElement As PXW.DEV.Element, ByRef subElement As PXW.DEV.Ele
 
 Method recoverStopAt(StopAtList As %List)
 {
-    s stop=$LISTFIND(StopAtList,..peek(1))
-    ;$$$DEBUG("Stop="_stop_":"_..peek(1))
-    q stop
     s stop=0
     f i=1:1:$ll(StopAtList) {
-        set stop=$lg(StopAtList,i)
-        set peek=..peek($l(stop))
-        if $$$UPPER(peek)=$$$UPPER(stop) {
+        set stopitem=$lg(StopAtList,i)
+        set peek=..peek($l(stopitem))
+        if $$$UPPER(peek)=$$$UPPER(stopitem) {
             set stop=1
         }
     }

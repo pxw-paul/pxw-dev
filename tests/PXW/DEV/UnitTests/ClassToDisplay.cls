@@ -11,6 +11,7 @@ ClassMethod WorkOnAList(ObjList As %ListOfObjects(ELEMENTTYPE="PXW.DEV.UnitTests
 	#dim p as %CSP.Util.HTMLDashboardPane
 	#dim x as %XML.ImportHandler
 	#dim r as %Library.AbstractResultSet
+	#dim z as %ZEN.Report.Display.COSChart.cchartDualY
 	#define mac s x=1
 	s y=2
 	$$$mac
