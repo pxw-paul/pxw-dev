@@ -8,7 +8,7 @@ Property Prop2 As %Integer [ Aliases = {property two ,p2}, SqlComputeCode = { s 
 /**/
 ClassMethod WorkOnAList(ObjList As %ListOfObjects(ELEMENTTYPE="PXW.DEV.UnitTests.ClassToDisplay",CLASSNAMEINOID=1)) As %Status
 {
-	#dim p as %CSP.Util.HTMLDashboardPane
+	#dim p as %SYSTEM.Query.Plan
 	#dim x as %XML.ImportHandler
 	#dim r as %Library.AbstractResultSet
 	#dim z as %ZEN.Report.Display.COSChart.cchartDualY

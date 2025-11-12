@@ -1,4 +1,4 @@
-/// Created: 2025-11-06 09:14:30 PXW.DEV.BNF.Compilers.Compiler1
+/// Created: 2025-11-12 19:48:45 PXW.DEV.BNF.Compilers.Compiler1
 Class PXW.DEV.BNF.GEN.COS Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 
@@ -1437,7 +1437,7 @@ Method CommandList45Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	quit ok
 }
 
-///  command_list_eol ::= cos_command ( cos_command )*
+///  command_list_eol ::= cos_command_or_macro ( cos_command_or_macro )*
 /// summary=C&(?4punctuation:4?)*
 Method CommandListEol(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
@@ -1446,7 +1446,7 @@ Method CommandListEol(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..CosCommand(.subElement,.addedElement)  {
+	if ..CosCommandOrMacro(.subElement,.addedElement)  {
 		if ..CommandListEol46RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
@@ -1463,7 +1463,7 @@ Method CommandListEol(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	quit ok
 }
 
-///  ( cos_command )*
+///  ( cos_command_or_macro )*
 Method CommandListEol46RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
@@ -1480,14 +1480,14 @@ Method CommandListEol46RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	quit ok
 }
 
-///  cos_command
+///  cos_command_or_macro
 /// summary=C
 Method CommandListEol47Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C
 	set subElement=ParentElement
 	set done=0 ; method start
-	if ..CosCommand(.subElement,.addedElement)  {
+	if ..CosCommandOrMacro(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 

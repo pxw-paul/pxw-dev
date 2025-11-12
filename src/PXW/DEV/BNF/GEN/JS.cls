@@ -1,4 +1,4 @@
-/// Created: 2025-11-06 09:14:37 PXW.DEV.BNF.Compilers.Compiler1
+/// Created: 2025-11-12 19:48:52 PXW.DEV.BNF.Compilers.Compiler1
 Class PXW.DEV.BNF.GEN.JS Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 

@@ -1,4 +1,4 @@
-/// Created: 2025-11-06 09:14:32 PXW.DEV.BNF.Compilers.Compiler1
+/// Created: 2025-11-12 19:48:47 PXW.DEV.BNF.Compilers.Compiler1
 Class PXW.DEV.BNF.GEN.CSP Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 
@@ -1106,7 +1106,6 @@ Method CspPageMandatory3RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	set done=0 ; must be at least 1
 	while ..CspPageMandatory4Sub(.subElement,.addedElement)  {
 		set done=1
-		$$$DEBUG("CSPMAND 3rep "_done)
 	}
 	if done {
 		set ok=1
@@ -1120,7 +1119,6 @@ Method CspPageMandatory3RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 /// summary=C|C|C|C|C
 Method CspPageMandatory4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	$$$DEBUG("CspPageMandatory4Sub called;"_..peek(20))
 	; rules summary C|C|C|C|C
 	set subElement=ParentElement
 	set done=0 ; method start
@@ -1135,6 +1133,7 @@ Method CspPageMandatory4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	} elseif ..CspContent(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
+
 	if done {
 		set ok=1
 	} else {
