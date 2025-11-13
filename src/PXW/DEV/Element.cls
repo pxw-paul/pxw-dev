@@ -59,6 +59,11 @@ Method partsClear()
 	Kill:$DATA(%PXWparts(+$THIS)) %PXWparts(+$THIS)
 }
 
+Method partsRemove(key As %Integer)
+{
+	If key'="" Kill %PXWparts(+$THIS,key)
+}
+
 Method %OnClose() As %Status
 {
 	Kill:$DATA(%PXWparts(+$THIS)) %PXWparts(+$THIS)

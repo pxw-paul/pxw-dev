@@ -350,7 +350,9 @@ Method TestNumber()
     Do $$$AssertEquals(..parseAndFlat("9e-14",pmeth),"Number:9e-14")
     Set x=9.2E-15
     Do $$$AssertEquals(..parseAndFlat("9.2E-15",pmeth),"Number:9.2E-15")
-    
+   ; set x=1. ; this will run, but editor thinks its invalid!
+    ;Do $$$AssertEquals(..parseAndFlat("1.",pmeth),"Number:1.")
+
     ; negative numbers are valid in this method but would probably not occur because expressions would split this into two parts (-) (number)
     Set x=-0
     Do $$$AssertEquals(..parseAndFlat("-0",pmeth),"Number:-0")

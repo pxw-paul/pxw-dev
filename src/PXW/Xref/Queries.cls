@@ -4,7 +4,7 @@ Class PXW.Xref.Queries [ Owner = {_PUBLIC} ]
 /// <dl>
 /// 		<dt>ItemType</dt><dd>Class, Global, Rtn etc</dd>
 /// 		<dt>ItemKey1</dt><dd>Class name ,may be a single string, a comma separated list OR contain wildcard (*), you cannot mix , and *</dd>
-/// 		<dt>ItemKey2</dt><dd>Method name, may be a comma separated list</dd>
+/// 		<dt>ItemKey2</dt><dd>Method name, may be a comma separated list, its possible that this is a * (select * from) so this is treated as a special case</dd>
 /// 		<dt>CalledByKey2</dt><dd>Class name, may be a comma separated list</dd>
 /// </dl>
 /// Flags: string containing the following flags: 
@@ -20,37 +20,39 @@ Query Get(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = 
 		AND ItemType=:ItemType
 	--ENDIF 
 	--IF ItemKey1'="" 
-		--IF ItemKey1["*" 
-			AND ItemKey1 LIKE replace(replace(:ItemKey1,'%','\%'),'*','%') ESCAPE '\'
-		--ELSEIF ItemKey1[","
+		--IF ItemKey1[","
 			AND ItemKey1 %INLIST $LISTFROMSTRING(:ItemKey1)
+		--ELSEIF ItemKey1["*" 
+			AND ItemKey1 LIKE replace(replace(:ItemKey1,'%','\%'),'*','%') ESCAPE '\'
 		--ELSE
 			AND ItemKey1=:ItemKey1
 		--ENDIF
 	--ENDIF 
 	--IF ItemKey2'=""
-		--IF ItemKey2["*"
-			AND ItemKey2 LIKE replace(replace(:ItemKey2,'%','\%'),'*','%') ESCAPE '\'
-		--ELSEIF ItemKey2["," 
+		--IF ItemKey2[","
 			AND ItemKey2 %INLIST $LISTFROMSTRING(:ItemKey2)
+		--ELSEIF ItemKey2="*"
+			AND ItemKey2=:ItemKey2
+		--ELSEIF ItemKey2["*" 
+			AND ItemKey2 LIKE replace(replace(:ItemKey2,'%','\%'),'*','%') ESCAPE '\'
 		--ELSE 
 			AND ItemKey2=:ItemKey2
 		--ENDIF
 	--ENDIF
 	--IF CalledByKey1'=""
-		--IF CalledByKey1["*" 
-			AND CalledByKey1 LIKE replace(replace(:CalledByKey1,'%','\%'),'*','%') ESCAPE '\'
-		--ELSEIF CalledByKey1[","
+		--IF CalledByKey1["," 
 			AND CalledByKey1 %INLIST $LISTFROMSTRING(:CalledByKey1)
+		--ELSEIF CalledByKey1["*"
+			AND CalledByKey1 LIKE replace(replace(:CalledByKey1,'%','\%'),'*','%') ESCAPE '\'
 		--ELSE
 			AND CalledByKey1=:CalledByKey1
 		--ENDIF	
 	--ENDIF
 	--IF CalledByKey2'=""
-		--IF CalledByKey2["*" 
-			AND CalledByKey2 LIKE replace(replace(:CalledByKey2,'%','\%'),'*','%') ESCAPE '\'
-		--ELSEIF CalledByKey1[","
+		--IF CalledByKey2["," 
 			AND CalledByKey2 %INLIST $LISTFROMSTRING(:CalledByKey2)
+		--ELSEIF CalledByKey1["*"
+			AND CalledByKey2 LIKE replace(replace(:CalledByKey2,'%','\%'),'*','%') ESCAPE '\'
 		--ELSE
 			AND CalledByKey2=:CalledByKey2
 		--ENDIF

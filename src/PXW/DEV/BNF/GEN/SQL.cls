@@ -1,4 +1,4 @@
-/// Created: 2025-11-12 19:48:57 PXW.DEV.BNF.Compilers.Compiler1
+/// Created: 2025-11-13 20:15:31 PXW.DEV.BNF.Compilers.Compiler1
 Class PXW.DEV.BNF.GEN.SQL Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 
@@ -3950,11 +3950,11 @@ Method SqlCosVariable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	quit ok
 }
 
-///  sql_dyadicop ::= "+" | "-" | "\\" | "/" | "<>" | ">=" | ">" | "!>" | "<=" | "<" | "!<" | "=" | "!=" | "**" | "*" | "&&" | "&" | "]]" | "]" | "[" | "'[" | "!" | "||" | "_" | "#" | '\' | "AND" | "OR" | "NOT=" | "SIZE" | "ESCAPE" | sql_predicate | ("NOT" sql_predicate)
-/// summary=P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|K|K|P|K|K|C|(K&C)
+///  sql_dyadicop ::= "+" | "-" | "\\" | "/" | "<>" | ">=" | ">" | "!>" | "<=" | "<" | "!<" | "*=" | "=*" | "=" | "!=" | "**" | "*" | "&&" | "&" | "]]" | "]" | "[" | "'[" | "!" | "||" | "_" | "#" | '\' | "AND" | "OR" | "NOT=" | "SIZE" | "ESCAPE" | sql_predicate | ("NOT" sql_predicate)
+/// summary=P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|K|K|P|K|K|C|(K&C)
 Method SqlDyadicop(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|K|K|P|K|K|C|(K&C)
+	; rules summary P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|P|K|K|P|K|K|C|(K&C)
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -3980,6 +3980,10 @@ Method SqlDyadicop(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	} elseif ..addPunctuation(.subElement,"<")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(.subElement,"!<")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"*=")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"=*")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(.subElement,"=")  {
 		set done=1 ; or

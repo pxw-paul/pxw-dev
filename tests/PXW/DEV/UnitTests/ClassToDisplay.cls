@@ -16,10 +16,15 @@ ClassMethod WorkOnAList(ObjList As %ListOfObjects(ELEMENTTYPE="PXW.DEV.UnitTests
 	s y=2
 	$$$mac
 	s z=3
+	&sql(
+		select 1,2,3
+		-- dummy select
+	)
 }
 
-ClassMethod ele(Output ele As PXW.DEV.Element)
+ClientMethod ele() [ Language = javascript ]
 {
+	var x=1;
 }
 
 ClassMethod atom(Output atom As PXW.DEV.Atom)

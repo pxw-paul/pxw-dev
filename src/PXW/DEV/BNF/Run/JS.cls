@@ -94,7 +94,17 @@ HEX_INTEGER_LITERAL ::= 'NEED HEX INTEGER LITERAL'
 */
 Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
-    Quit ..IdentifierName(ParentElement,.subElement)
+    $$$DEBUGMethodBegin
+    $$$BNFPATH
+    $$$BNFSTART(subElement)
+    
+    set x=..IdentifierName(subElement)
+    if x {
+        $$$BNFCOMMIT(subElement,ParentElement)
+    } else {
+        $$$BNFROLLBACK(subElement)
+    }
+    q x
 }
 
 /// IDENTIFIER_NAME ::= 'NEED IDENTIFIER NAME'

@@ -1,4 +1,4 @@
-/// Created: 2025-11-12 19:48:45 PXW.DEV.BNF.Compilers.Compiler1
+/// Created: 2025-11-13 20:15:20 PXW.DEV.BNF.Compilers.Compiler1
 Class PXW.DEV.BNF.GEN.COS Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 

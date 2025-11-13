@@ -576,7 +576,8 @@ Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
         Set i=i+2 ; . and number
         Set hasDigits=1
     }
-    
+    ; WE ARE NOT DEALING WITH "1." or "1.E10" or "1.*10" WHICH ARE ALL VALID BUT RARE
+
     If hasDigits {
     	$$$BNFSTART(subElement)
     

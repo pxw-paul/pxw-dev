@@ -576,7 +576,7 @@ Method xrefCOSGlobal(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compile
 		Set namea=globalElement
 		If $ISOBJECT(namea) {
 			Set subsE=fullrefE.findFirstElementByType("SubscriptParameterList",0)
-			Set subs=$SELECT($ISOBJECT(subsE):..Analyser.SimplifySubscripts(subsE),1:"")
+			Set subs=$SELECT($ISOBJECT(subsE):..Analyser.SimplifySubscripts(subsE),1:"_top")
 			Do ..SaveCOSXref("GBL",namea.ToStringAtomsOnly(0),subs,setmode,upa)            
 		}
 	} Else {

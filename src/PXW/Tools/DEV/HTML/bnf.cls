@@ -414,9 +414,9 @@ Method writeCDEFMethod(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.D
     Quit ""
 }
 
-Method writeCDEFClassClientMethod(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassClientMethod")
+Method writeCDEFJavascriptCodeBlock(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="JavascriptCodeBlock")
 {
-    Do ..wrapElementHTML(element,"<span class='EmbeddedJS'>","</span>")
+    Do ..wrapElementHTML(element,"<div><span class='EmbeddedJS'>","</span></div>")
     quit ""
 }
 
@@ -957,6 +957,17 @@ Method writeJSCosMethodReference(element As PXW.DEV.BNF.Elements.JS) As PXW.DEV.
     } Else {
         Do ..wrapElementHTML(element,"<a class='CDEFMember' href='"_..HREFToClass($PIECE(method,".",1,*-1),$PIECE(method,".",*))_"'>","</a>")
     }
+}
+
+Method writeJSIdentifier(element As PXW.DEV.BNF.Elements.JS) As PXW.DEV.BNF.Compilers.elementHandler(Type="Identifier")
+{
+    Set variablename=element.ToStringAtomsOnly(0)
+    ; add the hiliting function to the first atom only
+    set atom=element.FirstAtom()
+    Set cssclass="COSVariable"
+    If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(variablename) Set cssclass="COSVariableParameterSet"
+    ;Do ..wrapAtomHTML(atom,"<span class='"_cssclass_"' fetchid='"_variablename_"' onclick=""HiliteSets('"_variablename_"');"">","</span>")
+    Do ..wrapAtomHTML(atom,"<span class='"_cssclass_"'>","</span>")
 }
 
 /*method writeCOS(element As PXW.DEV.BNF.Elements.COS) AS PXW.DEV.BNF.Compilers.elementHandler(Type="")
