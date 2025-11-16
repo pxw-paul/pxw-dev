@@ -3,15 +3,7 @@ Class PXW.DEV.Dictionary.Install Extends %RegisteredObject
 
 ClassMethod Setup() As %Status
 {
-    ; This is the default namespace, if anything goes wrong this is where we count as safe
-    Set sc=..SetupCLS("LOCAL_USER","LOCAL_USER","localhost",52773,"IRISAPP","_SYSTEM","SYS")
-    If $$$ISERR(sc) Do $SYSTEM.Status.DisplayError(sc)
-    Quit sc
-}
-
-ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, AtelierServer As %String, AtelierPort As %String, AtelierNamespace As %String, Ausername As %String, Apassword As %String) As %Status
-{
- 
+    ; Common settings
     Set sc=$$$OK
     ; code interfaces
     Set:$$$ISOK(sc) sc=##class(PXW.DEV.Dictionary.ClassDefinitionObject).RegisterType()
@@ -24,9 +16,19 @@ ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, Ate
     ; cross reference builders
     Set:$$$ISOK(sc) sc=##class(PXW.Xref.Builders.Class).RegisterType()
     ; code analysers
-    Set:$$$ISOK(sc) sc=##class(PXW.DEV.BNF.Analyse.COS).RegisterType()
+    Set:$$$ISOK(sc) sc=##class(PXW.DEV.BNF.analysers.COS).RegisterType()
+    Set:$$$ISOK(sc) sc=##class(PXW.DEV.BNF.analysers.SQL).RegisterType()
+    Set:$$$ISOK(sc) sc=##class(PXW.DEV.BNF.analysers.Python).RegisterType()
     
-    
+    ; This is the default namespace, if anything goes wrong this is where we count as safe
+    Set sc=..SetupCLS("LOCAL_USER","LOCAL_USER","localhost",52773,"IRISAPP","_SYSTEM","SYS")
+    If $$$ISERR(sc) Do $SYSTEM.Status.DisplayError(sc)
+    Quit sc
+}
+
+ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, AtelierServer As %String, AtelierPort As %String, AtelierNamespace As %String, Ausername As %String, Apassword As %String) As %Status
+{
+    Set sc=$$$OK
     If $$$ISOK(sc) {
         Set namespace=##class(PXW.DEV.Dictionary.Namespace).%OpenId(NamespaceName)
         If '$ISOBJECT(namespace) {
@@ -44,7 +46,7 @@ ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, Ate
         }
         Set atelier.ServerAddress=AtelierServer
         Set atelier.Port=AtelierPort
-        Set atelier.Namespace="IRISAPP"
+        Set atelier.Namespace=AtelierNamespace
         Set atelier.InitiateAuthentication="Basic"
         Set atelier.Username=Ausername
         Set atelier.Password=Apassword
@@ -53,6 +55,7 @@ ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, Ate
     }
 
     If $$$ISOK(sc) {
+        ; set up interface to classes
         Set cls=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(NamespaceName)
         If '$ISOBJECT(cls) {
             Set cls=##class(PXW.DEV.Dictionary.ClassDefinitionObject).%New()
@@ -65,6 +68,7 @@ ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, Ate
     }
 
     If $$$ISOK(sc) {
+        ; set up interface to includes
         Set INC=##class(PXW.DEV.Dictionary.Include).OpenNamespace(NamespaceName)
         If '$ISOBJECT(INC) {
             Set INC=##class(PXW.DEV.Dictionary.Include).%New()
@@ -75,6 +79,7 @@ ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, Ate
     }
 
     If $$$ISOK(sc) {
+        ; set up interface to routines
         Set INT=##class(PXW.DEV.Dictionary.Routine).OpenNamespace(NamespaceName)
         If '$ISOBJECT(INT) {
             Set INT=##class(PXW.DEV.Dictionary.Routine).%New()
