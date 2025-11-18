@@ -16,9 +16,9 @@ ClassMethod Setup() As %Status
     ; cross reference builders
     Set:$$$ISOK(sc) sc=##class(PXW.Xref.Builders.Class).RegisterType()
     ; code analysers
-    Set:$$$ISOK(sc) sc=##class(PXW.DEV.BNF.analysers.COS).RegisterType()
-    Set:$$$ISOK(sc) sc=##class(PXW.DEV.BNF.analysers.SQL).RegisterType()
-    Set:$$$ISOK(sc) sc=##class(PXW.DEV.BNF.analysers.Python).RegisterType()
+    Set:$$$ISOK(sc) sc=##class(PXW.DEV.BNF.Analyse.COS).RegisterType()
+    Set:$$$ISOK(sc) sc=##class(PXW.DEV.BNF.Analyse.SQL).RegisterType()
+    Set:$$$ISOK(sc) sc=##class(PXW.DEV.BNF.Analyse.Python).RegisterType()
     
     ; This is the default namespace, if anything goes wrong this is where we count as safe
     Set sc=..SetupCLS("LOCAL_USER","LOCAL_USER","localhost",52773,"IRISAPP","_SYSTEM","SYS")
