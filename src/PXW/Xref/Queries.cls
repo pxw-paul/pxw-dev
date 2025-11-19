@@ -9,7 +9,7 @@ Class PXW.Xref.Queries [ Owner = {_PUBLIC} ]
 /// </dl>
 /// Flags: string containing the following flags: 
 ///        EXTERNAL : only list rows where the call is External
-Query Get(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = "", ItemKey2 As %String = "", CalledByCommand As %String = "", CalledByKey1 As %String = "", CalledByKey2 As %String = "", WindowSize As %Integer = 0, Flags As %String = "") As PXW.LIB.SQL.Query [ SqlProc ]
+Query Get(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = "", ItemKey2 As %String = "", CalledByCommand As %String = "", CalledByKey1 As %String = "", CalledByKey2 As %String = "", WindowSize As %Integer = 0, Flags As %String = "", CodeSearch As %String = "") As PXW.LIB.SQL.Query [ SqlProc ]
 {
 	SELECT NameSpace,ItemType,ItemKey1,ItemKey2,
 	       CalledByType,CalledByCommand,CalledByKey1,CalledByKey2,CalledByKey3,LineNumber,Parameters,
@@ -62,6 +62,9 @@ Query Get(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = 
 	--ENDIF
 	--IF Flags["EXTERNAL" 
 		AND CalledByKey1!=ItemKey1
+	--ENDIF
+	--IF CodeSearch'="",WindowSize>0
+		AND UPPER(PXW_Xref.Queries_GetCode(NameSpace,CalledByType,CalledByKey1,CalledByKey2,CalledByKey3,ItemKey1,ItemKey2,LineNumber,:WindowSize)) LIKE UPPER(replace(replace(:CodeSearch,'%','\%'),'*','%')) ESCAPE '\'
 	--ENDIF
 		ORDER BY 
 		--IF Flags["BY CALLED"

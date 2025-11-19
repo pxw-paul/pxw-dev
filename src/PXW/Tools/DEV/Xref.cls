@@ -5,20 +5,20 @@ Parameter ToolType = "Code";
 
 ClassMethod WriteMainBody()
 {
-	Do ..HREFFrom(.itemtype,.itemk1,.itemk2,.calledByCommand,.calledByKey1,.calledByKey2,.windowSize,.flags)
+	Do ..HREFFrom(.itemtype,.itemk1,.itemk2,.calledByCommand,.calledByKey1,.calledByKey2,.windowSize,.flags,.codeSearch)
 	If itemk1="",itemk2="",calledByKey1="",calledByKey2="" {
 		Write "Nothing to search for"
 	} Else {
-		Do ..WriteXRef(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,flags)
+		Do ..WriteXRef(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,flags,codeSearch)
 	}
 }
 
-ClassMethod WriteXRef(itemtype As %String, itemk1 As %String, itemk2 As %String, calledByCommand As %String, calledByKey1 As %String, calledByKey2 As %String, windowSize As %String, flags As %String)
+ClassMethod WriteXRef(itemtype As %String, itemk1 As %String, itemk2 As %String, calledByCommand As %String, calledByKey1 As %String, calledByKey2 As %String, windowSize As %String, flags As %String, codeSearch As %String)
 {
 	If flags["SUPER" {
 		Set rs=##class(PXW.Xref.Queries).GetSuperFunc(%NS,itemtype,itemk1,itemk2,calledByCommand,calledByKey1,windowSize,flags)
 	} Else {
-		Set rs=##class(PXW.Xref.Queries).GetFunc(%NS,itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,flags)
+		Set rs=##class(PXW.Xref.Queries).GetFunc(%NS,itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,flags,codeSearch)
 	}
 	;w "<pre>" zw rs w "</pre>"
 	Set showk3=$SELECT(flags[",SHOWK3":1,1:"")
@@ -85,15 +85,15 @@ ClassMethod WriteXRef(itemtype As %String, itemk1 As %String, itemk2 As %String,
 
 ClassMethod WriteNav()
 {
-	Do ..HREFFrom(.itemtype,.itemk1,.itemk2,.calledByCommand,.calledByKey1,.calledByKey2,.windowSize,.flags)
+	Do ..HREFFrom(.itemtype,.itemk1,.itemk2,.calledByCommand,.calledByKey1,.calledByKey2,.windowSize,.flags,.codeSearch)
 	Write "<a href='"_##class(PXW.Tools.DEV.XrefBuild).HREFTo()_"'>Build Xref</a>"
-	Write "<a href='"_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize+1,flags)_"'>Window +</a>"
-	If windowSize>0 Write "<a href='"_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize-1,flags)_"'>Window -</a>"
-	If itemk2'="" Write "<a href='"_..HREFTo(itemtype,itemk1,"","","","",windowSize,flags)_"'>All "_itemk1_"</a>"
-	If flags'["EXTERNAL" Write "<a href='"_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,flags_",EXTERNAL")_"'>External Only</a>"
-	If flags["EXTERNAL" Write "<a href='"_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,$REPLACE(flags,",EXTERNAL",""))_"'>Include Internal</a>"
-	If flags'["SUPER" Write "<a href='"_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,flags_",SUPER")_"'>Include Super</a>"
-	If flags["SUPER" Write "<a href='"_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,$REPLACE(flags,",SUPER",""))_"'>Exclude Super</a>"
+	Write "<a href='"_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize+1,flags,codeSearch)_"'>Window +</a>"
+	If windowSize>0 Write "<a href='"_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize-1,flags,codeSearch)_"'>Window -</a>"
+	If itemk2'="" Write "<a href='"_..HREFTo(itemtype,itemk1,"","","","",windowSize,flags,codeSearch)_"'>All "_itemk1_"</a>"
+	If flags'["EXTERNAL" Write "<a href='"_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,flags_",EXTERNAL",codeSearch)_"'>External Only</a>"
+	If flags["EXTERNAL" Write "<a href='"_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,$REPLACE(flags,",EXTERNAL",""),codeSearch)_"'>Include Internal</a>"
+	If flags'["SUPER" Write "<a href='"_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,flags_",SUPER",codeSearch)_"'>Include Super</a>"
+	If flags["SUPER" Write "<a href='"_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,$REPLACE(flags,",SUPER",""),codeSearch)_"'>Exclude Super</a>"
 
 	&html<
 		<form action='PXW.Tools.DEV.Xref.cls'>
@@ -121,6 +121,9 @@ ClassMethod WriteNav()
 				<tr><td class=prompt>CalledByKey2</td>
 				<td><input type=text name=CBK2 value='#(calledByKey2)#'></td>
 				</tr>
+				<tr><td class=prompt>CodeSearch</td>
+				<td><input type=text name=CS value='#(codeSearch)#'></td>
+				</tr>
 				<tr><td class=prompt>WindowSize</td>
 				<td><input type=text name=WS value='#(windowSize)#'></td>
 				</tr>
@@ -139,7 +142,7 @@ ClassMethod WriteNav()
 }
 
 /// This shoud output some variables, getting the data from %request
-ClassMethod HREFFrom(Output ItemType As %String, Output ItemKey1 As %String, Output ItemKey2 As %String, Output CalledByCommand As %String, CalledByKey1 As %String, CalledByKey2 As %String, WindowSize As %Integer = 0, Output Flags As %String)
+ClassMethod HREFFrom(Output ItemType As %String, Output ItemKey1 As %String, Output ItemKey2 As %String, Output CalledByCommand As %String, CalledByKey1 As %String, CalledByKey2 As %String, WindowSize As %Integer = 0, Output Flags As %String, Output CodeSearch As %String)
 {
 	Set ItemType=%request.Get("IT")
 	Set ItemKey1=%request.Get("IK1")
@@ -149,10 +152,11 @@ ClassMethod HREFFrom(Output ItemType As %String, Output ItemKey1 As %String, Out
 	Set CalledByKey2=%request.Get("CBK2")
 	Set WindowSize=+%request.Get("WS")
 	Set Flags=%request.Get("F")
+	Set CodeSearch=%request.Get("CS")
 }
 
 /// This should return a string of the href to this page based on the input parameters
-ClassMethod HREFTo(ItemType As %String = "", ItemKey1 As %String = "", ItemKey2 As %String = "", CalledByCommand As %String = "", CalledByKey1 As %String = "", CalledByKey2 As %String = "", WindowSize As %Integer = "", Flags As %String = "") As %String
+ClassMethod HREFTo(ItemType As %String = "", ItemKey1 As %String = "", ItemKey2 As %String = "", CalledByCommand As %String = "", CalledByKey1 As %String = "", CalledByKey2 As %String = "", WindowSize As %Integer = "", Flags As %String = "", CodeSearch As %String = "") As %String
 {
 	Set href=##super()
 	Set sep="&"
@@ -164,6 +168,7 @@ ClassMethod HREFTo(ItemType As %String = "", ItemKey1 As %String = "", ItemKey2 
 	If CalledByKey2'="" Set href=href_sep_"CBK2="_..EscapeURL(CalledByKey2),sep="&"
 	If WindowSize'="" Set href=href_sep_"WS="_..EscapeURL(WindowSize),sep="&"
 	If Flags'="" Set href=href_sep_"F="_..EscapeURL(Flags),sep="&"
+	If CodeSearch'="" Set href=href_sep_"CS="_..EscapeURL(CodeSearch),sep="&"
 	Quit href
 }
 

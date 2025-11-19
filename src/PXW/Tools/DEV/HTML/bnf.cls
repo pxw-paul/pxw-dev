@@ -174,8 +174,8 @@ Method writeElement(element As PXW.DEV.Element)
     /* CDEF */
     $$$DEBUG("Begin "_$CLASSNAME()_":"_$PIECE(element.type,":",1))
     $$$DEBUG("writeElement:"_element.type)
+    
     Set oldXMLPath=..XMLPath
- 
     Do ..GenericRedirect(element)
 
     For  {
@@ -205,7 +205,7 @@ Method writeElement(element As PXW.DEV.Element)
 
     Do ##super(element)
     Set ..XMLPath=oldXMLPath
-    $$$DEBUG("End "_$CLASSNAME()_":"_$PIECE(element.type,":",1))
+    $$$DEBUG("End "_$CLASSNAME()_":"_$PIECE(element.type,":",1)_$e(element.ToString(0),1,10))
 }
 
 Method writeElementBNF1(element As PXW.DEV.Element)

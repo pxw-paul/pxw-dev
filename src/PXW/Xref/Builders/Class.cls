@@ -190,7 +190,7 @@ Method SaveSQLXref(ItemType As %String, ItemKey1 As %String, ItemKey2 As %String
 	Set xref=##class(PXW.Xref.Data).%New()
 	Set xref.CalledByType=..#CodeType 
 	Set xref.CalledByKey1=..CalledByClassName
-	Set xref.CalledByKey2=$SELECT($GET(CalledByKey2)'="":CalledByKey2,1:..CalledByItemName)
+	Set xref.CalledByKey2=$SELECT($GET(CalledByKey2)'="":CalledByKey2,..CalledByItemName'="":..CalledByItemName,1:"unknown")
 
 	If $ISOBJECT(Atom) {
 		Set xref.CalledByKey3=$SELECT(..FixedLineNumber:..FixedLineNumber,1:Atom.line)-..ClassElementLineNumber

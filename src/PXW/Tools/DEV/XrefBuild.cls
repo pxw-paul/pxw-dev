@@ -14,16 +14,17 @@ ClassMethod xrefPackage(Package As %String, Force As %Boolean = 0) As %Status
 
 ClassMethod WriteMainBody()
 {
-	Do ..HREFFrom(.package,.force,.background,.deleteold)
+	Do ..HREFFrom(.package,.force,.deleteold)
 	&html<
+	Enter the name of the package to build or * for all. Leave the package empty to display the current status of any builds in progress.
 	<fieldset>
 		<form id=formRoutine action='PXW.Tools.DEV.XrefBuild.cls'>
 			<input type=hidden name=IFRAME value='0'>
 			<u>P</u>ackage 
 			<input accesskey=P 
 				title='Enter Package name'
-			type=text id=inputPackage name=P ovalue='#(package)#' value='' size=10>
-			Force <input type='checkbox' name="F" value=1 #($SELECT(force:"checked",1:""))#>
+			type=text id=inputPackage name=P value='' size=10>
+			Force <input type='checkbox' name="F" value=1>
 			<input type=hidden name="%NS" value='#(%NS)#'>
 			<input type=submit value='Go'>
 		</form>
@@ -92,8 +93,6 @@ ClassMethod WriteMainBody()
 
 	Write "</tbody>"
 	Write "</table>"
-
-	Write "<a href='"_..HREFTo("","","",1)_"'>Delete status history</a>"
 }
 
 Query SelectStatus() As %Library.SQLQuery
@@ -106,25 +105,20 @@ Query SelectStatus() As %Library.SQLQuery
 }
 
 /// This shoud output some variables, getting the data from %request
-ClassMethod HREFFrom(Output Package As %String, Output force As %Boolean, Output background As %Boolean, Output DeleteOld As %Boolean)
+ClassMethod HREFFrom(Output Package As %String, Output force As %Boolean, Output DeleteOld As %Boolean)
 {
 	Set Package=%request.Get("P")
 	Set force=+%request.Get("F")
-    Set background=+%request.Get("B")
-	set DeleteOld=+%request.Get("DO")
+  	set DeleteOld=+%request.Get("DO")
 }
 
 /// This should return a string of the href to this page based on the input parameters
-/// Package will build the entire package
-/// MethodId will build just the method
-/// DEBUG - only makes sense when building a single method
-ClassMethod HREFTo(Package As %String = "", Force As %Boolean = 0, Background As %Boolean = 1, DeleteOld As %Boolean = 0) As %String
+ClassMethod HREFTo(Package As %String = "", Force As %Boolean = 0, DeleteOld As %Boolean = 0) As %String
 {
 	Set href=##super()
 	Set sep="&"
 	If Package'="" Set href=href_sep_"P="_..EscapeURL(Package),sep="&"
 	If Force'="" Set href=href_sep_"F="_..EscapeURL(Force),sep="&"
-	If Background'="" Set href=href_sep_"B="_..EscapeURL(Background),sep="&"
 	If DeleteOld'=0 Set href=href_sep_"DO="_..EscapeURL(DeleteOld),sep="&"
 	Quit href
 }
@@ -133,6 +127,7 @@ ClassMethod HREFTo(Package As %String = "", Force As %Boolean = 0, Background As
 ClassMethod WriteNav(ByRef scratch)
 {
 	Write "<a href='"_##class(PXW.Tools.DEV.XrefBuildProblems).HREFTo("")_"'>Problems</a>"
+	Write "<a href='"_..HREFTo("","",1)_"'>Delete status history</a>"
 }
 
 }
