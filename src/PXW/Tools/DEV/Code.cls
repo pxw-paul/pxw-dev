@@ -69,7 +69,8 @@ ClassMethod WriteCodeList(Type As %String, Name As %String)
 /// Output 1 Anchor tag for each option in the navigation. Use the scratch variable for anything you want to get from BODY
 ClassMethod WriteNav(ByRef scratch)
 {
-   Do ..HREFFrom(.CodeReference)
+    ; Work out what type of code is being searched, eg *.CLS
+    Do ..HREFFrom(.CodeReference)
     Set type=$PIECE(CodeReference,".",*)
     Set utype=$$$UPPER(type)
 

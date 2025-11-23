@@ -78,16 +78,6 @@ ClassMethod WriteIncludeDir(Routine As %String)
 {
 	; if the input contains % then escape it
 	Set rtn=Routine,escape=""
-	/*i rtn["%" {
-		s escape="\"
-		s cls=$replace(cls,"%",escape_"%")
-	}
-	i cls["_" {
-		s escape=$g(escape,"\")
-		s cls=$replace(cls,"_",escape_"_")
-	}
-	s cls=$replace(cls,"*","%") ; make the selection a LIKE compatible thing
-	*/
 	Set rs=##class(PXW.DEV.Dictionary.Include).ListIncludes(rtn,escape)
 	 
 	Write "<table>"
@@ -109,22 +99,15 @@ ClassMethod WriteIncludeDir(Routine As %String)
 }
 
 ClassMethod WriteNav(ByRef scratch)
-{
-	
+{	
 	If $ISOBJECT($GET(scratch)) {
 		Set output=scratch
 		While output.NextIndexItemByName(.name,.type,.anchor,.error) {
-				;w "<tr>"
-				;w "<td>"
 				If error="" {
 					Write "<a class='"_"CDEF"_type_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
 				} Else {
 					Write "<a class='"_output.#WarningClass_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
 				}
-				;w "</td>"
-				;w "<td>"_..EscapeHTML(type)_"</td>"
-				;w "<td>"_..EscapeHTML(anchor)_"</td>"
-				;w "</tr>",!
 		}
 		Write "<hr>"
 	}

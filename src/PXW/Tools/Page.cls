@@ -1,5 +1,20 @@
 Include PXW.Debuggers.Macros
 
+/// <h2>The base page for all PXW Tools.</h2>
+/// 
+/// <p>
+/// It sets up the overall look of each page. This is not an application that has
+/// a static page and loads data into it. All pages are created from scratch every time.
+/// This makes thing more simple for me. 
+/// </p><p>
+/// Override the Write* methods to insert into HTML into the page.
+/// </p><p>
+/// Override the HREFTo method so that tools can get a HREF TO a page:
+/// <example>
+///  ; create a link to the class display page to display this class
+///  write "<a href='"_##class(PXW.Tools.DEV.Class).HREFTo("PXW.Tools.Page")_"'>Tools</a>"
+/// </example>
+/// </p>
 Class PXW.Tools.Page Extends %CSP.Page
 {
 
@@ -8,15 +23,11 @@ Class PXW.Tools.Page Extends %CSP.Page
 /// Internal tools are used for changing things about the tool itself
 Parameter ToolType = "Internal";
 
-/// Event handler for <b>PreHTTP</b> event: this is invoked before
-/// the HTTP headers for a CSP page have been sent.  All changes to the
-/// <class>%CSP.Response</class> class, such as adding cookies, HTTP headers,
-/// setting the content type etc. must be made from within the OnPreHTTP() method.
-/// Also changes to the state of the CSP application such as changing
-/// %session.EndSession or %session.AppTimeout must be made within the OnPreHTTP() method.
-/// It is prefered that changes to %session.Preserve are also made in the OnPreHTTP() method
-/// as this is more efficient, although it is supported in any section of the page.
-/// Return <b>0</b> to prevent <method>OnPage</method> from being called.
+/// This sets up some floating % variables that can be accessed at any time.
+/// <ul>
+/// <li>%NS is the currently selected Namespace.</li>
+/// <li>%STYLE is the currently selected Style.</li>
+/// </ul>
 ClassMethod OnPreHTTP() As %Boolean [ ServerOnly = 1 ]
 {
 	#dim %request as %CSP.Request
@@ -43,13 +54,26 @@ ClassMethod OnPreHTTP() As %Boolean [ ServerOnly = 1 ]
 	Quit 1
 }
 
-/// This shoud output some variables, getting the data from %request
+/// This should output some variables, getting the data from %request.
+/// It should match HREFTo.
 ClassMethod HREFFrom()
 {
 	;s Class=%request.Get("C")
 }
 
-/// This should return a string of the href to this page based on the input parameters
+/// This should return a string of the href to this page based on the input parameters.
+/// There is a convention used that each parameter of this method should 
+/// add a parameter to the URL using only the capital letters of the parameter, 
+/// this is only so that we can build a simple form generate page.
+/// <example>
+/// ClassMethod HREFTo(ClassName as %String,Method as %String) as %String
+/// {
+///   set href=##super()
+///   set href=href_"&CN="_..EscapeURL(ClassName)
+///   set href=href_"&M="_..EscapeURL(Method)
+///   quit href
+/// }
+/// </example>
 ClassMethod HREFTo() As %String
 {
 	Set href=..%ClassName(1)_".cls"
@@ -224,10 +248,6 @@ ClassMethod OnPage() As %Status
 				#(..WriteHeadForms())#
 			</div>
 		</div>
-		<!-- <div id=toolsMenu>
-			<ul id=divMainMenuUL>
-			</ul>
-		</div>-->
 		<div id=toolsTitle>
 			<h1>#(title)#</h1>
 		</div>
@@ -264,21 +284,16 @@ ClassMethod OnPage() As %Status
 	Quit $$$OK
 }
 
-/// use scratch to get anything you want to pass to the nav
+/// use scratch to get anything you want to pass to the nav.
 ClassMethod WriteMainBody(ByRef scratch)
 {
 	Write $THIS
 }
 
-/// Output 1 Anchor tag for each option in the navigation. Use the scratch variable for anything you want to get from BODY
+/// Output 1 Anchor tag for each option in the navigation. 
+/// Use the scratch variable for anything you want to get from BODY.
 ClassMethod WriteNav(ByRef scratch)
 {
-}
-
-ClassMethod mainmenu()
-{
-	;	<li><a href=#(##class(DEV.PXW.NSchange).HREFto())#>#($g(%NS))#</a></li>
-	;		#($s('TOOLSHELP:$s(..WriteMainMenuOptions():"",1:"WriteMainMenuOptions ERROR"),1:""))#
 }
 
 ClassMethod GetTitle() As %String
@@ -286,12 +301,19 @@ ClassMethod GetTitle() As %String
 	Quit ..%ClassName(1)
 }
 
-/// Write out extra styles here, the STYLE tags are already in place
+/// Write out extra styles here, the STYLE tags are already in place.
+/// <p>
+/// Be careful with putting colours in here. You do not know how the colours will 
+/// work with the current %STYLE selected by the user.
+/// </p><p> 
+/// You can put layout changing things here, EG if a page needs extra DIVs
+/// the layout information can go here. 
+/// </p>
 ClassMethod WriteStyles()
 {
 }
 
-/// Write out extra javascript here, the SCRIPT tags are already in place
+/// Write out extra javascript here, the SCRIPT tags are already in place.
 ClassMethod WriteScripts()
 {
 }
@@ -318,7 +340,7 @@ ClassMethod WriteStatus(sc As %Status)
         Write "<pre style='color:red;'>" Write txt Write "</pre>"	
     }
 }
-
+/// Find any page that inserts a form into the header.
 ClassMethod WriteHeadForms() As %String
 {
 	Set rs=##class(%ResultSet).%New("%Dictionary.ClassDefinition:SubclassOf")
@@ -347,10 +369,10 @@ ClassMethod WriteHeadForms() As %String
 	Quit ""
 }
 
+/// Override this method to insert a form onto the header of the page.
 /// Calling page is passed in so you can decide what to display on the form/if anything.
 ClassMethod WriteHeadForm(Page As %String)
 {
-
 	Quit
 }
 

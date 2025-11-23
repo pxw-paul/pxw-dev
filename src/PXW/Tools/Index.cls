@@ -33,10 +33,9 @@ ClassMethod WriteNav()
 	}
 }
 
-/// This is a quick way of dumping out a form from the spec of the method HREFto
-/// What really needs to happen is each tool has a proper definition of the fields it requires.
-/// Possibly even just a method called WriteForm that dumps the form. Note that DEV.PXW.Tools kind of has this
-/// capability already, its just unused!
+/// This is a quick way of dumping out a form from the spec of the method HREFTo.
+/// Its following the convention that Capital letters of the parameter will
+/// be used as the name of the parameter in the URL.
 /// Doing it this way for speed of development.
 ClassMethod WriteForm(ClassName As %String) As %Status
 {
