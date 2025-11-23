@@ -1,5 +1,5 @@
-/// Created: 2025-11-23 12:19:25 PXW.DEV.BNF.Compilers.Compiler1
-Class PXW.DEV.BNF.GEN.SQL Extends PXW.DEV.BNF.super [ ProcedureBlock ]
+/// Created: 2025-11-23 12:19:28 PXW.DEV.BNF.Compilers.Compiler1
+Class PXW.DEV.BNF.GEN.SQLShowPlan Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 
 Parameter KeywordPattern = "1.A";

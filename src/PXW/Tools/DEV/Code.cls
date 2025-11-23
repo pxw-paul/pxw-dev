@@ -32,36 +32,38 @@ ClassMethod WriteCodeList(Type As %String, Name As %String)
     Write "<tr><th>Type</th><th>SubType</th><th>Name</th><th>Modified</th></tr>"
     Write "</thead><tbody>"
     
-    Set rs=##class(%Library.ResultSet).%New(..%ClassName(1)_":"_"SelectTypes")
-    $$$ThrowOnError(rs.Execute(%NS,Type))
+    If Name'="" {
+        Set rs=##class(%Library.ResultSet).%New(..%ClassName(1)_":"_"SelectTypes")
+        $$$ThrowOnError(rs.Execute(%NS,Type))
 
-    While rs.%Next() {
-        Set typ=rs.%Get("Type")
-        Set page=rs.%Get("Page")
-        Set interface=##class(PXW.DEV.Dictionary.CodeInterface).%OpenId(rs.%Get("ID"))
-        Set rs2=interface.List(Name)
-        While interface.ListNext(rs2,.subtyp,.name,.timechanged,.id) {
-            Write "<tr>"
-            Write "<td>"_..EscapeHTML(typ)_"</td>"
-            Write "<td>"_..EscapeHTML(subtyp)_"</td>"
-            Write "<td>"
-            If page="" {
-                Write "<span title='CodeType ("_typ_") has no display page defined'>"
-                Write ..EscapeHTML(name) 
-                Write "</span>"
-                
-            } Else {
-                Write "<a class='CDEFClassName' href='"_$CLASSMETHOD(page,"HREFToID",id,name,subtyp)_"'>"
-                Write ..EscapeHTML(name) 
-                Write "</a>"
+        While rs.%Next() {
+            Set typ=rs.%Get("Type")
+            Set page=rs.%Get("Page")
+            Set interface=##class(PXW.DEV.Dictionary.CodeInterface).%OpenId(rs.%Get("ID"))
+            Set rs2=interface.List(Name)
+            While interface.ListNext(rs2,.subtyp,.name,.timechanged,.id) {
+                Write "<tr>"
+                Write "<td>"_..EscapeHTML(typ)_"</td>"
+                Write "<td>"_..EscapeHTML(subtyp)_"</td>"
+                Write "<td>"
+                If page="" {
+                    Write "<span title='CodeType ("_typ_") has no display page defined'>"
+                    Write ..EscapeHTML(name) 
+                    Write "</span>"
+                    
+                } Else {
+                    Write "<a class='CDEFClassName' href='"_$CLASSMETHOD(page,"HREFToID",id,name,subtyp)_"'>"
+                    Write ..EscapeHTML(name) 
+                    Write "</a>"
+                }
+                Write "</td>"
+                Write "<td>"_..EscapeHTML(timechanged)_"</td>"
+                Write "</tr>",!
             }
-            Write "</td>"
-            Write "<td>"_..EscapeHTML(timechanged)_"</td>"
-            Write "</tr>",!
         }
-	}
-    
-	Write "</tbody></table>"
+    }
+
+    Write "</tbody></table>"
 }
 
 /// Output 1 Anchor tag for each option in the navigation. Use the scratch variable for anything you want to get from BODY
@@ -82,8 +84,39 @@ ClassMethod WriteNav(ByRef scratch)
 
     While rs.%Next() {
         Set cref=name_"."_rs.%Get("Type")
-        Write "<a href='"_..HREFTo(cref)_"'>"_..EscapeHTML(cref)_"</a>"
+        Write "<a href='"_..HREFTo(cref)_"'>"_..EscapeHTML(cref)_"</a>",!
     }
+
+    ; find all tools that match    
+	Write "<hr>" 
+    Set rs=##class(%ResultSet).%New("%Dictionary.ClassDefinition:SubclassOf")
+	$$$THROWONERROR(sc,rs.Execute(##class(PXW.Tools.Page).%ClassName(1)))
+	
+    Set pattern=""
+    For i=1:1:$LENGTH(CodeReference,"*") {
+        Set part=$PIECE(CodeReference,"*",i)
+        If part'="" {
+            Set pattern=pattern_"1"""_$$$UPPER(part)_""""
+        }
+        If i<$LENGTH(CodeReference,"*") {
+            Set pattern=pattern_"0.E"
+        } 
+    }
+	While rs.Next() {
+		Set name=rs.Data("Name")
+		Set HREFto=##class(%Dictionary.MethodDefinition).%OpenId(name_"||HREFTo")
+		If $isobject(HREFto),name'=..%ClassName(1) {
+            ;If (pattern="") || (name?@pattern) || ($PIECE(name,".",*)?@pattern) {
+            If (pattern="") || ($$$UPPER(name)?@pattern) {
+                Set type=$PARAMETER(name,"ToolType")
+                Set css="toolTypeInternal"
+                If $$$UPPER(type)="CODE" Set css="toolTypeCode"
+                Set aname=$TRANSLATE(name,".","")_"anchor"
+                Set legname=$TRANSLATE(name,".","")_"legend"
+                Write "<a class='"_css_"' href='"_$CLASSMETHOD(name,"HREFTo")_"'>"_..EscapeHTML(name)_"</a>",!
+            }
+        }
+	}
 }
 
 Query SelectTypes(Namespace As %String, Type As %String) As PXW.LIB.SQL.Query [ SqlProc ]

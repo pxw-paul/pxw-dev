@@ -111,6 +111,8 @@ ClassMethod GenAll()
     If $$$ISERR(sc) Do $SYSTEM.Status.DisplayError(sc)
     Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.DEF.SQL","PXW.DEV.BNF.GEN.SQL")
     If $$$ISERR(sc) Do $SYSTEM.Status.DisplayError(sc)
+    Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.DEF.SQL","PXW.DEV.BNF.GEN.SQLShowPlan")
+    If $$$ISERR(sc) Do $SYSTEM.Status.DisplayError(sc)
 
     Do ..ExportGEN()
 }
@@ -127,7 +129,7 @@ ClassMethod ExportGEN()
     Set genroot="/home/irisowner/dev/src/PXW/DEV/BNF/GEN/"
     If ##class(%Library.File).DirectoryExists(genroot) {
         Set package="PXW.DEV.BNF.GEN."
-        Set classes=$LISTFROMSTRING("COS,CSP,ClassDefinition,JS,Python,SQL")
+        Set classes=$LISTFROMSTRING("COS,CSP,ClassDefinition,JS,Python,SQL,SQLShowPlan")
         For i=1:1:$LISTLENGTH(classes) {
             Set cls=$LISTGET(classes,i)
             Write !,"Exporting "_package_cls_".CLS to "_genroot_cls_".cls"

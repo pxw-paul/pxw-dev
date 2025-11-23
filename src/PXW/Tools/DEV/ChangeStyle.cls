@@ -331,7 +331,8 @@ ClassMethod WriteStyleChangeSelection() As %String
 
 ClassMethod HREFTo(NewStyle As %String) As %String
 {
-    If NewStyle["PXW.Tools.Styles" Set NewStyle=$PIECE(NewStyle,"PXW.Tools.Styles.",2)
+	set NewStyle=$G(NewStyle,$G(%STYLENAME))
+	If NewStyle["PXW.Tools.Styles" Set NewStyle=$PIECE(NewStyle,"PXW.Tools.Styles.",2)
     Quit ##super()_"&%STYLE="_..EscapeURL(NewStyle)
 }
 

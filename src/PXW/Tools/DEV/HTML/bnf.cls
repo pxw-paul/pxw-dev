@@ -759,15 +759,20 @@ Method writeCOSLabelDefinition(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.B
     If anchorAtom="" Set anchorAtom=labatom
     If lab=..HiliteLabel {
         If anchorAtom=labatom {
-               Do ..wrapAtomHTML(anchorAtom,"<a name='Bookmark' class='hilite'>","</a>")
+            Do ..wrapAtomHTML(anchorAtom,"<a name='Bookmark' class='hilite'>","</a>")
         } Else {
-                       Do ..wrapAtomHTML(anchorAtom,"<a name='Bookmark'>","</a>")
-                       Do ..wrapAtomHTML(labatom,"<a class='hilite'>","</a>")
+            Do ..wrapAtomHTML(anchorAtom,"<a name='Bookmark'>","</a>")
+            Do ..wrapAtomHTML(labatom,"<a class='hilite'>","</a>")
         }
         If ..HilitePlus'="" Set ..HiLiteLine=labatom.line+..HilitePlus
     } Else {
-        Set labname=$TRANSLATE("LAB"_..ThisMethod_lab,"$^%_","")
-        Do ..wrapAtomHTML(anchorAtom,"<a class='COSLabelDef' name='"_labname_"'>","</a>")
+        Set labname=..ThisMethod_lab
+        set anchor=$TRANSLATE("LAB"_labname,"$^%_","")
+        ;Do ..wrapAtomHTML(anchorAtom,"<a class='COSLabelDef' id='"_anchor_"' name='"_anchor_"'>","</a>")
+        Do ..wrapAtomHTML(anchorAtom,"<span class='COSLabelDef' id='"_anchor_"SPAN' >","</span>") ; not sure why the ID needs SPAN on the end...
+        Do ..AddToIndex(labname,"Label",anchor)
+        /*
+        */
     }
     Quit ""
 }

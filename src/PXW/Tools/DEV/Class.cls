@@ -277,7 +277,7 @@ ClassMethod HREFTo(Class As %String, Path As %String = "", LineNumber As %Intege
 	If $DATA(ons) Set %NS=ons
 	Set sep="&"
 	
-	Set cls=Class,instance=""
+	Set cls=$g(Class),instance=""
 
 	Set package=""
 	If CallerClass'="" Set package=$PIECE(CallerClass,".",1,*-1)

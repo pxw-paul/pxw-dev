@@ -94,7 +94,7 @@ ClassMethod WriteRoutineDir(Routine As %String)
 	Write "</tbody></table>"
 }
 
-ClassMethod HREFTo(Routine As %String) As %String
+ClassMethod HREFTo(Routine As %String = "") As %String
 {
 	Set href=##super()
 

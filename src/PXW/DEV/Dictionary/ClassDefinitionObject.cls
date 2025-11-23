@@ -163,7 +163,7 @@ Method CacheAll(ClassNameLike As %String, LoggerClass As %String = "")
 Method CacheIfNecessary(ClassName As %String, Parts As %String = "", TimeStamp As %TimeStamp = "")
 {
     $$$DEBUGMethodBegin
-    New %NS Set %NS=..Namespace
+    New %NS Set %NS=..Namespace.Name
     Set fcn=..FullClassName(ClassName)
     Set TimeStamp=$PIECE(TimeStamp,".",1) ; no dp
     If (Parts="") || (Parts["GCD") {
@@ -304,7 +304,7 @@ Method ListProperyDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierRS
 
 Method CacheListProperyDetails(ClassName As %String, TimeStamp As %TimeStamp = "")
 {
- 
+    New %NS Set %NS=..Namespace.Name
     Set rs=..ListProperyDetails(ClassName)
     While rs.%Next() {
         Set cn=rs.%Get("parent")
@@ -312,8 +312,8 @@ Method CacheListProperyDetails(ClassName As %String, TimeStamp As %TimeStamp = "
         Set pname=rs.%Get("Name")
         Set data=$LISTBUILD(pname,rs.%Get("RuntimeType"),psqlname,
                     rs.%Get("Collection"),rs.%Get("Type"),rs.%Get("Origin"))            
-        If psqlname'="" Set ^PXW.Cache("CDEF",..Namespace,$$$UPPER(cn),"GPD","sqlname",$$$UPPER(psqlname))=data
-        Set ^PXW.Cache("CDEF",..Namespace,$$$UPPER(cn),"GPD","propertyname",$$$UPPER(pname))=data
+        If psqlname'="" Set ^PXW.Cache("CDEF",%NS,$$$UPPER(cn),"GPD","sqlname",$$$UPPER(psqlname))=data
+        Set ^PXW.Cache("CDEF",%NS,$$$UPPER(cn),"GPD","propertyname",$$$UPPER(pname))=data
     }
 }
 
@@ -335,12 +335,13 @@ Method ListParameterDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierR
 
 Method CacheListParameterDetails(ClassName As %String, TimeStamp As %TimeStamp = "")
 {
+    New %NS Set %NS=..Namespace.Name
     Set rs=..ListParameterDetails(ClassName)
     While rs.%Next() {
         Set cn=rs.%Get("parent")
         Set pname=rs.%Get("Name")
         Set data=$LISTBUILD(pname,rs.%Get("Type"),rs.%Get("Origin"))            
-        Set ^PXW.Cache("CDEF",..Namespace,$$$UPPER(cn),"GAD",$$$UPPER(pname))=data
+        Set ^PXW.Cache("CDEF",%NS,$$$UPPER(cn),"GAD",$$$UPPER(pname))=data
     }
 }
 
@@ -349,7 +350,7 @@ Method ListMethodDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierRS
     $$$DEBUGMethodBegin
  	Set server=..AtelierSettings.ServerName
 	Set sql=""
-    Set sql=sql_"SELECT parent,Name,ReturnType,Origin,Stub,' ' || FormalSpecParsed as fsp" ; stub is undocumented but it seems to be "source name.method name.source type (i=index,a=property)
+    Set sql=sql_"SELECT parent,Name,ReturnType,Origin,Stub,' ' || FormalSpecParsed as fsp, CodeMode" ; stub is undocumented but it seems to be "source name.method name.source type (i=index,a=property)
     Set sql=sql_" FROM %Dictionary.CompiledMethod "
     Set sql=sql_" WHERE parent=?"
     Set parameters($INCREMENT(parameters))=ClassName
@@ -362,6 +363,7 @@ Method ListMethodDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierRS
 
 Method CacheListMethodDetails(ClassName As %String)
 {
+    New %NS Set %NS=..Namespace.Name
     Set rs=..ListMethodDetails(ClassName)
     While rs.%Next() {
         Set cn=rs.%Get("parent")
@@ -369,8 +371,9 @@ Method CacheListMethodDetails(ClassName As %String)
         Set stub=rs.%Get("Stub")
         Set rt=rs.%Get("ReturnType")
         Set fs=$e(rs.%Get("fsp"),2,*) ; remove leading " " because atelier does not like the encoded list (in v2)
-        Set data=$LISTBUILD(mname,rt,rs.%Get("Origin"),stub,fs)
-        Set ^PXW.Cache("CDEF",..Namespace,$$$UPPER(cn),"GMD",$$$UPPER(mname))=data
+        Set codemode=rs.%Get("CodeMode")
+        Set data=$LISTBUILD(mname,rt,rs.%Get("Origin"),stub,fs,codemode)
+        Set ^PXW.Cache("CDEF",%NS,$$$UPPER(cn),"GMD",$$$UPPER(mname))=data
     }
 }
 
@@ -392,13 +395,14 @@ Method ListIndexDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierRS
 
 Method CacheListIndexDetails(ClassName As %String)
 {
+    New %NS Set %NS=..Namespace.Name
     Set rs=..ListIndexDetails(ClassName)
     While rs.%Next() {
         Set cn=rs.%Get("parent")
         Set mname=rs.%Get("Name")
         Set tc=rs.%Get("TypeClass")
         Set data=$LISTBUILD(mname,tc,rs.%Get("Origin"))
-        Set ^PXW.Cache("CDEF",..Namespace,$$$UPPER(cn),"GID",$$$UPPER(mname))=data
+        Set ^PXW.Cache("CDEF",%NS,$$$UPPER(cn),"GID",$$$UPPER(mname))=data
     }
 }
 
@@ -420,18 +424,20 @@ Method ListQueryDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierRS
 
 Method CacheListQueryDetails(ClassName As %String)
 {
+    New %NS Set %NS=..Namespace.Name
     Set rs=..ListQueryDetails(ClassName)
     While rs.%Next() {
         Set cn=rs.%Get("parent")
         Set mname=rs.%Get("Name")
         Set type=rs.%Get("Type")
         Set data=$LISTBUILD(mname,type,rs.%Get("Origin"))
-        Set ^PXW.Cache("CDEF",..Namespace,$$$UPPER(cn),"GQD",$$$UPPER(mname))=data
+        Set ^PXW.Cache("CDEF",%NS,$$$UPPER(cn),"GQD",$$$UPPER(mname))=data
     }
 }
 
 Method GetPropertyNameSQL(ClassName As %String, SQLName As %String) As %String
 {
+    New %NS Set %NS=..Namespace.Name
     If ClassName="" Quit ""
 
     Set fcn=..FullClassName(ClassName)
@@ -442,7 +448,7 @@ Method GetPropertyNameSQL(ClassName As %String, SQLName As %String) As %String
 
     Do ..CacheIfNecessary(fcn,"GPD")
     ;m data=^PXW.Cache("CDEF",%NS,$$$UPPER(fcn)) $$$DEBUGArray(data)
-    Set data=$GET(^PXW.Cache("CDEF",..Namespace,$$$UPPER(fcn),"GPD","sqlname",ufield))
+    Set data=$GET(^PXW.Cache("CDEF",%NS,$$$UPPER(fcn),"GPD","sqlname",ufield))
 	Set pname=$LISTGET(data,1)
 
     ; ID or ID1
@@ -454,7 +460,8 @@ Method GetPropertyNameSQL(ClassName As %String, SQLName As %String) As %String
 
 Method GetPropertyTypeSQL(ClassName As %String, SQLName As %String) As %String
 {
-   If ClassName="" Quit ""
+    New %NS Set %NS=..Namespace.Name
+    If ClassName="" Quit ""
 
     Set fcn=..FullClassName(ClassName)
 
@@ -464,7 +471,7 @@ Method GetPropertyTypeSQL(ClassName As %String, SQLName As %String) As %String
 
     Do ..CacheIfNecessary(fcn,"GPD")
    
-    Set data=$GET(^PXW.Cache("CDEF",..Namespace,$$$UPPER(fcn),"GPD","sqlname",ufield))
+    Set data=$GET(^PXW.Cache("CDEF",%NS,$$$UPPER(fcn),"GPD","sqlname",ufield))
 	Set type=$LISTGET(data,2)
 	Quit type
 }
@@ -472,6 +479,7 @@ Method GetPropertyTypeSQL(ClassName As %String, SQLName As %String) As %String
 /// Returns 1 if details were found
 Method GetPropertyDetails(ClassName As %String, Name As %String, Output RuntimeType As %String, Output Collection As %String, Output Type As %String, Output Origin As %String) As %Boolean
 {
+    New %NS Set %NS=..Namespace.Name
     If ClassName="" Quit 0
     Set fcn=..FullClassName(ClassName)
 
@@ -484,7 +492,7 @@ Method GetPropertyDetails(ClassName As %String, Name As %String, Output RuntimeT
     ;s data=$lb(pname,rs.%Get("RuntimeType"),psqlname,
     ;                    rs.%Get("Collection"),rs.%Get("Type"))            
    
-    Set data=$SELECT(ufield'="":$GET(^PXW.Cache("CDEF",..Namespace,$$$UPPER(fcn),"GPD","propertyname",ufield)),1:"")
+    Set data=$SELECT(ufield'="":$GET(^PXW.Cache("CDEF",%NS,$$$UPPER(fcn),"GPD","propertyname",ufield)),1:"")
     If data="" Quit 0
 
 	Set RuntimeType=$LISTGET(data,2)
@@ -522,8 +530,9 @@ Method GetPropertyParameterDetails(ClassName As %String, PropertyName As %String
 
 /// Returns 1 if details were found
 /// Sets ReturnType to the defined return type, to work out more information about the return type use GetMethodReturnType 
-Method GetMethodDetails(ClassName As %String, Name As %String, Output ReturnType As %String, Output Origin As %String, Output Stub As %String, Output FormalSpecParsed As %List) As %Boolean
+Method GetMethodDetails(ClassName As %String, Name As %String, Output ReturnType As %String, Output Origin As %String, Output Stub As %String, Output FormalSpecParsed As %List, Output CodeMode As %String) As %Boolean
 {
+    New %NS Set %NS=..Namespace.Name
     If ClassName="" Quit 0
 
     Set fcn=..FullClassName(ClassName)
@@ -534,11 +543,12 @@ Method GetMethodDetails(ClassName As %String, Name As %String, Output ReturnType
 
     Do ..CacheIfNecessary(fcn,"GMD")
 	  
-    Set data=$SELECT(ufield'="":$GET(^PXW.Cache("CDEF",..Namespace,$$$UPPER(fcn),"GMD",ufield)),1:"")
+    Set data=$SELECT(ufield'="":$GET(^PXW.Cache("CDEF",%NS,$$$UPPER(fcn),"GMD",ufield)),1:"")
     Set ReturnType=$LISTGET(data,2)
     Set Origin=$LISTGET(data,3)
     Set Stub=$LISTGET(data,4)
     Set FormalSpecParsed=$LISTGET(data,5)
+    Set CodeMode=$LISTGET(data,6)
 
     If data="" Quit 0
 	Quit 1
@@ -579,6 +589,7 @@ Method GetMethodReturnType(ClassName As %String, Name As %String, Output FormalS
 /// Returns 1 if details were found
 Method GetIndexDetails(ClassName As %String, Name As %String, Output TypeClass As %String, Output Origin As %String) As %Boolean
 {
+    New %NS Set %NS=..Namespace.Name
     If ClassName="" Quit 0
 
     Set fcn=..FullClassName(ClassName)
@@ -589,7 +600,7 @@ Method GetIndexDetails(ClassName As %String, Name As %String, Output TypeClass A
 
     Do ..CacheIfNecessary(fcn,"GID")
 	  
-    Set data=$GET(^PXW.Cache("CDEF",..Namespace,$$$UPPER(fcn),"GID",ufield))
+    Set data=$GET(^PXW.Cache("CDEF",%NS,$$$UPPER(fcn),"GID",ufield))
     If data="" Quit 0
     Set TypeClass=$LISTGET(data,2)
     Set Origin=$LISTGET(data,3)
@@ -599,6 +610,7 @@ Method GetIndexDetails(ClassName As %String, Name As %String, Output TypeClass A
 /// Returns 1 if details were found
 Method GetQueryDetails(ClassName As %String, Name As %String, Output Type As %String, Output Origin As %String) As %Boolean
 {
+    New %NS Set %NS=..Namespace.Name
     If ClassName="" Quit 0
 
     Set fcn=..FullClassName(ClassName)
@@ -609,7 +621,7 @@ Method GetQueryDetails(ClassName As %String, Name As %String, Output Type As %St
 
     Do ..CacheIfNecessary(fcn,"GQD")
 	  
-    Set data=$GET(^PXW.Cache("CDEF",..Namespace,$$$UPPER(fcn),"GQD",ufield))
+    Set data=$GET(^PXW.Cache("CDEF",%NS,$$$UPPER(fcn),"GQD",ufield))
     If data="" Quit 0
     Set Type=$LISTGET(data,2)
     Set Origin=$LISTGET(data,3)
@@ -657,6 +669,7 @@ Method ListClassDetails(ClassName As %String = "", SQLTableName As %String = "")
 
 Method CacheListClassDetails(ClassName As %String = "", SQLTableName As %String = "")
 {
+    New %NS Set %NS=..Namespace.Name
     Set rs=..ListClassDetails(ClassName,SQLTableName)
     Set count=0
     While rs.%Next() {
@@ -668,8 +681,8 @@ Method CacheListClassDetails(ClassName As %String = "", SQLTableName As %String 
         If inc1'="" Set sep="" For i=1:1:$LISTLENGTH(inc1) Set includes=includes_sep_$LISTGET($LISTGET(inc1,i),1),sep=","
         If inc2'="" Set sep="" For i=1:1:$LISTLENGTH(inc2) Set includegens=includegens_sep_$LISTGET($LISTGET(inc2,i),1),sep=","
         Set data=$LISTBUILD(cname,rs.%Get("ClassType"),rs.%Get("Super"),rs.%Get("PrimarySuper"),sqlname,includes,includegens,rs.%Get("PropertyClass"))            
-        Set ^PXW.Cache("CDEF",..Namespace,$$$UPPER(cname),"GCD","data")=data
-        If sqlname'="" Set ^PXW.Cache("CDEFSQL",$$$UPPER(sqlname))=cname
+        Set ^PXW.Cache("CDEF",%NS,$$$UPPER(cname),"GCD","data")=data
+        If sqlname'="" Set ^PXW.Cache("CDEFSQL",%NS,$$$UPPER(sqlname))=cname
         Set count=count+1
     }
     If count=0,ClassName'="" Do ..CacheClearClassDetails(ClassName,1) ; delete as class has gone
@@ -677,17 +690,18 @@ Method CacheListClassDetails(ClassName As %String = "", SQLTableName As %String 
 
 Method CacheClearClassDetails(ClassName As %String, ClassGone As %Boolean = 0)
 {
-    Set olddata=$GET(^PXW.Cache("CDEF",..Namespace,$$$UPPER(ClassName),"GCD","data"))
+    New %NS Set %NS=..Namespace.Name
+    Set olddata=$GET(^PXW.Cache("CDEF",%NS,$$$UPPER(ClassName),"GCD","data"))
     Set oldsqlname=$LISTGET(olddata,5)
-    If oldsqlname'="" Kill ^PXW.Cache("CDEFSQL",$$$UPPER(oldsqlname))
-    If ClassGone Kill ^PXW.Cache("CDEF",..Namespace,$$$UPPER(ClassName))
+    If oldsqlname'="" Kill ^PXW.Cache("CDEFSQL",%NS,$$$UPPER(oldsqlname))
+    If ClassGone Kill ^PXW.Cache("CDEF",%NS,$$$UPPER(ClassName))
     Quit
 }
 
 /// Pass in a ClassName in any case (eg PXW.dev.dictionary.classdefinition) and Name is returned in the correct case
 Method GetClassDetails(ClassName As %String, Output classtype As %String, Output Super As %String, Output PrimarySuper As %String, Output Name As %String, Output IncludeAll As %String, Output IncludeGenAll As %String, Output PropertyClass As %String) As %Boolean
 {
-    
+    New %NS Set %NS=..Namespace.Name
     ; this should not need to be here but I have not sorted out subqueries properly
     If ClassName="" Quit 0
   
@@ -696,7 +710,7 @@ Method GetClassDetails(ClassName As %String, Output classtype As %String, Output
    
     Do ..CacheIfNecessary(fcn,"GCD")
  
-    Set data=$GET(^PXW.Cache("CDEF",..Namespace,$$$UPPER(fcn),"GCD","data"))
+    Set data=$GET(^PXW.Cache("CDEF",%NS,$$$UPPER(fcn),"GCD","data"))
     If data="" Quit 0
 	Set Name=$LISTGET(data,1)
 	Set classtype=$LISTGET(data,2)
@@ -718,8 +732,9 @@ Method GetClassName(ClassName As %String, Output classtype As %String) As %Strin
 /// OwningClassName is the name of the class that the query belongs to. Used when no schema is provided.
 Method GetClassNameFromTableName(SQLTableName As %String, OwningClassName As %String) As %String
 {
-   Set table=SQLTableName
-   ;i table'[".",'$d(OwningClassName) break
+    New %NS Set %NS=..Namespace.Name
+    Set table=SQLTableName
+    ;i table'[".",'$d(OwningClassName) break
     If table'[".",OwningClassName'="" {
         Set schema=$PIECE(OwningClassName,".",1,*-1)
         Set schema=$TRANSLATE(schema,".","_")
@@ -729,10 +744,10 @@ Method GetClassNameFromTableName(SQLTableName As %String, OwningClassName As %St
     ; use a local var as a cache, so that the next time a different process looks at
     ; for the table name it might have been set up
     If '$DATA(%PXWSQLName($$$UPPER(table))) {
-        Set classname=$GET(^PXW.Cache("CDEFSQL",$$$UPPER(table)))
+        Set classname=$GET(^PXW.Cache("CDEFSQL",%NS,$$$UPPER(table)))
         If classname="" {
             Do ..CacheListClassDetails(,table)
-          	Set classname=$GET(^PXW.Cache("CDEFSQL",$$$UPPER(table)))
+          	Set classname=$GET(^PXW.Cache("CDEFSQL",%NS,$$$UPPER(table)))
         }
         Set %PXWSQLName($$$UPPER(table))=classname
     } Else {
@@ -768,6 +783,8 @@ Method GetClassNameFromStoredProc(SQLProcName As %String, Output method As %Stri
 
 Method GetParameterDetails(ClassName As %String, Name As %String, Output Type As %String, Output Origin As %String) As %Boolean
 {
+   
+    New %NS Set %NS=..Namespace.Name
     If ClassName="" Quit 0
     Set fcn=..FullClassName(ClassName) 
 
@@ -780,7 +797,7 @@ Method GetParameterDetails(ClassName As %String, Name As %String, Output Type As
     ;  s data=$lb(pname,rs.%Get("Type"),rs.%Get("Origin"))            
     ;  s ^PXW.Cache("CDEF",%NS,$$$UPPER(cn),"GAD",$$$UPPER(pname))=data
  
-    Set data=$GET(^PXW.Cache("CDEF",..Namespace,$$$UPPER(fcn),"GAD",ufield))
+    Set data=$GET(^PXW.Cache("CDEF",%NS,$$$UPPER(fcn),"GAD",ufield))
     If data="" Quit 0
 
     Set Type=$LISTGET(data,2)

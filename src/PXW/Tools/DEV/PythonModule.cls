@@ -23,7 +23,7 @@ ClassMethod HREFTo(Class As %String) As %String
 {
 	Set href=##super()
 	Set sep="&"
-	Set href=href_sep_"C="_..EscapeURL(Class)
+	Set:$G(Class)'="" href=href_sep_"C="_..EscapeURL(Class)
     Quit href
 }
 
@@ -38,8 +38,8 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 
 	Set showPaths=0
     Write "<pre>"
-	If +Debug=1 $$$DEBUGNew(##class(PXW.Debuggers.Tools).%ClassName(1))
-	If Debug["$TIME" $$$DEBUGNew(##class(PXW.Debuggers.Timing).%ClassName(1))
+	If +Debug=1 $$$DEBUGNew(##class(PXW.Tools.DebugTiming).%ClassName(1))
+	If Debug["$TIME" $$$DEBUGNew(##class(PXW.Tools.DebugTiming).%ClassName(1))
 	If Debug["$FILE" $$$DEBUGNew(##class(PXW.Debuggers.BasicToFile).%ClassName(1)) 
 	If Debug["$PATHS" Set showPaths=1,%path="" ; no need to set any output its just for tooltips
 	

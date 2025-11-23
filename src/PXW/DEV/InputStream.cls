@@ -33,6 +33,7 @@ ClassMethod NewString(Code As %String) As PXW.DEV.InputStream
 	; make crlf just cr so that its 1 char, I am sure it will make things simpler
 	;s flat=Code 
 	Set flat=$REPLACE(Code,$CHAR(13,10),reader.eolChar)
+	Set flat=$REPLACE(flat,$CHAR(10),reader.eolChar)
 	Set reader.input=flat
 	Set reader.pos=1
 	Set reader.line=1

@@ -66,9 +66,9 @@ ClassMethod WriteMainBody()
 ClassMethod HREFTo(Text As %String, Class As %String, Method As %String) As %String
 {
     Set href=##super()
-    Set href=href_"&T="_..EscapeURL(Text)
-    Set href=href_"&C="_..EscapeURL(Class)
-    Set href=href_"&M="_..EscapeURL(Method)
+    Set:$G(Text)'="" href=href_"&T="_..EscapeURL(Text)
+    Set:$G(Class)'="" href=href_"&C="_..EscapeURL(Class)
+    Set:$G(Method)'="" href=href_"&M="_..EscapeURL(Method)
     Quit href
 }
 

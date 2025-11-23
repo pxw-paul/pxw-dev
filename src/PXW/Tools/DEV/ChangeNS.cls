@@ -36,12 +36,13 @@ ClassMethod WriteMainBody()
     Write "</tbody></table>"
 }
 
-/// This should return a string of the href to this page based on the input parameters
 ClassMethod HREFTo(NewServer As %String) As %String
 {
+    set NewServer=$G(NewServer,$G(%NS))
 	Quit ..%ClassName(1)_".cls?%NS="_..EscapeURL(NewServer)
 }
 
+/// This should return a string of the href to this page based on the input parameters
 Query SelectNS() As %SQLQuery
 {
     SELECT Name,Description FROM PXW_DEV_Dictionary.Namespace

@@ -13,7 +13,7 @@ ClassMethod WriteMainBody()
 	}
 }
 
-ClassMethod WriteXRef(itemtype As %String, itemk1 As %String, itemk2 As %String, calledByCommand As %String, calledByKey1 As %String, calledByKey2 As %String, windowSize As %String, flags As %String, codeSearch As %String)
+ClassMethod WriteXRef(itemtype As %String, itemk1 As %String, itemk2 As %String, calledByCommand As %String, calledByKey1 As %String, calledByKey2 As %String, windowSize As %String, flags As %String, codeSearch As %String = "")
 {
 	If flags["SUPER" {
 		Set rs=##class(PXW.Xref.Queries).GetSuperFunc(%NS,itemtype,itemk1,itemk2,calledByCommand,calledByKey1,windowSize,flags)

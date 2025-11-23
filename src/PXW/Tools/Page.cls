@@ -37,6 +37,7 @@ ClassMethod OnPreHTTP() As %Boolean [ ServerOnly = 1 ]
 		Set %STYLE=##class(PXW.Tools.Styles.Basic).%New()
 		Set style="Basic"
 	}
+	set %STYLENAME=style
 	Set expires="Mon, 31 Dec 2035 12:00:00 GMT"
 	Do %response.SetCookie("PXWSTYLE",style,expires)
 	Quit 1
