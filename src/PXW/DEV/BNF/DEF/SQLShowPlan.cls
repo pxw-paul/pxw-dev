@@ -74,11 +74,10 @@ read_master         ::= 'read' 'master' 'map' table_index
 read_master_scan    ::= 'read' 'master' 'map' table_index ',' 'looping' 'on' 'ID'
 
 call_module         ::= 'module' module_name
-/* stupid comma before and (call modules 1,2, and 3.) v.poor! */
-call_modules        ::= 'modules' module_name ( ',' !'and' module_name )* ',' 'and' module_name
+call_modules        ::= 'modules' module_name ( ',' ['and'] module_name )* ['and' module_name]
 
 call_subquery       ::= 'subquery' subquery_name
-call_subqueries     ::= 'subqueries' subquery_name ( ',' !'and' subquery_name )* ',' 'and' subquery_name
+call_subqueries     ::= 'subqueries' subquery_name ( ',' ['and'] subquery_name )* ['and' subquery_name]
 
 table_index           ::=  schema_name '.'  table_name [ table_subscript_imply | table_subscript_alias ] '.' index_name
 table_subscript_imply ::= '(' schema_name '.' table_name '.' (property_name '->')* ')'

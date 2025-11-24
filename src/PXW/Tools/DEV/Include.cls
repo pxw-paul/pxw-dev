@@ -76,7 +76,7 @@ ClassMethod WriteInclude(Include As %String, MacroToHilite As %Integer = "", Deb
 
 ClassMethod WriteIncludeDir(Routine As %String)
 {
-	; if the input contains % then escape it
+	/*; if the input contains % then escape it
 	Set rtn=Routine,escape=""
 	Set rs=##class(PXW.DEV.Dictionary.Include).ListIncludes(rtn,escape)
 	 
@@ -96,10 +96,13 @@ ClassMethod WriteIncludeDir(Routine As %String)
 		Write "</tr>",!
 	}
 	Write "</tbody></table>"
+	*/
+	d ##class(PXW.Tools.DEV.Code).WriteCodeList("INC",Routine)
 }
 
 ClassMethod WriteNav(ByRef scratch)
-{	
+{
+	
 	If $ISOBJECT($GET(scratch)) {
 		Set output=scratch
 		While output.NextIndexItemByName(.name,.type,.anchor,.error) {

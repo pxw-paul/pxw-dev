@@ -340,6 +340,7 @@ ClassMethod WriteStatus(sc As %Status)
         Write "<pre style='color:red;'>" Write txt Write "</pre>"	
     }
 }
+
 /// Find any page that inserts a form into the header.
 ClassMethod WriteHeadForms() As %String
 {

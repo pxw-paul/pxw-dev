@@ -1,7 +1,7 @@
-Class PXW.Tools.DEV.Routine Extends PXW.Tools.DEV.CodeDisplayPage
+Class PXW.Tools.DEV.MAC Extends PXW.Tools.DEV.CodeDisplayPage
 {
 
-Parameter CodeType = "INT";
+Parameter CodeType = "MAC";
 
 ClassMethod WriteMainBody(ByRef scratch)
 {
@@ -14,10 +14,10 @@ ClassMethod WriteMainBody(ByRef scratch)
 
 ClassMethod WriteRoutine(Routine As %String, Label As %String = "", Plus As %String = "", Debug As %String = "", Output scratch)
 {
-	If $PIECE(Routine,".",*)="INT" Set Routine=$PIECE(Routine,".",1,*-1)
+	If $PIECE(Routine,".",*)="MAC" Set Routine=$PIECE(Routine,".",1,*-1)
 
 	Set zh=$ZHOROLOG
-	set server=##class(PXW.DEV.Dictionary.Routine).OpenNamespace(%NS)
+    set server=##class(PXW.DEV.Dictionary.MAC).OpenNamespace(%NS)
 	Set sc=server.GetRoutineStudioText(Routine,.text,.linesOfCode)
 	Set zh(1)=$ZHOROLOG-zh,zh=$ZHOROLOG
 	If $$$ISOK(sc) {
@@ -31,19 +31,19 @@ ClassMethod WriteRoutine(Routine As %String, Label As %String = "", Plus As %Str
 		If Debug="$PATHS" Set output.showPaths=1
 
 		Set element=##class(PXW.DEV.Element).%New()
-        Set x=##class(PXW.DEV.BNF.Run.COS).%New()
-        Set x.stream=##class(PXW.DEV.InputStream).NewString(text) 
+        Set parser=##class(PXW.DEV.BNF.Run.COS).%New()
+        Set parser.stream=##class(PXW.DEV.InputStream).NewString(text) 
 		Set zh(2)=$ZHOROLOG-zh,zh=$ZHOROLOG
 		Try {
-			Set ok=x.CosCodeBlock(element)
+			Set ok=parser.CosCodeBlock(element)
 			If 'ok $$$ThrowStatus($$$ERROR(5001,"Could not parse"))
 			Set zh(3)=$ZHOROLOG-zh,zh=$ZHOROLOG
-			Set x.element=element
+			Set parser.element=element
 
 			Set zh(4)=$ZHOROLOG-zh,zh=$ZHOROLOG
 			Do output.middle(element)
 			Set zh(5)=$ZHOROLOG-zh,zh=$ZHOROLOG
-			If 'x.stream.EOF() {
+			If 'parser.stream.EOF() {
 				Write "<span id='unfinishedParse'>"
 				Do ..WriteStatus($$$ERROR(5001,"Not at end:line="_x.stream.line_":pos="_x.stream.pos_":lastPos="_x.stream.lastPos_":length="_x.stream.length_":"_$EXTRACT(x.stream.input,x.stream.pos,x.stream.lastPos)_"."))
 				Write "</span>"
@@ -94,7 +94,7 @@ ClassMethod WriteRoutineDir(Routine As %String)
 	}
 	Write "</tbody></table>"
 	*/
-	Do ##class(PXW.Tools.DEV.Code).WriteCodeList("INT",Routine)
+	Do ##class(PXW.Tools.DEV.Code).WriteCodeList("MAC",Routine)
 }
 
 ClassMethod HREFTo(Routine As %String = "") As %String

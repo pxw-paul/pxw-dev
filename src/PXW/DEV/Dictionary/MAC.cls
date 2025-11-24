@@ -1,11 +1,11 @@
 Include PXW.Debuggers.Macros
 
-Class PXW.DEV.Dictionary.Routine Extends PXW.DEV.Dictionary.CodeInterface
+Class PXW.DEV.Dictionary.MAC Extends PXW.DEV.Dictionary.CodeInterface
 {
 
-Parameter CodeType = "INT";
+Parameter CodeType = "MAC";
 
-Parameter CodeTypeDescription = "Iris Routine INT";
+Parameter CodeTypeDescription = "Iris Routine MAC";
 
 Property AtelierSettings As PXW.DEV.Dictionary.AtelierSettings;
 
@@ -15,9 +15,9 @@ Method GetRoutineStudioText(RoutineName As %String, Output Text As %String, Outp
     #dim iter as %Iterator.Object
  
     If RoutineName="" Quit $$$ERROR(5001,"RoutineName is mandatory")
-
+    If $$$UPPER($p(RoutineName,".",*))="MAC"
   	Set server=..AtelierSettings.ServerName
-	Set sc=##class(PXW.DEV.Dictionary.AtelierClient).rtn(server,RoutineName,.object)
+	Set sc=##class(PXW.DEV.Dictionary.AtelierClient).mac(server,RoutineName,.object)
     If $$$ISOK(sc) {
         Set content=object.result.content
         Set LastUpdateTime=object.result.ts
@@ -51,7 +51,7 @@ Method List(Routines As %String) As PXW.DEV.Dictionary.AtelierRS
 	Set server=..AtelierSettings.ServerName
 	Set sql=""
 	Set sql=sql_"select Name,""Date"" as TimeChanged,null as SubType  from  %Library.Routine_RoutineList(?)"
-    set parameters($i(parameters))=Routines_".INT"
+    set parameters($i(parameters))=Routines_".MAC"
  
     Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj,parameters...)
   	If $$$ISERR(qsc) $$$ThrowStatus(qsc)

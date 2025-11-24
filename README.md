@@ -1,8 +1,6 @@
 ## ZPM IS SET TO MY REGISTER MUST CHANGE
 ## THINGS TO DO
-* fix Include.cls seach for wildcards.
-* check the navigate on Code.cls, what is utype?
- 
+
 # pxw-dev
 A set of tools for displaying, analysing and cross-referencing Objectscript code.
 

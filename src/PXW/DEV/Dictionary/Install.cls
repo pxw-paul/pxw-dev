@@ -9,12 +9,16 @@ ClassMethod Setup() As %Status
     Set:$$$ISOK(sc) sc=##class(PXW.DEV.Dictionary.ClassDefinitionObject).RegisterType()
     Set:$$$ISOK(sc) sc=##class(PXW.DEV.Dictionary.Include).RegisterType()
     Set:$$$ISOK(sc) sc=##class(PXW.DEV.Dictionary.Routine).RegisterType()
+    Set:$$$ISOK(sc) sc=##class(PXW.DEV.Dictionary.MAC).RegisterType()
     ; html display pages
     Set:$$$ISOK(sc) sc=##class(PXW.Tools.DEV.Class).RegisterType()
     Set:$$$ISOK(sc) sc=##class(PXW.Tools.DEV.Include).RegisterType()
     Set:$$$ISOK(sc) sc=##class(PXW.Tools.DEV.Routine).RegisterType()
+    Set:$$$ISOK(sc) sc=##class(PXW.Tools.DEV.MAC).RegisterType()
     ; cross reference builders
     Set:$$$ISOK(sc) sc=##class(PXW.Xref.Builders.Class).RegisterType()
+    Set:$$$ISOK(sc) sc=##class(PXW.Xref.Builders.MAC).RegisterType()
+    Set:$$$ISOK(sc) sc=##class(PXW.Xref.Builders.Routine).RegisterType()
     ; code analysers
     Set:$$$ISOK(sc) sc=##class(PXW.DEV.BNF.Analyse.COS).RegisterType()
     Set:$$$ISOK(sc) sc=##class(PXW.DEV.BNF.Analyse.SQL).RegisterType()
@@ -89,6 +93,17 @@ ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, Ate
         Set sc=INT.%Save()
     }
 
+    If $$$ISOK(sc) {
+        ; set up interface to MAC
+        Set MAC=##class(PXW.DEV.Dictionary.MAC).OpenNamespace(NamespaceName)
+        If '$ISOBJECT(MAC) {
+            Set MAC=##class(PXW.DEV.Dictionary.MAC).%New()
+            Set MAC.Namespace=namespace
+            Set MAC.AtelierSettings=atelier
+        }
+        Set sc=MAC.%Save()
+    }
+
     Quit sc
 }
 
@@ -111,7 +126,7 @@ ClassMethod GenAll()
     If $$$ISERR(sc) Do $SYSTEM.Status.DisplayError(sc)
     Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.DEF.SQL","PXW.DEV.BNF.GEN.SQL")
     If $$$ISERR(sc) Do $SYSTEM.Status.DisplayError(sc)
-    Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.DEF.SQL","PXW.DEV.BNF.GEN.SQLShowPlan")
+    Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.DEF.SQLShowPlan","PXW.DEV.BNF.GEN.SQLShowPlan")
     If $$$ISERR(sc) Do $SYSTEM.Status.DisplayError(sc)
 
     Do ..ExportGEN()

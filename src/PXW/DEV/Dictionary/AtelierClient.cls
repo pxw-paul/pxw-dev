@@ -34,11 +34,33 @@ ClassMethod rtn(ServerName As %String, RoutineName As %String, Output object As 
     #dim request as %Net.HttpRequest
     
     $$$DEBUGMethodBegin
+    set rname=RoutineName
+    if $$$UPPER($p(rname,".",*))="INT" s rname=$p(rname,".",1,*-1)
+
+    Set handler=..%New(ServerName) ;  ..%New(ServerName) 
+    Set ns=handler.Settings.Namespace
+    Set url="/api/atelier/v2/"_ns_"/doc/"_handler.EncodeURL(rname)_".INT"
+    ;s sep="?"
+    ;s url=url_sep_xxx,sep="&"
+    Set sc=handler.getAsObject(url,.object)
+
+    $$$DEBUGMethodEnd
+
+    Quit sc
+}
+
+/// s sc=##class(PXW.DEV.Dictionary.AtelierClient).mac("LOCAL_USER","PXW.DEV.Dictionary.AtelierClient.1",.obj)
+ClassMethod mac(ServerName As %String, RoutineName As %String, Output object As %DynamicObject) As %Status
+{
+    #dim request as %Net.HttpRequest
     
+    $$$DEBUGMethodBegin
+    set rname=RoutineName
+    if $$$UPPER($p(rname,".",*))="MAC" s rname=$p(rname,".",1,*-1)
     Set handler=..%New(ServerName) ;  ..%New(ServerName)
  
     Set ns=handler.Settings.Namespace
-    Set url="/api/atelier/v2/"_ns_"/doc/"_handler.EncodeURL(RoutineName)_".INT"
+    Set url="/api/atelier/v2/"_ns_"/doc/"_handler.EncodeURL(rname)_".MAC"
     ;s sep="?"
     ;s url=url_sep_xxx,sep="&"
     Set sc=handler.getAsObject(url,.object)

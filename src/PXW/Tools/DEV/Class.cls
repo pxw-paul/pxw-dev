@@ -6,7 +6,11 @@ Parameter CodeType = "CLS";
 ClassMethod WriteMainBody(ByRef scratch)
 {
 	Do ..HREFFrom(.cls,.path,.instance,.linenumber,.debug,.PropertyParameter)
-	If cls["*" Do ..WriteClassDir(cls) Quit
+
+	If cls["*" {
+		Do ..WriteClassDir(cls) 
+		Quit
+	}
 
 	Set ocls=..GetClassToLoad(cls,path,.bookmark,,.PropertyParameter)
 	If ocls'=cls {
@@ -301,7 +305,11 @@ ClassMethod GetTitle() As %String
 {
 	Do ..HREFFrom(.class,.name,,,,.pp)
 
-	Set class=..GetClassToLoad(class,name,,.method,pp)
+	if class["*" {
+		set method="" 
+	} else {
+		Set class=..GetClassToLoad(class,name,,.method,pp)
+	} 
 
 	If method'="" {
 		Quit class_":"_method_""
@@ -312,7 +320,7 @@ ClassMethod GetTitle() As %String
 
 ClassMethod WriteClassDir(Class As %String)
 {
-	ZWrite %NS,Class
+	/*ZWrite %NS,Class
 	Set ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).%OpenId(%NS)
 	Set rs=ClassServer.ListClassDetailsWild(Class,1)
 
@@ -332,6 +340,8 @@ ClassMethod WriteClassDir(Class As %String)
 		Write "</tr>",!
 	}
 	Write "</tbody></table>"
+	*/
+	d ##class(PXW.Tools.DEV.Code).WriteCodeList("CLS",Class)
 }
 
 /// Write out extra javascript here, the SCRIPT tags are already in place

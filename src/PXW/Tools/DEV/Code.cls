@@ -85,7 +85,8 @@ ClassMethod WriteNav(ByRef scratch)
 
     While rs.%Next() {
         Set cref=name_"."_rs.%Get("Type")
-        Write "<a href='"_..HREFTo(cref)_"'>"_..EscapeHTML(cref)_"</a>",!
+        Set class=$s($$$UPPER(rs.%Get("Type"))=utype:"class='hilite'",1:"")
+        Write "<a "_class_" href='"_..HREFTo(cref)_"'>"_..EscapeHTML(cref)_"</a>",!
     }
 
     ; find all tools that match    
