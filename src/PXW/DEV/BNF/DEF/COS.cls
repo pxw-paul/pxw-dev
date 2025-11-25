@@ -62,6 +62,9 @@ cos_directive                       ::= '#' ( cos_directive_define
                                         | cos_directive_undef
                                         | cos_directive_execute
                                         | cos_directive_sqlcompile
+                                        | cos_directive_classcontext
+                                        | cos_directive_generator
+                                        | cos_directive_classmethod
                                         )
 
 cos_directive_defonearg             ::= 'def1arg' cos_directive_define_name [ array_parameter_list ] [cos_directive_define_subst] /* text_to_eol_continue */
@@ -86,6 +89,10 @@ cos_directive_undef                 ::= 'undef' macro_identifier
 
 cos_directive_include_list          ::= '(' cos_directive_include_name ( ',' cos_directive_include_name )* ')'
 cos_directive_include_name          ::= include_identifier
+/* only seen these in MACs */
+cos_directive_classcontext          ::= 'classcontext' class_reference
+cos_directive_generator             ::= 'generator'
+cos_directive_classmethod           ::= 'classmethod' object_member_identifier
 
 include_identifier                  ::= 'regexp:(\%|[a-zA-Z])[a-zA-Z0-9\.]*'
 
@@ -449,7 +456,7 @@ continue_command                    ::= 'continue' [ post_conditional ]
 do_command                          ::= ('do' | 'd') ( do_while | do_label ) 
 do_label                            ::= [ post_conditional ] ( naked | do_item_list)
 do_while                            ::= '{' [ cos_code_block ] '}' 'while' expression_list
-do_item_list                        ::= do_item ( ',' do_item)*
+do_item_list                        ::= do_item [ post_conditional] ( ',' do_item [ post_conditional] )*
 do_item                             ::=  object_variable
                                           | this_object 
                                           | simple_indirection 

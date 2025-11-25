@@ -18,6 +18,8 @@ Method Build(Namespace As %String, ItemKey1 As %String, PreLoadedText As %String
         set ..Analyser=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage("CLS","COS")
  		Set ..ClassServer=ClassServer
         Set ..CalledByClassName=ItemKey1
+		Set ..This=$s($$$UPPER($p(ItemKey1,".",*))="MAC":$p(ItemKey1,".",1,*-1),1:ItemKey1)
+
 		Try {
 			Set parser=##class(PXW.DEV.BNF.Run.COS).%New()
   		    Set parser.stream=##class(PXW.DEV.InputStream).NewString(text)

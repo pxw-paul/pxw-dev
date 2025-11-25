@@ -5,12 +5,15 @@ Class PXW.Xref.Builders.Class Extends PXW.Xref.Builder
 
 Parameter CodeType = "CLS";
 
+/// The thing that $THIS or ..THIS means.
+Property This As %String;
+
 /// The command used for the call (set/kill)
 Property CalledByKeyword As %String;
 
 Property CalledByCommand As %String;
 
-/// The routine, class doing the call
+/// The routine, class doing the call (needs renaming to CalledByKey1)
 Property CalledByClassName As %String;
 
 /// Line label, method
@@ -68,6 +71,7 @@ Method Build(Namespace As %String, ItemKey1 As %String, PreLoadedText As %String
 
 	If $$$ISOK(sc) {
  		Set ..ClassServer=ClassServer
+		Set ..This=$s($$$UPPER($p(ItemKey1,".",*))="CLS":$p(ItemKey1,".",1,*-1),1:ItemKey1)
 		Try {
 			Set x=##class(PXW.DEV.BNF.Run.ClassDefinition).%New()
   		    Set x.stream=##class(PXW.DEV.InputStream).NewString(text)
@@ -424,7 +428,7 @@ Method xrefCOSSqlBody(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compil
 Method xrefCOSThisThing(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ThisObject,ThisObjectDirectProperty,ThisObjectSet,ThisObjectDirectPropertySet")
 {
 	If ..CalledByClassName'="" {
-		Set classname=..CalledByClassName
+		Set classname=..This
 		If classname'="" Do ..FollowObjectChainForType(element,classname)
 	}
 	Quit ""

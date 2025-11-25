@@ -18,6 +18,7 @@ Method Build(Namespace As %String, ItemKey1 As %String, PreLoadedText As %String
         set ..Analyser=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage("CLS","COS")
  		Set ..ClassServer=ClassServer
         Set ..CalledByClassName=ItemKey1
+		Set ..This=$p($s($$$UPPER($p(ItemKey1,".",*))="INT":$p(ItemKey1,".",1,*-1),1:ItemKey1),".",1,*-1) ; get rid of 1.INT from the end
 		Try {
 			Set parser=##class(PXW.DEV.BNF.Run.COS).%New()
   		    Set parser.stream=##class(PXW.DEV.InputStream).NewString(text)
@@ -34,6 +35,13 @@ Method Build(Namespace As %String, ItemKey1 As %String, PreLoadedText As %String
 		}
 	}
 	Quit sc
+}
+
+Method xrefCosLabelDefinition(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="LabelDefinition")
+{
+	Set labatom=element.FirstAtom()
+    Set lab=labatom.value
+    Set ..CalledByItemName=lab
 }
 
 }

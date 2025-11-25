@@ -14,21 +14,27 @@ ClassMethod WriteMainBody(ByRef scratch)
 
 ClassMethod WriteRoutine(Routine As %String, Label As %String = "", Plus As %String = "", Debug As %String = "", Output scratch)
 {
+	#dim server as PXW.DEV.Dictionary.Routine
+
+	new %path
 	If $PIECE(Routine,".",*)="INT" Set Routine=$PIECE(Routine,".",1,*-1)
 
 	Set zh=$ZHOROLOG
 	set server=##class(PXW.DEV.Dictionary.Routine).OpenNamespace(%NS)
-	Set sc=server.GetRoutineStudioText(Routine,.text,.linesOfCode)
+	Set sc=server.GetRoutineStudioText(Routine,.text,.linesOfCode,,.summary,.IsGenerated)
 	Set zh(1)=$ZHOROLOG-zh,zh=$ZHOROLOG
 	If $$$ISOK(sc) {
 		;s parser=##class(PXW.DEV.ClassDefinition.Parser).NewFromString(text)
 
 		Write "<pre>"
+		;summary="ROUTINE PXW.DEV.Atom.1 [Type=INT,Generated]"
+		;zw summary
 		Set output=##class(PXW.Tools.DEV.HTML.bnf).%New()
 		Set output.HiliteLabel=Label
 		Set output.HilitePlus=Plus
+		set output.This=$s(IsGenerated:$p(Routine,".",1,*-1),1:"")
 		Set scratch=output
-		If Debug="$PATHS" Set output.showPaths=1
+		If Debug="$PATHS" Set output.showPaths=1,%path=""
 
 		Set element=##class(PXW.DEV.Element).%New()
         Set x=##class(PXW.DEV.BNF.Run.COS).%New()
