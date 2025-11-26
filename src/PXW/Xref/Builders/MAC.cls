@@ -12,10 +12,10 @@ Method Build(Namespace As %String, ItemKey1 As %String, PreLoadedText As %String
     Set ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(Namespace)
 	Set text=PreLoadedText
 
-    Do ClassServer.CacheClearClassDetails(ItemKey1,1) ; pretend the class is deleted so that it REALLY clears it
+    ;Do ClassServer.CacheClearClassDetails(ItemKey1,1) ; pretend the class is deleted so that it REALLY clears it
 
 	If $$$ISOK(sc) {
-        set ..Analyser=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage("CLS","COS")
+        set ..Analyser=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..#CodeType,"COS")
  		Set ..ClassServer=ClassServer
         Set ..CalledByClassName=ItemKey1
 		Set ..This=$s($$$UPPER($p(ItemKey1,".",*))="MAC":$p(ItemKey1,".",1,*-1),1:ItemKey1)

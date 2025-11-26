@@ -27,6 +27,8 @@ ClassMethod WriteRoutine(Routine As %String, Label As %String = "", Plus As %Str
 		Set output=##class(PXW.Tools.DEV.HTML.bnf).%New()
 		Set output.HiliteLabel=Label
 		Set output.HilitePlus=Plus
+		Set output.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)
+		Set output.ThisType=..#CodeType
 		Set scratch=output
 		If Debug="$PATHS" Set output.showPaths=1
 

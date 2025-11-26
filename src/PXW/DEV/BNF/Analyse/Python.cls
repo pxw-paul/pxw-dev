@@ -3,7 +3,7 @@ Include PXW.Debuggers.Macros
 Class PXW.DEV.BNF.Analyse.Python Extends PXW.DEV.BNF.Analyse.analyser
 {
 
-Parameter CodeType = "CLS";
+Parameter CodeType = "CLS,INT,MAC";
 
 Parameter Language = "PYTHON";
 

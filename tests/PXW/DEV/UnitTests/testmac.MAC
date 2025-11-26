@@ -1,0 +1,8 @@
+ROUTINE tests.PXW.DEV.UnitTests.testmac
+testsPXWDEVUnitTeststestmac ;
+    d label(1)
+    q
+    ;
+label(param1) [varlist] {
+    &sql(SELECT * FROM PXW_Xref.Data)
+}

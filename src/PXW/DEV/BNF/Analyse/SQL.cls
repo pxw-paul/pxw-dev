@@ -1,7 +1,7 @@
 Class PXW.DEV.BNF.Analyse.SQL Extends PXW.DEV.BNF.Analyse.analyser
 {
 
-Parameter CodeType = "CLS";
+Parameter CodeType = "CLS,INT,MAC";
 
 Parameter Language = "SQL";
 

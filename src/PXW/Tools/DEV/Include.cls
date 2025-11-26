@@ -44,10 +44,9 @@ ClassMethod WriteInclude(Include As %String, MacroToHilite As %Integer = "", Deb
 		Write "<pre>"
 		Set output=##class(PXW.Tools.DEV.HTML.bnf).%New()
 		Set output.This=Include
-		Set output.ThisType="INC"
+		Set output.ThisType=..#CodeType
         Set output.BookMark=MacroToHilite
-		; we can attempt to analyse as if it was COS (in a CLS type bit of code)
-		Set output.Analyser=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage("CLS","COS")
+		Set output.Analyser=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..#CodeType,"COS")
 		Set output.Analyser.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)
 		Set scratch=output
 		If Debug="$PATHS" Set output.showPaths=1,%path=""

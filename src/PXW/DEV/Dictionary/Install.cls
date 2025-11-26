@@ -18,7 +18,10 @@ ClassMethod Setup() As %Status
     ; cross reference builders
     Set:$$$ISOK(sc) sc=##class(PXW.Xref.Builders.Class).RegisterType()
     Set:$$$ISOK(sc) sc=##class(PXW.Xref.Builders.MAC).RegisterType()
-    Set:$$$ISOK(sc) sc=##class(PXW.Xref.Builders.Routine).RegisterType()
+    ; it would be really nice to do this (XREF compiled code) but there is just too much
+    ; maybe this could be a way of selectively doing this on certain generated methods or certain macros
+    ;Set:$$$ISOK(sc) sc=##class(PXW.Xref.Builders.Routine).RegisterType()
+    
     ; code analysers
     Set:$$$ISOK(sc) sc=##class(PXW.DEV.BNF.Analyse.COS).RegisterType()
     Set:$$$ISOK(sc) sc=##class(PXW.DEV.BNF.Analyse.SQL).RegisterType()
@@ -47,15 +50,15 @@ ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, Ate
         If '$ISOBJECT(atelier) {
             Set atelier=##class(PXW.DEV.Dictionary.AtelierSettings).%New()
             Set atelier.ServerName=AtelierServerName
+            Set atelier.ServerAddress=AtelierServer
+            Set atelier.Port=AtelierPort
+            Set atelier.Namespace=AtelierNamespace
+            Set atelier.InitiateAuthentication="Basic"
+            Set atelier.Username=Ausername
+            Set atelier.Password=Apassword
+            Set atelier.ContentType="application/json"
+            Set sc=atelier.%Save()
         }
-        Set atelier.ServerAddress=AtelierServer
-        Set atelier.Port=AtelierPort
-        Set atelier.Namespace=AtelierNamespace
-        Set atelier.InitiateAuthentication="Basic"
-        Set atelier.Username=Ausername
-        Set atelier.Password=Apassword
-        Set atelier.ContentType="application/json"
-        Set sc=atelier.%Save()
     }
 
     If $$$ISOK(sc) {

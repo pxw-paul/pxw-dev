@@ -27,9 +27,12 @@ Method AddElementWarning(element As PXW.DEV.Element, text As %String)
 ClassMethod RegisterType() As %Status
 {
     Set sc=$$$OK 
-    Set codetype=..#CodeType
-    If codetype'="" {
-        Set sc=##class(PXW.DEV.Dictionary.CodeTypeIndex).RegisterType("Analyse:"_..#Language,codetype,..%ClassName(1))
+    Set codetypes=..#CodeType
+    If codetypes'="" {
+		f i=1:1:$l(codetypes,",") {
+			s codetype=$p(codetypes,",",i)
+			Set:$$$ISOK(sc) sc=##class(PXW.DEV.Dictionary.CodeTypeIndex).RegisterType("Analyse:"_..#Language,codetype,..%ClassName(1))
+		}
     }
     Quit sc
 }
