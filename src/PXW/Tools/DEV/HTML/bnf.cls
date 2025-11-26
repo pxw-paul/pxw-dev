@@ -500,6 +500,19 @@ Method writeCDEFIndex(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DE
     Quit ""
 }
 
+Method writeCDEFIndexPropertyList(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="IndexPropertyList")
+{
+    #dim ClassItemIdentifierE as PXW.DEV.Element
+    do element.findElementsXPath("IndexProperty/Fieldname/PropertyReference/ClassItemIdentifier",.props)
+    if $isobject(props) {
+        f i=1:1:props.Count() {
+            s ClassItemIdentifierE=props.GetAt(i)
+            s name=ClassItemIdentifierE.ToString(0)
+            d ..wrapElementHTML(ClassItemIdentifierE,"<a href='"_..HREFToClass(..This,name)_"'>","</a>")
+        }
+    }
+}
+
 Method writeCDEFTypeClassReference(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="TypeClassReference")
 {
     /*

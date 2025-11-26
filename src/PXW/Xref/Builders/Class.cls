@@ -320,6 +320,20 @@ Method xrefCDEFItemName(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.
 	Quit ""
 }
 
+Method xrefCDEFIndexPropertyList(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="IndexPropertyList")
+{
+    #dim ClassItemIdentifierE as PXW.DEV.Element
+    do element.findElementsXPath("IndexProperty/Fieldname/PropertyReference/ClassItemIdentifier",.props)
+    if $isobject(props) {
+        f i=1:1:props.Count() {
+            s ClassItemIdentifierE=props.GetAt(i)
+            s name=ClassItemIdentifierE.ToString(0)
+			s atom=ClassItemIdentifierE.FirstAtom()
+            do ..SaveCOSXref("CLS",..CalledByClassName,name,"_index",atom)
+        }
+    }
+}
+
 Method xrefCDEFMethodReference(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="MethodReference")
 {
 	Set name=element.ToString(0)

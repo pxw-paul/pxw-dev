@@ -28,7 +28,8 @@ ClassMethod WriteMainBody(ByRef modules)
         ; container
         Write "<div style=' width:100%; display:flex; height:100%; '>"
         ; left
-        Write "<div style='order:1;  display:block; vertical-align: top; height: 100%; width: 50%; padding:10px; overflow: auto; background-color: var(--bgAlternate1);'>"
+        Write "<div class='section2' style='order:1;  display:block; vertical-align: top; height: 100%; width: 50%;  overflow: auto; background-color: var(--bgAlternate1);'>"
+        write "<h2>SQL</h2>"
         ;Write "<div style='order:1;  display:block; vertical-align: top; height: 100%;  padding:10px; overflow: auto; background-color: var(--bgAlternate1); resize:horizontal;'>"
         Write "<pre>" 
         try {
@@ -41,7 +42,8 @@ ClassMethod WriteMainBody(ByRef modules)
         Write "</div>"
         ; /left
         ; right
-        Write "<div style='order:2; display:block; vertical-align: top; height: 100%; width: 50%; overflow: auto;'>"
+        Write "<div class='section2' style='order:2; display:block; vertical-align: top; height: 100%; width: 50%; overflow: auto;'>"
+        write "<h2>Plan</h2>"
         try {
             do ..WriteSQLPlan(SQL,.modules)
         } catch e {

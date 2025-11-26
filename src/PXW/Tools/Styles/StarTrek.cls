@@ -214,14 +214,15 @@ Method WriteStyles()
 	#toolsMainBodyContent .section1 .comment { border:0; padding-left:20px;}
 	#toolsMainBodyContent .section2 {  display:block; margin:10px 0px 0px 0px;
 										border-color: var(--lcars6);
-										border-radius: 0px 20px 0px 0px;
+										border-radius: 0px 20px 20px 0px;
 										border-width: 0px 40px 0px 0px;
 										border-style: solid;
 	}
 	#toolsMainBodyContent .section2 h2 { background-color: var(--lcars6);
 						text-transform: uppercase;
 						border-radius: 20px 0 0 20px;
-						padding-left: 20px;		
+						padding-left: 20px;
+						margin-top:0px;		
 						color:black;								
 	}
 
