@@ -33,7 +33,7 @@ Method readLineComment(start As %String) As PXW.DEV.Atom
 	Set n=""
     Do {
         Set morecomments=0
-        if '..stopAtEOLContinue {
+        If '..stopAtEOLContinue {
             Set n=n_..stream.NextToEol()
             ; now look to see if the NEXT line has the same type of comment
             ; if it does then add all that to this comment
@@ -44,13 +44,13 @@ Method readLineComment(start As %String) As PXW.DEV.Atom
                 Set n=n_..stream.NextChars(ws)
                 Set morecomments=1
             }
-        } else {
+        } Else {
             ; ##continue on the end of the comment? leave it there so its picked up as a eol if necessary
-            set line=..stream.PeekToEol()
-            if $$$UPPER(line)["##CONTINUE" {
-                set foundat=$find($$$UPPER(line),"##CONTINUE")
-                set line=$e(line,1,foundat-11) ; 11=$l(##contine)+1
-                set n=n_..next($l(line))
+            Set line=..stream.PeekToEol()
+            If $$$UPPER(line)["##CONTINUE" {
+                Set foundat=$FIND($$$UPPER(line),"##CONTINUE")
+                Set line=$EXTRACT(line,1,foundat-11) ; 11=$l(##contine)+1
+                Set n=n_..next($LENGTH(line))
                 $$$DEBUG("ReadLineComment stopAtEOLContinue contains ##continue, n="_n)
             }
         }
@@ -67,7 +67,7 @@ Method skipWhiteSpaceAndComments()
     #define isWS(%x) $c(32,9,13,10,160)[%x
     $$$DEBUGMethodBegin
 
-    if ..stopAtEOLContinue {
+    If ..stopAtEOLContinue {
         ; stop at eol is assumed
         Set ws=$CHAR(32,9,160)
 readNextLoop2		
@@ -75,17 +75,17 @@ readNextLoop2
         If ws[ch,ch'="" Set ..whitespace=..newAtom("whitespace",..nextChars(.ws)) Goto readNextLoop2
         If ..skipComments(.ch10) Set ..keyword="" Goto readNextLoop2
         ;read ##contine and trailing spaces and CR at end of line, this is complicated!
-        if $$$UPPER(ch10)="##CONTINUE" {
-            set ..whitespace=..newAtom("whitespace",..next(10))
+        If $$$UPPER(ch10)="##CONTINUE" {
+            Set ..whitespace=..newAtom("whitespace",..next(10))
             Set ch10=$EXTRACT(..streaminput,..stream.pos,..stream.pos+9),ch=$EXTRACT(ch10,1)
             If ws[ch,ch'="" Set ..whitespace=..newAtom("whitespace",..nextChars(.ws)) $$$DEBUG("Stripping trailing spaces")
-            if ..peek(1)=$c(13) set ..whitespace=..newAtom("whitespace",..next(1)) $$$DEBUG("Going to start of next line")
-            g readNextLoop2
+            If ..peek(1)=$CHAR(13) Set ..whitespace=..newAtom("whitespace",..next(1)) $$$DEBUG("Going to start of next line")
+            Goto readNextLoop2
         }
         $$$DEBUG("End of stopAtEOLContinue")
         Set ..needsWScheck=0
 
-    } else {
+    } Else {
         If '..stopAtWhitespace {
             If ..stopAtEOL { 
                 Set ws=$CHAR(32,9,160)
@@ -827,7 +827,7 @@ Method HtmlBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
         Do subElement.AddPart(atom)
         $$$BNFCOMMIT(subElement,ParentElement)
         ; if we get here the next thing must be a > so check
-        if ..peek(1)'=">" {
+        If ..peek(1)'=">" {
             Set recretok=..recover(ParentElement,.recsub,"<>","")
         }
         Set retok=1
@@ -870,7 +870,7 @@ Method JsBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
         Do subElement.AddPart(atom)
         $$$BNFCOMMIT(subElement,ParentElement)
         ; if we get here the next thing must be a > so check
-        if ..peek(1)'=">" {
+        If ..peek(1)'=">" {
             Set recretok=..recover(ParentElement,.recsub,"<>","")
         }
         Set retok=1
@@ -1000,8 +1000,8 @@ Method OneCosStatement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$BNFSTART(subElement)
 
     ; for recovery we need a way of stopping, so end of file or end of code block means no statement
-    i ..eof()  q 0 
-    i ..peek(1)="}" q 0
+    If ..eof()  Quit 0 
+    If ..peek(1)="}" Quit 0
 
     Set label=..LabelDefinition(subElement)
     ; check to see if the label is on a line on its own
@@ -1011,26 +1011,26 @@ Method OneCosStatement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
     ; if there is a label then we can have dots (not sure if thats true, or wise)
     ; if there is no label then the dots must be first thing on the line (ie whitespace contains cr)
     Set dots=0,invaliddot=0
-   if $isobject(..whitespace) {
-        set newline=(..whitespace.value[$CHAR(13))
-        if label || newline {
+   If $ISOBJECT(..whitespace) {
+        Set newline=(..whitespace.value[$CHAR(13))
+        If label || newline {
    	        While (..isString(subElement,".")) { Set dots=1 }
-        } else {
-            if ..peek(1)="." {
-                set invaliddot=1
+        } Else {
+            If ..peek(1)="." {
+                Set invaliddot=1
             }
         } 
-    } else {
-        if ..peek(1)="." {
-               set invaliddot=1
+    } Else {
+        If ..peek(1)="." {
+               Set invaliddot=1
         }
     }
 
-    i invaliddot {
+    If invaliddot {
         ; this is messy, there must be a cleaner bit of logic for all this invalid dot stuff!
-        do ..recover(ParentElement,.recElement,"{}",$lb($c(32),$c(9),$c(160),$c(13)))
-        set retok=1
-    } else {
+        Do ..recover(ParentElement,.recElement,"{}",$LISTBUILD($CHAR(32),$CHAR(9),$CHAR(160),$CHAR(13)))
+        Set retok=1
+    } Else {
         Set directive=0,command=0
         If ..stream.col=0 {
             Set directive=..CosDirective(subElement)
@@ -1041,8 +1041,8 @@ Method OneCosStatement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
             $$$BNFCOMMIT(subElement,ParentElement)
             Set retok=1
         } Else {
-            do ..recover(ParentElement,.recElement,"{}",$lb($c(32),$c(9),$c(160),$c(13)))
-            set retok=1
+            Do ..recover(ParentElement,.recElement,"{}",$LISTBUILD($CHAR(32),$CHAR(9),$CHAR(160),$CHAR(13)))
+            Set retok=1
         }
     }
 
@@ -1066,7 +1066,7 @@ Method Naked(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
     $$$DEBUG("Naked peek:"_..peek(20))
     $$$DEBUG("Naked whitespace:"_..whitespace)
-    if ..whitespace $$$DEBUG("Naked whitespace:"_$tr(..whitespace.value,$c(32,9,13),"stc"))
+    If ..whitespace $$$DEBUG("Naked whitespace:"_$TRANSLATE(..whitespace.value,$CHAR(32,9,13),"stc"))
     ; in single line mode and no white space found then we must be at the end of line
     ; eg: f x=1:1:10 d
     ; and therefore IS naked
@@ -1187,8 +1187,8 @@ Method CommandListEolContinue(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 {
     Set oldmode=..stopAtEOL,oldmodeContinue=..stopAtEOLContinue
     Set ..stopAtEOL=1
-    set ..stopAtEOLContinue=1
-    set retok=##super(ParentElement,.subElement)
+    Set ..stopAtEOLContinue=1
+    Set retok=##super(ParentElement,.subElement)
     Set ..stopAtEOL=oldmode,..stopAtEOLContinue=oldmodeContinue
     Set ..needsWScheck=1
     Quit retok

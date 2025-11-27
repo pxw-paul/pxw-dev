@@ -109,7 +109,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 	#dim ele,element as PXW.DEV.Element
 	Set zh=$ZHOROLOG
     Set output=##class(PXW.Tools.DEV.HTML.bnf).%New()
-	set output.ThisType=..#CodeType
+	Set output.ThisType=..#CodeType
 	Set output.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)
 
 	Set showPaths=0,forceXref=0
@@ -281,7 +281,7 @@ ClassMethod HREFTo(Class As %String, Path As %String = "", LineNumber As %Intege
 	If $DATA(ons) Set %NS=ons
 	Set sep="&"
 	
-	Set cls=$g(Class),instance=""
+	Set cls=$GET(Class),instance=""
 
 	Set package=""
 	If CallerClass'="" Set package=$PIECE(CallerClass,".",1,*-1)
@@ -305,9 +305,9 @@ ClassMethod GetTitle() As %String
 {
 	Do ..HREFFrom(.class,.name,,,,.pp)
 
-	if class["*" {
-		set method="" 
-	} else {
+	If class["*" {
+		Set method="" 
+	} Else {
 		Set class=..GetClassToLoad(class,name,,.method,pp)
 	} 
 
@@ -341,7 +341,7 @@ ClassMethod WriteClassDir(Class As %String)
 	}
 	Write "</tbody></table>"
 	*/
-	d ##class(PXW.Tools.DEV.Code).WriteCodeList("CLS",Class)
+	Do ##class(PXW.Tools.DEV.Code).WriteCodeList("CLS",Class)
 }
 
 /// Write out extra javascript here, the SCRIPT tags are already in place

@@ -62,7 +62,7 @@ Method List(Routines As %String) As PXW.DEV.Dictionary.AtelierRS
 
 Method Load(Name As %String, Output Text As %String, Output LastUpdateTime As %TimeStamp) As %Status
 {
-	quit ..GetRoutineStudioText(Name,.Text,,,.LastUpdateTime)
+	quit ..GetRoutineStudioText(Name,.Text,,.LastUpdateTime)
 }
 
 Storage Default

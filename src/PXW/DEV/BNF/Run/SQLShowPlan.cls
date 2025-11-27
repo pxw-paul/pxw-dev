@@ -8,33 +8,33 @@ Property NewLineIndent As %Integer;
 Method getBookmark(ByRef bookmark As %String)
 {
     ;$$$DEBUGMethodBegin
-    d ##super(.bookmark)
-    s bookmark("newline")=..StartedNewLine   
-    s bookmark("newlineindent")=..NewLineIndent
+    Do ##super(.bookmark)
+    Set bookmark("newline")=..StartedNewLine   
+    Set bookmark("newlineindent")=..NewLineIndent
     ;$$$DEBUGMethodEnd
 }
 
 Method gotoBookmark(ByRef bookmark As %String)
 {
-    d ##super(.bookmark)
-    s ..StartedNewLine=bookmark("newline")
-    s ..NewLineIndent=bookmark("newlineindent")
+    Do ##super(.bookmark)
+    Set ..StartedNewLine=bookmark("newline")
+    Set ..NewLineIndent=bookmark("newlineindent")
 }
 
 Method Nospace(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
     ; IF THERE IS NO WHITESPACE QUIT 1
-    do:..needsWScheck ..skipWhiteSpaceAndComments()
-    i '$isobject(..whitespace) q 1
-    q 0
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+    If '$ISOBJECT(..whitespace) Quit 1
+    Quit 0
 }
 
 ///  for_each_content ::= INDENT (!OUTDENT content)*
 /// summary=C&(?4punctuation:4?)*
 Method ForEachContent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	n %ForEachDepth
-    q ##super(.ParentElement,.subElement)
+	New %ForEachDepth
+    Quit ##super(.ParentElement,.subElement)
 }
 
 Method Newline(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -43,22 +43,22 @@ Method Newline(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
     $$$BNFPATH
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 
-    set ..StartedNewLine=0
-    set ..NewLineIndent=0
-    if $isobject(..whitespace) {
-        if ..whitespace.value[..stream.eolChar {
-            set ..NewLineIndent=$length($piece(..whitespace.value,..stream.eolChar,*))
-            set ..StartedNewLine=1
+    Set ..StartedNewLine=0
+    Set ..NewLineIndent=0
+    If $ISOBJECT(..whitespace) {
+        If ..whitespace.value[..stream.eolChar {
+            Set ..NewLineIndent=$LENGTH($PIECE(..whitespace.value,..stream.eolChar,*))
+            Set ..StartedNewLine=1
             $$$BNFSTART(subElement)
-            set atom=..newAtom("newline","")
-            do subElement.AddPart(subElement)
+            Set atom=..newAtom("newline","")
+            Do subElement.AddPart(atom)
             $$$BNFCOMMIT(subElement,ParentElement)
         }
     }    
     $$$DEBUG("NEWLINE="_..StartedNewLine_", INDENT="_..NewLineIndent)
 
     $$$DEBUGMethodEnd
-    q ..StartedNewLine
+    Quit ..StartedNewLine
 }
 
 ///  INDENT ::= 'CODE THIS TAKE NOTE OF CURRENT INDENT'
@@ -66,20 +66,20 @@ Method Newline(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 /// summary=P
 Method Indent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-    i ..eof() q 0
+    If ..eof() Quit 0
 
     $$$DEBUGMethodBegin
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 
-    i ..StartedNewLine {    
-        s depth=..NewLineIndent
-        s %ForEachDepth=depth
+    If ..StartedNewLine {    
+        Set depth=..NewLineIndent
+        Set %ForEachDepth=depth
         $$$DEBUG("Set %ForEachDepth="_depth_", peek="_..peek(30))
-    } else {
+    } Else {
         $$$DEBUG("Indent not on new line")
     }
     $$$DEBUGMethodEnd
-    quit 1
+    Quit 1
 }
 
 ///  OUTDENT ::= 'CODE THIS TAKE NOTE OF CURRENT INDENT'
@@ -87,24 +87,24 @@ Method Indent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 /// summary=P
 Method Outdent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-    i ..eof() q 1
+    If ..eof() Quit 1
     $$$DEBUGMethodBegin
 
     ; no depth already so it IS NOT an outdent
-    if '$d(%ForEachDepth) q 0
+    If '$DATA(%ForEachDepth) Quit 0
 
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 
-    s isoutdent=0
-    i ..StartedNewLine {    
-        s depth=..NewLineIndent
-        s isoutdent=(depth<%ForEachDepth)
+    Set isoutdent=0
+    If ..StartedNewLine {    
+        Set depth=..NewLineIndent
+        Set isoutdent=(depth<%ForEachDepth)
         $$$DEBUG("depth="_depth_",%ForEachDepth="_%ForEachDepth_", peek="_..peek(30))
-    } else {
+    } Else {
         $$$DEBUG("Not on a new line")
     }
     $$$DEBUGMethodEnd
-	q isoutdent
+	Quit isoutdent
 }
 
 Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean

@@ -34,8 +34,8 @@ ClassMethod rtn(ServerName As %String, RoutineName As %String, Output object As 
     #dim request as %Net.HttpRequest
     
     $$$DEBUGMethodBegin
-    set rname=RoutineName
-    if $$$UPPER($p(rname,".",*))="INT" s rname=$p(rname,".",1,*-1)
+    Set rname=RoutineName
+    If $$$UPPER($PIECE(rname,".",*))="INT" Set rname=$PIECE(rname,".",1,*-1)
 
     Set handler=..%New(ServerName) ;  ..%New(ServerName) 
     Set ns=handler.Settings.Namespace
@@ -55,8 +55,8 @@ ClassMethod mac(ServerName As %String, RoutineName As %String, Output object As 
     #dim request as %Net.HttpRequest
     
     $$$DEBUGMethodBegin
-    set rname=RoutineName
-    if $$$UPPER($p(rname,".",*))="MAC" s rname=$p(rname,".",1,*-1)
+    Set rname=RoutineName
+    If $$$UPPER($PIECE(rname,".",*))="MAC" Set rname=$PIECE(rname,".",1,*-1)
     Set handler=..%New(ServerName) ;  ..%New(ServerName)
  
     Set ns=handler.Settings.Namespace

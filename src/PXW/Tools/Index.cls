@@ -1,6 +1,23 @@
 Class PXW.Tools.Index Extends PXW.Tools.Page
 {
 
+/// Write out extra styles here, the STYLE tags are already in place.
+/// <p>
+/// Be careful with putting colours in here. You do not know how the colours will 
+/// work with the current %STYLE selected by the user.
+/// </p><p> 
+/// You can put layout changing things here, EG if a page needs extra DIVs
+/// the layout information can go here. 
+/// </p>
+ClassMethod WriteStyles()
+{
+	w ".grid-container {",!
+	w "  display:grid;   grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));;  grid-gap: 10px;  padding: 10px; ",!	
+	w "}",!
+	w ".grid-container fieldset { height:100%; }"
+	w ""
+}
+
 ClassMethod WriteMainBody()
 {
 	Do ##class(PXW.Xref.Build).DailyBuild(%NS)
@@ -8,10 +25,12 @@ ClassMethod WriteMainBody()
 	Set rs=##class(%ResultSet).%New("%Library.ClassDefinition:SubclassOf")
 	$$$THROWONERROR(sc,rs.Execute(##class(PXW.Tools.Page).%ClassName(1)))
 	
+	w "<div class='grid-container'>"
 	While rs.Next() {
 		Set name=rs.Data("Name")
 		Do ..WriteForm(name)
 	}
+	w "</div>"
 }
 
 ClassMethod WriteNav()

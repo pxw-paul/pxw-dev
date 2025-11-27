@@ -5,6 +5,7 @@ Class PXW.Tools.DEV.Settings Extends PXW.Tools.Page
 ClassMethod WriteMainBody(ByRef scratch)
 {
     &html<
+        <p>This is a display only page. The settings cannot be modified here. Update the tables using an install program.
         <table>
             <thead>
                 <tr><th>Type</th>

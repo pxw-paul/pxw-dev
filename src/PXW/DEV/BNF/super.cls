@@ -517,8 +517,8 @@ Method newAtom(type As %String, value As %String = "") As PXW.DEV.Atom
     }
     Set ..needsWScheck=1
     Set %atoms=$GET(%atoms)+1
-    set %atomadded=a.type_"="_a.value
-    set %next50=..peek(50)
+    Set %atomadded=a.type_"="_a.value
+    Set %next50=..peek(50)
     Quit a
 }
 
@@ -623,17 +623,17 @@ Method recover(ParentElement As PXW.DEV.Element, ByRef subElement As PXW.DEV.Ele
 	Quit ok
 }
 
-Method recoverStopAt(StopAtList As %List)
+Method recoverStopAt(StopAtList As %List) As %Boolean
 {
-    s stop=0
-    f i=1:1:$ll(StopAtList) {
-        set stopitem=$lg(StopAtList,i)
-        set peek=..peek($l(stopitem))
-        if $$$UPPER(peek)=$$$UPPER(stopitem) {
-            set stop=1
+    Set stop=0
+    For i=1:1:$LISTLENGTH(StopAtList) {
+        Set stopitem=$LISTGET(StopAtList,i)
+        Set peek=..peek($LENGTH(stopitem))
+        If $$$UPPER(peek)=$$$UPPER(stopitem) {
+            Set stop=1
         }
     }
-    q stop
+    Quit stop
 }
 
 }

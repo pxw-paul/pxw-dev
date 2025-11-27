@@ -3,7 +3,7 @@ Include PXW.Debuggers.Macros
 Class PXW.DEV.BNF.Analyse.COS Extends PXW.DEV.BNF.Analyse.analyser
 {
 
-Parameter CodeType = "CLS,INT,MAC";
+Parameter CodeType = "CLS,INC,INT,MAC";
 
 Parameter Language = "COS";
 

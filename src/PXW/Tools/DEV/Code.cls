@@ -113,8 +113,6 @@ ClassMethod WriteNav(ByRef scratch)
                 Set type=$PARAMETER(name,"ToolType")
                 Set css="toolTypeInternal"
                 If $$$UPPER(type)="CODE" Set css="toolTypeCode"
-                Set aname=$TRANSLATE(name,".","")_"anchor"
-                Set legname=$TRANSLATE(name,".","")_"legend"
                 Write "<a class='"_css_"' href='"_$CLASSMETHOD(name,"HREFTo")_"'>"_..EscapeHTML(name)_"</a>",!
             }
         }

@@ -154,7 +154,7 @@ Method WriteStyles()
 	#toolsMainBodyNav .CDEFStorageName::after  { white-space: nowrap; content: " storage"; color:silver;}
 	#toolsMainBodyNav .CDEFIndexName::after  { white-space: nowrap; content: " index"; color:silver;}
 	#toolsMainBodyNav .CDEFXdataName::after  { white-space: nowrap; content: " xdata"; color:silver;}
-	
+	#toolsMainBodyNav a { margin-top:0.25em;}
 	/* END of nav */
 
 	/* Start of style for the code display */

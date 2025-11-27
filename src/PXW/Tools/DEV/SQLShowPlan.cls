@@ -29,13 +29,13 @@ ClassMethod WriteMainBody(ByRef modules)
         Write "<div style=' width:100%; display:flex; height:100%; '>"
         ; left
         Write "<div class='section2' style='order:1;  display:block; vertical-align: top; height: 100%; width: 50%;  overflow: auto; background-color: var(--bgAlternate1);'>"
-        write "<h2>SQL</h2>"
+        Write "<h2>SQL</h2>"
         ;Write "<div style='order:1;  display:block; vertical-align: top; height: 100%;  padding:10px; overflow: auto; background-color: var(--bgAlternate1); resize:horizontal;'>"
         Write "<pre>" 
-        try {
+        Try {
             ;Do $CLASSMETHOD(class,"test1",text,method,.a,0,$GET($$$debugObject))
-            do ..WriteSQL(SQL,0)
-        } catch e {
+            Do ..WriteSQL(SQL,0)
+        } Catch e {
             Do ..WriteStatus(e.AsStatus())
         }
         Write "</pre>"
@@ -43,10 +43,10 @@ ClassMethod WriteMainBody(ByRef modules)
         ; /left
         ; right
         Write "<div class='section2' style='order:2; display:block; vertical-align: top; height: 100%; width: 50%; overflow: auto;'>"
-        write "<h2>Plan</h2>"
-        try {
-            do ..WriteSQLPlan(SQL,.modules)
-        } catch e {
+        Write "<h2>Plan</h2>"
+        Try {
+            Do ..WriteSQLPlan(SQL,.modules)
+        } Catch e {
             Do ..WriteStatus(e.AsStatus())
         }
         ;Write "</pre>"
@@ -66,39 +66,39 @@ ClassMethod WriteSQLPlan(sql, Output modules)
 {
 	#dim interface as PXW.DEV.Dictionary.ClassDefinitionObject
 	; enquote quotes
-	s sqlencode=sql
-	s plansql="SELECT %SYSTEM.QUERY_PLAN(?) as XML "
+	Set sqlencode=sql
+	Set plansql="SELECT %SYSTEM.QUERY_PLAN(?) as XML "
     ;s plansql="EXPLAIN "_sql
-	s params($i(params))=sqlencode
-    s interface=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)
+	Set params($INCREMENT(params))=sqlencode
+    Set interface=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)
 	Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(interface.AtelierSettings.ServerName,plansql,.obj,params...)
-    if $$$ISERR(qsc) {
-        do ..WriteStatus(qsc)
-        quit
+    If $$$ISERR(qsc) {
+        Do ..WriteStatus(qsc)
+        Quit
     }
 	;w "<pre>"
 	;zw obj
 	Set rs=##class(PXW.DEV.Dictionary.AtelierRS).%New(obj)
 	;zw rs
-	while rs.%Next() {
-		s xml=rs.%Get("XML")
+	While rs.%Next() {
+		Set xml=rs.%Get("XML")
         ;s xml=rs.%Get("Plan")
-        s xml=$replace(xml,$c(13,10),$c(13))
+        Set xml=$REPLACE(xml,$CHAR(13,10),$CHAR(13))
 		;w "<pre>"_$ZCONVERT(xml,"O","HTML")_"</pre>"
-		s parser=##class(PXW.DEV.BNF.Run.SQLShowPlan).%New()
-		s parser.stream=##class(PXW.DEV.InputStream).NewString(xml)
-		s element=##class(PXW.DEV.Element).%New()
-		n %path s %path=""
-		i parser.Plans(element) {
+		Set parser=##class(PXW.DEV.BNF.Run.SQLShowPlan).%New()
+		Set parser.stream=##class(PXW.DEV.InputStream).NewString(xml)
+		Set element=##class(PXW.DEV.Element).%New()
+		New %path Set %path=""
+		If parser.Plans(element) {
 			;d element.write()
-			s output=##class(PXW.Tools.DEV.HTML.SQLShowPlan).%New()
-			s output.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)	
-			i $d(%path) s output.showPaths=1
-			s output.ThisType="CLS" ; behave like a class until we want to analyse in a different way
-			d output.writeElement(element)
-            m modules=output.modules
-		} else {
-            w !,"NOT PARSED"
+			Set output=##class(PXW.Tools.DEV.HTML.SQLShowPlan).%New()
+			Set output.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)	
+			If $DATA(%path) Set output.showPaths=1
+			Set output.ThisType="CLS" ; behave like a class until we want to analyse in a different way
+			Do output.writeElement(element)
+            Merge modules=output.modules
+		} Else {
+            Write !,"NOT PARSED"
         }
 	}
 	;w "</pre>"
@@ -108,45 +108,45 @@ ClassMethod WriteSQL(sql As %String, hiliteLine As %Integer)
 {
 
     ;n %NS s %NS=$znspace
-	s parser=##class(PXW.DEV.BNF.Run.SQL).%New()
-	s parser.stream=##class(PXW.DEV.InputStream).NewString(sql)
-	s Element=##class(PXW.DEV.Element).%New()
-	s parsed=parser.SqlProgram(Element)
+	Set parser=##class(PXW.DEV.BNF.Run.SQL).%New()
+	Set parser.stream=##class(PXW.DEV.InputStream).NewString(sql)
+	Set Element=##class(PXW.DEV.Element).%New()
+	Set parsed=parser.SqlProgram(Element)
 	; if its all on a single line then format it
 	;i sql'[parser.stream.eolChar {
-		s formatter=##class(PXW.DEV.BNF.Format.SQL).%New()
-		d formatter.formatElement(Element)
+		Set formatter=##class(PXW.DEV.BNF.Format.SQL).%New()
+		Do formatter.formatElement(Element)
 	;}
-	w "<pre class='EmbeddedSQL'>"
-	s output=##class(PXW.Tools.DEV.HTML.SQLShowPlan).%New()
-	s output.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)	
-	s output.HiLiteLine=hiliteLine
-	s output.ThisType="CLS" ; behave like a class until we want to analyse in a different way
-	d output.begin()
-    d output.writeElement(Element)
-    d output.end()
-    w "</pre>"
-    q $$$OK
+	Write "<pre class='EmbeddedSQL'>"
+	Set output=##class(PXW.Tools.DEV.HTML.SQLShowPlan).%New()
+	Set output.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)	
+	Set output.HiLiteLine=hiliteLine
+	Set output.ThisType="CLS" ; behave like a class until we want to analyse in a different way
+	Do output.begin()
+    Do output.writeElement(Element)
+    Do output.end()
+    Write "</pre>"
+    Quit $$$OK
 }
 
 /// Output 1 Anchor tag for each option in the navigation. Use the scratch variable for anything you want to get from BODY
 ClassMethod WriteNav(ByRef scratch)
 {
-    s aname=""
-    f {
-	    s aname=$o(scratch(aname))
-        q:aname=""
+    Set aname=""
+    For {
+	    Set aname=$ORDER(scratch(aname))
+        Quit:aname=""
 
-        w "<a href='#"_aname_"'>"_aname_"</a>"
+        Write "<a href='#"_aname_"'>"_aname_"</a>"
     }
 }
 
 /// Write out extra styles here, the STYLE tags are already in place
 ClassMethod WriteStyles()
 {
-	do ##class(PXW.Tools.DEV.Class).WriteStyles()
-    w "pre.EmbeddedSQLSub { border:1px solid black; margin-left:40px; }",!
-    w "p.newline { padding-left:20px; text-indent: -20px; }",!
+	Do ##class(PXW.Tools.DEV.Class).WriteStyles()
+    Write "pre.EmbeddedSQLSub { border:1px solid var(--fgInlineOption); margin-left:40px; }",!
+    Write "p.newline { padding-left:20px; text-indent: -20px; }",!
     
     ; not working
     ;w "p.newline:nth-child(odd) { background-color: var(--bgAlternate1); color: var(--fgNormal); }",!
@@ -154,13 +154,13 @@ ClassMethod WriteStyles()
 
 ClassMethod WriteScripts()
 {
-	do ##class(PXW.Tools.DEV.Class).WriteScripts()
+	Do ##class(PXW.Tools.DEV.Class).WriteScripts()
 }
 
 ClassMethod HREFTo(SQL As %String) As %String
 {
     Set href=##super()
-    Set:$G(SQL)'="" href=href_"&SQL="_..EscapeURL(SQL)
+    Set:$GET(SQL)'="" href=href_"&SQL="_..EscapeURL(SQL)
     Quit href
 }
 

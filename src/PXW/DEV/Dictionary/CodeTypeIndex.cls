@@ -42,16 +42,16 @@ ClassMethod GetClassForUsage(Usage As %String, CodeTypeName As %String) As %Stri
     Quit ""
 }
 
-ClassMethod NewClassForUsage(Usage As %String, CodeTypeName As %String)
+ClassMethod NewClassForUsage(Usage As %String, CodeTypeName As %String) As %RegisteredObject
 {
-	#dim obj as PXW.DEV.BNF.Compilers.analyser
-	s class=..GetClassForUsage(Usage,CodeTypeName)
-	if class'="" {
-        s obj=$classmethod(class,"%New")
-    } else {
-        s obj=""
+    #dim obj as %Library.RegisteredObject
+	Set class=..GetClassForUsage(Usage,CodeTypeName)
+	If class'="" {
+        Set obj=$CLASSMETHOD(class,"%New")
+    } Else {
+        Set obj=""
     }
-	q obj
+	Quit obj
 }
 
 Storage Default

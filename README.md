@@ -35,12 +35,14 @@ http://localhost:52775/csp/irisapp/PXW.Tools.Index.cls
 
 This is the home page of all the tools available on the web front end. 
 
+![Home + Namespace Code](/docs/pics/home.png)
+
 * Home -- show the main home page.
 * (+) -- show the main home page in a new tab.
 * Namespace -- click on this to change the namespace the tools are linked to.
 * Code -- input a search pattern to find code. EG PXW*.CLS to find all classes for this set of tools.
 
-### Home
+### Home ( and + )
 This shows a list of all the tools that are available to the web front end. 
 
 Running the home page will cause the tools to start cross referencing all code on the system. To see it progress find the "Xref Build" tool and click the "Submit" button. The initial build will take a while. It is loading every program and analysing them to create the Xref database.
@@ -49,6 +51,10 @@ You do not have to wait while it does that, you can start to explore code but so
 
 ### Namespace
 The tools could be installed in any namespace but it is designed so that you have a central tools server which can connect to any other Iris server and namespace using the Atelier services.
+
+When first installed there will be only one namespace available. It has the internal name of "LOCAL_USER", and points to the "IRISAPP" namespace on the local host. 
+
+The PXW tools Namespace concept and setup requires its own document.
 
 ### Code
 In the Code prompt you can search for code. You can use wildcards to search. EG. Searching for PXW*.cls will find all code for this project.
@@ -84,6 +90,9 @@ Enter the SQL to be checked in the text area. Click Show Plan.
 On the left hand side the SQL is formatted and displayed with any views it uses embedded directly into the SQL.
 
 On the right hand side a formatted version of the SQL Query Plan is displayed. 
+
+![Show Plan](/docs/pics/ShowPlan.png)
+
 
 #### PXW.Tools.DEV.Settings
 Displays the various settings controlling how code is fetched and displayed. The settings cannot be modified here, the data should be updated by an install program.

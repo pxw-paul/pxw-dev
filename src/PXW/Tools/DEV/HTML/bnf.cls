@@ -187,13 +187,13 @@ Method writeElement(element As PXW.DEV.Element)
             Set type=$PIECE(a.type,":",1)
             If type="Keyword" {
             	Do ..wrapAtomHTML(a,"<span class='keyword'>","</span>")
-            } elseIf type="CDEFKeyword" {
+            } ElseIf type="CDEFKeyword" {
             	Do ..wrapAtomHTML(a,"<span class='CDEFkeyword'>","</span>")
             } ElseIf type="String" {
                 Do ..wrapInnerAtomHTML(a,"<span class='COSString'>","</span>")
             } ElseIf type="Number" {
                 Do ..wrapAtomHTML(a,"<span class='COSNumber'>","</span>")
-            } elseif type="ERROR" {
+            } ElseIf type="ERROR" {
                 Do ..wrapAtomHTML(a,"<span class='"_..#ErrorClass_"'>","</span>")
                 Do ..AddToIndexError(..ThisMethod,a.value)
             }
@@ -205,7 +205,7 @@ Method writeElement(element As PXW.DEV.Element)
 
     Do ##super(element)
     Set ..XMLPath=oldXMLPath
-    $$$DEBUG("End "_$CLASSNAME()_":"_$PIECE(element.type,":",1)_$e(element.ToString(0),1,10))
+    $$$DEBUG("End "_$CLASSNAME()_":"_$PIECE(element.type,":",1)_$EXTRACT(element.ToString(0),1,10))
 }
 
 Method writeElementBNF1(element As PXW.DEV.Element)
@@ -417,7 +417,7 @@ Method writeCDEFMethod(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.D
 Method writeCDEFJavascriptCodeBlock(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="JavascriptCodeBlock")
 {
     Do ..wrapElementHTML(element,"<div><span class='EmbeddedJS'>","</span></div>")
-    quit ""
+    Quit ""
 }
 
 Method writeCDEFClassQuery(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassQuery")
@@ -459,9 +459,9 @@ Method writeCDEFVariableSet(element As PXW.DEV.BNF.Elements.ClassDefinition) As 
 {
     #dim strElement as PXW.DEV.Element
 
-    set variablename=element.ToStringAtomsOnly(0)
+    Set variablename=element.ToStringAtomsOnly(0)
     ; add the hiliting function to the first atom only
-    set atom=element.FirstAtom()
+    Set atom=element.FirstAtom()
     Set cssclass="COSVariableSet"
     If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(variablename) Set cssclass="COSVariableParameterSet"
     Do ..wrapAtomHTML(atom,"<span class='"_cssclass_"' varid='"_variablename_"' onclick=""HiliteSets('"_variablename_"');"">","</span>")
@@ -503,14 +503,15 @@ Method writeCDEFIndex(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DE
 Method writeCDEFIndexPropertyList(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="IndexPropertyList")
 {
     #dim ClassItemIdentifierE as PXW.DEV.Element
-    do element.findElementsXPath("IndexProperty/Fieldname/PropertyReference/ClassItemIdentifier",.props)
-    if $isobject(props) {
-        f i=1:1:props.Count() {
-            s ClassItemIdentifierE=props.GetAt(i)
-            s name=ClassItemIdentifierE.ToString(0)
-            d ..wrapElementHTML(ClassItemIdentifierE,"<a href='"_..HREFToClass(..This,name)_"'>","</a>")
+    Do element.findElementsXPath("IndexProperty/Fieldname/PropertyReference/ClassItemIdentifier",.props)
+    If $ISOBJECT(props) {
+        For i=1:1:props.Count() {
+            Set ClassItemIdentifierE=props.GetAt(i)
+            Set name=ClassItemIdentifierE.ToString(0)
+            Do ..wrapElementHTML(ClassItemIdentifierE,"<a href='"_..HREFToClass(..This,name)_"'>","</a>")
         }
     }
+    Quit ""
 }
 
 Method writeCDEFTypeClassReference(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="TypeClassReference")
@@ -699,7 +700,8 @@ Method writeCOSCosDirective(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.
 Method writeCOSCosCommandListContinue(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CommandListEolContinue")
 {
     ; make the commands stand out like SQL
-    do ..wrapElementHTML(element,"<span class='EmbeddedSQL'>","</span>")
+    Do ..wrapElementHTML(element,"<span class='EmbeddedSQL'>","</span>")
+    Quit ""
 }
 
 Method writeCOSClassExpression(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassExpression")
@@ -724,7 +726,7 @@ Method writeCOSVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Comp
 {
     Set variablename=element.ToStringAtomsOnly(0)
     ; add the hiliting function to the first atom only
-    set atom=element.FirstAtom()
+    Set atom=element.FirstAtom()
     Set cssclass="COSVariable"
     If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(variablename) Set cssclass="COSVariableParameterSet"
     Do ..wrapAtomHTML(atom,"<span class='"_cssclass_"' fetchid='"_variablename_"' onclick=""HiliteSets('"_variablename_"');"">","</span>")
@@ -780,7 +782,7 @@ Method writeCOSLabelDefinition(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.B
         If ..HilitePlus'="" Set ..HiLiteLine=labatom.line+..HilitePlus
     } Else {
         Set labname=..ThisMethod_lab
-        set anchor=$TRANSLATE("LAB"_labname,"$^%_","")
+        Set anchor=$TRANSLATE("LAB"_labname,"$^%_","")
         ;Do ..wrapAtomHTML(anchorAtom,"<a class='COSLabelDef' id='"_anchor_"' name='"_anchor_"'>","</a>")
         Do ..wrapAtomHTML(anchorAtom,"<span class='COSLabelDef' id='"_anchor_"SPAN' >","</span>") ; not sure why the ID needs SPAN on the end...
         Do ..AddToIndex(labname,"Label",anchor)
@@ -877,7 +879,7 @@ Method writeCOSGlobals(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compi
     Set setting=0
     If element.type="GlobalRefSet" Set setting=1
     Set fullrefE=element.findFirstElementByType("GlobalRefFull",0)
-    if fullrefE="" set fullrefE=element.findFirstElementByType("GlobalRefSpecial",0)
+    If fullrefE="" Set fullrefE=element.findFirstElementByType("GlobalRefSpecial",0)
     If $ISOBJECT(fullrefE) {
         ; On a global clicking on the ^ will take directly to the XREF since we don't
         ; have any other details about the global at the moment.
@@ -924,9 +926,9 @@ Method writeCOSSqlBody(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compi
 
 Method writeObjectVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ObjectVariable")
 {
-    set variablename=element.ToStringAtomsOnly(0)
+    Set variablename=element.ToStringAtomsOnly(0)
     ; add the hiliting function to the first atom only
-    set atom=element.FirstAtom()
+    Set atom=element.FirstAtom()
     Set cssclass="COSVariable"
     If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(variablename) Set cssclass="COSVariableParameter"
     Do ..wrapAtomHTML(atom,"<span class='"_cssclass_"' fetchid='"_variablename_"' onclick=""HiliteSets('"_variablename_"');"">","</span>")
@@ -937,9 +939,9 @@ Method writeCOSVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.C
 {
     #dim strElement as PXW.DEV.Element
 
-    set variablename=element.ToStringAtomsOnly(0)
+    Set variablename=element.ToStringAtomsOnly(0)
     ; add the hiliting function to the first atom only
-    set atom=element.FirstAtom()
+    Set atom=element.FirstAtom()
     Set cssclass="COSVariableSet"
     If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(variablename) Set cssclass="COSVariableParameterSet"
     Do ..wrapAtomHTML(atom,"<span class='"_cssclass_"' varid='"_variablename_"' onclick=""HiliteSets('"_variablename_"');"">","</span>")
@@ -975,16 +977,18 @@ Method writeJSCosMethodReference(element As PXW.DEV.BNF.Elements.JS) As PXW.DEV.
     } Else {
         Do ..wrapElementHTML(element,"<a class='CDEFMember' href='"_..HREFToClass($PIECE(method,".",1,*-1),$PIECE(method,".",*))_"'>","</a>")
     }
+    Quit ""
 }
 
 Method writeJSIdentifier(element As PXW.DEV.BNF.Elements.JS) As PXW.DEV.BNF.Compilers.elementHandler(Type="Identifier")
 {
     Set variablename=element.ToStringAtomsOnly(0)
     ; add the hiliting function to the first atom only
-    set atom=element.FirstAtom()
+    Set atom=element.FirstAtom()
     Set cssclass="COSVariable"
     If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(variablename) Set cssclass="COSVariableParameterSet"
     Do ..wrapAtomHTML(atom,"<span class='"_cssclass_"' fetchid='"_variablename_"' onclick=""HiliteSets('"_variablename_"');"">","</span>")
+    Quit ""
 }
 
 /*method writeCOS(element As PXW.DEV.BNF.Elements.COS) AS PXW.DEV.BNF.Compilers.elementHandler(Type="")

@@ -13,7 +13,7 @@ Method Statement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
     
     ; if the code is embedded then we need to stop at:
-    if ..eof() quit 0
+    If ..eof() Quit 0
     If ..peek(2)="</" Quit 0 ; </script>?
     If ..peek(1)=">" Quit 0 ; &js<  >
     If ..peek(1)="}" Quit 0 ; } end of method
@@ -32,8 +32,8 @@ Method Statement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 Method Dyadicop(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; don't like this!
-    i ..peek(2)="</" q 0 ; reached a </ so treat as end of file
-    q ##super(ParentElement,.subElement)
+    If ..peek(2)="</" Quit 0 ; reached a </ so treat as end of file
+    Quit ##super(ParentElement,.subElement)
 }
 
 /// eos ::= SemiColon
@@ -98,13 +98,13 @@ Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
     $$$BNFPATH
     $$$BNFSTART(subElement)
     
-    set x=..IdentifierName(subElement)
-    if x {
+    Set x=..IdentifierName(subElement)
+    If x {
         $$$BNFCOMMIT(subElement,ParentElement)
-    } else {
+    } Else {
         $$$BNFROLLBACK(subElement)
     }
-    q x
+    Quit x
 }
 
 /// IDENTIFIER_NAME ::= 'NEED IDENTIFIER NAME'
@@ -319,7 +319,7 @@ Method skipComments(ch10 As %String) As %Boolean
 
 Method StringLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-    i ..codeMode="ClientMethod" q ..ClientMethodStringLiteral(ParentElement,.subElement)
+    If ..codeMode="ClientMethod" Quit ..ClientMethodStringLiteral(ParentElement,.subElement)
 
     $$$DEBUGMethodBegin
     $$$BNFSTART(subElement)
@@ -332,7 +332,7 @@ Method StringLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
     Set char=..peek(1)
     If char="""" Set ok=1
     If char="'" Set ok=1
-    if char="`" set ok=1
+    If char="`" Set ok=1
 
     Set instring=1 ; 1 means started, 2=continuation (after code expression)
     If ok {
@@ -404,7 +404,7 @@ Method ClientMethodStringLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef sub
     Set char=..peek(1)
     If char="""" Set ok=1
     If char="'" Set ok=1
-    if char="`" set ok=1
+    If char="`" Set ok=1
 
     Set instring=1 ; 1 means started, 2=continuation (after code expression)
     If ok {
@@ -503,11 +503,11 @@ Method CosMethodReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$BNFSTART(subElement)
 
     ; read all up to the (
-    set mref=..stream.PeekToString("(")
-    set atom=..newAtom(subElement.type,..nextNotEOL($l(mref)))
-    do subElement.AddPart(atom)
-    do ParentElement.AddPart(subElement)
-    set done=1 
+    Set mref=..stream.PeekToString("(")
+    Set atom=..newAtom(subElement.type,..nextNotEOL($LENGTH(mref)))
+    Do subElement.AddPart(atom)
+    Do ParentElement.AddPart(subElement)
+    Set done=1 
     $$$DEBUGMethodEnd
     Quit done
 }

@@ -29,8 +29,8 @@ ClassMethod RegisterType() As %Status
     Set sc=$$$OK 
     Set codetypes=..#CodeType
     If codetypes'="" {
-		f i=1:1:$l(codetypes,",") {
-			s codetype=$p(codetypes,",",i)
+		For i=1:1:$LENGTH(codetypes,",") {
+			Set codetype=$PIECE(codetypes,",",i)
 			Set:$$$ISOK(sc) sc=##class(PXW.DEV.Dictionary.CodeTypeIndex).RegisterType("Analyse:"_..#Language,codetype,..%ClassName(1))
 		}
     }
@@ -40,8 +40,8 @@ ClassMethod RegisterType() As %Status
 ClassMethod NewForLanguage(CodeType As %String, Language As %String) As PXW.DEV.BNF.Analyse.analyser
 {
 	#dim obj as PXW.DEV.BNF.Analyse.analyser
-	s obj=##class(PXW.DEV.Dictionary.CodeTypeIndex).NewClassForUsage("Analyse:"_Language,CodeType)
-	q obj
+	Set obj=##class(PXW.DEV.Dictionary.CodeTypeIndex).NewClassForUsage("Analyse:"_Language,CodeType)
+	Quit obj
 }
 
 Method GenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator ]

@@ -33,12 +33,14 @@ ClassMethod OnPreHTTP() As %Boolean [ ServerOnly = 1 ]
 	#dim %request as %CSP.Request
 	#dim %session as %CSP.Session
 	#dim %response as %CSP.Response
+	
+	set defaultDefault="Hip"
 
 	Set %NS=%request.Get("%NS","LOCAL_USER")
 	Set style=%request.Get("%STYLE")
 	Set:style="" style=%request.GetCookie("PXWSTYLE")
 	Set:style="" style=$GET(^PXW("TOOLSv2","PXWSTYLE"))
-	Set:style="" style="Basic"
+	Set:style="" style=defaultDefault
 
 	Set styleclass=style
 	If styleclass'["." Set styleclass="PXW.Tools.Styles."_style
@@ -46,7 +48,7 @@ ClassMethod OnPreHTTP() As %Boolean [ ServerOnly = 1 ]
 		Set %STYLE=$SYSTEM.OBJ.New(styleclass)
 	} Catch {
 		Set %STYLE=##class(PXW.Tools.Styles.Basic).%New()
-		Set style="Basic"
+		Set style=defaultDefault
 	}
 	set %STYLENAME=style
 	Set expires="Mon, 31 Dec 2035 12:00:00 GMT"

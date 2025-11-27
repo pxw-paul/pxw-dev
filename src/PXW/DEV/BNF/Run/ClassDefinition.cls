@@ -237,7 +237,7 @@ Method CosCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
             Do subElement.AddPart(atom)
             $$$BNFCOMMIT(subElement,ParentElement)
            ; next thing must be a "}" so check
-            if ..peek(1)'="}" {
+            If ..peek(1)'="}" {
                 Do ..recover(ParentElement,.recElement,"{}","")
             }
 		    Quit 1
@@ -254,7 +254,7 @@ Method CosCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
             Do subElement.AddPart(atom)
             $$$BNFCOMMIT(subElement,ParentElement)
            ; next thing must be a "}" so check
-            if ..peek(1)'="}" {
+            If ..peek(1)'="}" {
                 Do ..recover(ParentElement,.recElement,"{}","")
             }
             Quit 1
@@ -607,10 +607,10 @@ Method AliasIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
         ;    }
         ;    Set done=1
         ;}
-        while $EXTRACT(ch50,pos)'="", $EXTRACT(ch50,pos)'=",", $EXTRACT(ch50,pos)'="}" {
-            s pos=pos+1
+        While $EXTRACT(ch50,pos)'="", $EXTRACT(ch50,pos)'=",", $EXTRACT(ch50,pos)'="}" {
+            Set pos=pos+1
         }
-        set done=1
+        Set done=1
     }
     If done {
         Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
