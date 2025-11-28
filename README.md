@@ -84,7 +84,9 @@ This tool is used to change the style of the pages. There are a couple of styles
 A development tool for testing parsing of code.
 
 #### PXW.Tools.DEV.SQLShowPlan
+
 This is a new version of the SQL Show Plan in the System Management Portal.
+
 Enter the SQL to be checked in the text area. Click Show Plan.
 
 On the left hand side the SQL is formatted and displayed with any views it uses embedded directly into the SQL.
@@ -122,24 +124,45 @@ During the Xref build every class is loaded, parsed and analysed. If there are a
 #### PXW.Tools.DEV.Class
 This is the main page for displaying class code. 
 
-It has a few unique features when displaying code compared with tools such as VSCode and Studio:
-* Embedded languages -- these are displayed slightly differently to the way an editor displays them, to make them stand out a little more.
-* SQL -- all sql code is analysed and you can click on fields to go directly to the definition.
-* Links to cross reference -- On each method or property is a link to see all references to it.
-* Overrides -- Shows if the method is an override of a superclass method.
+It has a few unique features when displaying code compared with tools such as VSCode and Studio.
 
 ![Class Code](/docs/pics/ClassDisplay.png)
 
+The above shows:
+* How many times the class has been referenced. This includes all properties and method calls etc.
+* How many times the class has been extened.
+* How many times the parameters have been overridden.
+* How many times the properties have been used.
+
+![Embedded Languages](/docs/pics/EmbeddedLanguage.png)
+
+* SQL has a different background colour to make it stand out from the main language. 
+* SQL code is analysed and you can click on fields to go directly to the definition.
+* HTML is embedded with a different background colour.
+
+Note - The formatting is carried over from the original text and wrapped in an HTML block, which means it is spaced out a bit strangely after the first line. This is something I will fix one day.
+
 #### PXW.Tools.DEV.Code
+
 This is the page behind the main "Code Reference" prompt.
 
+It allows searching for any class/routine/include program using * as a wildcard.
+
+You can limit the search to just one type of program by adding an extension.
+```
+PXW*.CLS
+```
+
 #### PXW.Tools.DEV.Include
-This page display Include files (.INC).
+
+This page display Include files (.INC). This will also display the number of times each macro is used.
+
 
 #### PXW.Tools.DEV.PythonModule
 This page is used to display Python programs. It is experimental, the Python parsing of this set of tools is not complete. 
 
 #### PXW.Tools.DEV.Routine
+
 This page displays .INT code.
 
 
