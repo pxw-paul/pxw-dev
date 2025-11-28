@@ -70,8 +70,8 @@ ClassMethod WriteRoutine(Routine As %String, Label As %String = "", Plus As %Str
 ClassMethod WriteRoutineDir(Routine As %String)
 {
 	; if the input contains % then escape it
-	Set rtn=Routine,escape=""
-	/*i rtn["%" {
+	/*Set rtn=Routine,escape=""
+	i rtn["%" {
 		s escape="\"
 		s cls=$replace(cls,"%",escape_"%")
 	}

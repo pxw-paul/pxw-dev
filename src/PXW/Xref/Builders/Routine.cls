@@ -49,6 +49,7 @@ Method xrefCosLabelDefinition(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BN
 	Set labatom=element.FirstAtom()
     Set lab=labatom.value
     Set ..CalledByItemName=lab
+	Quit ""
 }
 
 }

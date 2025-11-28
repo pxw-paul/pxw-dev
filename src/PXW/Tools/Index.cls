@@ -11,11 +11,11 @@ Class PXW.Tools.Index Extends PXW.Tools.Page
 /// </p>
 ClassMethod WriteStyles()
 {
-	w ".grid-container {",!
-	w "  display:grid;   grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));;  grid-gap: 10px;  padding: 10px; ",!	
-	w "}",!
-	w ".grid-container fieldset { height:100%; }"
-	w ""
+	Write ".grid-container {",!
+	Write "  display:grid;   grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));;  grid-gap: 10px;  padding: 10px; ",!	
+	Write "}",!
+	Write ".grid-container fieldset { height:100%; }"
+	Write ""
 }
 
 ClassMethod WriteMainBody()
@@ -25,12 +25,12 @@ ClassMethod WriteMainBody()
 	Set rs=##class(%ResultSet).%New("%Library.ClassDefinition:SubclassOf")
 	$$$THROWONERROR(sc,rs.Execute(##class(PXW.Tools.Page).%ClassName(1)))
 	
-	w "<div class='grid-container'>"
+	Write "<div class='grid-container'>"
 	While rs.Next() {
 		Set name=rs.Data("Name")
 		Do ..WriteForm(name)
 	}
-	w "</div>"
+	Write "</div>"
 }
 
 ClassMethod WriteNav()

@@ -17,7 +17,7 @@ ClassMethod WriteRoutine(Routine As %String, Label As %String = "", Plus As %Str
 	If $PIECE(Routine,".",*)="MAC" Set Routine=$PIECE(Routine,".",1,*-1)
 
 	Set zh=$ZHOROLOG
-    set server=##class(PXW.DEV.Dictionary.MAC).OpenNamespace(%NS)
+    Set server=##class(PXW.DEV.Dictionary.MAC).OpenNamespace(%NS)
 	Set sc=server.GetRoutineStudioText(Routine,.text,.linesOfCode)
 	Set zh(1)=$ZHOROLOG-zh,zh=$ZHOROLOG
 	If $$$ISOK(sc) {
@@ -65,9 +65,9 @@ ClassMethod WriteRoutine(Routine As %String, Label As %String = "", Plus As %Str
 
 ClassMethod WriteRoutineDir(Routine As %String)
 {
-	; if the input contains % then escape it
+	/*; if the input contains % then escape it
 	Set rtn=Routine,escape=""
-	/*i rtn["%" {
+	i rtn["%" {
 		s escape="\"
 		s cls=$replace(cls,"%",escape_"%")
 	}

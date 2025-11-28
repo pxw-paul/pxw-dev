@@ -62,7 +62,7 @@ ClassMethod WriteMainBody(ByRef modules)
     Write "</div>"
 }
 
-ClassMethod WriteSQLPlan(sql, Output modules)
+ClassMethod WriteSQLPlan(sql As %String, Output modules)
 {
 	#dim interface as PXW.DEV.Dictionary.ClassDefinitionObject
 	; enquote quotes
@@ -106,17 +106,16 @@ ClassMethod WriteSQLPlan(sql, Output modules)
 
 ClassMethod WriteSQL(sql As %String, hiliteLine As %Integer)
 {
-
-    ;n %NS s %NS=$znspace
 	Set parser=##class(PXW.DEV.BNF.Run.SQL).%New()
 	Set parser.stream=##class(PXW.DEV.InputStream).NewString(sql)
 	Set Element=##class(PXW.DEV.Element).%New()
 	Set parsed=parser.SqlProgram(Element)
 	; if its all on a single line then format it
 	;i sql'[parser.stream.eolChar {
+    If parsed {
 		Set formatter=##class(PXW.DEV.BNF.Format.SQL).%New()
 		Do formatter.formatElement(Element)
-	;}
+	}
 	Write "<pre class='EmbeddedSQL'>"
 	Set output=##class(PXW.Tools.DEV.HTML.SQLShowPlan).%New()
 	Set output.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)	
@@ -126,7 +125,6 @@ ClassMethod WriteSQL(sql As %String, hiliteLine As %Integer)
     Do output.writeElement(Element)
     Do output.end()
     Write "</pre>"
-    Quit $$$OK
 }
 
 /// Output 1 Anchor tag for each option in the navigation. Use the scratch variable for anything you want to get from BODY

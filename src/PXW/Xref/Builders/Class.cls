@@ -71,7 +71,7 @@ Method Build(Namespace As %String, ItemKey1 As %String, PreLoadedText As %String
 
 	If $$$ISOK(sc) {
  		Set ..ClassServer=ClassServer
-		Set ..This=$s($$$UPPER($p(ItemKey1,".",*))="CLS":$p(ItemKey1,".",1,*-1),1:ItemKey1)
+		Set ..This=$SELECT($$$UPPER($PIECE(ItemKey1,".",*))="CLS":$PIECE(ItemKey1,".",1,*-1),1:ItemKey1)
 		Try {
 			Set x=##class(PXW.DEV.BNF.Run.ClassDefinition).%New()
   		    Set x.stream=##class(PXW.DEV.InputStream).NewString(text)
@@ -323,15 +323,16 @@ Method xrefCDEFItemName(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.
 Method xrefCDEFIndexPropertyList(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="IndexPropertyList")
 {
     #dim ClassItemIdentifierE as PXW.DEV.Element
-    do element.findElementsXPath("IndexProperty/Fieldname/PropertyReference/ClassItemIdentifier",.props)
-    if $isobject(props) {
-        f i=1:1:props.Count() {
-            s ClassItemIdentifierE=props.GetAt(i)
-            s name=ClassItemIdentifierE.ToString(0)
-			s atom=ClassItemIdentifierE.FirstAtom()
-            do ..SaveCOSXref("CLS",..CalledByClassName,name,"_index",atom)
+    Do element.findElementsXPath("IndexProperty/Fieldname/PropertyReference/ClassItemIdentifier",.props)
+    If $ISOBJECT(props) {
+        For i=1:1:props.Count() {
+            Set ClassItemIdentifierE=props.GetAt(i)
+            Set name=ClassItemIdentifierE.ToString(0)
+			Set atom=ClassItemIdentifierE.FirstAtom()
+            Do ..SaveCOSXref("CLS",..CalledByClassName,name,"_index",atom)
         }
     }
+	Quit ""
 }
 
 Method xrefCDEFMethodReference(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="MethodReference")
@@ -352,8 +353,8 @@ Method xrefCDEFClassReference(element As PXW.DEV.BNF.Elements.ClassDefinition) A
 
 Method xrefCDEFOneClassmember(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="OneClassmember")
 {
-	set ..Analyser=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..#CodeType,"COS")
-	set ..Analyser.ClassServer=..ClassServer
+	Set ..Analyser=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..#CodeType,"COS")
+	Set ..Analyser.ClassServer=..ClassServer
 	Set ..Analyser.This=..CalledByClassName
 	If ..Analyser Do ..Analyser.checkElement(element)
 
@@ -491,7 +492,7 @@ Method xrefCOSVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Co
 			Set normValue=$$$UPPER($TRANSLATE(value,$CHAR(13,9),"  "))
 			Set selectfound=$FIND(normValue,"SELECT ")
 			Set fromfound=$FIND(normValue,"FROM ")
-			set bracketFound=$FIND(normValue,"(")
+			Set bracketFound=$FIND(normValue,"(")
 			; want a select followed by a from, but if there is a bracket then the select should be before to exclude partial subquery strings eg "and id in (select id from ...)"
 			If selectfound,fromfound>selectfound,((bracketFound=0)||(selectfound<bracketFound)) {
 				; its being treated as SQL so format it a bit (the simplify deals with array of strings not quite right for this function)
@@ -522,7 +523,7 @@ Method xrefCOSVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Co
 							Set newXrefer.CalledByItemName=..CalledByItemName
 							Set newXrefer.CalledByClassName=..CalledByClassName
 							Set newXrefer.ClassElementLineNumber=..ClassElementLineNumber
-							set newXrefer.Analyser=..Analyser
+							Set newXrefer.Analyser=..Analyser
 							Set newXrefer.ClassServer=..ClassServer
 							Set newXrefer.FixedLineNumber=atom.line
 							Do newXrefer.xrefElement(sqlelement)
@@ -566,16 +567,17 @@ Method xrefCOSClassmethodMethod(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.
 
 Method xrefJSCosMethodReference(element As PXW.DEV.BNF.Elements.JS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosMethodReference")
 {
-    s method=element.ToString(0)
-	s atom=element.FirstAtom()
+    Set method=element.ToString(0)
+	Set atom=element.FirstAtom()
     ; method in ..this class
-    i method?1".."1.E {
+    If method?1".."1.E {
         ;do ..wrapElementHTML(element,"<a class='CDEFMember' href='"_..HREFToClass(..This,$p(method,"..",2))_"'>","</a>")
-		do ..SaveCOSXref("CLS",..CalledByClassName,$p(method,"..",2),"JScall",atom)
-    } else {
+		Do ..SaveCOSXref("CLS",..CalledByClassName,$PIECE(method,"..",2),"JScall",atom)
+    } Else {
         ;do ..wrapElementHTML(element,"<a class='CDEFMember' href='"_..HREFToClass($p(method,"..",1),$p(method,"..",2))_"'>","</a>")
-		do ..SaveCOSXref("CLS",$p(method,".",1,*-1),$p(method,".",*),"JScall",atom)
+		Do ..SaveCOSXref("CLS",$PIECE(method,".",1,*-1),$PIECE(method,".",*),"JScall",atom)
     }
+	Quit ""
 }
 
 Method xrefCOSGlobal(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="GlobalRef,GlobalRefs,GlobalRefSet")
@@ -650,9 +652,9 @@ Method xrefSQLSelectCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.
     If $ISOBJECT(..SqlProgramAnalyser) {
         Set sqlanalyse=$GET(..SqlProgramAnalyser.SelectCommandAnalysis(+element))
     } Else {
-		set sqlanalyse=""
+		Set sqlanalyse=""
 	} 
-	if sqlanalyse="" {
+	If sqlanalyse="" {
         ; certain types of subquery are not being coverded by the program analyse yet, so treat separately for now
 	    Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..#CodeType,"SQL")
     	Set sqlanalyse.ClassServer=..ClassServer

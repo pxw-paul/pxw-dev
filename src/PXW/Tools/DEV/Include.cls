@@ -96,7 +96,7 @@ ClassMethod WriteIncludeDir(Routine As %String)
 	}
 	Write "</tbody></table>"
 	*/
-	d ##class(PXW.Tools.DEV.Code).WriteCodeList("INC",Routine)
+	Do ##class(PXW.Tools.DEV.Code).WriteCodeList("INC",Routine)
 }
 
 ClassMethod WriteNav(ByRef scratch)

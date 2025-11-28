@@ -54,7 +54,7 @@ Method wrapAtomHTML(atom As PXW.DEV.Atom, pre As %String, post As %String)
 
 /// eg an atom=2@PXW.DEV.Atom
 /// orefNumber is just the 2
-Method wrapObjectRefHTML(orefNumber, pre As %String, post As %String)
+Method wrapObjectRefHTML(orefNumber As %Integer, pre As %String, post As %String)
 {
     Set n=$GET(..pre(orefNumber)),n=n+1,..pre(orefNumber,n)=pre,..pre(orefNumber)=n
     Set n=$GET(..post(orefNumber)),n=n+1,..post(orefNumber,n)=post,..post(orefNumber)=n
