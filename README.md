@@ -107,7 +107,7 @@ There are limitations, it is not 100% accurate. Some of these limitations are:
 * In ObjectScript it can be hard to work out exactly what class a property or method belongs to. For example where a method formal spec is not accurate, or where a #dim is not right. 
 * Macros are another problem that are hard to deal with.
 
-However the accuracy is enough to make this very useful. The class display tool will show some of this data within the class. The data could also be displayed in VSCode using a CodeLens extension.
+However the accuracy is enough to make this very useful. The class display tool will show some of this data within the class. The data can also be displayed in VSCode using a [CodeLens extension](https://github.com/pxw-paul/pxw-vscode-webpack).
 
 #### PXW.Tools.DEV.XrefBuild
 This tool is used to request a build of the Xref data. Normally data is only built when a class has been changed since the last build. Use the Force option to force a build of the data.
@@ -127,6 +127,8 @@ It has a few unique features when displaying code compared with tools such as VS
 * SQL -- all sql code is analysed and you can click on fields to go directly to the definition.
 * Links to cross reference -- On each method or property is a link to see all references to it.
 * Overrides -- Shows if the method is an override of a superclass method.
+
+![Class Code](/docs/pics/ClassDisplay.png)
 
 #### PXW.Tools.DEV.Code
 This is the page behind the main "Code Reference" prompt.

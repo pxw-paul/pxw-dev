@@ -1,11 +1,11 @@
 Class PXW.Tools.DEV.XrefBuild Extends PXW.Tools.Page
 {
 
-/// d ##class(PXW.Tools.DEV.BuildAllXref).xrefPackage("eng")
-ClassMethod xrefPackage(Package As %String, Force As %Boolean = 0) As %Status
+/// d ##class(PXW.Tools.DEV.XrefBuild).xrefPackage("LOCAL_USER","PXW")
+ClassMethod xrefPackage(Namespace, Package As %String, Force As %Boolean = 0) As %Status
 {
 	Set pack=$PIECE(Package,"*",1)_"*"
-	Job ##class(PXW.Xref.Build).Build(%NS,"",pack,Force)
+	Job ##class(PXW.Xref.Build).Build(Namespace,"",pack,Force)
 	Hang 1
 	Write !,"Submitted to background."
 	Set sc=$$$OK
@@ -39,7 +39,7 @@ ClassMethod WriteMainBody()
         If package="*" Set package=""
 		Write "<pre>"
 		Write "Clearing Cache" Do ##class(PXW.DEV.Dictionary.ClassDefinitionObject).ClearCache()
-		Set sc=..xrefPackage(package,force)
+		Set sc=..xrefPackage(%NS,package,force)
 		Do ..WriteStatus(sc)
 		Write "</pre>"
 	} 
