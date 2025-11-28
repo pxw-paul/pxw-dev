@@ -132,11 +132,16 @@ The above shows:
 * How many times the class has been referenced. This includes all properties and method calls etc.
 * How many times the class has been extened.
 * How many times the parameters have been overridden.
-* How many times the properties have been used.
+* How many times the parameters and properties have been used. This number includes the override count.
+
+It will also show:
+* If the parameter/property is an override of the superclass.
+
+Embedded languages are also parsed and displayed so that there is a clear separation from the main language.
 
 ![Embedded Languages](/docs/pics/EmbeddedLanguage.png)
 
-* SQL has a different background colour to make it stand out from the main language. 
+* SQL has a different background colour. 
 * SQL code is analysed and you can click on fields to go directly to the definition.
 * HTML is embedded with a different background colour.
 
