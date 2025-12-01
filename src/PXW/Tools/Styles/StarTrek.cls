@@ -66,10 +66,30 @@ Method WriteStyles()
 	::-webkit-scrollbar-corner {
 	  background:black;
 	}
-	#toolsMainTop { }
+
+   /*
+        +----------------------------------------------+
+        |header #toolsHead                             |
+        |  div #toolsForms                             |
+        +----------------------------------------------+
+        |div #toolsTitle  h1                           |
+        +----------------------------------------------+
+        |div #toolsMainBody                            |
+        |  div #toolsMainBodyContainer                 |
+        |   +------------------+----------------------+|
+        |   |nav               |main                  ||
+        |   |#toolsMainBodyNav |#toolsMainBodyContent ||
+        |   |                  |                      ||
+        |   |                  |                      ||
+        |   +------------------+----------------------+|
+        +----------------------------------------------+
+        |div #toolsFooter                              |
+        +----------------------------------------------+
+    */
+
 	#toolsHead { 
 		margin:0px;
-		border-color: var(--lcars1);
+		border-color: var(--lcars7);
 		border-style: solid;
 		/*border-width: 0px 0px 0px 100px;*/
 		border-width: 0px 0px 10px 100px;
@@ -109,22 +129,13 @@ Method WriteStyles()
 					 font-weight: bold; font-stretch:ultra-condensed;
 					border:0px;
 					}
-	#toolsMenu { display:none;
-		margin-top:10px;
-		background-color: var(--lcars1);
-		width:100px; min-height: 100px;
-		border-width: 0px 0px 0px 100px;
-		border-radius: 50% 0px 0px 0px;
-		padding:0px;
-	}
-
 
 	#toolsTitle { 
 		margin-top:10px;
 		border-color: var(--lcars2);
 		border-style: solid;
 		border-width: 0px 10px 0px 100px;
-		border-radius: 100pt 0px 0px 0px;
+		border-radius: 100px 0px 0px 0px;
 		background-color: var(--lcars2);
 		padding: 0px; 
 		text-align: right; 
@@ -140,6 +151,7 @@ Method WriteStyles()
 		display:inline;	
 	}
 
+	
 
 
 	#toolsMainBody { 

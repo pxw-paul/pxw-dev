@@ -1012,7 +1012,8 @@ Method writeSQLWithCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.C
         Set aliasE=withE.findFirstElementByType("AliasName")	    
         If $ISOBJECT(aliasE) {
             Set aliasname="alias"_aliasE.ToString(0)
-            Do ..wrapElementHTML(aliasE,"<span class='SQLTableAliasSet' title='show alias usage' varid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
+            set atom=aliasE.FirstAtom()
+            Do ..wrapAtomHTML(atom,"<span class='SQLTableAliasSet' title='show alias usage' varid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
         }	    
     }    
     Quit ""
@@ -1122,7 +1123,8 @@ Method writeSQLSelectCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
         }
         If $ISOBJECT(aliasNameE) {
             Set aliasname="alias"_aliasNameE.ToString(0)
-            Do ..wrapElementHTML(aliasNameE,"<span class='SQLTableAlias' title='show alias usage' fetchid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
+            Set atom=aliasNameE.FirstAtom()
+            Do ..wrapAtomHTML(atom,"<span class='SQLTableAlias' title='show alias usage' fetchid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
         }
     }    
     Quit ""
@@ -1213,7 +1215,8 @@ Method writeSQLTableAsClause(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
     Set aliasE=element.findFirstElementByType("AliasName")
     If $ISOBJECT(aliasE) {
         Set aliasname="alias"_aliasE.ToString(0)
-        Do ..wrapElementHTML(aliasE,"<span class='SQLTableAliasSet' title='show alias usage' varid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
+        Set atom=aliasE.FirstAtom()
+        Do ..wrapAtomHTML(atom,"<span class='SQLTableAliasSet' title='show alias usage' varid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
     }    
     Quit ""
 }

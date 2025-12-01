@@ -1,16 +1,10 @@
-Class PXW.Tools.DEV.ParserTest Extends PXW.Tools.Page
+Class PXW.Tools.DEV.ParserTest Extends PXW.Tools.PageTLR
 {
 
-ClassMethod WriteMainBody()
+ClassMethod WriteMainTop(ByRef scratch)
 {
-    #dim a as PXW.DEV.Element
-    Do ..HREFFrom(.text,.class,.method)
-
-    ; page
-    Write "<div style=' height:100%; display:flex; flex-direction: column;'>"
-    ; head
-    Write "<div>"
-    &html<<form > 
+	Do ..HREFFrom(.text,.class,.method)
+   &html<<form > 
         <fieldset>
         <input name='%NS' value='#(%NS)#' type=hidden>
         <table style='width:100%'>
@@ -22,45 +16,43 @@ ClassMethod WriteMainBody()
         </fieldset>
         </form>
     >
-    ; /head
-    Write "</div>"
-    If text'="",class'="",method'="" {
-        ; main
-        Write "<div style='flex-grow:1; overflow:auto;  border: 1px solid red;'>" 
-        ; container
-        Write "<div style=' width:100%; display:flex; height:100%; '>"
-        ; left
-        Write "<div style='order:1;  display:block; vertical-align: top; height: 100%; width: 50%; padding:10px; overflow: auto; background-color: var(--bgAlternate1);'>"
+}
+
+ClassMethod WriteMainLeft(ByRef scratch)
+{
+	Do ..HREFFrom(.text,.class,.method)
+    if text'="",class'="",method'="" {
         Write "<pre>" 
-        $$$DEBUGNew(##class(PXW.Tools.Debugger).%ClassName(1))
+        ;$$$DEBUGNew(##class(PXW.Tools.Debugger).%ClassName(1))
+        $$$DEBUGSetup(##class(PXW.Tools.Debugger).%ClassName(1))
         $$$DEBUG("Running "_class_":"_method)
         try {
-            Do $CLASSMETHOD(class,"test1",text,method,.a,0,$GET($$$debugObject))
+            Do $CLASSMETHOD(class,"test1",text,method,.scratch,0,$GET($$$debugObject))
         } catch e {
             Do ..WriteStatus(e.AsStatus())
         }
         Write "</pre>"
-        Write "</div>"
-        ; /left
-        ; right
-        Write "<div style='order:2; display:block; vertical-align: top; height: 100%; width: 50%; overflow: auto;'>"
+    }
+}
+
+ClassMethod WriteMainRight(ByRef scratch)
+{
+    #dim element as PXW.DEV.Element
+    if $isobject($g(scratch)) {
+        set element=scratch
         Write "<pre>" 
         If $ISOBJECT($GET($$$debugObject)) {
-          Do a.writeDebug() 
+            Do element.writeDebug() 
         } Else {
-            Do a.write()
+            Do element.write()
         }
         Write "</pre>"
-        ; /right
-        Write "</div>"
-        ; /container
-        Write "</div>"
-        ; /main
-        Write "</div>"
     }
-    Write "<div>foot</div>"
-    ;/page
-    Write "</div>"
+}
+
+ClassMethod WriteMaiFoot(ByRef scratch)
+{
+    $$$DEBUGStop
 }
 
 ClassMethod HREFTo(Text As %String, Class As %String, Method As %String) As %String

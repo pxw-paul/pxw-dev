@@ -22,6 +22,7 @@ Method writeSQLDirectTableExpand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV
                     If sql'="" {
                         Set subElement=..SubSQLToEmbeddedViewElement(sql)
                         If $ISOBJECT(subElement) {
+                            Do ..wrapElementHTML(element,"<div class='EmbeddedSQLcontainer'>","</div>")
                             Do element.AddPart(subElement)
                         }
                     }

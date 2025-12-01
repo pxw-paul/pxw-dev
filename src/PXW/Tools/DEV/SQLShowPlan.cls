@@ -1,15 +1,9 @@
-Class PXW.Tools.DEV.SQLShowPlan Extends PXW.Tools.Page
+Class PXW.Tools.DEV.SQLShowPlan Extends PXW.Tools.PageTLR
 {
 
-ClassMethod WriteMainBody(ByRef modules)
+ClassMethod WriteMainTop(ByRef scratch)
 {
-    #dim a as PXW.DEV.Element
-    Do ..HREFFrom(.SQL)
-
-    ; page
-    Write "<div style=' height:100%; display:flex; flex-direction: column;'>"
-    ; head
-    Write "<div>"
+    do ..HREFFrom(.SQL)
     &html<<form > 
         <fieldset>
         <input name='%NS' value='#(%NS)#' type=hidden>
@@ -20,46 +14,30 @@ ClassMethod WriteMainBody(ByRef modules)
         </fieldset>
         </form>
     >
-    ; /head
-    Write "</div>"
-    If SQL'="" {
-        ; main
-        Write "<div style='flex-grow:1; overflow:auto; '>" 
-        ; container
-        Write "<div style=' width:100%; display:flex; height:100%; '>"
-        ; left
-        Write "<div class='section2' style='order:1;  display:block; vertical-align: top; height: 100%; width: 50%;  overflow: auto; background-color: var(--bgAlternate1);'>"
-        Write "<h2>SQL</h2>"
-        ;Write "<div style='order:1;  display:block; vertical-align: top; height: 100%;  padding:10px; overflow: auto; background-color: var(--bgAlternate1); resize:horizontal;'>"
-        Write "<pre>" 
-        Try {
-            ;Do $CLASSMETHOD(class,"test1",text,method,.a,0,$GET($$$debugObject))
-            Do ..WriteSQL(SQL,0)
-        } Catch e {
-            Do ..WriteStatus(e.AsStatus())
-        }
-        Write "</pre>"
-        Write "</div>"
-        ; /left
-        ; right
-        Write "<div class='section2' style='order:2; display:block; vertical-align: top; height: 100%; width: 50%; overflow: auto;'>"
-        Write "<h2>Plan</h2>"
-        Try {
-            Do ..WriteSQLPlan(SQL,.modules)
-        } Catch e {
-            Do ..WriteStatus(e.AsStatus())
-        }
-        ;Write "</pre>"
-        ; /right
-        Write "</div>"
-        ; /container
-        Write "</div>"
-        ; /main
-        Write "</div>"
+}
+
+ClassMethod WriteMainLeft(ByRef scratch)
+{
+    do ..HREFFrom(.SQL)
+    Write "<h2>SQL</h2>"
+    Write "<pre>" 
+    Try {
+        Do ..WriteSQL(SQL,0)
+    } Catch e {
+        Do ..WriteStatus(e.AsStatus())
     }
-    Write "<div></div>"
-    ;/page
-    Write "</div>"
+    Write "</pre>"
+}
+
+ClassMethod WriteMainRight(ByRef scratch)
+{
+    do ..HREFFrom(.SQL)
+    Write "<h2>Plan</h2>"
+    Try {
+        Do ..WriteSQLPlan(SQL,.scratch)
+    } Catch e {
+        Do ..WriteStatus(e.AsStatus())
+    }
 }
 
 ClassMethod WriteSQLPlan(sql As %String, Output modules)
@@ -142,7 +120,9 @@ ClassMethod WriteNav(ByRef scratch)
 /// Write out extra styles here, the STYLE tags are already in place
 ClassMethod WriteStyles()
 {
+    do ##super()
 	Do ##class(PXW.Tools.DEV.Class).WriteStyles()
+    Write "div.EmbeddedSQLcontainer { display:inline-block; vertical-align:top;}",!
     Write "pre.EmbeddedSQLSub { border:1px solid var(--fgInlineOption); margin-left:40px; }",!
     Write "p.newline { padding-left:20px; text-indent: -20px; }",!
     
