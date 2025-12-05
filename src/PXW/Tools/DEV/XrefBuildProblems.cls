@@ -26,7 +26,7 @@ ClassMethod WriteMainBody()
 		Write "<td>"
 			set page=##class(PXW.Tools.DEV.CodeDisplayPage).GetPageClass(rs.ItemType)
 			If page'="" {
-				Write "<a class='CDEFMember' href='"_$CLASSMETHOD(page,"HREFToK123",rs.ItemKey1)_"'>"
+				Write "<a class="_$$$classProgramLabel_" href='"_$CLASSMETHOD(page,"HREFToK123",rs.ItemKey1)_"'>"
 				Write ..EscapeHTML(rs.ItemKey1)
 				Write "</a>"
 			}  Else {

@@ -241,7 +241,7 @@ ClassMethod WriteNav(ByRef scratch)
 				If error="" {
 					Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_"CDEF"_type_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
 				} Else {
-					Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_output.#ErrorClass_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
+					Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_$$$classError_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
 				}
 		}
 		Write "<hr>"
@@ -320,27 +320,6 @@ ClassMethod GetTitle() As %String
 
 ClassMethod WriteClassDir(Class As %String)
 {
-	/*ZWrite %NS,Class
-	Set ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).%OpenId(%NS)
-	Set rs=ClassServer.ListClassDetailsWild(Class,1)
-
-	Write "<table>"
-	Write "<thead>"
-	Write "<tr><th>Type</th><th>Name</th><th>Modified</th></tr>"
-	Write "</thead><tbody>"
-	While rs.%Next() {
-		Write "<tr>"
-		Write "<td>"_..EscapeHTML(rs.%Get("ClassType"))_"</td>"
-		Write "<td>"
-			Write "<a class='CDEFClassName' href='"_##class(PXW.Tools.DEV.Class).HREFTo(rs.%Get("Name"))_"'>"
-			Write ..EscapeHTML(rs.%Get("Name")) 
-			Write "</a>"
-		Write "</td>"
-		Write "<td>"_..EscapeHTML(rs.%Get("TimeChanged"))_"</td>"
-		Write "</tr>",!
-	}
-	Write "</tbody></table>"
-	*/
 	Do ##class(PXW.Tools.DEV.Code).WriteCodeList("CLS",Class)
 }
 
@@ -391,7 +370,7 @@ ClassMethod WriteScripts()
 	Write "      if (objs[i].className=='EmbeddedPython') {",!
 	Write "          objs[i].className=objs[i].className+' '+clsOFF; //",!
 	Write "      }",!
-	Write "      if (objs[i].className=='COSString') {",!
+	Write "      if (objs[i].className=='"_$$$classString_"') {",!
 	Write "          objs[i].className=objs[i].className+' '+clsON; //",! 
 	Write "      }",!
 	Write "      if (objs[i].className=='whitespace') {",!

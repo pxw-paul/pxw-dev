@@ -42,27 +42,13 @@ Method WriteStyles()
         --borderNormal: silver;
         --borderAlternate1: silver;
 		--borderWarning: #f3a488;
-		--borderError: #9f3d3d;
-		--borderGood: #225922;
+		--borderError: red;
+		--borderGood: green;
 	}	
 
-
-	html { height: 100%;}
 	body {border:0; margin:0; padding:0; 
 		background-color: var(--bgNormal); color: var(--fgNormal); 
-		height: 100%; 
-		font-family: Arial, Helvetica, sans-serif; font-size: small;
-		display: grid; 
-		grid-template-areas:
-                'toolsHead toolsHead'
-                'toolsTitle toolsTitle'
-                'toolsMainBodyNav toolsMainBodyContent'
-				'toolsFooter toolsFooter';
-            grid-template-columns: 15% auto;
-            grid-template-rows: auto auto #("1fr")# auto;
-            grid-column-gap: 1em;
-            grid-row-gap: 1em;
-		
+		font-family: Arial, Helvetica, sans-serif; font-size: small;	
 	} 
 	a { text-decoration:none;  color: inherit;}
 	a:visited { text-decoration:none; color: inherit; }
@@ -91,67 +77,7 @@ Method WriteStyles()
         +----------------------------------------------+
     */
 	
-    #toolsHead { grid-area:toolsHead; }
-	#toolsHead form { display:inline; margin: 0px; padding:0px; border:0px; }
-	#toolsHead form fieldset { display:inline; }
-
-    #toolsForms { }
-
-	#toolsTitle { grid-area:toolsTitle; }
-
-	#toolsMainBodyNav { grid-area:toolsMainBodyNav; overflow:auto;}
-	#toolsMainBodyNav a { width: 100%; display: block;}
-
-	#toolsMainBodyContent { grid-area:toolsMainBodyContent; overflow:auto;}
-
-	/* The intention  of the sections is that they are containers so it goes like this*/
-	/* content 
-		section1
-			section2
-			section2
-				section3
-			section2
-	*/
-
-	#toolsFooter { grid-area:toolsFooter;}
-	
-	#toolsMainBodyNavTEMP {  display:none; }
-
-    #toolsMainTLR {
-        height:100%;
-        display: grid;
-        grid-template-areas:
-            'toolsMainTop toolsMainTop'
-            'toolsMainLeft toolsMainRight'
-            'toolsMainFoot toolsMainFoot';
-        grid-template-columns: auto auto;
-        grid-template-rows: auto #("1fr")# auto;
-        grid-column-gap: 1em;
-        grid-row-gap: 1em;
-    }
-
-    #toolsMainTLR div { width:100%; }
-
-    #toolsMainTop {
-        grid-area: toolsMainTop;
-    }
-
-    #toolsMainLeft {
-        grid-area: toolsMainLeft;
-        overflow:scroll;
-        resize:horizontal;
-    }
-    #toolsMainLeft div { width:100%; }
-
-    #toolsMainRight {
-        grid-area: toolsMainRight;
-        overflow:scroll;
-    }
-    #toolsMainRight div { width:100%; }
-
-    #toosMainFoot {
-        grid-area: toolsMainFoot;
-    }
+ 
 
     table { width: 100%;}
 	table thead, table tfoot { position: sticky;  background: var(--bgAlternate2); color: var(--fgNormal);}
@@ -164,41 +90,6 @@ Method WriteStyles()
 	
 	table tbody tr { vertical-align:top;}
 	table tbody tr:Hover { background-color: var(--bgHover);  }
-
-	.nocopy	{
-		-webkit-user-select: none;
-		-khtml-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		-o-user-select: none;
-		user-select: none;
-	}
-
-	.unInteresting {
-		-webkit-user-select: none;
-		-khtml-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		-o-user-select: none;
-		user-select: none;
-	}
-	.quiteInteresting {
-		-webkit-user-select: text;
-		-khtml-user-select: text;
-		-moz-user-select: text;
-		-ms-user-select: text;
-		-o-user-select: text;
-		user-select: text;
-	}
-	.veryInteresting {
-		-webkit-user-select: text;
-		-khtml-user-select: text;
-		-moz-user-select: text;
-		-ms-user-select: text;
-		-o-user-select: text;
-		user-select: text;
-		font-weight:bold; font-size:1.1em;
-	}
 
 	.treeItemName {
 		display: inline-block;
@@ -225,48 +116,47 @@ Method WriteStyles()
 
 	/* Start of style for the code display */
 
-	.comment { color: var(--fgComment); }
+	.narrative { color: #80ff80; }
 
+	/* code containers */
 	.EmbeddedJS { background-color: var(--bgAlternate1); display:inline-block;}
 	.EmbeddedSQL { background-color: var(--bgAlternate1); display:inline-block; vertical-align: top;}
 	.EmbeddedXML { background-color: var(--bgAlternate1); display:inline-block;}
 	.EmbeddedPython { background-color: var(--bgAlternate1); display:inline-block;}
 
-	
 
-	.CDEFComment { color: var(--fgComment); }
-   	.CDEFClassName, a.CDEFClassName  { color: var(--fgProgramName);}
-	.CDEFMember, a.CDEFMember, a.CDEFMember:visited {color: var(--fgProgramLabel);}
-	.CDEFKeyword { color: var(--fgProgramKeyword);}
+	.LensMenu { background-color: var(--bgAlternate3);}
+	.LensOption, .LensOption:visited { color: var(--fgInlineOption);}
+	.LensOption:hover { background-color: var(--bgAlternate2); }
 
-    .KeyWord { color: var(--fgCodeKeyword);}
-	.Warning { border-style:solid; border-color:var(--borderWarning); border-width:1px 5px 1px 5px;}
-	.Error { border-style:solid; border-color:var(--borderError); border-width:1px 5px 1px 5px;}
+	/* General purpose classes that could be applicable to any language */
 
-	.CDEFItemMenu { background-color: var(--bgAlternate3);}
-	.CDEFOption, .CDEFOption:visited { color: var(--fgInlineOption);}
-	.CDEFOption:hover { background-color: var(--bgAlternate2); }
+	.codeWarning { border-style:solid; border-color:var(--borderWarning); border-width:1px 5px 1px 5px;}
+	.codeError { border-style:solid; border-color:var(--borderError); border-width:1px 5px 1px 5px;}
 
-    .CDEFFormalSpecList { display: inline-block; white-space: wrap; max-width: 75%;  vertical-align:top;}
-    .CDEFFormalSpecItem {  white-space:nowrap; background-color: var(--bgAlternate1); }
+	.codeComment { color: var(--fgComment); }
+   	.codeProgramName, a.codeProgramName  { color: var(--fgProgramName);}
+	.codeProgramLabel, a.codeProgramLabel, a.codeProgramLabel:visited {color: var(--fgProgramLabel);}
+	.codeProgramKeyword { color: var(--fgProgramKeyword);}
+    .codeKeyword { color: var(--fgCodeKeyword);}
+	.codeFormalSpecList { display: inline-block; white-space: wrap; max-width: 75%;  vertical-align:top;}
+    .codeFormalSpecItem {  white-space:nowrap; background-color: var(--bgAlternate1); }
+	.codeGlobal, a.codeGlobal, a.codeGlobal:Visited {color: var(--fgCodeVariableGlobal);}
+	.codeGlobalSet, a.codeGlobalSet, a.codeGlobalSet:visited {color: var(--fgCodeVariableGlobal); font-weight:bold;}
+	.codeVariable { color:var(--fgCodeVariable);}
+	.codeVariableSet { color:var(--fgCodeVariable); font-weight:bold; }
+	.codeVariableParameter { color: var(--fgCodeArgument);}
+	.codeVariableParameterSet { color: var(--fgCodeArgument); font-weight:bold;}
+	.codeObjectMember, a.codeObjectMember, a.codeObjectMember:visited {color: var(--fgCodeLabel);}
+	.codeString { color: var(--fgCodeString); }
+	.codeNumber { color: var(--fgCodeNumber); }
+	.codeLabel, a.codeLabel, a.codeLabel:visited { color: var(--fgCodeLabel);}
+	.codeLabelDef { color:var(--fgCodeLabel); font-weight: bold;}
 
+
+	/* Object script only styles */
 	.CDEFOneClassMember { display:block; margin:0px 0px 0px 20px;  }
 
-	.COSGlobal, a.COSGlobal, a.COSGlobal:Visited {color: var(--fgCodeVariableGlobal);}
-	.COSGlobalSet, a.COSGlobalSet, a.COSGlobalSet:visited {color: var(--fgCodeVariableGlobal); font-weight:bold;}
-
-	.COSObjectMember, a.COSObjectMember, a.COSObjectMember:visited {color: var(--fgCodeLabel);}
-
-	.COSVariable { color:var(--fgCodeVariable);}
-	.COSVariableSet { color:var(--fgCodeVariable); font-weight:bold; }
-	.COSVariableParameter { color: var(--fgCodeArgument);}
-	.COSVariableParameterSet { color: var(--fgCodeArgument); font-weight:bold;}
-
-	.COSString { color: var(--fgCodeString); }
-	.COSNumber { color: var(--fgCodeNumber); }
-
-	.COSLabel, a.COSLabel, a.COSLabel:visited { color: var(--fgCodeLabel);}
-	.COSLabelDef { color:var(--fgCodeLabel); font-weight: bold;}
 
 	.XMLTag { color: var(--fgProgramKeyword); }
 	.XMLAttribute { color:var(--fgCodeVariable); }
@@ -280,6 +170,8 @@ Method WriteStyles()
 	from {background-color:var(--bgAlternate1);}
 	to {background-color:var(--bgHilite);}
 	}
+
+	/* various high-lighting styles */
 
 	.hilite {  background-color: /*#505050;*/ var(--bgHilite); border-bottom:1px solid yellow;
 		animation-name: blinker;

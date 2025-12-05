@@ -571,10 +571,8 @@ Method xrefJSCosMethodReference(element As PXW.DEV.BNF.Elements.JS) As PXW.DEV.B
 	Set atom=element.FirstAtom()
     ; method in ..this class
     If method?1".."1.E {
-        ;do ..wrapElementHTML(element,"<a class='CDEFMember' href='"_..HREFToClass(..This,$p(method,"..",2))_"'>","</a>")
 		Do ..SaveCOSXref("CLS",..CalledByClassName,$PIECE(method,"..",2),"JScall",atom)
     } Else {
-        ;do ..wrapElementHTML(element,"<a class='CDEFMember' href='"_..HREFToClass($p(method,"..",1),$p(method,"..",2))_"'>","</a>")
 		Do ..SaveCOSXref("CLS",$PIECE(method,".",1,*-1),$PIECE(method,".",*),"JScall",atom)
     }
 	Quit ""

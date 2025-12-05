@@ -1,13 +1,7 @@
-Include PXW.Debuggers.Macros
+Include (PXW.Debuggers.Macros, PXW.Tools.Styles.macros)
 
 Class PXW.Tools.DEV.HTML.output Extends %RegisteredObject
 {
-
-/// Set this to a style class name
-Parameter CommentClass;
-
-/// Set this to a style class name
-Parameter WarningClass;
 
 /// Name of the main thing being written
 Property This As %String;
@@ -116,7 +110,7 @@ Method writeAtom(atom As PXW.DEV.Atom, preValue As %String = "", postValue As %S
 		Do ..writeAtom(atom.whitespace,"<span class=whitespace>","</span>",1)
 	}
 	If $ISOBJECT(atom.comment) {
-		Do ..writeAtom(atom.comment,"<span class='"_..#CommentClass_"'>","</span>")
+		Do ..writeAtom(atom.comment,"<span class='"_$$$classComment_"'>","</span>")
 	}
 
 	; add hilite on whitespace (OR ANYTHING) that is NOT going over more than 1 line

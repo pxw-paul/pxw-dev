@@ -234,7 +234,7 @@ ClassMethod WriteScripts()
 	Write "      if (objs[i].className=='EmbeddedPython') {",!
 	Write "          objs[i].className=objs[i].className+' '+clsOFF; //",! ;objs[i].className+' '+cls;",!
 	Write "      }",!
-	Write "      if (objs[i].className=='COSString') {",!
+	Write "      if (objs[i].className=='"_$$$classString_"') {",!
 	Write "          objs[i].className=objs[i].className+' '+clsON; //",! ;objs[i].className+' '+cls;",!
 	Write "      }",!
 	Write "      if (objs[i].className=='whitespace') {",!

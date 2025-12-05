@@ -42,16 +42,15 @@ ClassMethod WriteXRef(itemtype As %String, itemk1 As %String, itemk2 As %String,
 	Write "		",! 
 	While rs.%Next() {
 		Write "<tr>"
-		; WHAT ABOUT XREF ON ROUTINES????
-		Write "<td class='CDEFClassName'>"_..EscapeHTML(rs.ItemKey1)_"</td>"
-		Write "<td><a class='CDEFMember' href='"_..HREFTo(rs.ItemType,rs.ItemKey1,rs.ItemKey2)_"'>"_..EscapeHTML(rs.ItemKey2)_"</a></td>"
+		Write "<td class='"_$$$classProgramName_"'>"_..EscapeHTML(rs.ItemKey1)_"</td>"
+		Write "<td><a class="_$$$classProgramLabel_" href='"_..HREFTo(rs.ItemType,rs.ItemKey1,rs.ItemKey2)_"'>"_..EscapeHTML(rs.ItemKey2)_"</a></td>"
 		Write "<td>"_..EscapeHTML(rs.CalledByCommand)_"</td>"
 		Write "<td>"_..EscapeHTML(rs.CalledByType)_"</td>"
-		Write "<td class='CDEFClassName'>"_..EscapeHTML(rs.CalledByKey1)_"</td>"
+		Write "<td class='"_$$$classProgramName_"'>"_..EscapeHTML(rs.CalledByKey1)_"</td>"
 		Write "<td>"
 			Set page=##class(PXW.Tools.DEV.CodeDisplayPage).GetPageClass(rs.CalledByType)
 			If page'="" {
-				Write "<a class='CDEFMember' href='"_$CLASSMETHOD(page,"HREFToK123",rs.CalledByKey1,rs.CalledByKey2,rs.LineNumber)_"'>"
+				Write "<a class="_$$$classProgramLabel_" href='"_$CLASSMETHOD(page,"HREFToK123",rs.CalledByKey1,rs.CalledByKey2,rs.LineNumber)_"'>"
 				Write ..EscapeHTML(rs.CalledByKey2)
 				Write "</a>"
 			}  Else {

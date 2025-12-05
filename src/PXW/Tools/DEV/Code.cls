@@ -52,7 +52,7 @@ ClassMethod WriteCodeList(Type As %String, Name As %String)
                     Write "</span>"
                     
                 } Else {
-                    Write "<a class='CDEFClassName' href='"_$CLASSMETHOD(page,"HREFToID",id,name,subtyp)_"'>"
+                    Write "<a class='"_$$$classProgramName_"' href='"_$CLASSMETHOD(page,"HREFToID",id,name,subtyp)_"'>"
                     Write ..EscapeHTML(name) 
                     Write "</a>"
                 }

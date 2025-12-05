@@ -1,3 +1,5 @@
+Include PXW.Tools.Styles.macros
+
 Class PXW.Tools.Styles.super Extends %Library.RegisteredObject
 {
 

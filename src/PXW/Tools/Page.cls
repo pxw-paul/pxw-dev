@@ -1,4 +1,4 @@
-Include PXW.Debuggers.Macros
+Include (PXW.Debuggers.Macros, PXW.Tools.Styles.macros)
 
 /// <h2>The base page for all PXW Tools.</h2>
 /// 
@@ -93,38 +93,28 @@ ClassMethod GridOnPage() As %Status
 	Set zh=$ZHOROLOG
 	Set title=..GetTitle()	
 	&html<<html>
-	<head>
-		<title>#($g(%NS)_" "_title)#</title>>
-
-	; overall style
-
-	Do %STYLE.WriteStyles()
-	; styles for this page
-	Write "<style>"
-	Do ..WriteStyles()
-	Write "</style>",!
-
-	Write "<script language=javascript>",!
-	Do ..WriteScripts()
-	Do ..PageScripts() 
-	Write "</script>",!
-	&html<</head>>
-	&html<
-	<body  onload='bodyonload();'>
-		#(..PageHead())#
-		<div id=toolsTitle>
-			<h1>#(title)#</h1>
-		</div>
-		#(..PageMain())#
-		<div id=toolsFooter>
-				<span id=toolsFooterDTH>datetimeh=#($HOROLOG)#</span> 
-				<span id=toolsFooterDT>datetime=#($ZDATETIME($HOROLOG,3))#</span> 
-				<span id=toolsFooterTIM>processtime=#($ZHOROLOG-zh)#</span> 
-				<span id=toolsFooterPID>$job=#($JOB)#</span>
-				<span id=toolsFooterMEM>$s=#(startmem-$STORAGE)#</span>
-		</div>
-	</body>>
-	&html<</html>>
+		<head>
+			<title>#($g(%NS)_" "_title)#</title>
+			#(..PageStyle())#
+			<script language=javascript>
+				#(..PageScripts())#
+			</script>
+		</head>
+		<body  onload='bodyonload();'>
+			#(..PageHead())#
+			<div id=toolsTitle>
+				<h1>#(title)#</h1>
+			</div>
+			#(..PageMain())#
+			<div id=toolsFooter>
+					<span id=toolsFooterDTH>datetimeh=#($HOROLOG)#</span> 
+					<span id=toolsFooterDT>datetime=#($ZDATETIME($HOROLOG,3))#</span> 
+					<span id=toolsFooterTIM>processtime=#($ZHOROLOG-zh)#</span> 
+					<span id=toolsFooterPID>$job=#($JOB)#</span>
+					<span id=toolsFooterMEM>$s=#(startmem-$STORAGE)#</span>
+			</div>
+		</body>
+	</html>>
 	Quit $$$OK
 }
 
@@ -216,7 +206,7 @@ ClassMethod PageScripts()
 	Write "}",!
 
 	&JS<
-			function fallbackCopyTextToClipboard(text) {
+		function fallbackCopyTextToClipboard(text) {
 			var textArea = document.createElement("textarea");
 			textArea.value = text;
 			
@@ -238,8 +228,8 @@ ClassMethod PageScripts()
 			}
 
 			document.body.removeChild(textArea);
-			}
-			function copyTextToClipboard(text) {
+		}
+		function copyTextToClipboard(text) {
 			if (!navigator.clipboard) {
 				fallbackCopyTextToClipboard(text);
 				return;
@@ -249,8 +239,11 @@ ClassMethod PageScripts()
 			}, function(err) {
 				console.error('Async: Could not copy text: ', err);
 			});
-			}
+		}
 	>
+
+	Do ..WriteScripts()
+
 	quit ""
 }
 
@@ -282,7 +275,7 @@ ClassMethod PageHead() As %String
 	quit ""
 }
 
-ClassMethod PageMain()
+ClassMethod PageMain() As %String
 {
 	#dim e as %Exception.SystemException
 
@@ -304,6 +297,128 @@ ClassMethod PageMain()
 	Write "</nav>"
 	Write "</div>" ; nav
 	Quit ""
+}
+
+/// This controls the layout of the whole page, setting up the main grid etc based on PageBody and PageMain divs.
+/// Not much in the way of colour defined here, its just about the shape of the page.
+/// Change colours using %STYLE.
+ClassMethod PageStyle() As %String
+{
+	&html<<style>
+		/* https://www.w3schools.com/css/css3_box-sizing.asp */
+		* {
+ 			box-sizing: border-box;
+		}
+		body {
+			border:0; margin:0; padding:0; 
+			height: 100%; 
+			display: grid; 
+			grid-template-areas:
+				'toolsHead toolsHead'
+				'toolsTitle toolsTitle'
+				'toolsMainBodyNav toolsMainBodyContent'
+				'toolsFooter toolsFooter';
+			grid-template-columns: 15% auto;
+			grid-template-rows: auto auto #("1fr")# auto;
+			grid-column-gap: 1em;
+			grid-row-gap: 1em;			
+		} 
+		#toolsHead { grid-area:toolsHead; }
+		#toolsHead form { display:inline; margin: 0px; padding:0px; border:0px; }
+		#toolsHead form fieldset { display:inline; }
+
+		#toolsForms { }
+
+		#toolsTitle { grid-area:toolsTitle; }
+
+		#toolsMainBodyNav { grid-area:toolsMainBodyNav; overflow:auto;}
+		#toolsMainBodyNav a { width: 100%; display: block;}
+
+		#toolsMainBodyContent { grid-area:toolsMainBodyContent; overflow:auto;}
+
+		#toolsFooter { grid-area:toolsFooter;}
+		
+		#toolsMainBodyNavTEMP {  display:none; }
+
+		#toolsMainTLR {
+			height:100%;
+			display: grid;
+			grid-template-areas:
+				'toolsMainTop toolsMainTop'
+				'toolsMainLeft toolsMainRight'
+				'toolsMainFoot toolsMainFoot';
+			grid-template-columns: auto auto;
+			grid-template-rows: auto #("1fr")# auto;
+			grid-column-gap: 1em;
+			grid-row-gap: 1em;
+		}
+
+		#toolsMainTLR div { width:100%; }
+
+		#toolsMainTop {
+			grid-area: toolsMainTop;
+		}
+
+		#toolsMainLeft {
+			grid-area: toolsMainLeft;
+			overflow:scroll;
+			resize:horizontal;
+		}
+		#toolsMainLeft div { width:100%; }
+
+		#toolsMainRight {
+			grid-area: toolsMainRight;
+			overflow:scroll;
+		}
+		#toolsMainRight div { width:100%; }
+
+		#toosMainFoot {
+			grid-area: toolsMainFoot;
+		}
+
+		.nocopy	{
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			-o-user-select: none;
+			user-select: none;
+		}
+
+		.unInteresting {
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			-o-user-select: none;
+			user-select: none;
+		}
+		.quiteInteresting {
+			-webkit-user-select: text;
+			-khtml-user-select: text;
+			-moz-user-select: text;
+			-ms-user-select: text;
+			-o-user-select: text;
+			user-select: text;
+		}
+		.veryInteresting {
+			-webkit-user-select: text;
+			-khtml-user-select: text;
+			-moz-user-select: text;
+			-ms-user-select: text;
+			-o-user-select: text;
+			user-select: text;
+			font-weight:bold; font-size:1.1em;
+		}
+	</style>>
+
+	Do %STYLE.WriteStyles()
+	; styles for this page
+	Write "<style>"
+		Do ..WriteStyles()
+	Write "</style>",!
+
+	quit ""
 }
 
 ClassMethod OnPage() As %Status
@@ -557,7 +672,7 @@ ClassMethod WriteStatus(sc As %Status)
         Set caller=$GET(err(1,"caller"))
         Set txt=..EscapeHTML(err(1))
         If caller'="" {
-			Set alink="<a class='COSLabel' href='"_##class(PXW.Tools.DEV.Routine).HREFTo(caller)_"'>"_..EscapeHTML(caller)_"</a>"
+			Set alink="<a class='"_$$$classLabel_"' href='"_##class(PXW.Tools.DEV.Routine).HREFTo(caller)_"'>"_..EscapeHTML(caller)_"</a>"
             If txt[caller {
 				Set txt=$REPLACE(txt,caller,alink)
 			} Else {

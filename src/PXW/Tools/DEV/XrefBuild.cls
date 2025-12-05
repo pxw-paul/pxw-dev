@@ -71,9 +71,9 @@ ClassMethod WriteMainBody()
 		Set rowclass=""
 		Set enddatetime=rs.%Get("EndDateTime")
 		Set running=rs.%Get("Running")
-		If running Set rowclass=" class=warningrow"
-		If 'running,enddatetime="" Set rowclass="class=errorrow"
-		If 'running,$p(enddatetime," ",1)=today Set rowclass=" class=goodrow"
+		If running Set rowclass=" class='"_$$$classHiliteRowWarning_"'"
+		If 'running,enddatetime="" Set rowclass="class='"_$$$classHiliteRowError_"'"
+		If 'running,$p(enddatetime," ",1)=today Set rowclass=" class='"_$$$classHiliteRowGood_"'"
 		Write "<tr "_rowclass_">"
 		Write "<td>"_..EscapeHTML(rs.%Get("ID"))_"</td>"
 		Write "<td>"_..EscapeHTML(rs.%Get("ProcessId"))_"</td>"

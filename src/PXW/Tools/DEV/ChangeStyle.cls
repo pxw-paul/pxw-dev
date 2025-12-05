@@ -116,7 +116,7 @@ ClassMethod WriteExampleTable() As %String
 					<td>1</td>
 					<td>Text data</td>
 					<td><a href="#">Link data</a></td>
-					<td><span class=comment>Comment in a span</span></td>
+					<td><span class='#($$$classNarrative)#'>#($$$classNarrative)# (#("$$$")#classNarrative) in a span</span></td>
 					<td>
 						<table>
 							<thead>
@@ -146,7 +146,7 @@ ClassMethod WriteExampleTable() As %String
 					<td>2</td>
 					<td>Longer text data</td>
 					<td><a href="#">Link data</a></td>
-					<td><div class=comment>Comment in a div</span></td>
+					<td><div class='#($$$classNarrative)#'>#($$$classNarrative)# (#("$$$")#classNarrative) in a div</span></td>
 					<td>
 						<table>
 							<thead>
@@ -172,11 +172,11 @@ ClassMethod WriteExampleTable() As %String
 						</table>
 					</td>
 				</tr>
-				<tr class=hiliterow>
+				<tr class=#($$$classHiliteRow)#>
 					<td>3</td>
-					<td>This row is highlighted by putting tr class=hiliterow</td>
+					<td>This row is highlighted by putting tr class=#($$$classHiliteRow)# (#("$$$")#classHiliteRow)</td>
 					<td><a href="#">Link data</a></td>
-					<td><div class=comment>Comment in a div</span></td>
+					<td><div class='#($$$classNarrative)#'>#($$$classNarrative)# (#("$$$")#classNarrative) in a div</span></td>
 					<td>
 						<table>
 							<thead>
@@ -198,11 +198,11 @@ ClassMethod WriteExampleTable() As %String
 						</table>
 					</td>
 				</tr>
-				<tr class=warningrow>
+				<tr class='#($$$classHiliteRowWarning)#'>
 					<td>4</td>
-					<td>This row is highlighted by putting tr class=warningrow</td>
+					<td>This row is highlighted by putting tr class=#($$$classHiliteRowWarning)# (#("$$$")#classHiliteRowWarning)</td>
 					<td><a href="#">Link data</a></td>
-					<td><div class=comment>Comment about why the row has a warning</span></td>
+					<td><div class='#($$$classNarrative)#'>Comment about why the row has a warning</span></td>
 					<td>
 					<!--	<table>
 							<thead>
@@ -224,71 +224,71 @@ ClassMethod WriteExampleTable() As %String
 					<td>5</td>
 					<td>This row is highlighted by putting tr class=errorrow</td>
 					<td><a href="#">Link data</a></td>
-					<td><div class=comment>Comment about why the row is in error</span></td>
+					<td><div class='#($$$classNarrative)#'>Comment about why the row is in error</span></td>
 					<td>
 					</td>
 				</tr>
-				<tr class=goodrow>
+				<tr class=#($$$classHiliteRowGood)#>
 					<td>6</td>
-					<td>This row is highlighted by putting tr class=goodrow</td>
+					<td>This row is highlighted by putting tr class=#($$$classHiliteRowGood)# (#("$$$")#classHiliteRowGood)</td>
 					<td><a href="#">Link data</a></td>
-					<td><div class=comment>Comment about why the row is good</span></td>
+					<td><div class='#($$$classNarrative)#'>Comment about why the row is good</span></td>
 					<td>
 					</td>
 				</tr>
 				<tr >
 					<td>7</td>
-					<td class=CDEFClassName>ClassName</td>
-					<td class=CDEFClassName><a class=CDEFClassName href="#">LinkClassName</a></td>
-					<td><div class=comment>These cells have class=CDEFClassName</span></td>
+					<td class=#($$$classProgramName)#>ClassName</td>
+					<td class=#($$$classProgramName)#><a class=#($$$classProgramName)# href="#">LinkClassName</a></td>
+					<td><div class='#($$$classNarrative)#'>These cells have class=#($$$classProgramName)#</span></td>
 					<td>
-					</td>
+					</td> 
 				</tr>
 				<tr >
 					<td>8</td>
-					<td class=CDEFClassName>ClassName</td>
-					<td class=CDEFClassName><a class=CDEFClassName href="#">LinkClassName</a></td>
-					<td><div class=comment>These cells have class=CDEFClassName</span></td>
+					<td class=#($$$classProgramName)#>ClassName</td>
+					<td class=#($$$classProgramName)#><a class=#($$$classProgramName)# href="#">LinkClassName</a></td>
+					<td><div class='#($$$classNarrative)#'>These cells have class=#($$$classProgramName)#</span></td>
 					<td>
 					</td>
 				</tr>
 				<tr>
 					<td>9</td>
-					<td class=CDEFMember>MethodName</td>
-					<td class=CDEFMember><a class=CDEFMember href="#">LinkMethodName</a></td>
-					<td><div class=comment>These cells have class=CDEFMember</span></td>
+					<td class=#($$$classProgramLabel)#>MethodName</td>
+					<td class=#($$$classProgramLabel)#><a class=#($$$classProgramLabel)# href="#">LinkMethodName</a></td>
+					<td><div class='#($$$classNarrative)#'>These cells have class=#($$$classProgramLabel)#</span></td>
 					<td>
 					</td>
 				</tr>
 				<tr>
 					<td>10</td>
-					<td class=CDEFMember>MethodName</td>
-					<td class=CDEFMember><a class=CDEFMember href="#">LinkMethodName</a></td>
-					<td><div class=comment>These cells have class=CDEFMember</span></td>
+					<td class=#($$$classProgramLabel)#>MethodName</td>
+					<td class=#($$$classProgramLabel)#><a class=#($$$classProgramLabel)# href="#">LinkMethodName</a></td>
+					<td><div class='#($$$classNarrative)#'>These cells have class=#($$$classProgramLabel)#</span></td>
 					<td>
 					</td>
 				</tr>
 				<tr>
 					<td>11</td>
-					<td class=gooddata>good data</td>
-					<td class=gooddata><a href="#">LinkMethodName</a></td>
-					<td><div class=comment>These cells have class=gooddata</span></td>
+					<td class=#($$$classHiliteDataGood)#>good data</td>
+					<td class=#($$$classHiliteDataGood)#><a href="#">LinkMethodName</a></td>
+					<td><div class='#($$$classNarrative)#'>These cells have class=#($$$classHiliteDataGood)# (#("$$$")#classHiliteDataGood)</span></td>
 					<td>
 					</td>
 				</tr>
 				<tr>
 					<td>12</td>
-					<td class=warningdata>warning data</td>
-					<td class=warningdata><a href="#">LinkMethodName</a></td>
-					<td><div class=comment>These cells have class=warningdata</span></td>
+					<td class=#($$$classHiliteDataWarning)#>warning data</td>
+					<td class=#($$$classHiliteDataWarning)#><a href="#">LinkMethodName</a></td>
+					<td><div class='#($$$classNarrative)#'>These cells have class=#($$$classHiliteData)# (#("$$$")#classHiliteData)</span></td>
 					<td>
 					</td>
 				</tr>
 				<tr>
 					<td>13</td>
-					<td class=errordata>error data</td>
-					<td class=errordata><a href="#">LinkMethodName</a></td>
-					<td><div class=comment>These cells have class=errordata</span></td>
+					<td class=#($$$classHiliteDataError)#>error data</td>
+					<td class=#($$$classHiliteDataError)#><a href="#">LinkMethodName</a></td>
+					<td><div class='#($$$classNarrative)#'>These cells have class=#($$$classHiliteData)# (#("$$$")#classHiliteData)</span></td>
 					<td>
 					</td>
 				</tr>
@@ -296,7 +296,7 @@ ClassMethod WriteExampleTable() As %String
 					<td>14</td>
 					<td class=hilitedata>hilite data</td>
 					<td class=hilitedata><a href="#">LinkMethodName</a></td>
-					<td><div class=comment>These cells have class=hilitedata</span></td>
+					<td><div class='#($$$classNarrative)#'>These cells have class=hilitedata</span></td>
 					<td>
 					</td>
 				</tr>
@@ -319,7 +319,7 @@ ClassMethod WriteStyleChangeSelection() As %String
 	While rs.Next() {
 		Set name=rs.Data("Name")
 		Set class=""
-		If name=current Set class="hiliterow"
+		If name=current Set class=$$$classHiliteRow
 		Write "<tr class='"_class_"'>"
 		Write "<td><a href='"_..HREFTo(name)_"'>"_name_$SELECT(name=current:"*",1:"")_"</a></td>"
         Write "</tr>"

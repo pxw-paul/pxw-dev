@@ -28,7 +28,7 @@ ClassMethod WriteMainBody()
 		Set name=rs.Data("Name")
         Set desc=rs.Data("Description")
         set selected=$SELECT(name=%NS:1,1:0)
-        Write "<tr"_$s(selected:" class=hiliterow",1:"")_">"
+        Write "<tr"_$s(selected:" class='"_$$$classHiliteRow_"'",1:"")_">"
         Write "<td><a href='"_..HREFTo(name)_"'>"_..EscapeHTML(name)_$s(selected:"*",1:"")_"</a></td>"
         Write "<td>"_..EscapeHTML(desc)_"</td>"
         Write "</tr>"
