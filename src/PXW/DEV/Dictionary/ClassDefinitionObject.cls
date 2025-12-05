@@ -925,6 +925,32 @@ ClassMethod FindNamespaceFromIRISNameSpace(IRISNameSpace As %String) As %String 
     Quit ns
 }
 
+Method GetViewSQL(schema As %String, table As %String) As %String
+{
+    $$$DEBUGMethodBegin
+
+    Set sql="SELECT  v.CLASSNAME,cd.viewquery "
+    Set sql=sql_" FROM INFORMATION_SCHEMA.VIEWS as v"
+    Set sql=sql_" inner join %Dictionary.ClassDefinition as cd on cd.ID=v.ClassName"
+    Set sql=sql_" where v.table_schema=?" Set params($INCREMENT(params))=schema
+    Set sql=sql_" and v.table_name=?" Set params($INCREMENT(params))=table
+	
+    Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(..AtelierSettings.ServerName,sql,.obj,params...)
+	If $$$ISERR(qsc) $$$ThrowStatus(qsc)
+ 	Set rs=##class(PXW.DEV.Dictionary.AtelierRS).%New(obj)
+    Set rs.SQL=sql
+
+    Set viewQuery=""
+    if $$$ISOK(qsc)	{
+        Set rs=##class(PXW.DEV.Dictionary.AtelierRS).%New(obj)
+        While rs.%Next() {
+            Set viewQuery=viewQuery_rs.%Get("ViewQuery")
+        }
+    }
+    $$$DEBUGMethodEnd
+    Quit viewQuery
+}
+
 Storage Default
 {
 <Data name="ClassDefinitionObjectDefaultData">

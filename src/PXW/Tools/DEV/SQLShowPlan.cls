@@ -8,7 +8,7 @@ ClassMethod WriteMainTop(ByRef scratch)
         <fieldset>
         <input name='%NS' value='#(%NS)#' type=hidden>
         <table style='width:100%'>
-            <tr><td>SQL</td><td><textarea style='width:100%' name='SQL' rows=20>#(SQL)#</textarea></td></tr>
+            <tr><td>SQL</td><td><textarea spellcheck="false" style='width:100%' name='SQL' rows=20>#(SQL)#</textarea></td></tr>
             <tr><td>&nbsp;</td><td><input type=submit value='Show Plan'></td></tr>
         </table>
         </fieldset>
@@ -19,25 +19,33 @@ ClassMethod WriteMainTop(ByRef scratch)
 ClassMethod WriteMainLeft(ByRef scratch)
 {
     do ..HREFFrom(.SQL)
-    Write "<h2>SQL</h2>"
     Write "<pre>" 
     Try {
-        Do ..WriteSQL(SQL,0)
+        Do:SQL'="" ..WriteSQL(SQL,0)
     } Catch e {
         Do ..WriteStatus(e.AsStatus())
     }
     Write "</pre>"
 }
 
+ClassMethod GetMainLeftTitle() As %String
+{
+    quit "SQL"
+}
+
 ClassMethod WriteMainRight(ByRef scratch)
 {
     do ..HREFFrom(.SQL)
-    Write "<h2>Plan</h2>"
     Try {
-        Do ..WriteSQLPlan(SQL,.scratch)
+        Do:SQL'="" ..WriteSQLPlan(SQL,.scratch)
     } Catch e {
         Do ..WriteStatus(e.AsStatus())
     }
+}
+
+ClassMethod GetMainRightTitle() As %String
+{
+    quit "Plan"
 }
 
 ClassMethod WriteSQLPlan(sql As %String, Output modules)
@@ -123,7 +131,7 @@ ClassMethod WriteStyles()
     do ##super()
 	Do ##class(PXW.Tools.DEV.Class).WriteStyles()
     Write "div.EmbeddedSQLcontainer { display:inline-block; vertical-align:top;}",!
-    Write "pre.EmbeddedSQLSub { border:1px solid var(--fgInlineOption); margin-left:40px; }",!
+    Write "pre.EmbeddedSQLSub { border:1px solid var(--borderNormal); margin-left:40px; }",!
     Write "p.newline { padding-left:20px; text-indent: -20px; }",!
     
     ; not working

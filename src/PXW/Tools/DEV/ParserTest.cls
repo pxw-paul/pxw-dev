@@ -8,7 +8,7 @@ ClassMethod WriteMainTop(ByRef scratch)
         <fieldset>
         <input name='%NS' value='#(%NS)#' type=hidden>
         <table style='width:100%'>
-            <tr><td>Text</td><td><textarea style='width:100%' name='T' rows=20>#(text)#</textarea></td></tr>
+            <tr><td>Text</td><td><textarea spellcheck=false style='width:100%' name='T' rows=20>#(text)#</textarea></td></tr>
             <tr><td>Class</td><td><input name='C' value='#(class)#' size=80></td></tr>
             <tr><td>Method</td><td><input name='M' value='#(method)#' sizw=80></td></tr>
             <tr><td>&nbsp;</td><td><input type=submit></td></tr>

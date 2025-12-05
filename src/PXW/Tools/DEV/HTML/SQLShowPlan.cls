@@ -47,7 +47,7 @@ Method SubSQLToEmbeddedViewElement(sql As %String) As PXW.DEV.BNF.Elements.SQL
 	Set parser.stream=##class(PXW.DEV.InputStream).NewString(sql)
 	Set Element=##class(PXW.DEV.BNF.Elements.SQL).%New("EmbeddedView")
 	Set parsed=parser.SqlProgram(Element)
-    if parsed {
+    If parsed {
 		Set formatter=##class(PXW.DEV.BNF.Format.SQL).%New()
 		Do formatter.formatElement(Element)
     }
@@ -56,20 +56,7 @@ Method SubSQLToEmbeddedViewElement(sql As %String) As PXW.DEV.BNF.Elements.SQL
 
 Method GetViewSQL(schema As %String, table As %String) As %String
 {
-    Set sql="SELECT  v.CLASSNAME,cd.viewquery "
-    Set sql=sql_" FROM INFORMATION_SCHEMA.VIEWS as v"
-    Set sql=sql_" inner join %Dictionary.ClassDefinition as cd on cd.ID=v.ClassName"
-    Set sql=sql_" where v.table_schema=?" Set params($INCREMENT(params))=schema
-    Set sql=sql_" and v.table_name=?" Set params($INCREMENT(params))=table
-   	Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(..ClassServer.AtelierSettings.ServerName,sql,.obj,params...)
-
-    Set viewQuery=""
-    if $$$ISOK(qsc)	{
-        Set rs=##class(PXW.DEV.Dictionary.AtelierRS).%New(obj)
-        While rs.%Next() {
-            Set viewQuery=viewQuery_rs.%Get("ViewQuery")
-        }
-    }
+    Set viewQuery=..ClassServer.GetViewSQL(schema,table)
     Quit viewQuery
 }
 
@@ -266,6 +253,17 @@ Method writeSQLPlanAliasName(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Comp
 {
     Set aliasname="alias"_element.ToString(0)
     Do ..wrapElementHTML(element,"<span class='SQLTableAlias' title='show alias usage' fetchid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
+    Quit ""
+}
+
+Method writeSQLPlanTable(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="Table")
+{
+    Set schemaE=element.findFirstElementByType("SchemaName")
+    Set tableE=element.findFirstElementByType("TableName")
+    If $ISOBJECT(schemaE),$ISOBJECT(tableE) {
+                Do ..wrapElementHTML(schemaE,"<a class='CDEFClassName' href='"_..HREFToClass(schemaE.ToString(0)_"."_tableE.ToString(0))_"'>","</a>")
+                Do ..wrapElementHTML(tableE,"<a class='CDEFClassName' href='"_..HREFToClass(schemaE.ToString(0)_"."_tableE.ToString(0))_"'>","</a>")
+    }
     Quit ""
 }
 

@@ -37,6 +37,7 @@ content ::= newline
             | frozen_section
             | info_section
             | for_each
+            | table
             | subquery_section
             | module_section
             | read_index 
@@ -79,6 +80,7 @@ call_modules        ::= 'modules' module_name ( ',' ['and'] module_name )* ['and
 call_subquery       ::= 'subquery' subquery_name
 call_subqueries     ::= 'subqueries' subquery_name ( ',' ['and'] subquery_name )* ['and' subquery_name]
 
+table                 ::= 'table' schema_name '.' table_name
 table_index           ::=  schema_name '.'  table_name [ table_subscript_imply | table_subscript_alias ] '.' index_name
 table_subscript_imply ::= '(' schema_name '.' table_name '.' (property_name '->')* ')'
 table_subscript_alias ::= '(' alias_name ['.' ( property_name '->')* ] ')'
