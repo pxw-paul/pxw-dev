@@ -45,9 +45,13 @@ ClassMethod WriteNav()
 			Set type=$PARAMETER(name,"ToolType")
 			Set css="toolTypeInternal"
 			If $$$UPPER(type)="CODE" Set css="toolTypeCode"
-			Set aname=$TRANSLATE(name,".","")_"anchor"
-			Set legname=$TRANSLATE(name,".","")_"legend"
-			Write "<a onclick='HiliteElement("""_legname_""");' class='"_css_"' href=#"_$TRANSLATE(aname,".","")_">"_name_"</a>"
+			Set toolname=$PARAMETER(name,"ToolName")
+			if toolname'="" {
+				;If toolname="" Set toolname=name
+				Set aname=$TRANSLATE(name,".","")_"anchor"
+				Set legname=$TRANSLATE(name,".","")_"legend"
+				Write "<a onclick='HiliteElement("""_legname_""");' class='"_css_"' href=#"_$TRANSLATE(aname,".","")_">"_..EscapeHTML(toolname)_"</a>"
+			}
 		}
 	}
 }
@@ -65,48 +69,52 @@ ClassMethod WriteForm(ClassName As %String) As %Status
 	Set type=$PARAMETER(ClassName,"ToolType")
 	Set css="toolTypeInternal"
 	If $$$UPPER(type)="CODE" Set css="toolTypeCode"	
-	Set aname=$TRANSLATE(ClassName,".","")_"anchor"
-	Set legname=$TRANSLATE(ClassName,".","")_"legend"
-	&html<
-	<div id="#(aname)#" class=#(css)#>
-		<form action='#(ClassName)#.cls'>
-			<fieldset>
-				<legend id=#(legname)#>#(ClassName)#</legend>
-				<input type=hidden name=IFRAME value='0'>
-				<input type=hidden name='%NS' value='#($GET(%NS))#'>
-				<table>
-				>
-				Set FS=HREFto.FormalSpec
-				For i=1:1:$LENGTH(FS,",") {
-					Set VAR=$PIECE($PIECE(FS,",",i),":",1)
-					Set TYP=$PIECE($PIECE(FS,",",i),":",2)
-					Set DEF=$PIECE(TYP,"=",2),TYP=$PIECE(TYP,"=",1)
-					; if this is not a default parameter name output it
-					If VAR'?1"P"1N {
-						; the url code is normally the capital letters/numbers of the variable name,
-						; if I find one thats not I will deal with this later
-						Set VNAME=$TRANSLATE(VAR,"abcdefghijklmnopqrstuvwxyz")
-						Set DEF=$TRANSLATE(DEF,"""")
-						&html<<tr><td width=25% class=prompt>#(VAR)#</td>>
-						If TYP="%Boolean" {
-							&html<<td width=25%><input type=checkbox name=#(VNAME)# value=1 #($SELECT(DEF=1:"checked",1:""))#></td>>
-						} Else {
-							&html<<td width=25%><input type=text name=#(VNAME)# value='#(DEF)#'></td>>
+	Set toolname=$PARAMETER(ClassName,"ToolName")
+	If toolname'="" {
+		If toolname="" Set toolname=ClassName
+		Set aname=$TRANSLATE(ClassName,".","")_"anchor"
+		Set legname=$TRANSLATE(ClassName,".","")_"legend"
+		&html<
+		<div id="#(aname)#" class=#(css)#>
+			<form action='#(ClassName)#.cls'>
+				<fieldset>
+					<legend id=#(legname)#>#(toolname)#</legend>
+					<input type=hidden name=IFRAME value='0'>
+					<input type=hidden name='%NS' value='#($GET(%NS))#'>
+					<table>
+					>
+					Set FS=HREFto.FormalSpec
+					For i=1:1:$LENGTH(FS,",") {
+						Set VAR=$PIECE($PIECE(FS,",",i),":",1)
+						Set TYP=$PIECE($PIECE(FS,",",i),":",2)
+						Set DEF=$PIECE(TYP,"=",2),TYP=$PIECE(TYP,"=",1)
+						; if this is not a default parameter name output it
+						If VAR'?1"P"1N {
+							; the url code is normally the capital letters/numbers of the variable name,
+							; if I find one thats not I will deal with this later
+							Set VNAME=$TRANSLATE(VAR,"abcdefghijklmnopqrstuvwxyz")
+							Set DEF=$TRANSLATE(DEF,"""")
+							&html<<tr><td width=25% class=prompt>#(VAR)#</td>>
+							If TYP="%Boolean" {
+								&html<<td width=25%><input type=checkbox name=#(VNAME)# value=1 #($SELECT(DEF=1:"checked",1:""))#></td>>
+							} Else {
+								&html<<td width=25%><input type=text name=#(VNAME)# value='#(DEF)#'></td>>
+							}
+							&html<<td width=25%>#(TYP)#</td>
+								</tr>>
 						}
-						&html<<td width=25%>#(TYP)#</td>
-							</tr>>
 					}
-				}
-				Set DESC=HREFto.Description
-				; get the stuff between <dl> and </dl>
-				Set DESC=$PIECE($PIECE(DESC,"<dl>",2),"</dl>",1)
-				
-				&html<<tr><td>&nbsp;</td><td><input type=submit></td><td>&nbsp;</td></tr>
-					</table>
-			</fieldset>
-		</form>
-	</div>
-	>
+					Set DESC=HREFto.Description
+					; get the stuff between <dl> and </dl>
+					Set DESC=$PIECE($PIECE(DESC,"<dl>",2),"</dl>",1)
+					
+					&html<<tr><td>&nbsp;</td><td><input type=submit></td><td>&nbsp;</td></tr>
+						</table>
+				</fieldset>
+			</form>
+		</div>
+		>
+	}
 	Quit 1
 }
 

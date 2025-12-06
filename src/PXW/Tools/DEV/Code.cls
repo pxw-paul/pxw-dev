@@ -6,22 +6,25 @@ ClassMethod WriteMainBody(ByRef scratch)
 {
 
     Do ..HREFFrom(.CodeReference,.utype,.name)
-
-    If name'="" {
-        ; no type so do lookup
-        If utype="" {
-            Do ..WriteCodeList(utype,name)
-        } Else {
-            ; name is not known
-            If name["*" {
+    if utype="DIRECTRUN" {
+        do $CLASSMETHOD(name,"WriteMainBody",.scratch)
+    } else {
+        If name'="" {
+            ; no type so do lookup
+            If utype="" {
                 Do ..WriteCodeList(utype,name)
             } Else {
-                ;Do ..WriteCode(utype,name)
-                Write "No direct link yet"
+                ; name is not known
+                If name["*" {
+                    Do ..WriteCodeList(utype,name)
+                } Else {
+                    ;Do ..WriteCode(utype,name)
+                    Write "No direct link yet"
+                }
             }
+        } Else {
+            Write "Nothing to search for"
         }
-    } Else {
-        Write "Nothing to search for"
     }
 }
 
@@ -70,53 +73,87 @@ ClassMethod WriteCodeList(Type As %String, Name As %String)
 ClassMethod WriteNav(ByRef scratch)
 {
     ; Work out what type of code is being searched, eg *.CLS
-    Do ..HREFFrom(.CodeReference)
-    Set type=$PIECE(CodeReference,".",*)
-    Set utype=$$$UPPER(type)
+    Do ..HREFFrom(.CodeReference,.utype,.name)
 
-    If ##class(PXW.DEV.Dictionary.CodeType).%ExistsId(utype) {
-        Set name=$PIECE(CodeReference,".",1,*-1)
-    } Else {
-        Set name=CodeReference
-        Set utype=""
-    }
-    Set rs=##class(%Library.ResultSet).%New(..%ClassName(1)_":"_"SelectTypes")
-    $$$ThrowOnError(rs.Execute(%NS,""))
+    if utype="DIRECTRUN" {
+        do $CLASSMETHOD(name,"WriteNav",.scratch)
+    } else {
+        Set type=$PIECE(CodeReference,".",*)
+        Set utype=$$$UPPER(type)
 
-    While rs.%Next() {
-        Set cref=name_"."_rs.%Get("Type")
-        Set class=$s($$$UPPER(rs.%Get("Type"))=utype:"class='hilite'",1:"")
-        Write "<a "_class_" href='"_..HREFTo(cref)_"'>"_..EscapeHTML(cref)_"</a>",!
-    }
-
-    ; find all tools that match    
-	Write "<hr>" 
-    Set rs=##class(%ResultSet).%New("%Dictionary.ClassDefinition:SubclassOf")
-	$$$THROWONERROR(sc,rs.Execute(##class(PXW.Tools.Page).%ClassName(1)))
-	
-    Set pattern=""
-    For i=1:1:$LENGTH(CodeReference,"*") {
-        Set part=$PIECE(CodeReference,"*",i)
-        If part'="" {
-            Set pattern=pattern_"1"""_$$$UPPER(part)_""""
+        If ##class(PXW.DEV.Dictionary.CodeType).%ExistsId(utype) {
+            Set name=$PIECE(CodeReference,".",1,*-1)
+        } Else {
+            Set name=CodeReference
+            Set utype=""
         }
-        If i<$LENGTH(CodeReference,"*") {
-            Set pattern=pattern_"0.E"
-        } 
-    }
-	While rs.Next() {
-		Set name=rs.Data("Name")
-		Set HREFto=##class(%Dictionary.MethodDefinition).%OpenId(name_"||HREFTo")
-		If $isobject(HREFto),name'=..%ClassName(1) {
-            ;If (pattern="") || (name?@pattern) || ($PIECE(name,".",*)?@pattern) {
-            If (pattern="") || ($$$UPPER(name)?@pattern) {
-                Set type=$PARAMETER(name,"ToolType")
-                Set css="toolTypeInternal"
-                If $$$UPPER(type)="CODE" Set css="toolTypeCode"
-                Write "<a class='"_css_"' href='"_$CLASSMETHOD(name,"HREFTo")_"'>"_..EscapeHTML(name)_"</a>",!
+        Set rs=##class(%Library.ResultSet).%New(..%ClassName(1)_":"_"SelectTypes")
+        $$$ThrowOnError(rs.Execute(%NS,""))
+
+        While rs.%Next() {
+            Set cref=name_"."_rs.%Get("Type")
+            Set class=$s($$$UPPER(rs.%Get("Type"))=utype:"class='"_$$$classHilite_"'",1:"")
+            Write "<a "_class_" href='"_..HREFTo(cref)_"'>"_..EscapeHTML(cref)_"</a>",!
+        }
+
+        ; find all tools that match    
+        Write "<hr>" 
+        Set rs=##class(%ResultSet).%New("%Dictionary.ClassDefinition:SubclassOf")
+        $$$THROWONERROR(sc,rs.Execute(##class(PXW.Tools.Page).%ClassName(1)))
+        
+        Set pattern=""
+        For i=1:1:$LENGTH(CodeReference,"*") {
+            Set part=$PIECE(CodeReference,"*",i)
+            If part'="" {
+                Set pattern=pattern_"1"""_$$$UPPER(part)_""""
+            }
+            If i<$LENGTH(CodeReference,"*") {
+                Set pattern=pattern_"0.E"
+            } 
+        }
+        While rs.Next() {
+            Set name=rs.Data("Name")
+            Set HREFto=##class(%Dictionary.MethodDefinition).%OpenId(name_"||HREFTo")
+            If $isobject(HREFto),name'=..%ClassName(1) {
+                ;If (pattern="") || (name?@pattern) || ($PIECE(name,".",*)?@pattern) {
+                If (pattern="") || ($$$UPPER(name)?@pattern) {
+                    Set type=$PARAMETER(name,"ToolType")
+                    Set css="toolTypeInternal"
+                    If $$$UPPER(type)="CODE" Set css="toolTypeCode"
+                    Write "<a class='"_css_"' href='"_$CLASSMETHOD(name,"HREFTo")_"'>"_..EscapeHTML(name)_"</a>",!
+                }
             }
         }
-	}
+    }
+}
+
+/// Write out extra javascript here, the SCRIPT tags are already in place.
+ClassMethod WriteScripts()
+{
+    Do ..HREFFrom(.CodeReference,.utype,.name)
+
+    if utype="DIRECTRUN" {
+        do $CLASSMETHOD(name,"WriteScripts")
+    } else {
+    }
+}
+
+/// Write out extra styles here, the STYLE tags are already in place.
+/// <p>
+/// Be careful with putting colours in here. You do not know how the colours will 
+/// work with the current %STYLE selected by the user.
+/// </p><p> 
+/// You can put layout changing things here, EG if a page needs extra DIVs
+/// the layout information can go here. 
+/// </p>
+ClassMethod WriteStyles()
+{
+    Do ..HREFFrom(.CodeReference,.utype,.name)
+
+    if utype="DIRECTRUN" {
+        do $CLASSMETHOD(name,"WriteStyles")
+    } else {
+    }
 }
 
 Query SelectTypes(Namespace As %String, Type As %String) As PXW.LIB.SQL.Query [ SqlProc ]
@@ -134,26 +171,49 @@ Query SelectTypes(Namespace As %String, Type As %String) As PXW.LIB.SQL.Query [ 
 
 ClassMethod WriteHeadForm(Page As %String)
 {
-    Set CR=""
+    Do ..HREFFrom(.CodeReference,.utype,.name)
+    Set CR=$S(utype="DIRECTRUN":"",1:CodeReference)
     If Page=..%ClassName(1) {
-        Do ..HREFFrom(.CR)
+        ;Do ..HREFFrom(.CR)
     } ElseIf Page="PXW.Tools.DEV.Class" {
         Do ##class(PXW.Tools.DEV.Class).HREFFrom(.CR)
         Set CR=$PIECE(CR,".",1,*-1)
         If CR'="" Set CR=CR_".*"
     }
+
+    ; find all tools
+    Set rs=##class(%ResultSet).%New("%Dictionary.ClassDefinition:SubclassOf")
+	$$$THROWONERROR(sc,rs.Execute(##class(PXW.Tools.Page).%ClassName(1)))
+	
+    set datalist="<datalist id='toolsAvailable'>"
+	While rs.Next() {
+		Set name=rs.Data("Name")
+		Set HREFto=##class(%Dictionary.MethodDefinition).%OpenId(name_"||HREFTo")
+		If $isobject(HREFto) {
+                ;Set type=$PARAMETER(name,"ToolType")
+                ;Set css="toolTypeInternal"
+                ;If $$$UPPER(type)="CODE" Set css="toolTypeCode"
+                Set toolname=$PARAMETER(name,"ToolName")
+                if toolname'="" {
+                    set datalist=datalist_"<option value='"_..EscapeHTML(name_".DIRECTRUN")_"'>"_..EscapeHTML(toolname)_"</option>"
+                }
+        }
+	}
+    set datalist=datalist_"</datalist>"
+
    &html<
     <form id=toolsFormCodeReference action='PXW.Tools.DEV.Code.cls'>
 					<fieldset id=toolsCodeReference>
 						<legend>Code reference</legend>
 						<input type=hidden name=IFRAME value='0'>
 						<input type=hidden name=%NS value='#(%NS)#'>
-						<input accesskey=R placeholder="Class.Name.cls" size=20
+						<input list=toolsAvailable autofocus accesskey=R placeholder="Class.Name.cls" size=20
 							title='Enter Code Reference:#($CHAR(10))#routine.INT, package.name.CLS'
 						type=text id=toolInputCodeReference name=CR value='#(CR)#' size=10>
 						<input type=submit value='Go'>
 					</fieldset>
 				</form>
+                #(datalist)#
     >
 }
 
@@ -165,7 +225,9 @@ ClassMethod HREFFrom(Output CodeReference As %String, Output CodeType As %String
     Set type=$PIECE(CodeReference,".",*)
     Set utype=$$$UPPER(type)
 
-    If ##class(PXW.DEV.Dictionary.CodeType).%ExistsId(utype) {
+    If utype="DIRECTRUN" {
+        set nam=$PIECE(CodeReference,".",1,*-1)
+    } elseif ##class(PXW.DEV.Dictionary.CodeType).%ExistsId(utype) {
         Set nam=$PIECE(CodeReference,".",1,*-1)
     } Else {
         Set nam=CodeReference

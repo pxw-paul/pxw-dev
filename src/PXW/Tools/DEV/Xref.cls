@@ -1,6 +1,8 @@
 Class PXW.Tools.DEV.Xref Extends PXW.Tools.Page
 {
 
+Parameter ToolName = "Xref Search";
+
 Parameter ToolType = "Code";
 
 ClassMethod WriteMainBody()
@@ -71,7 +73,7 @@ ClassMethod WriteXRef(itemtype As %String, itemk1 As %String, itemk2 As %String,
 			For i=from:1:to {
 				Set piecenumber=piecenumber+1
 				If piecenumber<=pieces {
-					If ws>0,i=mid Write "<span class='hilite'>"
+					If ws>0,i=mid Write "<span class='"_$$$classHilite_"'>"
 					Write ..EscapeHTML($PIECE(rs.CallingCode,$CHAR(13,10),piecenumber))_"<br>"
 					If ws>0,i=mid Write "</span>"
 				}

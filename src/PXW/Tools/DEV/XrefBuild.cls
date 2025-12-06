@@ -1,6 +1,8 @@
 Class PXW.Tools.DEV.XrefBuild Extends PXW.Tools.Page
 {
 
+Parameter ToolName = "Xref Build";
+
 /// d ##class(PXW.Tools.DEV.XrefBuild).xrefPackage("LOCAL_USER","PXW")
 ClassMethod xrefPackage(Namespace, Package As %String, Force As %Boolean = 0) As %Status
 {

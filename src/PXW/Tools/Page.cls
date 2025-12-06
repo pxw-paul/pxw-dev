@@ -23,6 +23,10 @@ Class PXW.Tools.Page Extends %CSP.Page
 /// Internal tools are used for changing things about the tool itself
 Parameter ToolType = "Internal";
 
+/// The name of the tool on the main home page (index).
+/// If the tool does not have a name then it does not appear on the index page by default.
+Parameter ToolName;
+
 /// This sets up some floating % variables that can be accessed at any time.
 /// <ul>
 /// <li>%NS is the currently selected Namespace.</li>
@@ -318,7 +322,7 @@ ClassMethod PageStyle() As %String
 				'toolsTitle toolsTitle'
 				'toolsMainBodyNav toolsMainBodyContent'
 				'toolsFooter toolsFooter';
-			grid-template-columns: 15% auto;
+			grid-template-columns: #(" minmax(15%, auto) ")# #("1fr")#;
 			grid-template-rows: auto auto #("1fr")# auto;
 			grid-column-gap: 1em;
 			grid-row-gap: 1em;			
@@ -331,8 +335,9 @@ ClassMethod PageStyle() As %String
 
 		#toolsTitle { grid-area:toolsTitle; }
 
-		#toolsMainBodyNav { grid-area:toolsMainBodyNav; overflow:auto;}
+		#toolsMainBodyNav { grid-area:toolsMainBodyNav; overflow:auto }
 		#toolsMainBodyNav a { width: 100%; display: block;}
+
 
 		#toolsMainBodyContent { grid-area:toolsMainBodyContent; overflow:auto;}
 

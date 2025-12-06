@@ -1,6 +1,8 @@
 Class PXW.Tools.DEV.ChangeNS Extends PXW.Tools.Page
 {
 
+Parameter ToolName = "Change Namespace";
+
 /// Calling page is passed in so you can decide what to display on the form/if anything.
 ClassMethod WriteHeadForm(Page As %String)
 {

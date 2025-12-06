@@ -52,6 +52,7 @@ Method WriteStyles()
 		--lcars7: #3366CC;
 		--lcars8: #006699;
 
+		/* background colours: ;*/
 		--bgNormal: #1E1E1E;
 		--bgAlternate1: #2E2E2E;
 		--bgAlternate2: #3E3E3E;
@@ -62,28 +63,37 @@ Method WriteStyles()
 		--bgError: #9f3d3d;
 		--bgGood: #225922;
 
+		/* foreground colours: ;*/
+		--fgNormal: white;
+		--fgAlternate: black;
+		--fgProgramName: #4EC9B0;
+		--fgProgramLabel: #DCDCAA;
+		--fgProgramKeyword: #6596FF;
+		--fgCodeKeyword: white;
+		--fgCodeVariable: #ade2ff;
+		--fgCodeVariableGlobal: #64c9ff;
+		--fgCodeArgument: #ff75f4;
+		--fgCodeLabel: #DCDCAA;
+		--fgCodeString: #D4B57C; 
+		--fgCodeNumber: #D4B57C; 
+		--fgComment: #378D2A;
+		--fgInlineOption: silver;
+
         --borderNormal: silver;
-        --borderAlternate1: yellow;
+        --borderAlternate1: silver;
 		--borderWarning: #f3a488;
-		--borderError: #9f3d3d;
-		--borderGood: #225922;
+		--borderError: red;
+		--borderGood: green;
 	}	
 
 
 	body {border:0; margin:0; padding:0; 
             background-color:#1E1E1E; color:white; 
             height: #("100vh")#; 
-			font-family:helvetica;  font-stretch:ultra-condensed; font-weight: bold;
-            display: grid; 
-            grid-template-areas:
-                'toolsHead toolsHead'
-                'toolsTitle toolsTitle'
-                'toolsMainBodyNav toolsMainBodyContent'
-                'toolsFooter toolsFooter';
-            grid-template-columns: #("1fr 9fr")#;
-            grid-template-rows: #("auto auto 1fr auto")#;
+            font-family:helvetica;  font-stretch:ultra-condensed; font-weight: bold;
+            /* font-family:okuda;*/
             grid-column-gap:0;
-            grid-row-gap:0;                        
+            grid-row-gap:0; 
 		}
 	a { text-decoration:none;  color: inherit;}
 	a:visited { text-decoration:none; color: inherit; }
@@ -91,64 +101,6 @@ Method WriteStyles()
 	a:active { text-decoration:none;  color: inherit; }
 	pre { margin:0px; tab-size:4; font-weight: normal;}
 
-    /* layout */
-    #toolsHead { grid-area:toolsHead; }
-	#toolsHead form { display:inline; margin: 0px; padding:0px; border:0px; }
-	#toolsHead form fieldset { display:inline; }
-
-    #toolsForms { }
-
-	#toolsTitle { grid-area:toolsTitle; }
-
-	#toolsMainBodyNav { grid-area:toolsMainBodyNav; overflow:auto;}
-	#toolsMainBodyNav a { width: 100%; display: block;}
-
-	#toolsMainBodyContent { grid-area:toolsMainBodyContent; overflow:auto;}
-
-    #toolsFooter { grid-area:toolsFooter;}
-	
-    #toolsMainTLRContainer {
-        display:block;
-        height:100%;
-    }
-    
-    #toolsMainTLR {
-        height: 100%;
-        display: grid;
-        grid-template-areas:
-            'toolsMainTop toolsMainTop'
-            'toolsMainLeft toolsMainRight'
-            'toolsMainFoot toolsMainFoot';
-        grid-template-columns: auto auto;
-        grid-template-rows:  #("auto")#  #("1fr")# #("auto")# ;
-        grid-column-gap: 1em;
-        grid-row-gap: 1em;
-    }
-
-   
-    #toolsMainTop {
-        grid-area: toolsMainTop;
-    }
-
-    #toolsMainLeft {
-        grid-area: toolsMainLeft;
-        overflow:auto;
-        resize:horizontal;
-    }
-   
-    #toolsMainRight {
-        grid-area: toolsMainRight;
-        overflow:auto;
-   }
-   
-   
-    #toosMainFoot {
-        grid-area: toolsMainFoot;
-    }
-
-    #toolsMainTop textarea {
-        resize:vertical;
-    }
 
     /* Look */
 	::-webkit-scrollbar {
@@ -250,17 +202,27 @@ Method WriteStyles()
 	#toolsMainBodyNav {  vertical-align: top; 
 					background-color: var(--lcars2);
 					padding-top:20px;
-					overflow-x: clip; overflow-y: auto;
-                    resize:horizontal;}
+                    overflow-x: clip; overflow-y: auto;
+                    resize:horizontal;
+                    }
 	#toolsMainBodyNav a { text-transform: uppercase; text-align: right; color:black; 
 	                 width:100%; display: block; 
 					 min-height:5%; 
 					 border-top: 4px solid black;
 					 padding-top:30px; 
-					  font-weight: bold;
-						
+					 font-weight: bold;	
 					 }
-
+    #toolsMainBodyNav fieldset { 
+					background-color: black; color:white; 
+					border-color: var(--lcars3);
+					border-style: solid;
+					border-width: 20px 5px 20px 0px;
+					border-radius: 0px 20px 20px 0px; 
+					vertical-align: bottom;
+					padding: 0px 20px 0px 0px;
+					margin: 0px 0px 0px 0px;
+					}
+ 
     #toolsMainBodyContent {
         margin:0; padding: 0; border:0;
         background-color: var(--lcars2);
@@ -277,7 +239,7 @@ Method WriteStyles()
 						 overflow: auto;
                         }
 
-	#toolsMainBodyContent fieldset { /*display:inline; width:45%;*/
+	#toolsMainBodyContent fieldset { 
 					background-color: black; color:white; 
 					border-color: var(--lcars3);
 					border-style: solid;
@@ -423,41 +385,6 @@ Method WriteStyles()
 
 	table tbody tr:Hover { background-color:#3e3e3e;  }
 
-	.nocopy	{
-		-webkit-user-select: none;
-		-khtml-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		-o-user-select: none;
-		user-select: none;
-	}
-
-	.unInteresting {
-		-webkit-user-select: none;
-		-khtml-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		-o-user-select: none;
-		user-select: none;
-	}
-	.quiteInteresting {
-		-webkit-user-select: text;
-		-khtml-user-select: text;
-		-moz-user-select: text;
-		-ms-user-select: text;
-		-o-user-select: text;
-		user-select: text;
-	}
-	.veryInteresting {
-		-webkit-user-select: text;
-		-khtml-user-select: text;
-		-moz-user-select: text;
-		-ms-user-select: text;
-		-o-user-select: text;
-		user-select: text;
-		font-weight:bold; font-size:1.1em;
-	}
-
 	/* END of style of the app */
 
 
@@ -482,18 +409,8 @@ Method WriteStyles()
 	.EmbeddedXML { background-color:#404040; display:inline-block;}
 	.EmbeddedPython { background-color:#404040; display:inline-block;}
 
-	.CDEFComment { color:#67BD5A; }
-   	.CDEFClassName, a.CDEFClassName  { color:#4EC9B0;}
-	.CDEFMember, a.CDEFMember, a.CDEFMember:visited {color:#DCDCAA;}
-	.CDEFKeyword { color:#85A6FF;}
-	.CDEFOneClassMember { display:block; margin:0px 0px 0px 20px;  }
-
-    .KeyWord { color:white;}
-	.Warning { border-style:solid; border-color:orange; border-width:1px 5px 1px 5px;}
-	.Error { border-style:solid; border-color:red; border-width:1px 5px 1px 5px;}
-
-	.CDEFItemMenu { background-color:black; margin-top:20px; display:block; } 
-	a.CDEFOption, a.CDEFOption:visited { 
+	.LensMenu { background-color:black; margin-top:20px; display:block; } 
+	a.LensOption, a.LensOption:visited { 
 					background-color: var(--lcars3); color:black; 
 					border-color: var(--lcars3);
 					border-style: solid;
@@ -505,26 +422,35 @@ Method WriteStyles()
 					text-transform: uppercase;
 					font-weight: bold;  font-size: 0.9em;
 					width:75px;}
-	/*.CDEFOption:hover { background-color:#3e3e3e; }*/
 
-    .CDEFFormalSpecList { display: inline-block; white-space: wrap; max-width: 75%;  vertical-align:top;}
-    .CDEFFormalSpecItem {  white-space:nowrap; background-color:#2E2E2E; }
 
-	.COSGlobal, a.COSGlobal, a.COSGlobal:Visited {color:#64c9ff;}
-	.COSGlobalSet, a.COSGlobalSet, a.COSGlobalSet:visited {color:#64c9ff; font-weight:bold;}
+	/* General purpose classes that could be applicable to any language */
 
-	.COSObjectMember, a.COSObjectMember, a.COSObjectMember:visited {color:#DCDCAA;}
+	.codeWarning { border-style:solid; border-color:var(--borderWarning); border-width:1px 5px 1px 5px;}
+	.codeError { border-style:solid; border-color:var(--borderError); border-width:1px 5px 1px 5px;}
 
-	.COSVariable { color:#ade2ff;}
-	.COSVariableSet { color:#ade2ff; font-weight:bold; }
-	.COSVariableParameter { color:#ff75f4;}
-	.COSVariableParameterSet { color:#ff75f4; font-weight:bold;}
+	.codeComment { color: var(--fgComment); }
+   	.codeProgramName, a.codeProgramName  { color: var(--fgProgramName);}
+	.codeProgramLabel, a.codeProgramLabel, a.codeProgramLabel:visited {color: var(--fgProgramLabel);}
+	.codeProgramKeyword { color: var(--fgProgramKeyword);}
+    .codeKeyword { color: var(--fgCodeKeyword);}
+	.codeFormalSpecList { display: inline-block; white-space: wrap; max-width: 75%;  vertical-align:top;}
+    .codeFormalSpecItem {  white-space:nowrap; background-color: var(--bgAlternate1); }
+	.codeGlobal, a.codeGlobal, a.codeGlobal:Visited {color: var(--fgCodeVariableGlobal);}
+	.codeGlobalSet, a.codeGlobalSet, a.codeGlobalSet:visited {color: var(--fgCodeVariableGlobal); font-weight:bold;}
+	.codeVariable { color:var(--fgCodeVariable);}
+	.codeVariableSet { color:var(--fgCodeVariable); font-weight:bold; }
+	.codeVariableParameter { color: var(--fgCodeArgument);}
+	.codeVariableParameterSet { color: var(--fgCodeArgument); font-weight:bold;}
+	.codeObjectMember, a.codeObjectMember, a.codeObjectMember:visited {color: var(--fgCodeLabel);}
+	.codeString { color: var(--fgCodeString); }
+	.codeNumber { color: var(--fgCodeNumber); }
+	.codeLabel, a.codeLabel, a.codeLabel:visited { color: var(--fgCodeLabel);}
+	.codeLabelDef { color:var(--fgCodeLabel); font-weight: bold;}
 
-	.COSString { color:#d4b57c; }
-	.COSNumber { color:#d4b57c; }
 
-	.COSLabel, a.COSLabel, a.COSLabel:visited { color:#DCDCAA;}
-	.COSLabelDef { color:#DCDCAA; font-weight: bold;}
+	/* Object script only styles */
+	.CDEFOneClassMember { display:block; margin:0px 0px 0px 20px;  }
 
 	.XMLTag { color:#85a6ff; }
 	.XMLAttribute { color:#ade2ff; }

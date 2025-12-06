@@ -69,37 +69,6 @@ ClassMethod WriteRoutine(Routine As %String, Label As %String = "", Plus As %Str
 
 ClassMethod WriteRoutineDir(Routine As %String)
 {
-	; if the input contains % then escape it
-	/*Set rtn=Routine,escape=""
-	i rtn["%" {
-		s escape="\"
-		s cls=$replace(cls,"%",escape_"%")
-	}
-	i cls["_" {
-		s escape=$g(escape,"\")
-		s cls=$replace(cls,"_",escape_"_")
-	}
-	s cls=$replace(cls,"*","%") ; make the selection a LIKE compatible thing
-	*/
-	/*Set rs=##class(PXW.DEV.Dictionary.Routine).ListRoutines(rtn,escape)
-	 
-	Write "<table>"
-	Write "<thead>"
-	Write "<tr><th>Type</th><th>Name</th><th>Modified</th></tr>"
-	Write "</thead><tbody>"
-	While rs.%Next() {
-		Write "<tr>"
-		Write "<td>"_..EscapeHTML(rs.%Get("Lang"))_"</td>"
-		Write "<td>"
-			Write "<a class='COSObjectsClass' href='"_##class(PXW.Tools.DEV.Routine).HREFTo(rs.%Get("Name"))_"'>"
-			Write ..EscapeHTML(rs.%Get("Name")) 
-			Write "</a>"
-		Write "</td>"
-		Write "<td>"_..EscapeHTML(rs.%Get("Date"))_"</td>"
-		Write "</tr>",!
-	}
-	Write "</tbody></table>"
-	*/
 	Do ##class(PXW.Tools.DEV.Code).WriteCodeList("INT",Routine)
 }
 
@@ -232,7 +201,7 @@ ClassMethod WriteNav(ByRef scratch)
 				If error="" {
 					Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_"CDEF"_type_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
 				} Else {
-					Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_output.#ErrorClass_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
+					Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_$$$classError_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
 				}
 		}
 		Write "<hr>"

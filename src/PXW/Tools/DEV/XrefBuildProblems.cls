@@ -1,6 +1,8 @@
 Class PXW.Tools.DEV.XrefBuildProblems Extends PXW.Tools.Page
 {
 
+Parameter ToolName = "Xref Build Problems";
+
 /// ID, BuildStatus, ItemKey1, ItemType, LastUpdate, NameSpace
 ClassMethod WriteMainBody()
 {

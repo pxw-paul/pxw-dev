@@ -1,6 +1,8 @@
 Class PXW.Tools.DEV.ParserTest Extends PXW.Tools.PageTLR
 {
 
+Parameter ToolName = "Parser Test";
+
 ClassMethod WriteMainTop(ByRef scratch)
 {
 	Do ..HREFFrom(.text,.class,.method)

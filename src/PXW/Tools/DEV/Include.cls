@@ -75,27 +75,6 @@ ClassMethod WriteInclude(Include As %String, MacroToHilite As %Integer = "", Deb
 
 ClassMethod WriteIncludeDir(Routine As %String)
 {
-	/*; if the input contains % then escape it
-	Set rtn=Routine,escape=""
-	Set rs=##class(PXW.DEV.Dictionary.Include).ListIncludes(rtn,escape)
-	 
-	Write "<table>"
-	Write "<thead>"
-	Write "<tr><th>Type</th><th>Name</th><th>Modified</th></tr>"
-	Write "</thead><tbody>"
-	While rs.%Next() {
-		Write "<tr>"
-		Write "<td>"_..EscapeHTML(rs.%Get("Lang"))_"</td>"
-		Write "<td>"
-			Write "<a class='COSObjectsClass' href='"_##class(PXW.Tools.DEV.Include).HREFTo(rs.%Get("Name"))_"'>"
-			Write ..EscapeHTML(rs.%Get("Name")) 
-			Write "</a>"
-		Write "</td>"
-		Write "<td>"_..EscapeHTML(rs.%Get("Date"))_"</td>"
-		Write "</tr>",!
-	}
-	Write "</tbody></table>"
-	*/
 	Do ##class(PXW.Tools.DEV.Code).WriteCodeList("INC",Routine)
 }
 
@@ -108,7 +87,7 @@ ClassMethod WriteNav(ByRef scratch)
 				If error="" {
 					Write "<a class='"_"CDEF"_type_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
 				} Else {
-					Write "<a class='"_output.#WarningClass_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
+					Write "<a class='"_$$$classWarning_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
 				}
 		}
 		Write "<hr>"

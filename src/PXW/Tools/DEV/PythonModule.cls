@@ -169,21 +169,11 @@ ClassMethod WriteNav(ByRef scratch)
 	If $ISOBJECT($GET(scratch)) {
 		Set output=scratch
 		While output.NextIndexItemByName(.name,.type,.anchor,.error) {
-				;w "<tr>"
-				;w "<td>"
 				If error="" {
-					;w "<span class=toolsMainBodyNavItem>"
 					Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_"CDEF"_type_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
-					;w "</span>"
 				} Else {
-					;w "<span class=toolsMainBodyNavItem>"
-					Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_output.#WarningClass_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
-					;w "</span>"
+					Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_$$$classWarning_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
 				}
-				;w "</td>"
-				;w "<td>"_..EscapeHTML(type)_"</td>"
-				;w "<td>"_..EscapeHTML(anchor)_"</td>"
-				;w "</tr>",!
 		}
 		Write "<hr>"
 	}

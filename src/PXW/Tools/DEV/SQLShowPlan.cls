@@ -1,6 +1,8 @@
 Class PXW.Tools.DEV.SQLShowPlan Extends PXW.Tools.PageTLR
 {
 
+Parameter ToolName = "SQL Show Plan";
+
 ClassMethod WriteMainTop(ByRef scratch)
 {
     do ..HREFFrom(.SQL)
@@ -8,7 +10,7 @@ ClassMethod WriteMainTop(ByRef scratch)
         <fieldset>
         <input name='%NS' value='#(%NS)#' type=hidden>
         <table style='width:100%'>
-            <tr><td>SQL</td><td><textarea spellcheck="false" style='width:100%' name='SQL' rows=20>#(SQL)#</textarea></td></tr>
+            <tr><td>SQL</td><td><textarea autofocus spellcheck="false" style='width:100%' name='SQL' rows=20>#(SQL)#</textarea></td></tr>
             <tr><td>&nbsp;</td><td><input type=submit value='Show Plan'></td></tr>
         </table>
         </fieldset>

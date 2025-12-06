@@ -1,6 +1,8 @@
 Class PXW.Tools.DEV.Settings Extends PXW.Tools.Page
 {
 
+Parameter ToolName = "Show Settings";
+
 /// use scratch to get anything you want to pass to the nav
 ClassMethod WriteMainBody(ByRef scratch)
 {

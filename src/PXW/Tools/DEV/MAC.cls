@@ -65,37 +65,6 @@ ClassMethod WriteRoutine(Routine As %String, Label As %String = "", Plus As %Str
 
 ClassMethod WriteRoutineDir(Routine As %String)
 {
-	/*; if the input contains % then escape it
-	Set rtn=Routine,escape=""
-	i rtn["%" {
-		s escape="\"
-		s cls=$replace(cls,"%",escape_"%")
-	}
-	i cls["_" {
-		s escape=$g(escape,"\")
-		s cls=$replace(cls,"_",escape_"_")
-	}
-	s cls=$replace(cls,"*","%") ; make the selection a LIKE compatible thing
-	*/
-	/*Set rs=##class(PXW.DEV.Dictionary.Routine).ListRoutines(rtn,escape)
-	 
-	Write "<table>"
-	Write "<thead>"
-	Write "<tr><th>Type</th><th>Name</th><th>Modified</th></tr>"
-	Write "</thead><tbody>"
-	While rs.%Next() {
-		Write "<tr>"
-		Write "<td>"_..EscapeHTML(rs.%Get("Lang"))_"</td>"
-		Write "<td>"
-			Write "<a class='COSObjectsClass' href='"_##class(PXW.Tools.DEV.Routine).HREFTo(rs.%Get("Name"))_"'>"
-			Write ..EscapeHTML(rs.%Get("Name")) 
-			Write "</a>"
-		Write "</td>"
-		Write "<td>"_..EscapeHTML(rs.%Get("Date"))_"</td>"
-		Write "</tr>",!
-	}
-	Write "</tbody></table>"
-	*/
 	Do ##class(PXW.Tools.DEV.Code).WriteCodeList("MAC",Routine)
 }
 
@@ -157,66 +126,6 @@ ClassMethod WriteScripts()
 	Write "    }",!
 	Write "    hiliterun=hiliterun+1; if (hiliterun>8) hiliterun=1;",!
 	Write "}",!
- /*
-	write "function showUndefs() {",!
-	write "		for (var s=0; s<document.styleSheets.length; s++) {",!
-	write "			var ss=document.styleSheets[s];",!
-	write "			var rules;",!
-	write "			if (ss.rules) rules=ss.rules;",!
-	write "			if (ss.cssRules) rules=ss.cssRules;",!
-	write "			for (var r=0; r<rules.length; r++) {",!
-	write "				var rule=rules[r];",!
-	write "				if (rule.selectorText) {",!
-	write "					if (rule.selectorText=='.unset') rule.style.backgroundColor='darkcyan';",!
-	write "				}",!
-	write "			}",!
-	write "		}",!
-	write "	}",!
-
-	write "function showTypos() {",!
-	write "		for (var s=0; s<document.styleSheets.length; s++) {",!
-	write "			var ss=document.styleSheets[s];",!
-	write "			var rules;",!
-	write "			if (ss.rules) rules=ss.rules;",!
-	write "			if (ss.cssRules) rules=ss.cssRules;",!
-	write "			for (var r=0; r<rules.length; r++) {",!
-	write "				var rule=rules[r];",!
-	write "				if (rule.selectorText) {",!
-	write "					if (rule.selectorText.indexOf('.typo')>-1) rule.style.backgroundColor='#F0E0C0';",!
-	write "				}",!
-	write "			}",!
-	write "		}",!
-	write "	}",!
-
-	write "function showSubscripts() {",!
-	write "		for (var s=0; s<document.styleSheets.length; s++) {",!
-	write "			var ss=document.styleSheets[s];",!
-	write "			var rules;",!
-	write "			if (ss.rules) rules=ss.rules;",!
-	write "			if (ss.cssRules) rules=ss.cssRules;",!
-	write "			for (var r=0; r<rules.length; r++) {",!
-	write "				var rule=rules[r];",!
-	write "				if (rule.selectorText) {",!
-	write "					if (rule.selectorText=='.subscript') rule.style.backgroundColor='pink';",!
-	write "				}",!
-	write "			}",!
-	write "		}",!
-	write "	}",!
-
-	&js<
-	function AutoIndent() {
-		var objs=document.getElementsByTagName('span');
-	    for (var i=0; i!=objs.length; i++) {
-		    var indent=objs[i].getAttribute('indent');
-		    if ((indent!='')&&(indent!=null)) {
-			    var str="";
-			    for (var j=0; j!=parseInt(indent); j++) str=str+"&nbsp;&nbsp;&nbsp;&nbsp;";
-			    objs[i].innerHTML=str;
-		    }
-	    }
-	}
-	>
-	*/
 }
 
 ClassMethod WriteNav(ByRef scratch)
@@ -228,7 +137,7 @@ ClassMethod WriteNav(ByRef scratch)
 				If error="" {
 					Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_"CDEF"_type_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
 				} Else {
-					Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_output.#ErrorClass_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
+					Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_$$$classError_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
 				}
 		}
 		Write "<hr>"

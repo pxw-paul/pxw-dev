@@ -1,6 +1,8 @@
 Class PXW.Tools.DEV.ChangeStyle Extends PXW.Tools.Page
 {
 
+Parameter ToolName = "Change Style";
+
 ClassMethod WriteMainBody()
 {
 	&html<
