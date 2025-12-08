@@ -29,6 +29,21 @@ ClassMethod WriteMainBody()
 					<h2 id="VariableHilite">Variable high light colours</h2>
 					#(..WriteHilite())#
 				</div>
+				<div class=section2>
+					<h2 id="MainForm">Main Form</h2>
+					<form>
+						<fieldset>
+							<legend>Main form</legend>
+							<table>
+								<tr><td class=prompt>Main Form Prompt</td>
+									<td><input type=text value='defaul'></td>
+								</tr>
+								<tr><td>&nbsp;</td><td><input type=submit></td>
+								</tr>
+							</table>
+						</fieldset>
+					</form>
+				</div>
 		<!-- /*</div> -->
 		</div>
 
@@ -44,10 +59,25 @@ ClassMethod WriteNav(ByRef scratch)
 		<a href="#ExampleCode">Example Code</a>
 		<!--<a href="#ExampleXref">Example X-Ref</a> -->
 		<a href="#VariableHilite">Variable Highlights</a>
+		<a href="#MainForm">Main Form</a>
 		<hr>
 		<a href="#">Nav 1 (no style)</a>		
 		<a href="#">Nav 2 (no style)</a>
 		<a href="#">These are simple links</a>
+		<hr>
+		<form>
+			<fieldset>
+				<legend>Nav form</legend>
+				<table>
+					<tr><td class=prompt>Prompt</td>
+						<td><input type=text value='default'></td>
+					</tr>
+					<tr><td>&nbsp;</td><td><input type=submit></td>
+					</tr>
+				</table>
+			</fieldset>
+		</form>
+
 	>
 }
 

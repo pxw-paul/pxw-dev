@@ -42,14 +42,14 @@ Method WriteStyles()
         --borderNormal: silver;
         --borderAlternate1: silver;
 		--borderWarning: #f3a488;
-		--borderError: #9f3d3d;
-		--borderGood: #225922;
+		--borderError: red;
+		--borderGood: green;
 	}	
 
-
-	html { height: 100%;}
-	body {border:0; margin:0; padding:0; background-color: var(--bgNormal); color: var(--fgNormal); height: 100%; display: flex; flex-direction: column;
-			font-family: Arial, Helvetica, sans-serif; font-size: small;} 
+	body {border:0; margin:0; padding:0; 
+		background-color: var(--bgNormal); color: var(--fgNormal); 
+		font-family: Arial, Helvetica, sans-serif; font-size: small;	
+	} 
 	a { text-decoration:none;  color: inherit;}
 	a:visited { text-decoration:none; color: inherit; }
 	a:hover { text-decoration:none;  color: inherit; }
@@ -77,39 +77,8 @@ Method WriteStyles()
         +----------------------------------------------+
     */
 	
-    #toolsHead { }
-	#toolsHead form { display:inline; margin: 0px; padding:0px; border:0px; }
-	#toolsHead form fieldset { display:inline; }
+ 
 
-    #toolsForms { }
-
-	#toolsTitle {}
-
-	#toolsMainBody { flex-grow: 1;overflow:auto;}
-	#toolsMainBodyContainer {  width:100%; display:flex; height:100%; }
-	#toolsMainBodyNav {  order:1;  display:block; vertical-align: top; height: 100%; width: 15%; padding:10px; overflow: auto; background-color: var(--bgAlternate1);  transition:width 0.25s ease-in-out;transition-delay:1s;}
-	/*#toolsMainBodyNav:Hover {  width: 30%; }*/
-	#toolsMainBodyNav a { width: 100%; display: block;}
-	#toolsMainBodyNavTEMP {  display:none; }
-	#toolsMainBodyContent { order:2; display:block; vertical-align: top; height: 100%; width: 85%; overflow: auto;}
-	#toolsMainBodyContent .section1 {  display:block; margin:10px 0px 0px 0px;}
-	#toolsMainBodyContent .section1 .comment { border:0; padding-left:20px;}
-	#toolsMainBodyContent .section2 {  display:block; margin:10px 0px 0px 0px;}
-	#toolsMainBodyContent .section2 .comment { border:0; padding-left:10px;}
-	#toolsMainBodyContent .section3 {  display:block; margin:5px 0px 0px 0px; background-color: var(--bgAlternate2) ;}
-	#toolsMainBodyContent .section3 .comment { border:0; padding-left:10px;}
-
-	/* The intention  of the sections is that they are containers so it goes like this*/
-	/* content 
-		section1
-			section2
-			section2
-				section3
-			section2
-	*/
-
-	#toolsFooter { }
-	
     table { width: 100%;}
 	table thead, table tfoot { position: sticky;  background: var(--bgAlternate2); color: var(--fgNormal);}
 	table thead { inset-block-start: 0;} /* top */
@@ -121,41 +90,6 @@ Method WriteStyles()
 	
 	table tbody tr { vertical-align:top;}
 	table tbody tr:Hover { background-color: var(--bgHover);  }
-
-	.nocopy	{
-		-webkit-user-select: none;
-		-khtml-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		-o-user-select: none;
-		user-select: none;
-	}
-
-	.unInteresting {
-		-webkit-user-select: none;
-		-khtml-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		-o-user-select: none;
-		user-select: none;
-	}
-	.quiteInteresting {
-		-webkit-user-select: text;
-		-khtml-user-select: text;
-		-moz-user-select: text;
-		-ms-user-select: text;
-		-o-user-select: text;
-		user-select: text;
-	}
-	.veryInteresting {
-		-webkit-user-select: text;
-		-khtml-user-select: text;
-		-moz-user-select: text;
-		-ms-user-select: text;
-		-o-user-select: text;
-		user-select: text;
-		font-weight:bold; font-size:1.1em;
-	}
 
 	.treeItemName {
 		display: inline-block;
@@ -182,48 +116,47 @@ Method WriteStyles()
 
 	/* Start of style for the code display */
 
-	.comment { color: var(--fgComment); }
+	.narrative { color: #80ff80; }
 
+	/* code containers */
 	.EmbeddedJS { background-color: var(--bgAlternate1); display:inline-block;}
 	.EmbeddedSQL { background-color: var(--bgAlternate1); display:inline-block; vertical-align: top;}
 	.EmbeddedXML { background-color: var(--bgAlternate1); display:inline-block;}
 	.EmbeddedPython { background-color: var(--bgAlternate1); display:inline-block;}
 
-	
 
-	.CDEFComment { color: var(--fgComment); }
-   	.CDEFClassName, a.CDEFClassName  { color: var(--fgProgramName);}
-	.CDEFMember, a.CDEFMember, a.CDEFMember:visited {color: var(--fgProgramLabel);}
-	.CDEFKeyword { color: var(--fgProgramKeyword);}
+	.LensMenu { background-color: var(--bgAlternate3);}
+	.LensOption, .LensOption:visited { color: var(--fgInlineOption);}
+	.LensOption:hover { background-color: var(--bgAlternate2); }
 
-    .KeyWord { color: var(--fgCodeKeyword);}
-	.Warning { border-style:solid; border-color:var(--borderWarning); border-width:1px 5px 1px 5px;}
-	.Error { border-style:solid; border-color:var(--borderError); border-width:1px 5px 1px 5px;}
+	/* General purpose classes that could be applicable to any language */
 
-	.CDEFItemMenu { background-color: var(--bgAlternate3);}
-	.CDEFOption, .CDEFOption:visited { color: var(--fgInlineOption);}
-	.CDEFOption:hover { background-color: var(--bgAlternate2); }
+	.codeWarning { border-style:solid; border-color:var(--borderWarning); border-width:1px 5px 1px 5px;}
+	.codeError { border-style:solid; border-color:var(--borderError); border-width:1px 5px 1px 5px;}
 
-    .CDEFFormalSpecList { display: inline-block; white-space: wrap; max-width: 75%;  vertical-align:top;}
-    .CDEFFormalSpecItem {  white-space:nowrap; background-color: var(--bgAlternate1); }
+	.codeComment { color: var(--fgComment); }
+   	.codeProgramName, a.codeProgramName  { color: var(--fgProgramName);}
+	.codeProgramLabel, a.codeProgramLabel, a.codeProgramLabel:visited {color: var(--fgProgramLabel);}
+	.codeProgramKeyword { color: var(--fgProgramKeyword);}
+    .codeKeyword { color: var(--fgCodeKeyword);}
+	.codeFormalSpecList { display: inline-block; white-space: wrap; max-width: 75%;  vertical-align:top;}
+    .codeFormalSpecItem {  white-space:nowrap; background-color: var(--bgAlternate1); }
+	.codeGlobal, a.codeGlobal, a.codeGlobal:Visited {color: var(--fgCodeVariableGlobal);}
+	.codeGlobalSet, a.codeGlobalSet, a.codeGlobalSet:visited {color: var(--fgCodeVariableGlobal); font-weight:bold;}
+	.codeVariable { color:var(--fgCodeVariable);}
+	.codeVariableSet { color:var(--fgCodeVariable); font-weight:bold; }
+	.codeVariableParameter { color: var(--fgCodeArgument);}
+	.codeVariableParameterSet { color: var(--fgCodeArgument); font-weight:bold;}
+	.codeObjectMember, a.codeObjectMember, a.codeObjectMember:visited {color: var(--fgCodeLabel);}
+	.codeString { color: var(--fgCodeString); }
+	.codeNumber { color: var(--fgCodeNumber); }
+	.codeLabel, a.codeLabel, a.codeLabel:visited { color: var(--fgCodeLabel);}
+	.codeLabelDef { color:var(--fgCodeLabel); font-weight: bold;}
 
+
+	/* Object script only styles */
 	.CDEFOneClassMember { display:block; margin:0px 0px 0px 20px;  }
 
-	.COSGlobal, a.COSGlobal, a.COSGlobal:Visited {color: var(--fgCodeVariableGlobal);}
-	.COSGlobalSet, a.COSGlobalSet, a.COSGlobalSet:visited {color: var(--fgCodeVariableGlobal); font-weight:bold;}
-
-	.COSObjectMember, a.COSObjectMember, a.COSObjectMember:visited {color: var(--fgCodeLabel);}
-
-	.COSVariable { color:var(--fgCodeVariable);}
-	.COSVariableSet { color:var(--fgCodeVariable); font-weight:bold; }
-	.COSVariableParameter { color: var(--fgCodeArgument);}
-	.COSVariableParameterSet { color: var(--fgCodeArgument); font-weight:bold;}
-
-	.COSString { color: var(--fgCodeString); }
-	.COSNumber { color: var(--fgCodeNumber); }
-
-	.COSLabel, a.COSLabel, a.COSLabel:visited { color: var(--fgCodeLabel);}
-	.COSLabelDef { color:var(--fgCodeLabel); font-weight: bold;}
 
 	.XMLTag { color: var(--fgProgramKeyword); }
 	.XMLAttribute { color:var(--fgCodeVariable); }
@@ -237,6 +170,8 @@ Method WriteStyles()
 	from {background-color:var(--bgAlternate1);}
 	to {background-color:var(--bgHilite);}
 	}
+
+	/* various high-lighting styles */
 
 	.hilite {  background-color: /*#505050;*/ var(--bgHilite); border-bottom:1px solid yellow;
 		animation-name: blinker;

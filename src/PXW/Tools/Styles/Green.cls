@@ -28,18 +28,19 @@ Method WriteStyles()
 		/* foreground colours: ;*/
 		--fgNormal: #67BD5A;
 		--fgInverse: black;
-		--fgProgramName: #2EA990;
-		--fgProgramLabel: #ACAC7A;
-		--fgProgramKeyword: #6586DF;
-		--fgCodeKeyword: black;
-		--fgCodeVariable: #6DA2FF;
-		--fgCodeVariableGlobal: #64c9ff;
-		--fgCodeArgument: #ff75f4;
-		--fgCodeLabel: #ACAC7A;
-		--fgCodeString: #2e8122; 
-		--fgCodeNumber: #B4955C; 
+		--fgAlternate: black;
+		--fgProgramName: #67BD5A;;
+		--fgProgramLabel: #67BD5A;
+		--fgProgramKeyword: #67BD5A;
+		--fgCodeKeyword: #67BD5A;
+		--fgCodeVariable: #67BD5A;
+		--fgCodeVariableGlobal: #67BD5A;
+		--fgCodeArgument: #67BD5A;
+		--fgCodeLabel : #67BD5A;
+		--fgCodeString: #67BD5A; 
+		--fgCodeNumber: #67BD5A; 
 		--fgComment: #2e8122;
-		--fgInlineOption: silver;
+		--fgInlineOption: #67BD5A;;
 	}	
     body {
         background-color: black;
@@ -49,10 +50,10 @@ Method WriteStyles()
         overflow: hidden;
         padding: 2rem;
         color: /*white;*/ #67BD5A; 
-        font: 1.3rem Inconsolata, monospace;
+        font: 1rem Inconsolata, monospace;
         text-shadow: 0 0 5px #C8C8C8;
 
-        border:0; margin:0; padding:0; height: 100%; display: flex; flex-direction: column;
+        border:0; margin:0; padding:0; height: 100%;
     }
     body::after {
         content: "";
@@ -65,35 +66,41 @@ Method WriteStyles()
         pointer-events: none;
     }
     
-    /*::selection {
-        background: #0080FF;
-        text-shadow: none;
-    }*/
-
-
 	html { height: 100%;}
-	/*body {border:0; margin:0; padding:0; background-color:#1E1E1E; color:white; height: 100%; display: flex; flex-direction: column;} */
 	a { text-decoration:none;  color: inherit;}
 	a:visited { text-decoration:none; color: inherit; }
 	a:hover { text-decoration:none;  color: inherit; }
 	a:active { text-decoration:none;  color: inherit; }
 	pre { margin:0px; tab-size:4;}
+	input {  background-color: var(--bgHilite); color: var(--fgInverse);border:0;}
+  /*
+        +----------------------------------------------+
+        |header #toolsHead                             |
+        |  div #toolsForms                             |
+        +----------------------------------------------+
+        |div #toolsTitle  h1                           |
+        +----------------------------------------------+
+        |div #toolsMainBody                            |
+        |  div #toolsMainBodyContainer                 |
+        |   +------------------+----------------------+|
+        |   |nav               |main                  ||
+        |   |#toolsMainBodyNav |#toolsMainBodyContent ||
+        |   |                  |                      ||
+        |   |                  |                      ||
+        |   +------------------+----------------------+|
+        +----------------------------------------------+
+        |div #toolsFooter                              |
+        +----------------------------------------------+
+    */
 
-
-	#toolsMainTop { }
-	#toolsHead { }
 	#toolsHead form { display:inline; margin: 0px; padding:0px; border:0px; }
 	#toolsHead form fieldset { display:inline; border:none; }
+	#toolsHead legend { display: none;}
 	#toolsHead form fieldset input {  background-color: var(--bgHilite); color: var(--fgInverse);}
-	#toolsMenu {}
-	#toolsTitle {}
-	#toolsMainBody { flex-grow: 1;overflow:auto;}
-	#toolsMainBodyContainer {  width:100%; display:flex; height:100%; }
-	#toolsMainBodyNav {  order:1;  display:block; vertical-align: top; height: 100%; width: 15%; margin:0px; overflow: auto; }
-	#toolsMainBodyNav a { width: 100%; display: block;}
-	#toolsMainBodyNavTEMP {  display:none; }
-	#toolsMainBodyContent { order:2; display:block; vertical-align: top; height: 100%; width: 85%; overflow: auto;}
-	#toolsFooter { }
+
+	#toolsTitle { border:0; margin: 0; padding: 0;}
+	#toolsTitle h1 { border:0; margin: 0; padding: 0;}
+		
 
 	table thead, table tfoot { position: sticky;  background: black;}
 	table thead { inset-block-start: 0;} /* top */
@@ -103,41 +110,6 @@ Method WriteStyles()
   		color: #fff;*/
 	}
 	table tbody tr:Hover { background-color:var(--bgHover); color: var(--fgInverse);}
-
-	.nocopy	{
-		-webkit-user-select: none;
-		-khtml-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		-o-user-select: none;
-		user-select: none;
-	}
-
-	.unInteresting {
-		-webkit-user-select: none;
-		-khtml-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		-o-user-select: none;
-		user-select: none;
-	}
-	.quiteInteresting {
-		-webkit-user-select: text;
-		-khtml-user-select: text;
-		-moz-user-select: text;
-		-ms-user-select: text;
-		-o-user-select: text;
-		user-select: text;
-	}
-	.veryInteresting {
-		-webkit-user-select: text;
-		-khtml-user-select: text;
-		-moz-user-select: text;
-		-ms-user-select: text;
-		-o-user-select: text;
-		user-select: text;
-		font-weight:bold; font-size:1.1em;
-	}
 
 	/* END of style of the app */
 	/* Start of nav */
@@ -153,41 +125,45 @@ Method WriteStyles()
 
 	/* Start of style for the code display */
 
-	.EmbeddedJS { /*background-color:#404040*/; display:inline-block;}
-	.EmbeddedSQL {/*background-color:#404040;*/ display:inline-block; vertical-align: top;}
-	.EmbeddedXML {/*background-color:#404040;*/ display:inline-block;}
+	/* code containers */
+	.EmbeddedJS { display:inline-block;}
+	.EmbeddedSQL { display:inline-block; vertical-align: top;}
+	.EmbeddedXML {  display:inline-block;}
+	.EmbeddedPython { display:inline-block;}
 
-	.CDEFComment { color:#67BD5A; }
-   	.CDEFClassName, a.CDEFClassName  { /*color:#4EC9B0;*/}
-	.CDEFMember, a.CDEFMember, a.CDEFMember:visited {/*color:#DCDCAA;*/}
-	.CDEFKeyword { /*color:#85A6FF;*/}
 
-    .KeyWord { /*color:white;*/}
-	.Warning { background-color:#67BD5A; color:black;}
-	.Error { background-color:#67BD5A; color:black;}
+	.LensMenu { }
+	.LensOption, .LensOption:visited { color: var(--fgInlineOption);}
+	.LensOption:hover { background-color: var(--bgAlternate1); }
 
-	.CDEFItemMenu {/* background-color:#0E0E0E;*/ }
-	.CDEFOption, .CDEFOption:visited { /* color:silver; */ background-color:#67BD5A; color:black;}
-	.CDEFOption:hover { /*background-color:#3e3e3e;*/ background-color:#67BD5A; color:black; }
+	/* General purpose classes that could be applicable to any language */
 
-    .CDEFFormalSpecList { display: inline-block; white-space: wrap; max-width: 75%;  vertical-align:top;}
-    .CDEFFormalSpecItem {  white-space:nowrap; /*background-color:#2E2E2E;*/ }
+	.codeWarning { border-style:solid; border-color:var(--borderWarning); border-width:1px 5px 1px 5px;}
+	.codeError { border-style:solid; border-color:var(--borderError); border-width:1px 5px 1px 5px;}
 
-	.COSGlobal, a.COSGlobal, a.COSGlobal:Visited {/*color:#64c9ff;*/}
-	.COSGlobalSet, a.COSGlobalSet, a.COSGlobalSet:visited {/*color:#64c9ff;*/ font-weight:bold;}
+	.codeComment { color: var(--fgComment); }
+   	.codeProgramName, a.codeProgramName  { color: var(--fgProgramName);}
+	.codeProgramLabel, a.codeProgramLabel, a.codeProgramLabel:visited {color: var(--fgProgramLabel);}
+	.codeProgramKeyword { color: var(--fgProgramKeyword);}
+    .codeKeyword { color: var(--fgCodeKeyword);}
+	.codeFormalSpecList { display: inline-block; white-space: wrap; max-width: 75%;  vertical-align:top;}
+    .codeFormalSpecItem {  white-space:nowrap; }
+	.codeGlobal, a.codeGlobal, a.codeGlobal:Visited {color: var(--fgCodeVariableGlobal);}
+	.codeGlobalSet, a.codeGlobalSet, a.codeGlobalSet:visited {color: var(--fgCodeVariableGlobal); font-weight:bold;}
+	.codeVariable { color:var(--fgCodeVariable);}
+	.codeVariableSet { color:var(--fgCodeVariable); font-weight:bold; }
+	.codeVariableParameter { color: var(--fgCodeArgument);}
+	.codeVariableParameterSet { color: var(--fgCodeArgument); font-weight:bold;}
+	.codeObjectMember, a.codeObjectMember, a.codeObjectMember:visited {color: var(--fgCodeLabel);}
+	.codeString { color: var(--fgCodeString); }
+	.codeNumber { color: var(--fgCodeNumber); }
+	.codeLabel, a.codeLabel, a.codeLabel:visited { color: var(--fgCodeLabel);}
+	.codeLabelDef { color:var(--fgCodeLabel); font-weight: bold;}
 
-	.COSObjectMember, a.COSObjectMember, a.COSObjectMember:visited {/*color:#DCDCAA;*/}
 
-	.COSVariable { /*color:#ade2ff;*/}
-	.COSVariableSet { /*color:#ade2ff;*/ font-weight:bold; }
-	.COSVariableParameter { /*color:#ff75f4;*/}
-	.COSVariableParameterSet { /*color:#ff75f4;*/ font-weight:bold;}
+	/* Object script only styles */
+	.CDEFOneClassMember { display:block; margin:0px 0px 0px 20px;  }
 
-	.COSString { /*color:#d4b57c;*/ }
-	.COSNumber { /*color:#d4b57c; */}
-
-	.COSLabel, a.COSLabel, a.COSLabel:visited { /*color:#DCDCAA;*/}
-	.COSLabelDef { /*color:#DCDCAA;*/ font-weight: bold;}
 
 	.XMLTag { /*color:#85a6ff;*/ }
 	.XMLAttribute { /*color:#ade2ff;*/ }
@@ -222,24 +198,24 @@ Method WriteStyles()
 	.warningdata { background-color: var(--bgWarning); color: var(--fgInverse);}
 	.errordata { background-color: var(--bgError); color: var(--fgInverse); }
 
-	.hiliteSET1 { background-color:#ffcc00; } 
-	.hiliteSET2 { background-color:#ff0000; }
-	.hiliteSET3 { background-color:#0000ff; }
-	.hiliteSET4 { background-color:#00cc00; }
-	.hiliteSET5 { background-color:#800080; }
-	.hiliteSET6 { background-color:#00ccb4; }
-	.hiliteSET7 { background-color:#be00cc; }
-	.hiliteSET8 { background-color:#b30000; }
-	.hiliteSET9 { background-color:none; }
-	.hiliteGET1 { background-color:#cca300; } 
-	.hiliteGET2 { background-color:#cc0000; } 
-	.hiliteGET3 { background-color:#0000cc; }
-	.hiliteGET4 { background-color:#009900; }
-	.hiliteGET5 { background-color:#660066; }
-	.hiliteGET6 { background-color:#009987; }
-	.hiliteGET7 { background-color:#8e0099; }
-	.hiliteGET8 { background-color:#860000; }
-	.hiliteGET9 { background-color:none; }
+	.hiliteSET1 { background-color: #40cc40; color:var(--fgAlternate); } 
+	.hiliteSET2 { background-color: #40bb40; color:var(--fgAlternate); }
+	.hiliteSET3 { background-color: #40aa40; color:var(--fgAlternate); }
+	.hiliteSET4 { background-color: #409940; color:var(--fgAlternate); }
+	.hiliteSET5 { background-color: #408840; color:var(--fgAlternate); }
+	.hiliteSET6 { background-color: #407740; color:var(--fgAlternate); }
+	.hiliteSET7 { background-color: #406640; color:var(--fgAlternate); }
+	.hiliteSET8 { background-color: #405540; color:var(--fgAlternate); }
+	.hiliteSET9 { background-color: none; }
+	.hiliteGET1 { background-color: #00cc00; color:var(--fgAlternate); } 
+	.hiliteGET2 { background-color: #00bb00; color:var(--fgAlternate); } 
+	.hiliteGET3 { background-color: #00aa00; color:var(--fgAlternate); }
+	.hiliteGET4 { background-color: #009900; color:var(--fgAlternate); }
+	.hiliteGET5 { background-color: #008800; color:var(--fgAlternate); }
+	.hiliteGET6 { background-color: #007700; color:var(--fgAlternate); }
+	.hiliteGET7 { background-color: #006600; color:var(--fgAlternate); }
+	.hiliteGET8 { background-color: #005500; color:var(--fgAlternate); }
+	.hiliteGET9 { background-color: none; }
 	
 	/* End of code display */
 

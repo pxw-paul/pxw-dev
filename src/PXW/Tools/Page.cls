@@ -38,7 +38,7 @@ ClassMethod OnPreHTTP() As %Boolean [ ServerOnly = 1 ]
 	#dim %session as %CSP.Session
 	#dim %response as %CSP.Response
 	
-	set defaultDefault="Hip"
+	set defaultDefault="Dark"
 
 	Set %NS=%request.Get("%NS","LOCAL_USER")
 	Set style=%request.Get("%STYLE")
@@ -51,7 +51,7 @@ ClassMethod OnPreHTTP() As %Boolean [ ServerOnly = 1 ]
 	Try {
 		Set %STYLE=$SYSTEM.OBJ.New(styleclass)
 	} Catch {
-		Set %STYLE=##class(PXW.Tools.Styles.Basic).%New()
+		Set %STYLE=##class(PXW.Tools.Styles.Dark).%New()
 		Set style=defaultDefault
 	}
 	set %STYLENAME=style
@@ -89,7 +89,7 @@ ClassMethod HREFTo() As %String
 	Quit href
 }
 
-ClassMethod GridOnPage() As %Status
+ClassMethod OnPage() As %Status
 {
 
 	Set startmem=$STORAGE
@@ -324,8 +324,8 @@ ClassMethod PageStyle() As %String
 				'toolsFooter toolsFooter';
 			grid-template-columns: #(" minmax(15%, auto) ")# #("1fr")#;
 			grid-template-rows: auto auto #("1fr")# auto;
-			grid-column-gap: 1em;
-			grid-row-gap: 1em;			
+			grid-column-gap: 0;
+			grid-row-gap: 0;			
 		} 
 		#toolsHead { grid-area:toolsHead; }
 		#toolsHead form { display:inline; margin: 0px; padding:0px; border:0px; }
@@ -424,211 +424,6 @@ ClassMethod PageStyle() As %String
 	Write "</style>",!
 
 	quit ""
-}
-
-ClassMethod OnPage() As %Status
-{
-	#dim %STYLE as PXW.Tools.Styles.super
-	if %STYLE.%ClassName(1)["Grid" q ..GridOnPage()
-
-	Set startmem=$STORAGE
-	#dim e as %Exception.SystemException
-	Set zh=$ZHOROLOG
-	Set title=..GetTitle()	
-	&html<<html>
-	<head>
-		<title>#(title)#</title>>
-
-	; overall style
-
-	Do %STYLE.WriteStyles()
-
-	; styles for this page
-	Write "<style>"
-	Do ..WriteStyles()
-	Write "</style>",!
-
-	Write "<script language=javascript>",!
-	Do ..WriteScripts()
-	
-	Write "function HiliteElement(id) {",!
-	Write "    var obj=document.getElementById(id);",!
-	Write "    obj.className='hilite';",!
-	Write "}",!
-
-
-	Write "/*****************************************************************/",!
-	Write "/// Any tables with a filename attribute is downloadable",!
-	Write "/// eg: <table filename='download'>",!
-	Write "function makeTablesExportable() {",!
-	Write "    var elements=document.getElementsByTagName('TABLE');",!
-	Write "    for (var e=elements.length-1; e>-1; e--) {",!
-	Write "      var table=elements[e];",!
-	Write "      var filename=table.getAttribute('filename');",!
-	Write "      if (filename!=null) {",!
-	Write "          var tid=table.id;",!
-	Write "          if (tid=='') {",!
-	Write "              tid='table'+e;",!
-	Write "              table.id=tid;",!
-	Write "          }",!
-	Write "          var bc=document.createElement(""button"");",!
-	Write "          bc.textContent=""download csv"";",!
-	Write "          bc.setAttribute('pxwFile',filename);",!
-	Write "          bc.setAttribute('pxwTable',tid);",!
-	Write "          bc.className='noPrint';",!
-	Write "          bc.addEventListener('click',exportButtonEventCSV);",!
-	Write "          table.appendChild(bc);",!
-	Write "      }",!
-	Write "   }",!
-	Write "}",!
-	Write " ",!
-	Write " ",!
-	Write "function exportButtonEventCSV() {",!
-	Write "  var file=this.getAttribute('pxwFile');",!
-	Write "  var tid=this.getAttribute('pxwTable');",!
-	Write "  var table=document.getElementById(tid)",!
-	Write "  htmlToCSV(table,file+"".csv"");",!
-	Write "}",!
-	Write " ",!
-	Write "",!
-	Write "function htmlToCSV(table, filename) {",!
-	Write "  var q = String.fromCharCode(34);",!
-	Write "  var tab = "",""; //String.fromCharCode(9);",!
-	Write "  var cr=""\n"";",!
-	Write "  var data = [];",!
-	Write "  var rows = table.querySelectorAll(""tr"");",!
-	Write " ",!
-	Write "  for (var i = 0; i < rows.length; i++) {",!
-	Write "     var row = [], cols = rows[i].querySelectorAll(""td, th"");",!
-	Write "     for (var j = 0; j < cols.length; j++) {",!
-	Write "        //var str=cols[j].innerText;",!
-	Write "        var str=cols[j].textContent;",!
-	Write "        var esc=str.replace(/""/g,'""""');",!
-	Write "        if (esc.includes(tab) || esc.includes(cr)) {",!
-	Write "            esc='""'+esc+'""';",!
-	Write "         }",!
-	Write "         row.push(esc);",!
-	Write "     }",!
-	Write "     data.push(row.join(tab));",!
-	Write "   }",!
-	Write "   downloadCSVFile(data.join(""\n""), filename);",!
-	Write "}",!
-	Write " ",!
-	Write "function downloadCSVFile(csv, filename) {",!
-	Write "  var csv_file, download_link;",!
-	Write "   csv_file = new Blob([csv], {type: ""text/csv""});",!
-	Write "   download_link = document.createElement(""a"");",!
-	Write "   download_link.download = filename;",!
-	Write "   download_link.href = window.URL.createObjectURL(csv_file);",!
-	Write "   download_link.style.display = ""none"";",!
-	Write "   document.body.appendChild(download_link);",!
-	Write "   download_link.click();",!
-	Write "}",!
-	Write " ",!
-	Write "/*****************************************************************/",!	
-	Write "function bodyonload() {",!
-	Write "   var nav=document.getElementById('toolsMainBodyNav');",!
-	Write "   var tmp=document.getElementById('toolsMainBodyNavTEMP');",!
-	Write "   nav.innerHTML=tmp.innerHTML;",!
-	Write "   makeTablesExportable();",!
-	;                                                          #($s(..WriteBodyOnLoad():"",1:"WriteBodyOnLoad ERROR"))#
-	Write "}",!
-
-	&JS<
-			function fallbackCopyTextToClipboard(text) {
-			var textArea = document.createElement("textarea");
-			textArea.value = text;
-			
-			// Avoid scrolling to bottom
-			textArea.style.top = "0";
-			textArea.style.left = "0";
-			textArea.style.position = "fixed";
-
-			document.body.appendChild(textArea);
-			textArea.focus();
-			textArea.select();
-
-			try {
-				var successful = document.execCommand('copy');
-				var msg = successful ? 'successful' : 'unsuccessful';
-				console.log('Fallback: Copying text command was ' + msg);
-			} catch (err) {
-				console.error('Fallback: Oops, unable to copy', err);
-			}
-
-			document.body.removeChild(textArea);
-			}
-			function copyTextToClipboard(text) {
-			if (!navigator.clipboard) {
-				fallbackCopyTextToClipboard(text);
-				return;
-			}
-			navigator.clipboard.writeText(text).then(function() {
-				console.log('Async: Copying to clipboard was successful!');
-			}, function(err) {
-				console.error('Async: Could not copy text: ', err);
-			});
-			}
-	>
-
-	Write "</script>",!
-	
-	&html<
-	</head>
-	<body  onload='bodyonload();'>
-		<header id=toolsHead>
-			<div id=toolsForms>
-				<form id=toolsFormHome action='PXW.Tools.Index.cls'>
-					<fieldset id=toolsHome>
-					<legend>Home</legend>
-						<input type=hidden name=%NS value='#(%NS)#'>
-						<input type=submit value='Home'>
-					</fieldset>
-				</form>
-				<form target=_blank id=toolsFormHome action='PXW.Tools.Index.cls'>
-					<fieldset id=toolsHome>
-					<legend>Home</legend>
-						<input type=hidden name=%NS value='#(%NS)#'>
-						<input type=submit value='+'>
-					</fieldset>
-				</form>
-				#(..WriteHeadForms())#
-			</div>
-		</header>
-		<div id=toolsTitle>
-			<h1>#(title)#</h1>
-		</div>
-	>
-	Write "<div id=toolsMainBody><div id=toolsMainBodyContainer>"
-	Write "<div id=toolsMainBodyNav> waiting" 
-		; empty for now
-	Write "</div>"
-	Write "<main id=toolsMainBodyContent>"
-	Write "<div id="_$TRANSLATE(..%ClassName(1),".","")_">" ; div for setting up style for specific functions
-	Try {
-		Do ..WriteMainBody(.scratch)
-	} Catch e {
-		Do ..WriteStatus(e.AsStatus())
-	}
-	Write "</div>" ; function specific
-	Write "</main>" ; content
-	Write "<div id=toolsMainBodyNavTEMP>" 
-	Write "<nav>"
-		Do ..WriteNav(.scratch) ; this is called AFTER the main body so that the main body could build some sort of index from the content
-		               ; but the styling will probably put it BEFORE the content on screen
-	Write "</nav>"
-	Write "</div>" ; nav
-	Write "</div></div>" ; conainer mainbody
-
-	&html<<div id=toolsFooter>
-				<span id=toolsFooterDTH>datetimeh=#($HOROLOG)#</span> 
-				<span id=toolsFooterDT>datetime=#($ZDATETIME($HOROLOG,3))#</span> 
-				<span id=toolsFooterTIM>processtime=#($ZHOROLOG-zh)#</span> 
-				<span id=toolsFooterPID>$job=#($JOB)#</span>
-				<span id=toolsFooterMEM>$s=#(startmem-$STORAGE)#</span>
-			</div>>
-	&html<</body></html>>
-	Quit $$$OK
 }
 
 /// use scratch to get anything you want to pass to the nav.

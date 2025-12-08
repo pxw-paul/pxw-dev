@@ -5,6 +5,33 @@ Property CDEFDescriptionsAsText As %Boolean [ InitialExpression = 1 ];
 
 Property CDEFMenuInline As %Boolean [ InitialExpression = 1 ];
 
+/*
+Here are the main named holders
+    +----------------------------------------------+
+    |#toolsHead header                             |
+    |  div #toolsForms                             |
+    +----------------------------------------------+
+    |#toolsTitle  h1                               |
+    +----------------------------------------------+
+    |#toolsMainBody main                           |
+    |+------------------+-------------------------+|
+    ||#toolsMainBodyNav |#toolsMainBodyContent    ||
+    ||  nav             |  main                   ||
+    ||                  |                         ||
+    |+------------------+-------------------------+|
+    +----------------------------------------------+
+    |#toolsFooter spans                            |
+    +----------------------------------------------+
+
+        Some pages have Top, Left, and Right content:
+        toolsMainTLR
+        +-------------------------------+
+        |#toolsMainTop                  |
+        +-----+-------------------------+
+        |#toolsMainLeft |toolsMainRight |
+        |               |               |
+        +---------------+---------------+
+*/
 Method WriteStyles()
 {
     &html<
@@ -25,23 +52,57 @@ Method WriteStyles()
 		--lcars7: #3366CC;
 		--lcars8: #006699;
 
-		--bgHilite:#878700;
+		/* background colours: ;*/
+		--bgNormal: #1E1E1E;
+		--bgAlternate1: #2E2E2E;
+		--bgAlternate2: #3E3E3E;
+		--bgAlternate3: black;
+		--bgHover: #3E3E3E;
+		--bgHilite:#6b6b1d;
 		--bgWarning: #f3a488;
-		--bgError: #7b2c2c;
+		--bgError: #9f3d3d;
 		--bgGood: #225922;
+
+		/* foreground colours: ;*/
+		--fgNormal: white;
+		--fgAlternate: black;
+		--fgProgramName: #4EC9B0;
+		--fgProgramLabel: #DCDCAA;
+		--fgProgramKeyword: #6596FF;
+		--fgCodeKeyword: white;
+		--fgCodeVariable: #ade2ff;
+		--fgCodeVariableGlobal: #64c9ff;
+		--fgCodeArgument: #ff75f4;
+		--fgCodeLabel: #DCDCAA;
+		--fgCodeString: #D4B57C; 
+		--fgCodeNumber: #D4B57C; 
+		--fgComment: #378D2A;
+		--fgInlineOption: silver;
+
+        --borderNormal: silver;
+        --borderAlternate1: silver;
+		--borderWarning: #f3a488;
+		--borderError: red;
+		--borderGood: green;
 	}	
 
 
-	body {border:0; margin:0; padding:0; background-color:#1E1E1E; color:white; height: 100%; 
-	        display: flex; flex-direction: column;
-					font-family:helvetica;  font-stretch:ultra-condensed; font-weight: bold;
-			}
+	body {border:0; margin:0; padding:0; 
+            background-color:#1E1E1E; color:white; 
+            height: #("100vh")#; 
+            font-family:helvetica;  font-stretch:ultra-condensed; font-weight: bold;
+            /* font-family:okuda;*/
+            grid-column-gap:0;
+            grid-row-gap:0; 
+		}
 	a { text-decoration:none;  color: inherit;}
 	a:visited { text-decoration:none; color: inherit; }
 	a:hover { text-decoration:none;  color: inherit; }
 	a:active { text-decoration:none;  color: inherit; }
 	pre { margin:0px; tab-size:4; font-weight: normal;}
 
+
+    /* Look */
 	::-webkit-scrollbar {
 	  width: 20px;
 	}
@@ -66,32 +127,11 @@ Method WriteStyles()
 	::-webkit-scrollbar-corner {
 	  background:black;
 	}
-
-   /*
-        +----------------------------------------------+
-        |header #toolsHead                             |
-        |  div #toolsForms                             |
-        +----------------------------------------------+
-        |div #toolsTitle  h1                           |
-        +----------------------------------------------+
-        |div #toolsMainBody                            |
-        |  div #toolsMainBodyContainer                 |
-        |   +------------------+----------------------+|
-        |   |nav               |main                  ||
-        |   |#toolsMainBodyNav |#toolsMainBodyContent ||
-        |   |                  |                      ||
-        |   |                  |                      ||
-        |   +------------------+----------------------+|
-        +----------------------------------------------+
-        |div #toolsFooter                              |
-        +----------------------------------------------+
-    */
-
+ 
 	#toolsHead { 
 		margin:0px;
-		border-color: var(--lcars7);
+		border-color: red; /* var(--lcars7); */
 		border-style: solid;
-		/*border-width: 0px 0px 0px 100px;*/
 		border-width: 0px 0px 10px 100px;
 		border-radius: 0px 0px 0px 50px; 
 		padding: 0px;
@@ -151,8 +191,6 @@ Method WriteStyles()
 		display:inline;	
 	}
 
-	
-
 
 	#toolsMainBody { 
 		background-color: var(--lcars2);
@@ -161,24 +199,35 @@ Method WriteStyles()
 		overflow: hidden;
 	  }
 
-	#toolsMainBodyContainer {  width:100%; display:flex; height:100%; }
-	#toolsMainBodyNav {  order:1;  display:block; vertical-align: top; height: 100%; width: 20%;
+	#toolsMainBodyNav {  vertical-align: top; 
 					background-color: var(--lcars2);
 					padding-top:20px;
-					overflow-x: clip; overflow-y: auto;}
+                    overflow-x: clip; overflow-y: auto;
+                    resize:horizontal;
+                    }
 	#toolsMainBodyNav a { text-transform: uppercase; text-align: right; color:black; 
 	                 width:100%; display: block; 
 					 min-height:5%; 
 					 border-top: 4px solid black;
 					 padding-top:30px; 
-					  font-weight: bold;
-						
+					 font-weight: bold;	
 					 }
-
-
-
-	#toolsMainBodyContent { order:2; display:block; vertical-align: top;
-					 height: 100%; width: 80%; 
+    #toolsMainBodyNav fieldset { 
+					background-color: black; color:white; 
+					border-color: var(--lcars3);
+					border-style: solid;
+					border-width: 20px 5px 20px 0px;
+					border-radius: 0px 20px 20px 0px; 
+					vertical-align: bottom;
+					padding: 0px 20px 0px 0px;
+					margin: 0px 0px 0px 0px;
+					}
+ 
+    #toolsMainBodyContent {
+        margin:0; padding: 0; border:0;
+        background-color: var(--lcars2);
+    }
+	#toolsMainBodyContent main { vertical-align: top;
 					 	margin: 0;
 						background-color: black;
 						border-radius:10px 0px 0px 0px; 
@@ -186,21 +235,19 @@ Method WriteStyles()
 						border-style: solid;
 						border-color:black;
 						padding:0px 20px 0px 0px;
-						/*padding:20px 0px 0px 10px;*/
-						 overflow: auto;}
+                        height:100%;
+						 overflow: auto;
+                        }
 
-	/*#toolsMainBodyContent div { display:inline; width:200px; }*/
-	#PXWTools div { display: inline-block; width: 48%;}
-
-	#toolsMainBodyContent fieldset { /*display:inline; width:45%;*/
+	#toolsMainBodyContent fieldset { 
 					background-color: black; color:white; 
-					/*border-color: var(--lcars3);*/
+					border-color: var(--lcars3);
 					border-style: solid;
 					border-width: 20px 50px 0px 0px;
-					border-radius: 0px 20px 0px 0px; 
+					border-radius: 0px 20px 20px 0px; 
 					vertical-align: bottom;
-					padding: 0px 0px 30px 0px;
-					margin: 0px 0px 30px 0px;
+					padding: 0px 0px 0px 0px;
+					margin: 0px 0px 0px 0px;
 					}
 	#toolsMainBodyContent .toolTypeInternal form fieldset {  
 					border-color: var(--lcars4);
@@ -246,6 +293,41 @@ Method WriteStyles()
 	#toolsMainBodyContent .section3 {  display:block; margin:5px 0px 0px 0px;}
 	#toolsMainBodyContent .section3 .comment { border:0; padding-left:10px;}
 
+   #toolsMainTLR main {
+        border:0; margin: 0; padding: 0; border-radius: 0; height:100%;
+    }
+    #toolsMainLeft {
+         border-style:solid;
+        border-color:var(--lcars4);
+        border-radius:0 15px 15px 0;
+        border-width:0 15px 0 0;
+        background-color:var(--bgNormal);
+    }
+
+    #toolsMainLeft h2 {
+        border:0; padding:0 0 0 20px; margin:0;
+        background-color: var(--lcars4);
+        z-index: 99;
+        position: sticky;
+        top: 0;
+    }
+
+     #toolsMainRight {
+        border-style:solid;
+        border-color:var(--lcars5);
+        border-radius:15px 0 0 15px;
+        border-width:0 0 0 15px;
+        background-color:var(--bgNormal);
+    }
+
+    #toolsMainRight h2 {
+        border:0; padding:0 0 0 20px; margin:0; 
+        background-color: var(--lcars5);
+        z-index: 99;
+        position: sticky;
+        top: 0;
+    }
+
 	#toolsFooter {
 		background-color: var(--lcars2);
 		color:black;
@@ -257,6 +339,11 @@ Method WriteStyles()
 	#toolsFooter span {
 		border-left:10px solid black;
 		padding:0px 20px 0px 20px;
+	}
+
+	#toolsFooter span:nth-child(odd) {
+		background-color: var(--lcars7);
+        color: white;
 	}
 
 	table { font-weight: bold;
@@ -298,41 +385,6 @@ Method WriteStyles()
 
 	table tbody tr:Hover { background-color:#3e3e3e;  }
 
-	.nocopy	{
-		-webkit-user-select: none;
-		-khtml-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		-o-user-select: none;
-		user-select: none;
-	}
-
-	.unInteresting {
-		-webkit-user-select: none;
-		-khtml-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		-o-user-select: none;
-		user-select: none;
-	}
-	.quiteInteresting {
-		-webkit-user-select: text;
-		-khtml-user-select: text;
-		-moz-user-select: text;
-		-ms-user-select: text;
-		-o-user-select: text;
-		user-select: text;
-	}
-	.veryInteresting {
-		-webkit-user-select: text;
-		-khtml-user-select: text;
-		-moz-user-select: text;
-		-ms-user-select: text;
-		-o-user-select: text;
-		user-select: text;
-		font-weight:bold; font-size:1.1em;
-	}
-
 	/* END of style of the app */
 
 
@@ -357,18 +409,8 @@ Method WriteStyles()
 	.EmbeddedXML { background-color:#404040; display:inline-block;}
 	.EmbeddedPython { background-color:#404040; display:inline-block;}
 
-	.CDEFComment { color:#67BD5A; }
-   	.CDEFClassName, a.CDEFClassName  { color:#4EC9B0;}
-	.CDEFMember, a.CDEFMember, a.CDEFMember:visited {color:#DCDCAA;}
-	.CDEFKeyword { color:#85A6FF;}
-	.CDEFOneClassMember { display:block; margin:0px 0px 0px 20px;  }
-
-    .KeyWord { color:white;}
-	.Warning { border-style:solid; border-color:orange; border-width:1px 5px 1px 5px;}
-	.Error { border-style:solid; border-color:red; border-width:1px 5px 1px 5px;}
-
-	.CDEFItemMenu { background-color:black; margin-top:20px; display:block; } 
-	a.CDEFOption, a.CDEFOption:visited { 
+	.LensMenu { background-color:black; margin-top:20px; display:block; } 
+	a.LensOption, a.LensOption:visited { 
 					background-color: var(--lcars3); color:black; 
 					border-color: var(--lcars3);
 					border-style: solid;
@@ -380,26 +422,35 @@ Method WriteStyles()
 					text-transform: uppercase;
 					font-weight: bold;  font-size: 0.9em;
 					width:75px;}
-	/*.CDEFOption:hover { background-color:#3e3e3e; }*/
 
-    .CDEFFormalSpecList { display: inline-block; white-space: wrap; max-width: 75%;  vertical-align:top;}
-    .CDEFFormalSpecItem {  white-space:nowrap; background-color:#2E2E2E; }
 
-	.COSGlobal, a.COSGlobal, a.COSGlobal:Visited {color:#64c9ff;}
-	.COSGlobalSet, a.COSGlobalSet, a.COSGlobalSet:visited {color:#64c9ff; font-weight:bold;}
+	/* General purpose classes that could be applicable to any language */
 
-	.COSObjectMember, a.COSObjectMember, a.COSObjectMember:visited {color:#DCDCAA;}
+	.codeWarning { border-style:solid; border-color:var(--borderWarning); border-width:1px 5px 1px 5px;}
+	.codeError { border-style:solid; border-color:var(--borderError); border-width:1px 5px 1px 5px;}
 
-	.COSVariable { color:#ade2ff;}
-	.COSVariableSet { color:#ade2ff; font-weight:bold; }
-	.COSVariableParameter { color:#ff75f4;}
-	.COSVariableParameterSet { color:#ff75f4; font-weight:bold;}
+	.codeComment { color: var(--fgComment); }
+   	.codeProgramName, a.codeProgramName  { color: var(--fgProgramName);}
+	.codeProgramLabel, a.codeProgramLabel, a.codeProgramLabel:visited {color: var(--fgProgramLabel);}
+	.codeProgramKeyword { color: var(--fgProgramKeyword);}
+    .codeKeyword { color: var(--fgCodeKeyword);}
+	.codeFormalSpecList { display: inline-block; white-space: wrap; max-width: 75%;  vertical-align:top;}
+    .codeFormalSpecItem {  white-space:nowrap; background-color: var(--bgAlternate1); }
+	.codeGlobal, a.codeGlobal, a.codeGlobal:Visited {color: var(--fgCodeVariableGlobal);}
+	.codeGlobalSet, a.codeGlobalSet, a.codeGlobalSet:visited {color: var(--fgCodeVariableGlobal); font-weight:bold;}
+	.codeVariable { color:var(--fgCodeVariable);}
+	.codeVariableSet { color:var(--fgCodeVariable); font-weight:bold; }
+	.codeVariableParameter { color: var(--fgCodeArgument);}
+	.codeVariableParameterSet { color: var(--fgCodeArgument); font-weight:bold;}
+	.codeObjectMember, a.codeObjectMember, a.codeObjectMember:visited {color: var(--fgCodeLabel);}
+	.codeString { color: var(--fgCodeString); }
+	.codeNumber { color: var(--fgCodeNumber); }
+	.codeLabel, a.codeLabel, a.codeLabel:visited { color: var(--fgCodeLabel);}
+	.codeLabelDef { color:var(--fgCodeLabel); font-weight: bold;}
 
-	.COSString { color:#d4b57c; }
-	.COSNumber { color:#d4b57c; }
 
-	.COSLabel, a.COSLabel, a.COSLabel:visited { color:#DCDCAA;}
-	.COSLabelDef { color:#DCDCAA; font-weight: bold;}
+	/* Object script only styles */
+	.CDEFOneClassMember { display:block; margin:0px 0px 0px 20px;  }
 
 	.XMLTag { color:#85a6ff; }
 	.XMLAttribute { color:#ade2ff; }

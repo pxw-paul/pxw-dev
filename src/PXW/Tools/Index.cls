@@ -20,7 +20,9 @@ ClassMethod WriteStyles()
 
 ClassMethod WriteMainBody()
 {
-	Do ##class(PXW.Xref.Build).DailyBuild(%NS)
+	If ##class(PXW.Xref.Build).DailyBuild(%NS) {
+		Write "Backgroung build of Xref data has started. <a href='"_##class(PXW.Tools.DEV.XrefBuild).HREFTo()_"'>Check progress</a>"
+	}
 	
 	Set rs=##class(%ResultSet).%New("%Library.ClassDefinition:SubclassOf")
 	$$$THROWONERROR(sc,rs.Execute(##class(PXW.Tools.Page).%ClassName(1)))
