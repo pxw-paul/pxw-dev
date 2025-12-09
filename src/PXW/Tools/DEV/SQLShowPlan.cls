@@ -6,7 +6,7 @@ Parameter ToolName = "SQL Show Plan";
 ClassMethod WriteMainTop(ByRef scratch)
 {
     do ..HREFFrom(.SQL)
-    &html<<form > 
+    &html<<form action='PXW.Tools.DEV.SQLShowPlan.cls'> 
         <fieldset>
         <input name='%NS' value='#(%NS)#' type=hidden>
         <table style='width:100%'>
@@ -55,7 +55,8 @@ ClassMethod WriteSQLPlan(sql As %String, Output modules)
 	#dim interface as PXW.DEV.Dictionary.ClassDefinitionObject
 	; enquote quotes
 	Set sqlencode=sql
-	Set plansql="SELECT %SYSTEM.QUERY_PLAN(?) as XML "
+	; MOVE THIS ALL TO THE INTERFACE
+    Set plansql="SELECT %SYSTEM.QUERY_PLAN(?) as XML "
     ;s plansql="EXPLAIN "_sql
 	Set params($INCREMENT(params))=sqlencode
     Set interface=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)

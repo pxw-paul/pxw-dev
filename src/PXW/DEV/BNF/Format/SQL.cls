@@ -116,6 +116,10 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %Stri
         Do ..setWhitespaceNewLineElement(element,indent)
     }
 
+    if element.type="Union" {
+        Do ..setWhitespaceNewLineElement(element,indent)
+    }
+
    	For  {
 		Set a=element.partsGetNext(.akey)
 		Quit:akey=""

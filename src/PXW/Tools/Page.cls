@@ -339,7 +339,9 @@ ClassMethod PageStyle() As %String
 		#toolsMainBodyNav a { width: 100%; display: block;}
 
 
-		#toolsMainBodyContent { grid-area:toolsMainBodyContent; overflow:auto;}
+		#toolsMainBodyContent { grid-area:toolsMainBodyContent; 
+								overflow:auto; 
+								scroll-padding-top:4rem; }
 
 		#toolsFooter { grid-area:toolsFooter;}
 		
@@ -361,19 +363,20 @@ ClassMethod PageStyle() As %String
 		#toolsMainTLR div { width:100%; }
 
 		#toolsMainTop {
-			grid-area: toolsMainTop;
+			grid-area: toolsMainTop; 
+			scroll-padding-top: 4rem;
 		}
 
 		#toolsMainLeft {
 			grid-area: toolsMainLeft;
-			overflow:scroll;
+			overflow:auto;
 			resize:horizontal;
 		}
 		#toolsMainLeft div { width:100%; }
 
 		#toolsMainRight {
 			grid-area: toolsMainRight;
-			overflow:scroll;
+			overflow:auto;
 		}
 		#toolsMainRight div { width:100%; }
 

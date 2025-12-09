@@ -258,7 +258,7 @@ Method wrapElementBNF1Loop(element As PXW.DEV.Element)
 
 Method writeCDEFIncludeName(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="IncludeName")
 {
-    Do ..wrapElementHTML(element,"<a href='"_..HREFToInclude(element.ToString(0))_"'>","</a>")
+    Do ..wrapElementHTML(element,"<a class='"_$$$classProgramName_' href='"_..HREFToInclude(element.ToString(0))_"'>","</a>")
     Quit ""
 }
 
@@ -777,6 +777,7 @@ Method writeCOSLabelDefinition(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.B
         Set labname=..ThisMethod_lab
         Set anchor=$TRANSLATE("LAB"_labname,"$^%_","")
         Do ..wrapAtomHTML(anchorAtom,"<span class='"_$$$classLabelDef_"' id='"_anchor_"SPAN' >","</span>") ; not sure why the ID needs SPAN on the end...
+        Do ..wrapAtomHTML(anchorAtom,"<a name='"_anchor_"' >","</a>") 
         Do ..AddToIndex(labname,"Label",anchor)
         /*
         */

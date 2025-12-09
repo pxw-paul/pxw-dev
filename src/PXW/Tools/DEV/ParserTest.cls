@@ -6,7 +6,7 @@ Parameter ToolName = "Parser Test";
 ClassMethod WriteMainTop(ByRef scratch)
 {
 	Do ..HREFFrom(.text,.class,.method)
-   &html<<form > 
+   &html<<form action='PXW.Tools.DEV.ParserTest.cls'> 
         <fieldset>
         <input name='%NS' value='#(%NS)#' type=hidden>
         <table style='width:100%'>

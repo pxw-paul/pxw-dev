@@ -942,8 +942,7 @@ Method GetViewSQL(schema As %String, table As %String) As %String
 
     Set viewQuery=""
     if $$$ISOK(qsc)	{
-        Set rs=##class(PXW.DEV.Dictionary.AtelierRS).%New(obj)
-        While rs.%Next() {
+         While rs.%Next() {
             Set viewQuery=viewQuery_rs.%Get("ViewQuery")
         }
     }
