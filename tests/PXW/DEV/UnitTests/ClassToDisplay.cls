@@ -19,16 +19,49 @@ ClassMethod WorkOnAList(ObjList As %ListOfObjects(ELEMENTTYPE="PXW.DEV.UnitTests
 	&sql(
 		select 1,2,3
 		-- dummy select
-	)
+		)
+	&sql(
+		select 1,2,3)
+	&sql(
+		select 1,2,3
+		)
+
+	&js< var x=1;>
+	&js< var x=1;
+	>
+	&js< var x=1; /*comment */>
+	&js< var x=1; //comment 
+	>
+}
+
+Method testcq()
+{
+	&sqlcq(
+		select 1 into :i%Prop1/* comment */
+		)qc
+		s c=1
 }
 
 ClientMethod ele() [ Language = javascript ]
 {
 	var x=1;
+	/// comment
 }
 
 ClassMethod atom(Output atom As PXW.DEV.Atom)
 {
+}
+
+Query testq(p1 As %String) As %SQLQuery
+{
+	select 1,2,3
+	-- comment
+}
+
+Query testq2(p1 As %String) As %SQLQuery
+{
+	---comment
+	select 1,2,3
 }
 
 }

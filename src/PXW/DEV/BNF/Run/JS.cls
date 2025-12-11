@@ -475,17 +475,17 @@ Method CosExpressionBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	Set done=0
     If parser.peek(2)=")#" {
 		; its empty 
-		Set ..whitespace=parser.whitespace
-		Set ..comment=parser.comment
+		Set ..comment=parser.GetCurrentComment()
 		Set atom=..newAtom("CosCodeExpression Empty","")
 		Do ParentElement.AddPart(atom)
+		Set ..whitespace=parser.whitespace
         Set done=1
 	} ElseIf parser.Expression(subElement) {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ..whitespace=parser.whitespace
-		Set ..comment=parser.comment
+		Set ..comment=parser.GetCurrentComment()
 		Set atom=..newAtom("CosCodeBlock End","")
 		Do ParentElement.AddPart(atom)
+		Set ..whitespace=parser.whitespace
 		Set done=1
 	} Else {
         $$$BNFROLLBACK(subElement)

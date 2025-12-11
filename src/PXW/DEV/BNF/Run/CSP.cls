@@ -244,17 +244,17 @@ Method CosExpressionBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	Set done=0
     If parser.peek(2)=")#" {
 		; its empty 
-		Set ..whitespace=parser.whitespace
-		Set ..comment=parser.comment
+		Set ..comment=parser.GetCurrentComment()
 		Set atom=..newAtom("CosCodeExpression Empty","")
 		Do ParentElement.AddPart(atom)
+		Set ..whitespace=parser.whitespace
         Set done=1
 	} ElseIf parser.Expression(subElement) {
 		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ..whitespace=parser.whitespace
-		Set ..comment=parser.comment
+		Set ..comment=parser.GetCurrentComment()
 		Set atom=..newAtom("CosCodeBlock End","")
 		Do ParentElement.AddPart(atom)
+		Set ..whitespace=parser.whitespace
 		Set done=1
 	} Else {
         $$$BNFROLLBACK(subElement)
@@ -280,10 +280,10 @@ Method JavascriptBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
     $$$DEBUG("Javascript language normal")
     if parser.StatementList(subElement) { 
         $$$BNFCOMMIT(subElement,ParentElement)
-        Set ..whitespace=parser.whitespace
-        Set ..comment=parser.comment
+        Set ..comment=parser.GetCurrentComment()
         Set atom=..newAtom("JavascriptCodeBlock End","")
         Do ParentElement.AddPart(atom)
+        Set ..whitespace=parser.whitespace
         Set ok=1
     } Else {
         $$$BNFROLLBACK(subElement)
@@ -291,63 +291,6 @@ Method JavascriptBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
     }
     $$$DEBUGMethodBegin
     Quit ok
-   	/*#dim tokenstream as PXW.DEV.TokenStream
-
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	;$$$DEBUG("%path="_%path)
-
-	s parser=##class(PXW.DEV.JS.Parser).%New()
-	d parser.inputNewObject()
-	s parser.input.input=..stream
-    s parser.EndEmbeddedChar="</SCRIPT>"
-
-	s imp=##class(PXW.DEV.Element).%New()
-    ;s imp.This=..This 
-    ;s imp.ThisMethod=..ThisMethod
-    ;s imp.Parser=parser.%ClassName(1)
-    set next=parser.Next(.scratch)
-    while next {
-        d imp.AddPart(next)
-        s next=parser.Next(.scratch)
-    }
-    d ParentElement.AddPart(imp)
-
-    ; the tokeniser will have the last thing in it which should be a ">" so go back
-    s ..stream.pos=..stream.pos-1
-
-    ;w "<pre>" w "peek2="_..peek((10)) d ..getBookmark(.bookMark) zw bookMark w "</pre>"
-    $$$DEBUGMethodEnd
-    q 1
-    */
-
-
-    /*
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	;$$$DEBUG("%path="_%path)
-
-   	#dim atom as PXW.DEV.Atom
-	;$$$BNFPATH
-	$$$BNFSTART(subElement)
-    s atom=..newAtom("JSCodeBlock Begin","")
-    d ParentElement.AddPart(atom)
-
-	s parser=##class(PXW.DEV.BNF.Run.JS).%New()
-	s parser.stream=..stream
-    d parser.skipWhiteSpaceAndComments()
-    ;$$$DEBUG("COS CODE BLOCK peeked "_parser.peek(1))
-	i parser.CspPage(subElement) {
-		$$$BNFCOMMIT(subElement,ParentElement)
-		s ..whitespace=parser.whitespace
-		s ..comment=parser.comment
-    	s atom=..newAtom("CSPCodeBlock End","")
-		d ParentElement.AddPart(atom)
-		quit 1
-	} else {
-        $$$BNFROLLBACK(subElement)
-        quit 0
-    }*/
 }
 
 ///  js_expression ::= 'NEEDS JS EXPRESSION'

@@ -240,6 +240,7 @@ class_parameter_attribute           ::=  attribute_Abstract
                                         | attribute_Flags
                                         | attribute_Internal
                                         | attribute_Deprecated
+                                        | attribute_Encoded
 
 class_storage                       ::= 'storage' storage_name '{' storage_xml '}'
 storage_name                        ::= class_item_identifier
@@ -489,6 +490,8 @@ attribute_DDLAllowed                ::= 'ddlallowed'
 attribute_DependsOn                 ::= 'dependson' '=' (  class_reference_list | class_reference )
 
 attribute_EmbeddedClass             ::= 'EmbeddedClass' '=' class_reference
+
+attribute_Encoded                   ::= 'Encoded'
 
 attribute_Event                     ::= 'event' '=' event_keyword
 event_keyword                       ::= 'insert/update/delete' | 'insert/update' | 'insert/delete' | 'update/delete' | 'delete' | 'insert' | 'update' 

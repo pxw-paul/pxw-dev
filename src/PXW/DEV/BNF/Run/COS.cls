@@ -821,11 +821,11 @@ Method HtmlBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	Set parser.stream=..stream
     Do parser.skipWhiteSpaceAndComments()
     If parser.CspPageMandatory(subElement) {
-        Set ..whitespace=parser.whitespace
-        Set ..comment=parser.comment
+        Set ..comment=parser.GetCurrentComment()
         Set atom=..newAtom("CSPCodeBlock End","")
         Do subElement.AddPart(atom)
         $$$BNFCOMMIT(subElement,ParentElement)
+        Set ..whitespace=parser.whitespace
         ; if we get here the next thing must be a > so check
         If ..peek(1)'=">" {
             Set recretok=..recover(ParentElement,.recsub,"<>","")
@@ -864,11 +864,11 @@ Method JsBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 
     $$$DEBUG("Javascript language normal")
     If parser.StatementList(subElement) {
-        Set ..whitespace=parser.whitespace
-        Set ..comment=parser.comment
+        Set ..comment=parser.GetCurrentComment()
         Set atom=..newAtom("JavascriptCodeBlock End","")
         Do subElement.AddPart(atom)
         $$$BNFCOMMIT(subElement,ParentElement)
+        Set ..whitespace=parser.whitespace
         ; if we get here the next thing must be a > so check
         If ..peek(1)'=">" {
             Set recretok=..recover(ParentElement,.recsub,"<>","")
@@ -898,11 +898,11 @@ Method SqlBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
     Do parser.skipWhiteSpaceAndComments()
     ;$$$DEBUG("COS CODE BLOCK peeked "_parser.peek(1))
 	If parser.SqlProgram(subElement) {
-		Set ..whitespace=parser.whitespace
-		Set ..comment=parser.comment
+		Set ..comment=parser.GetCurrentComment()
     	Set atom=..newAtom("SQLCodeBlock End","")
 		Do subElement.AddPart(atom)
 		$$$BNFCOMMIT(subElement,ParentElement)
+		Set ..whitespace=parser.whitespace
 		Set retok=1
 	} Else {
         Set recretok=..recover(ParentElement,.recsub,"()","")

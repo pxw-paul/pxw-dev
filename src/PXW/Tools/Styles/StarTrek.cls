@@ -130,7 +130,7 @@ Method WriteStyles()
  
 	#toolsHead { 
 		margin:0px;
-		border-color: red; /* var(--lcars7); */
+		border-color: var(--lcars7);
 		border-style: solid;
 		border-width: 0px 0px 10px 100px;
 		border-radius: 0px 0px 0px 50px; 

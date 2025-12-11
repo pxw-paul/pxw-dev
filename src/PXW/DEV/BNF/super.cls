@@ -636,4 +636,28 @@ Method recoverStopAt(StopAtList As %List) As %Boolean
     Quit stop
 }
 
+/// Gets the latest comment even if its from the whitespace.
+/// Remember comments can hold whitespace and whitespace can hold comments.
+/// So this is getting the latest comment which will probably belong to the embedded code
+/// and leave the whitespace which will belong to the parent.
+/// EG
+///   &sql(select * from table
+///         -- sql comment
+///       ) 
+/// we consider that the comment here is part of the sql but the CR and TAB on the next line belongs to the objectscript.
+Method GetCurrentComment() As PXW.DEV.Atom
+{
+    set comment=""
+    if $ISOBJECT(..comment) {
+        set comment=..comment
+        set ..comment=""
+    } elseif $isobject(..whitespace) {
+        if $isobject(..whitespace.comment) {
+            set comment=..whitespace.comment
+            set ..whitespace.comment=""
+        }
+    }
+    q comment
+}
+
 }

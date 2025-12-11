@@ -1,10 +1,10 @@
-/// Created: 2025-11-26 18:09:34 PXW.DEV.BNF.Compilers.Compiler1
+/// Created: 2025-12-11 20:19:52 PXW.DEV.BNF.Compilers.Compiler1
 Class PXW.DEV.BNF.GEN.SQLShowPlan Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 
 Parameter KeywordPattern = "1.A";
 
-Parameter Keywords = "AND,BITMAP,EACH,EXTENT,FOR,ID,INDEX,LOOPING,MAP,MASTER,MODULE,MODULES,ON,READ,SUBQUERIES,SUBQUERY";
+Parameter Keywords = "AND,BITMAP,EACH,EXTENT,FOR,ID,INDEX,LOOPING,MAP,MASTER,MODULE,MODULES,ON,READ,SUBQUERIES,SUBQUERY,TABLE";
 
 ///  alias_name ::= IDENTIFIER
 /// summary=C
@@ -350,11 +350,11 @@ Method CallSubquery(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	quit ok
 }
 
-///  content ::= newline | plan | sql_section | warning_section | cost_section | frozen_section | info_section | for_each | subquery_section | module_section | read_index | read_bitmap_index | read_extent_bitmap | read_master_scan | read_master | call_modules | call_module | call_subqueries | call_subquery | alias_property | word | punctuation
-/// summary=C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
+///  content ::= newline | plan | sql_section | warning_section | cost_section | frozen_section | info_section | for_each | table | subquery_section | module_section | read_index | read_bitmap_index | read_extent_bitmap | read_master_scan | read_master | call_modules | call_module | call_subqueries | call_subquery | alias_property | word | punctuation
+/// summary=C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
 Method Content(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
+	; rules summary C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -374,6 +374,8 @@ Method Content(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 	} elseif ..InfoSection(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..ForEach(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..Table(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..SubquerySection(.subElement,.addedElement)  {
 		set done=1 ; or
@@ -1635,6 +1637,38 @@ Method SubquerySection9RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	} else {
 		set ok=1 /* nothing found is ok in RZ */
 	}
+	quit ok
+}
+
+///  table ::= 'table' schema_name '.' table_name
+/// summary values:TABLE
+/// summary=K&C&P&C
+Method Table(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary K&C&P&C
+	if '(..isKeyword("TABLE",.value)) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"TABLE")  {
+		if ..SchemaName(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,".")  {
+				if ..TableName(.subElement,.addedElement)  {
+					set done=1 ; end compileRules
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0 ; normal rollback
+	}
+	$$$DEBUGMethodEnd
 	quit ok
 }
 

@@ -736,7 +736,7 @@ html_body                           ::= 'NEED HTML BODY'
 js_command                          ::= ('&javascript<' | '&js<') js_body '>'
 js_body                             ::= 'NEED JS BODY'
 
-sql_command                        ::= '&sql(' sql_body ')'
+sql_command                        ::= ('&sql(' sql_body ')') | ('&sqlcq(' sql_body ')qc')
 sql_body                           ::= 'NEED SQL BODY'
 
 

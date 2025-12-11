@@ -147,19 +147,19 @@ Method ClassQueryBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
     ;$$$DEBUG("COS CODE BLOCK peeked "_parser.peek(1))
 	If parser.peek(1)="}" {
 		; its empty 
-		Set ..whitespace=parser.whitespace
-		Set ..comment=parser.comment
+		Set ..comment=parser.GetCurrentComment()
 		Set atom=..newAtom("SQLCodeBlock Empty","")
 		Do ParentElement.AddPart(atom)
+		Set ..whitespace=parser.whitespace
 		Quit 1
 	}
 	If parser.QuerySpecification(subElement) {
-		Set ..whitespace=parser.whitespace
-		Set ..comment=parser.comment
+        Set ..comment=parser.GetCurrentComment()
 		Set atom=..newAtom("SQLCodeBlock End","")
 		Do subElement.AddPart(atom)
 		$$$BNFCOMMIT(subElement,ParentElement)
-        If ..peek(1)'="}" {
+        Set ..whitespace=parser.whitespace
+		If ..peek(1)'="}" {
             Do ..recover(ParentElement,.recsub,"{}","")
         }
  
@@ -186,18 +186,18 @@ Method CosCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
         Do pyparser.skipWhiteSpaceAndComments()
         If pyparser.peek(1)="}" {
             ; its empty 
-            Set ..whitespace=pyparser.whitespace
-            Set ..comment=pyparser.comment
+            Set ..comment=pyparser.GetCurrentComment()
             Set atom=..newAtom("CosCodeBlock Empty","")
             Do ParentElement.AddPart(atom)
+            Set ..whitespace=pyparser.whitespace
             Quit 1
         }
         If pyparser.File(subElement) {
              $$$BNFCOMMIT(subElement,ParentElement)
-            Set ..whitespace=pyparser.whitespace
-            Set ..comment=pyparser.comment
+            Set ..comment=pyparser.GetCurrentComment()
             Set atom=..newAtom("CosCodeBlock End","")
             Do ParentElement.AddPart(atom)
+            Set ..whitespace=pyparser.whitespace
  		    Quit 1
         } Else {
             Do ..recover(ParentElement,.subElement,"{}","") ; NOT WORKING AS EXPECTED!
@@ -218,10 +218,10 @@ Method CosCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
     ;$$$DEBUG("COS CODE BLOCK peeked "_parser.peek(1))
 	If parser.peek(1)="}" {
 		; its empty 
-		Set ..whitespace=parser.whitespace
-		Set ..comment=parser.comment
+		Set ..comment=parser.GetCurrentComment()
 		Set atom=..newAtom("CosCodeBlock Empty","")
 		Do ParentElement.AddPart(atom)
+		Set ..whitespace=parser.whitespace
 		Quit 1
 	}
 
@@ -231,11 +231,11 @@ Method CosCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
         $$$DEBUG("COS language EXPRESSION")
         If parser.Expression(subElement) {
             ; maybe its codemode=expression (need to check specifically)
-            Set ..whitespace=parser.whitespace
-            Set ..comment=parser.comment
+            Set ..comment=parser.GetCurrentComment()
             Set atom=..newAtom("CosCodeBlock End","")
             Do subElement.AddPart(atom)
             $$$BNFCOMMIT(subElement,ParentElement)
+            Set ..whitespace=parser.whitespace
            ; next thing must be a "}" so check
             If ..peek(1)'="}" {
                 Do ..recover(ParentElement,.recElement,"{}","")
@@ -248,11 +248,11 @@ Method CosCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
     } Else {
         $$$DEBUG("COS language normal")
         If parser.CosCodeBlock(subElement) {
-            Set ..whitespace=parser.whitespace
-            Set ..comment=parser.comment
+            Set ..comment=parser.GetCurrentComment()
             Set atom=..newAtom("CosCodeBlock End","")
             Do subElement.AddPart(atom)
             $$$BNFCOMMIT(subElement,ParentElement)
+            Set ..whitespace=parser.whitespace
            ; next thing must be a "}" so check
             If ..peek(1)'="}" {
                 Do ..recover(ParentElement,.recElement,"{}","")
@@ -279,10 +279,10 @@ Method CosCodeBlockSql(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
     ;$$$DEBUG("COS CODE BLOCK peeked "_parser.peek(1))
 	If parser.peek(1)="}" {
 		; its empty 
-		Set ..whitespace=parser.whitespace
-		Set ..comment=parser.comment
+		Set ..comment=parser.GetCurrentComment()
 		Set atom=..newAtom("CosCodeBlock Empty","")
 		Do ParentElement.AddPart(atom)
+		Set ..whitespace=parser.whitespace
 		Quit 1
 	}
     
@@ -290,11 +290,11 @@ Method CosCodeBlockSql(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
         $$$DEBUG("COS language EXPRESSION")
         If parser.Expression(subElement) {
             ; maybe its codemode=expression (need to check specifically)
-            Set ..whitespace=parser.whitespace
-            Set ..comment=parser.comment
+            Set ..comment=parser.GetCurrentComment()
             Set atom=..newAtom("CosCodeBlock End","")
             Do subElement.AddPart(atom)
             $$$BNFCOMMIT(subElement,ParentElement)
+            Set ..whitespace=parser.whitespace
 		    Quit 1
         } Else {
             $$$BNFROLLBACK(subElement)
@@ -303,11 +303,11 @@ Method CosCodeBlockSql(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
     } Else {
         $$$DEBUG("COS language normal")
         If parser.CosCodeBlockSql(subElement) {
-            Set ..whitespace=parser.whitespace
-            Set ..comment=parser.comment
+            Set ..comment=parser.GetCurrentComment()
             Set atom=..newAtom("CosCodeBlock End","")
             Do subElement.AddPart(atom)
             $$$BNFCOMMIT(subElement,ParentElement)
+            Set ..whitespace=parser.whitespace
             Quit 1
         } Else {
             $$$BNFROLLBACK(subElement)
@@ -330,10 +330,10 @@ Method CosCodeBlockSqlStorage(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
     ;$$$DEBUG("COS CODE BLOCK peeked "_parser.peek(1))
 	If parser.peek(1)="}" {
 		; its empty 
-		Set ..whitespace=parser.whitespace
-		Set ..comment=parser.comment
+		Set ..comment=parser.GetCurrentComment()
 		Set atom=..newAtom("CosCodeBlock Empty","")
 		Do ParentElement.AddPart(atom)
+		Set ..whitespace=parser.whitespace
 		Quit 1
 	}
     
@@ -342,10 +342,10 @@ Method CosCodeBlockSqlStorage(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
         If parser.Expression(subElement) {
             ; maybe its codemode=expression (need to check specifically)
             $$$BNFCOMMIT(subElement,ParentElement)
-            Set ..whitespace=parser.whitespace
-            Set ..comment=parser.comment
+            Set ..comment=parser.GetCurrentComment()
             Set atom=..newAtom("CosCodeBlock End","")
             Do ParentElement.AddPart(atom)
+            Set ..whitespace=parser.whitespace
 		    Quit 1
         } Else {
             $$$BNFROLLBACK(subElement)
@@ -355,10 +355,10 @@ Method CosCodeBlockSqlStorage(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
         $$$DEBUG("COS language normal")
         If parser.CosCodeBlockSqlStorage(subElement) {
             $$$BNFCOMMIT(subElement,ParentElement)
-            Set ..whitespace=parser.whitespace
-            Set ..comment=parser.comment
+            Set ..comment=parser.GetCurrentComment()
             Set atom=..newAtom("CosCodeBlock End","")
             Do ParentElement.AddPart(atom)
+            Set ..whitespace=parser.whitespace
             Quit 1
         } Else {
             $$$BNFROLLBACK(subElement)
@@ -380,10 +380,10 @@ Method CosCodeBlockTrigger(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
     ;$$$DEBUG("COS CODE BLOCK peeked "_parser.peek(1))
 	If parser.peek(1)="}" {
 		; its empty 
-		Set ..whitespace=parser.whitespace
-		Set ..comment=parser.comment
+		Set ..comment=parser.GetCurrentComment()
 		Set atom=..newAtom("CosCodeBlockTrigger Empty","")
 		Do ParentElement.AddPart(atom)
+		Set ..whitespace=parser.whitespace
 		Quit 1
 	}
     
@@ -391,11 +391,11 @@ Method CosCodeBlockTrigger(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
         $$$DEBUG("COS language EXPRESSION")
         If parser.Expression(subElement) {
             ; maybe its codemode=expression (need to check specifically)
-            Set ..whitespace=parser.whitespace
-            Set ..comment=parser.comment
+            Set ..comment=parser.GetCurrentComment()
             Set atom=..newAtom("CosCodeBlockTigger End","")
             Do subElement.AddPart(atom)
             $$$BNFCOMMIT(subElement,ParentElement)
+            Set ..whitespace=parser.whitespace
 		    Quit 1
         } Else {
             $$$BNFROLLBACK(subElement)
@@ -404,11 +404,11 @@ Method CosCodeBlockTrigger(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
     } Else {
         $$$DEBUG("COS language normal")
         If parser.CosCodeBlockTrigger(subElement) {
-            Set ..whitespace=parser.whitespace
-            Set ..comment=parser.comment
+            Set ..comment=parser.GetCurrentComment()
             Set atom=..newAtom("CosCodeBlockTrigger End","")
             Do subElement.AddPart(atom)
             $$$BNFCOMMIT(subElement,ParentElement)
+            Set ..whitespace=parser.whitespace
             Quit 1
         } Else {
             $$$BNFROLLBACK(subElement)
@@ -432,19 +432,19 @@ Method JavascriptCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
     ;$$$DEBUG("COS CODE BLOCK peeked "_parser.peek(1))
 	If parser.peek(1)="}" {
 		; its empty 
-		Set ..whitespace=parser.whitespace
-		Set ..comment=parser.comment
+		Set ..comment=parser.GetCurrentComment()
 		Set atom=..newAtom("JavascriptCodeBlock Empty","")
 		Do ParentElement.AddPart(atom)
+		Set ..whitespace=parser.whitespace
 		Set retok=1
 	} Else {
         $$$DEBUG("Javascript language normal")
        If parser.StatementListMandatory(subElement) {
-            Set ..whitespace=parser.whitespace
-            Set ..comment=parser.comment
+            Set ..comment=parser.GetCurrentComment()
             Set atom=..newAtom("JavascriptCodeBlock End","")
             Do subElement.AddPart(atom)
             $$$BNFCOMMIT(subElement,ParentElement)
+            Set ..whitespace=parser.whitespace
             Set retok=1
         } Else {
  
@@ -481,11 +481,11 @@ Method Expression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
         Set ok=1
     } 
     If ok=1 {
-		Set ..whitespace=parser.whitespace
-		Set ..comment=parser.comment
+		Set ..comment=parser.GetCurrentComment()
 		Set atom=..newAtom("CosCodeBlock End","")
 		Do subElement.AddPart(atom)
 		$$$BNFCOMMIT(subElement,ParentElement)
+		Set ..whitespace=parser.whitespace
 	} Else {
 		$$$BNFROLLBACK(subElement)
 	}
@@ -520,11 +520,11 @@ Method CosExpressionSql(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
         Set ok=1
     } 
     If ok=1 {
-		Set ..whitespace=parser.whitespace
-		Set ..comment=parser.comment
+		Set ..comment=parser.GetCurrentComment
 		Set atom=..newAtom("CosCodeBlock End","")
 		Do subElement.AddPart(atom)
 		$$$BNFCOMMIT(subElement,ParentElement)
+		Set ..whitespace=parser.whitespace
 	} Else {
 		$$$BNFROLLBACK(subElement)
 	}

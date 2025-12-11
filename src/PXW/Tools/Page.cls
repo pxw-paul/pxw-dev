@@ -125,125 +125,125 @@ ClassMethod OnPage() As %Status
 ClassMethod PageScripts()
 {
 	#dim err as %Exception.SystemException
+	s lt="<",gt=">"
+	&js<function HiliteElement(id) {
+	    var obj=document.getElementById(id);
+	    obj.className='hilite';
+	}
+	>
 
-	Write "function HiliteElement(id) {",!
-	Write "    var obj=document.getElementById(id);",!
-	Write "    obj.className='hilite';",!
-	Write "}",!
-
-
-	Write "/*****************************************************************/",!
-	Write "/// Any tables with a filename attribute is downloadable",!
-	Write "/// eg: <table filename='download'>",!
-	Write "function makeTablesExportable() {",!
-	Write "    var elements=document.getElementsByTagName('TABLE');",!
-	Write "    for (var e=elements.length-1; e>-1; e--) {",!
-	Write "      var table=elements[e];",!
-	Write "      var filename=table.getAttribute('filename');",!
-	Write "      if (filename!=null) {",!
-	Write "          var tid=table.id;",!
-	Write "          if (tid=='') {",!
-	Write "              tid='table'+e;",!
-	Write "              table.id=tid;",!
-	Write "          }",!
-	Write "          var bc=document.createElement(""button"");",!
-	Write "          bc.textContent=""download csv"";",!
-	Write "          bc.setAttribute('pxwFile',filename);",!
-	Write "          bc.setAttribute('pxwTable',tid);",!
-	Write "          bc.className='noPrint';",!
-	Write "          bc.addEventListener('click',exportButtonEventCSV);",!
-	Write "          table.appendChild(bc);",!
-	Write "      }",!
-	Write "   }",!
-	Write "}",!
-	Write " ",!
-	Write " ",!
-	Write "function exportButtonEventCSV() {",!
-	Write "  var file=this.getAttribute('pxwFile');",!
-	Write "  var tid=this.getAttribute('pxwTable');",!
-	Write "  var table=document.getElementById(tid)",!
-	Write "  htmlToCSV(table,file+"".csv"");",!
-	Write "}",!
-	Write " ",!
-	Write "",!
-	Write "function htmlToCSV(table, filename) {",!
-	Write "  var q = String.fromCharCode(34);",!
-	Write "  var tab = "",""; //String.fromCharCode(9);",!
-	Write "  var cr=""\n"";",!
-	Write "  var data = [];",!
-	Write "  var rows = table.querySelectorAll(""tr"");",!
-	Write " ",!
-	Write "  for (var i = 0; i < rows.length; i++) {",!
-	Write "     var row = [], cols = rows[i].querySelectorAll(""td, th"");",!
-	Write "     for (var j = 0; j < cols.length; j++) {",!
-	Write "        //var str=cols[j].innerText;",!
-	Write "        var str=cols[j].textContent;",!
-	Write "        var esc=str.replace(/""/g,'""""');",!
-	Write "        if (esc.includes(tab) || esc.includes(cr)) {",!
-	Write "            esc='""'+esc+'""';",!
-	Write "         }",!
-	Write "         row.push(esc);",!
-	Write "     }",!
-	Write "     data.push(row.join(tab));",!
-	Write "   }",!
-	Write "   downloadCSVFile(data.join(""\n""), filename);",!
-	Write "}",!
-	Write " ",!
-	Write "function downloadCSVFile(csv, filename) {",!
-	Write "  var csv_file, download_link;",!
-	Write "   csv_file = new Blob([csv], {type: ""text/csv""});",!
-	Write "   download_link = document.createElement(""a"");",!
-	Write "   download_link.download = filename;",!
-	Write "   download_link.href = window.URL.createObjectURL(csv_file);",!
-	Write "   download_link.style.display = ""none"";",!
-	Write "   document.body.appendChild(download_link);",!
-	Write "   download_link.click();",!
-	Write "}",!
-	Write " ",!
-	Write "/*****************************************************************/",!	
-	Write "function bodyonload() {",!
-	;Write "   var nav=document.getElementById('toolsMainBodyNav');",!
-	;Write "   var tmp=document.getElementById('toolsMainBodyNavTEMP');",!
-	;Write "   nav.innerHTML=tmp.innerHTML;",!
-	Write "   makeTablesExportable();",!
-	;                                                          #($s(..WriteBodyOnLoad():"",1:"WriteBodyOnLoad ERROR"))#
-	Write "}",!
-
-	&JS<
-		function fallbackCopyTextToClipboard(text) {
-			var textArea = document.createElement("textarea");
-			textArea.value = text;
-			
-			// Avoid scrolling to bottom
-			textArea.style.top = "0";
-			textArea.style.left = "0";
-			textArea.style.position = "fixed";
-
-			document.body.appendChild(textArea);
-			textArea.focus();
-			textArea.select();
-
-			try {
-				var successful = document.execCommand('copy');
-				var msg = successful ? 'successful' : 'unsuccessful';
-				console.log('Fallback: Copying text command was ' + msg);
-			} catch (err) {
-				console.error('Fallback: Oops, unable to copy', err);
+	&js<
+	/*****************************************************************/
+	/// Any tables with a filename attribute is downloadable
+	/// eg: <table filename='download'>
+	function makeTablesExportable() {
+	    var elements=document.getElementsByTagName('TABLE');
+	    for (var e=elements.length-1; e#(gt)#-1; e--) {
+	      var table=elements[e];
+	      var filename=table.getAttribute('filename');
+	      if (filename!=null) {
+	          var tid=table.id;
+	          if (tid=='') {
+	              tid='table'+e;
+	              table.id=tid;
+	          }
+	          var bc=document.createElement("button");
+	          bc.textContent="download csv";
+	          bc.setAttribute('pxwFile',filename);
+	          bc.setAttribute('pxwTable',tid);
+	          bc.className='noPrint';
+	          bc.addEventListener('click',exportButtonEventCSV);
+	          table.appendChild(bc);
+	      }
+	   }
+	}
+	 	
+	function exportButtonEventCSV() {
+	  var file=this.getAttribute('pxwFile');
+	  var tid=this.getAttribute('pxwTable');
+	  var table=document.getElementById(tid)
+	  htmlToCSV(table,file+".csv");
+	}
+	 
+	
+	function htmlToCSV(table, filename) {
+		var q = String.fromCharCode(34);
+		var tab = ","; //String.fromCharCode(9);
+		var cr="\n";
+		var data = [];
+		var rows = table.querySelectorAll("tr");
+		
+		for (var i = 0; i #(lt)# rows.length; i++) {
+			var row = [], cols = rows[i].querySelectorAll("td, th");
+			for (var j = 0; j #(lt)# cols.length; j++) {
+				//var str=cols[j].innerText;
+				var str=cols[j].textContent;
+				var esc=str.replace(/"/g,'""');
+				if (esc.includes(tab) || esc.includes(cr)) {
+					esc='"'+esc+'"';
+				}
+				row.push(esc);
 			}
+			data.push(row.join(tab));
+		}
+		downloadCSVFile(data.join("\n"), filename);
+	}
+	
+	 
+	function downloadCSVFile(csv, filename) {
+	  var csv_file, download_link;
+	   csv_file = new Blob([csv], {type: "text/csv"});
+	   download_link = document.createElement("a");
+	   download_link.download = filename;
+	   download_link.href = window.URL.createObjectURL(csv_file);
+	   download_link.style.display = "none";
+	   document.body.appendChild(download_link);
+	   download_link.click();
+	}
+	 
+	/*****************************************************************/	
+	function bodyonload() {
+	//   var nav=document.getElementById('toolsMainBodyNav');
+	//   var tmp=document.getElementById('toolsMainBodyNavTEMP');
+	//   nav.innerHTML=tmp.innerHTML;
+	   makeTablesExportable();
 
-			document.body.removeChild(textArea);
+	}
+	
+	function fallbackCopyTextToClipboard(text) {
+		var textArea = document.createElement("textarea");
+		textArea.value = text;
+		
+		// Avoid scrolling to bottom
+		textArea.style.top = "0";
+		textArea.style.left = "0";
+		textArea.style.position = "fixed";
+
+		document.body.appendChild(textArea);
+		textArea.focus();
+		textArea.select();
+
+		try {
+			var successful = document.execCommand('copy');
+			var msg = successful ? 'successful' : 'unsuccessful';
+			console.log('Fallback: Copying text command was ' + msg);
+		} catch (err) {
+			console.error('Fallback: Oops, unable to copy', err);
 		}
-		function copyTextToClipboard(text) {
-			if (!navigator.clipboard) {
-				fallbackCopyTextToClipboard(text);
-				return;
-			}
-			navigator.clipboard.writeText(text).then(function() {
-				console.log('Async: Copying to clipboard was successful!');
-			}, function(err) {
-				console.error('Async: Could not copy text: ', err);
-			});
+
+		document.body.removeChild(textArea);
+	}
+	function copyTextToClipboard(text) {
+		if (!navigator.clipboard) {
+			fallbackCopyTextToClipboard(text);
+			return;
 		}
+		navigator.clipboard.writeText(text).then(function() {
+			console.log('Async: Copying to clipboard was successful!');
+		}, function(err) {
+			console.error('Async: Could not copy text: ', err);
+		});
+	}
 	>
 
 	Do ..WriteScripts()

@@ -258,7 +258,7 @@ Method wrapElementBNF1Loop(element As PXW.DEV.Element)
 
 Method writeCDEFIncludeName(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="IncludeName")
 {
-    Do ..wrapElementHTML(element,"<a class='"_$$$classProgramName_' href='"_..HREFToInclude(element.ToString(0))_"'>","</a>")
+    Do ..wrapElementHTML(element,"<a class='"_$$$classProgramName_"' href='"_..HREFToInclude(element.ToString(0))_"'>","</a>")
     Quit ""
 }
 

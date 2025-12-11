@@ -253,7 +253,9 @@ Method SqlCosVariable(ParentElement As PXW.DEV.BNF.Element) As %Library.Boolean
     Set parser.whitespace=..whitespace
     Set parser.comment=..comment
     ;d parser.skipWhiteSpaceAndComments()
-    If parser.Variable(subElement) {
+    if parser.ThisObjectDirectProperty(subElement) {
+        set ok=1
+    } elseIf parser.Variable(subElement) {
         Set ok=1
     } 
     If ok=1 {

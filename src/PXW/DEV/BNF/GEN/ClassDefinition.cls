@@ -1,4 +1,4 @@
-/// Created: 2025-11-26 18:09:25 PXW.DEV.BNF.Compilers.Compiler1
+/// Created: 2025-12-11 20:19:42 PXW.DEV.BNF.Compilers.Compiler1
 Class PXW.DEV.BNF.GEN.ClassDefinition Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 
@@ -839,6 +839,32 @@ Method AttributeEmbeddedclass(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 				set done=1 ; end compileRules
 			}
 		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0 ; normal rollback
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  attribute_Encoded ::= 'Encoded'
+/// summary values:ENCODED
+/// summary=K
+Method AttributeEncoded(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary K
+	if '(..isKeyword("ENCODED",.value)) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"ENCODED")  {
+		set done=1 ; end compileRules
 	}
 
 	if done {
@@ -5338,11 +5364,11 @@ Method ClassParameter46OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	quit ok
 }
 
-///  class_parameter_attribute ::= attribute_Abstract | attribute_Constraint | attribute_Final | attribute_Flags | attribute_Internal | attribute_Deprecated
-/// summary=C|C|C|C|C|C
+///  class_parameter_attribute ::= attribute_Abstract | attribute_Constraint | attribute_Final | attribute_Flags | attribute_Internal | attribute_Deprecated | attribute_Encoded
+/// summary=C|C|C|C|C|C|C
 Method ClassParameterAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C|C|C|C|C|C
+	; rules summary C|C|C|C|C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -5358,6 +5384,8 @@ Method ClassParameterAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	} elseif ..AttributeInternal(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..AttributeDeprecated(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..AttributeEncoded(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
