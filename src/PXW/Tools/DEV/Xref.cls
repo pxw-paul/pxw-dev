@@ -30,13 +30,13 @@ ClassMethod WriteXRef(itemtype As %String, itemk1 As %String, itemk2 As %String,
 	Write "<table filename='XREF_"_itemk1_"'>"
 	Write "		<thead>",!
 	Write "			<tr>",!
-	Write "				<th><a href='"_(..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,newflags_",BY ITEM"))_"'>Item Key1</a></th>",!
-	Write "				<th><a href='"_(..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,newflags_",BY ITEM"))_"'>Item Key2</a></th>",!
+	Write "				<th><a href="""_(..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,newflags_",BY ITEM"))_""">Item Key1</a></th>",!
+	Write "				<th><a href="""_(..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,newflags_",BY ITEM"))_""">Item Key2</a></th>",!
 	Write "				<th>Mode</th>",!
 	Write "				<th>Called By Type</th>",!
-	Write "				<th><a href='"_(..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,newflags_",BY CALLED"))_"'>Called By Key1</a></th>",!
-	Write "				<th><a href='"_(..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,newflags_",BY CALLED"))_"'>Called By Key2</a></th>",!
-	Write:showk3 "				<th><a href='"_(..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,newflags_",BY CALLED"))_"'>Called By Key3</a></th>",!
+	Write "				<th><a href="""_(..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,newflags_",BY CALLED"))_""">Called By Key1</a></th>",!
+	Write "				<th><a href="""_(..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,newflags_",BY CALLED"))_""">Called By Key2</a></th>",!
+	Write:showk3 "				<th><a href="""_(..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,newflags_",BY CALLED"))_""">Called By Key3</a></th>",!
 	Write "				<th>Code</th>",!
 	Write "			</tr>",!
 	Write "		</thead>",!
@@ -45,14 +45,14 @@ ClassMethod WriteXRef(itemtype As %String, itemk1 As %String, itemk2 As %String,
 	While rs.%Next() {
 		Write "<tr>"
 		Write "<td class='"_$$$classProgramName_"'>"_..EscapeHTML(rs.ItemKey1)_"</td>"
-		Write "<td><a class="_$$$classProgramLabel_" href='"_..HREFTo(rs.ItemType,rs.ItemKey1,rs.ItemKey2)_"'>"_..EscapeHTML(rs.ItemKey2)_"</a></td>"
+		Write "<td><a class="_$$$classProgramLabel_" href="""_..HREFTo(rs.ItemType,rs.ItemKey1,rs.ItemKey2)_""">"_..EscapeHTML(rs.ItemKey2)_"</a></td>"
 		Write "<td>"_..EscapeHTML(rs.CalledByCommand)_"</td>"
 		Write "<td>"_..EscapeHTML(rs.CalledByType)_"</td>"
 		Write "<td class='"_$$$classProgramName_"'>"_..EscapeHTML(rs.CalledByKey1)_"</td>"
 		Write "<td>"
 			Set page=##class(PXW.Tools.DEV.CodeDisplayPage).GetPageClass(rs.CalledByType)
 			If page'="" {
-				Write "<a class="_$$$classProgramLabel_" href='"_$CLASSMETHOD(page,"HREFToK123",rs.CalledByKey1,rs.CalledByKey2,rs.LineNumber)_"'>"
+				Write "<a class="_$$$classProgramLabel_" href="""_$CLASSMETHOD(page,"HREFToK123",rs.CalledByKey1,rs.CalledByKey2,rs.LineNumber)_""">"
 				Write ..EscapeHTML(rs.CalledByKey2)
 				Write "</a>"
 			}  Else {
@@ -87,14 +87,14 @@ ClassMethod WriteXRef(itemtype As %String, itemk1 As %String, itemk2 As %String,
 ClassMethod WriteNav()
 {
 	Do ..HREFFrom(.itemtype,.itemk1,.itemk2,.calledByCommand,.calledByKey1,.calledByKey2,.windowSize,.flags,.codeSearch)
-	Write "<a href='"_##class(PXW.Tools.DEV.XrefBuild).HREFTo()_"'>Build Xref</a>"
-	Write "<a href='"_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize+1,flags,codeSearch)_"'>Window +</a>"
-	If windowSize>0 Write "<a href='"_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize-1,flags,codeSearch)_"'>Window -</a>"
-	If itemk2'="" Write "<a href='"_..HREFTo(itemtype,itemk1,"","","","",windowSize,flags,codeSearch)_"'>All "_itemk1_"</a>"
-	If flags'["EXTERNAL" Write "<a href='"_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,flags_",EXTERNAL",codeSearch)_"'>External Only</a>"
-	If flags["EXTERNAL" Write "<a href='"_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,$REPLACE(flags,",EXTERNAL",""),codeSearch)_"'>Include Internal</a>"
-	If flags'["SUPER" Write "<a href='"_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,flags_",SUPER",codeSearch)_"'>Include Super</a>"
-	If flags["SUPER" Write "<a href='"_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,$REPLACE(flags,",SUPER",""),codeSearch)_"'>Exclude Super</a>"
+	Write "<a href="""_##class(PXW.Tools.DEV.XrefBuild).HREFTo()_""">Build Xref</a>"
+	Write "<a href="""_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize+1,flags,codeSearch)_""">Window +</a>"
+	If windowSize>0 Write "<a href="""_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize-1,flags,codeSearch)_""">Window -</a>"
+	If itemk2'="" Write "<a href="""_..HREFTo(itemtype,itemk1,"","","","",windowSize,flags,codeSearch)_""">All "_itemk1_"</a>"
+	If flags'["EXTERNAL" Write "<a href="""_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,flags_",EXTERNAL",codeSearch)_""">External Only</a>"
+	If flags["EXTERNAL" Write "<a href="""_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,$REPLACE(flags,",EXTERNAL",""),codeSearch)_""">Include Internal</a>"
+	If flags'["SUPER" Write "<a href="""_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,flags_",SUPER",codeSearch)_""">Include Super</a>"
+	If flags["SUPER" Write "<a href="""_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,$REPLACE(flags,",SUPER",""),codeSearch)_""">Exclude Super</a>"
 
 	&html<
 		<form action='PXW.Tools.DEV.Xref.cls'>
@@ -138,7 +138,7 @@ ClassMethod WriteNav()
 		</form>
 	>
 	Set ons=%NS,%NS="LOCAL_USER"
-	Write "<a target=_blank title='To get an idea of what the parameters can do' href='"_##class(PXW.Tools.DEV.Class).HREFTo("PXW.Xref.Queries","Get")_"'>Show query</a>",!
+	Write "<a target=_blank title='To get an idea of what the parameters can do' href="""_##class(PXW.Tools.DEV.Class).HREFTo("PXW.Xref.Queries","Get")_""">Show query</a>",!
 	Set %NS=ons
 }
 

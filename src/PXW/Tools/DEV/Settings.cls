@@ -22,8 +22,8 @@ ClassMethod WriteMainBody(ByRef scratch)
             Write "<tr>"
             Write "<td>"_rs.%Get("CodeType")_"</td>",!
             Write "<td>"_rs.%Get("Usage")_"</td>",!
-            Write "<td><a class='"_$$$classProgramName_"' href='"_##class(PXW.Tools.DEV.Class).HREFTo(rs.%Get("Class"))_"'>"_..EscapeHTML(rs.%Get("Class"))_"</a></td>",!
-            Write "<td><a class='"_$$$classProgramName_"' href='"_##class(PXW.Tools.DEV.ChangeNS).HREFTo(rs.%Get("Namespace"))_"'>"_..EscapeHTML(rs.%Get("Namespace"))_"</a></td>",!
+            Write "<td><a class='"_$$$classProgramName_"' href="""_##class(PXW.Tools.DEV.Class).HREFTo(rs.%Get("Class"))_""">"_..EscapeHTML(rs.%Get("Class"))_"</a></td>",!
+            Write "<td><a class='"_$$$classProgramName_"' href="""_##class(PXW.Tools.DEV.ChangeNS).HREFTo(rs.%Get("Namespace"))_""">"_..EscapeHTML(rs.%Get("Namespace"))_"</a></td>",!
             Write "</tr>"
         }
         &html<

@@ -353,7 +353,7 @@ ClassMethod WriteStyleChangeSelection() As %String
 		Set class=""
 		If name=current Set class=$$$classHiliteRow
 		Write "<tr class='"_class_"'>"
-		Write "<td><a href='"_..HREFTo(name)_"'>"_name_$SELECT(name=current:"*",1:"")_"</a></td>"
+		Write "<td><a href="""_..HREFTo(name)_""">"_name_$SELECT(name=current:"*",1:"")_"</a></td>"
         Write "</tr>"
 	}
 	Write "</tbody>"

@@ -199,7 +199,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 			Set calls=rs.Get("CountOfCalls"),totalcalls=totalcalls+calls
 			Write "<tr>"
 			Write "<td>"_..EscapeHTML(rs.Get("ClassName"))_"</td>"
-			Write "<td>"_"<a href='"_..HREFTo(rs.Get("ClassName"),rs.Get("MethodName"))_"'>"_..EscapeHTML(rs.Get("MethodName"))_"</a>"_"</td>"
+			Write "<td>"_"<a href="""_..HREFTo(rs.Get("ClassName"),rs.Get("MethodName"))_""">"_..EscapeHTML(rs.Get("MethodName"))_"</a>"_"</td>"
 			Write "<td style='text-align:right;'>"_$JUSTIFY(time,0,6)_"</td>"
 			Write "<td style='text-align:right;'>"_calls_"</td>"
 			Write "<td style='text-align:right;'>"_$JUSTIFY(rs.Get("AverageTime"),0,6)_"</td>"

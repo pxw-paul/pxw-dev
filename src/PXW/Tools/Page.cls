@@ -12,7 +12,7 @@ Include (PXW.Debuggers.Macros, PXW.Tools.Styles.macros)
 /// Override the HREFTo method so that tools can get a HREF TO a page:
 /// <example>
 ///  ; create a link to the class display page to display this class
-///  write "<a href='"_##class(PXW.Tools.DEV.Class).HREFTo("PXW.Tools.Page")_"'>Tools</a>"
+///  write "<a href="""_##class(PXW.Tools.DEV.Class).HREFTo("PXW.Tools.Page")_""">Tools</a>"
 /// </example>
 /// </p>
 Class PXW.Tools.Page Extends %CSP.Page
@@ -475,7 +475,7 @@ ClassMethod WriteStatus(sc As %Status)
         Set caller=$GET(err(1,"caller"))
         Set txt=..EscapeHTML(err(1))
         If caller'="" {
-			Set alink="<a class='"_$$$classLabel_"' href='"_##class(PXW.Tools.DEV.Routine).HREFTo(caller)_"'>"_..EscapeHTML(caller)_"</a>"
+			Set alink="<a class='"_$$$classLabel_"' href="""_##class(PXW.Tools.DEV.Routine).HREFTo(caller)_""">"_..EscapeHTML(caller)_"</a>"
             If txt[caller {
 				Set txt=$REPLACE(txt,caller,alink)
 			} Else {

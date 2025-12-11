@@ -28,7 +28,7 @@ ClassMethod WriteMainBody()
 		Write "<td>"
 			set page=##class(PXW.Tools.DEV.CodeDisplayPage).GetPageClass(rs.ItemType)
 			If page'="" {
-				Write "<a class="_$$$classProgramLabel_" href='"_$CLASSMETHOD(page,"HREFToK123",rs.ItemKey1)_"'>"
+				Write "<a class="_$$$classProgramLabel_" href="""_$CLASSMETHOD(page,"HREFToK123",rs.ItemKey1)_""">"
 				Write ..EscapeHTML(rs.ItemKey1)
 				Write "</a>"
 			}  Else {
@@ -46,7 +46,7 @@ ClassMethod WriteMainBody()
 /// Output 1 Anchor tag for each option in the navigation. Use the scratch variable for anything you want to get from BODY
 ClassMethod WriteNav(ByRef scratch)
 {
-	Write "<a href='"_##class(PXW.Tools.DEV.XrefBuild).HREFTo()_"'>Build Xref</a>"
+	Write "<a href="""_##class(PXW.Tools.DEV.XrefBuild).HREFTo()_""">Build Xref</a>"
 }
 
 /// This should return a string of the href to this page based on the input parameters

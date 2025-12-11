@@ -55,7 +55,7 @@ ClassMethod WriteCodeList(Type As %String, Name As %String)
                     Write "</span>"
                     
                 } Else {
-                    Write "<a class='"_$$$classProgramName_"' href='"_$CLASSMETHOD(page,"HREFToID",id,name,subtyp)_"'>"
+                    Write "<a class='"_$$$classProgramName_"' href="""_$CLASSMETHOD(page,"HREFToID",id,name,subtyp)_""">"
                     Write ..EscapeHTML(name) 
                     Write "</a>"
                 }
@@ -93,7 +93,7 @@ ClassMethod WriteNav(ByRef scratch)
         While rs.%Next() {
             Set cref=name_"."_rs.%Get("Type")
             Set class=$s($$$UPPER(rs.%Get("Type"))=utype:"class='"_$$$classHilite_"'",1:"")
-            Write "<a "_class_" href='"_..HREFTo(cref)_"'>"_..EscapeHTML(cref)_"</a>",!
+            Write "<a "_class_" href="""_..HREFTo(cref)_""">"_..EscapeHTML(cref)_"</a>",!
         }
 
         ; find all tools that match    
@@ -120,7 +120,7 @@ ClassMethod WriteNav(ByRef scratch)
                     Set type=$PARAMETER(name,"ToolType")
                     Set css="toolTypeInternal"
                     If $$$UPPER(type)="CODE" Set css="toolTypeCode"
-                    Write "<a class='"_css_"' href='"_$CLASSMETHOD(name,"HREFTo")_"'>"_..EscapeHTML(name)_"</a>",!
+                    Write "<a class='"_css_"' href="""_$CLASSMETHOD(name,"HREFTo")_""">"_..EscapeHTML(name)_"</a>",!
                 }
             }
         }

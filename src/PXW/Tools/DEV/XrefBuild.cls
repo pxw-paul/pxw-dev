@@ -128,8 +128,8 @@ ClassMethod HREFTo(Package As %String = "", Force As %Boolean = 0, DeleteOld As 
 /// Output 1 Anchor tag for each option in the navigation. Use the scratch variable for anything you want to get from BODY
 ClassMethod WriteNav(ByRef scratch)
 {
-	Write "<a href='"_##class(PXW.Tools.DEV.XrefBuildProblems).HREFTo("")_"'>Problems</a>"
-	Write "<a href='"_..HREFTo("","",1)_"'>Delete status history</a>"
+	Write "<a href="""_##class(PXW.Tools.DEV.XrefBuildProblems).HREFTo("")_""">Problems</a>"
+	Write "<a href="""_..HREFTo("","",1)_""">Delete status history</a>"
 }
 
 }

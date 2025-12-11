@@ -397,10 +397,8 @@ Method xrefCDEFTypeClassReference(element As PXW.DEV.BNF.Elements.ClassDefinitio
 			For i=1:1:list.Count() {
 				Set itemE=list.GetAt(i)
 				Set a=itemE.FirstAtom()
-				;d ..wrapElementHTML(itemE,"<a href='"_##class(PXW.Tools.DEV.Class).HREFTo(class,itemE.ToString(0),,,..This)_"'>","</a>")
 				Set ..CalledByCommand="Override" 
 				If $LISTFIND($LISTFROMSTRING("Property","Relationship"),..ThisItemType) {
-					;Do ..wrapElementHTML(itemE,"<a href='"_..HREFToClass(..This,..ThisMethod,itemE.ToString(0))_"'>","</a>")
 					If ..ClassServer.GetPropertyParameterDetails(..CalledByClassName,..CalledByItemName,itemE.ToString(0),.ppsource) {
 						Do ..SaveCDEFCref(ppsource,a.line,itemE.ToString(0))
 					}
@@ -472,8 +470,7 @@ Method xrefCOSVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compi
                 ; is the paremeter a string
                 If parameter?1"""".AN1"""" {
 					Set atom=arrayE.FirstAtom()
-                    ;d ..wrapElementHTML(arrayE,"<a href='"_..HREFToClass(..This,$tr(parameter,"""",""))_"'","</a>")
-					Do ..SaveCOSXref("CLS",..CalledByClassName,$TRANSLATE(parameter,"""",""),"%parameter",atom)
+ 					Do ..SaveCOSXref("CLS",..CalledByClassName,$TRANSLATE(parameter,"""",""),"%parameter",atom)
                 }
             }
         }
@@ -556,7 +553,6 @@ Method xrefCOSClassmethodMethod(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.
             ; its a string, so its a hard coded method name
             If $EXTRACT(simple,1)="""",$EXTRACT(simple,*)="""" {
                 Set mname=$TRANSLATE(simple,"""","")
-                ;d ..wrapElementHTML(expressionE,"<a href='"_##class(PXW.Tools.DEV.Xref).HREFTo("CLS","*",mname)_"'>","</a>")
 				Set atom=expressionE.FirstAtom()
 				Do ..SaveCOSXref("CLS","*",mname,"$classmethod",atom)
             }

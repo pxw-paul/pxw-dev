@@ -33,9 +33,9 @@ ClassMethod WriteAnalysis(itemtype As %String, itemk1 As %String, itemk2 As %Str
 		Write "<tr>"
 		; WHAT ABOUT XREF ON ROUTINES????
 		If rs.ItemType="CLS" {
-			Write "<td><a class='"_$$$classProgramName_"' href='"_##class(PXW.Tools.DEV.Class).HREFTo(rs.ItemKey1)_"'>"_..EscapeHTML(rs.ItemKey1)_"</a></td>"
-			Write "<td><a class="_$$$classProgramLabel_" href='"_##class(PXW.Tools.DEV.Class).HREFTo(rs.ItemKey1,rs.ItemKey2)_"'>"_..EscapeHTML(rs.ItemKey2)_"</a></td>"
-			Write "<td><a class="_$$$classProgramLabel_" href='"_##class(PXW.Tools.DEV.Class).HREFTo(rs.ItemKey1,rs.ItemKey2,rs.LineNumber)_"'>"_..EscapeHTML(rs.LineNumber)_"</a></td>"
+			Write "<td><a class='"_$$$classProgramName_"' href="""_##class(PXW.Tools.DEV.Class).HREFTo(rs.ItemKey1)_""">"_..EscapeHTML(rs.ItemKey1)_"</a></td>"
+			Write "<td><a class="_$$$classProgramLabel_" href="""_##class(PXW.Tools.DEV.Class).HREFTo(rs.ItemKey1,rs.ItemKey2)_""">"_..EscapeHTML(rs.ItemKey2)_"</a></td>"
+			Write "<td><a class="_$$$classProgramLabel_" href="""_##class(PXW.Tools.DEV.Class).HREFTo(rs.ItemKey1,rs.ItemKey2,rs.LineNumber)_""">"_..EscapeHTML(rs.LineNumber)_"</a></td>"
 		} Else {
 			Write "<td>"_..EscapeHTML(rs.ItemKey1)_"</td>"
 			Write "<td>"_..EscapeHTML(rs.ItemKey2)_"</td>"
@@ -49,7 +49,7 @@ ClassMethod WriteAnalysis(itemtype As %String, itemk1 As %String, itemk2 As %Str
 
 ClassMethod WriteNav()
 {
-	Write "<a href='"_##class(PXW.Tools.DEV.XrefBuild).HREFTo()_"'>Build Xref/Analysis</a>"
+	Write "<a href="""_##class(PXW.Tools.DEV.XrefBuild).HREFTo()_""">Build Xref/Analysis</a>"
 }
 
 /// This shoud output some variables, getting the data from %request

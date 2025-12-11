@@ -124,7 +124,7 @@ ClassMethod WriteNav(ByRef scratch)
 	    Set aname=$ORDER(scratch(aname))
         Quit:aname=""
 
-        Write "<a href='#"_aname_"'>"_aname_"</a>"
+        Write "<a href=""#"_aname_""">"_aname_"</a>"
     }
 }
 

@@ -229,13 +229,13 @@ Method writeSQLPlanTableIndex(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Com
     Set indexE=element.findFirstElementByType("IndexName",0)
     If $ISOBJECT(schemaE),$ISOBJECT(tableE) {
         Set table=schemaE.ToString(0)_"."_tableE.ToString(0)
-        Do ..wrapElementHTML(schemaE,"<a class="_$$$classProgramName_" href='"_..HREFToClass(table)_"'>","</a>")
-        Do ..wrapElementHTML(tableE,"<a class="_$$$classProgramName_" href='"_..HREFToClass(table)_"'>","</a>")
+        Do ..wrapElementHTML(schemaE,"<a class="_$$$classProgramName_" href="""_..HREFToClass(table)_""">","</a>")
+        Do ..wrapElementHTML(tableE,"<a class="_$$$classProgramName_" href="""_..HREFToClass(table)_""">","</a>")
     }
     If $ISOBJECT(schemaE),$ISOBJECT(tableE),$ISOBJECT(indexE) {
         Set table=schemaE.ToString(0)_"."_tableE.ToString(0)
         Set index=indexE.ToString(0)
-        Do ..wrapElementHTML(indexE,"<a class='"_$$$classObjectMember_"' href='"_..HREFToClass(table,index)_"'>","</a>")
+        Do ..wrapElementHTML(indexE,"<a class='"_$$$classObjectMember_"' href="""_..HREFToClass(table,index)_""">","</a>")
     }
     /*
     set subscriptE=element.findFirstElementByType("TableSubscriptAlias",0)
@@ -261,21 +261,21 @@ Method writeSQLPlanTable(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compiler
     Set schemaE=element.findFirstElementByType("SchemaName")
     Set tableE=element.findFirstElementByType("TableName")
     If $ISOBJECT(schemaE),$ISOBJECT(tableE) {
-                Do ..wrapElementHTML(schemaE,"<a class="_$$$classProgramName_" href='"_..HREFToClass(schemaE.ToString(0)_"."_tableE.ToString(0))_"'>","</a>")
-                Do ..wrapElementHTML(tableE,"<a class="_$$$classProgramName_" href='"_..HREFToClass(schemaE.ToString(0)_"."_tableE.ToString(0))_"'>","</a>")
+                Do ..wrapElementHTML(schemaE,"<a class="_$$$classProgramName_" href="""_..HREFToClass(schemaE.ToString(0)_"."_tableE.ToString(0))_""">","</a>")
+                Do ..wrapElementHTML(tableE,"<a class="_$$$classProgramName_" href="""_..HREFToClass(schemaE.ToString(0)_"."_tableE.ToString(0))_""">","</a>")
     }
     Quit ""
 }
 
 Method writeSQLPlanModuleName(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="ModuleName")
 {
-    Do ..wrapElementHTML(element,"<a class='"_$$$classLabel_"' href='#module_"_element.ToString(0)_"'>","</a>")
+    Do ..wrapElementHTML(element,"<a class='"_$$$classLabel_"' href=""#module_"_element.ToString(0)_""">","</a>")
     Quit ""
 }
 
 Method writeSQLPlanSubqueryName(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="SubqueryName")
 {
-    Do ..wrapElementHTML(element,"<a class='"_$$$classLabelDef_"' href='#subquery_"_element.ToString(0)_"'>","</a>")
+    Do ..wrapElementHTML(element,"<a class='"_$$$classLabelDef_"' href=""#subquery_"_element.ToString(0)_""">","</a>")
     Quit ""
 }
 
