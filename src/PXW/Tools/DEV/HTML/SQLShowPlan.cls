@@ -99,14 +99,14 @@ Method writePlanSql(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.ele
 
 Method writePlanWarning(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="WarningSection")
 {
-    Do ..wrapElementHTML(element,"<div class=Warning><h3>Warning</h3>","</div>")
+    Do ..wrapElementHTML(element,"<div class="_$$$classWarning_"><h3>Warning</h3>","</div>")
     Do ..ClearAllButContent(element)
     Quit ""
 }
 
 Method writePlanInfo(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="InfoSection")
 {
-    Do ..wrapElementHTML(element,"<div class=Warning><h3>Info</h3>","</div>")
+    Do ..wrapElementHTML(element,"<div class="_$$$classWarning_"><h3>Info</h3>","</div>")
     Do ..ClearAllButContent(element)
     Quit ""
 }
@@ -237,15 +237,7 @@ Method writeSQLPlanTableIndex(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Com
         Set index=indexE.ToString(0)
         Do ..wrapElementHTML(indexE,"<a class='"_$$$classObjectMember_"' href="""_..HREFToClass(table,index)_""">","</a>")
     }
-    /*
-    set subscriptE=element.findFirstElementByType("TableSubscriptAlias",0)
-    if $isobject(subscriptE) {
-            set aliasNameE=subscriptE.findFirstElementByType("AliasName",0)
-            If $ISOBJECT(aliasNameE) {
-                Set aliasname="alias"_aliasNameE.ToString(0)
-                Do ..wrapElementHTML(aliasNameE,"<span class='SQLTableAlias' title='show alias usage' fetchid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
-        }
-    }*/
+ 
     Quit ""
 }
 
