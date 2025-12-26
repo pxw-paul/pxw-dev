@@ -179,8 +179,22 @@ Method WriteStyles()
 		background-color: var(--lcars2);
 		padding: 0px; 
 		text-align: right; 
-				/*transform:scale(1,1.5);*/
+		position:relative;
 	  }
+
+	#toolsTitle:before { content:' '; 
+					margin: 0 10px 0 10px;
+					border-left:10px solid black; border-right:10px solid black;
+					background: linear-gradient(var(--lcars3) 50%, black 50%);
+					position:absolute; left:400px; top:0; height: 100%; width:10%; }
+
+	#toolsTitle:after { content:' '; 
+					margin: 0 10px 0 10px;
+					border-left:10px solid black; border-right:10px solid black;
+					background: linear-gradient(black 50%,var(--lcars4) 50%);
+					position:absolute; left:600px; top:0; height: 100%; width:20%; }
+
+
 	#toolsTitle h1 {
 		margin:0px 10px 0px 10px;
 		border:0px;

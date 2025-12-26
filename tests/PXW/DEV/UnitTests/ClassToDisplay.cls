@@ -6,13 +6,13 @@ Property Prop1 As %String;
 Property Prop2 As %Integer [ Aliases = {property two ,p2}, SqlComputeCode = { s {*}={Prop_1} } ];
 
 /**/
-ClassMethod WorkOnAList(ObjList As %ListOfObjects(ELEMENTTYPE="PXW.DEV.UnitTests.ClassToDisplay",CLASSNAMEINOID=1)) As %Status
+ClassMethod WorkOnAList(ObjList As %ListOfObjects(ELEMENTTYPE="PXW.DEV.UnitTests.ClassToDisplay",CLASSNAMEINOID=1)) As ClassToDisplay
 {
 	#dim p as %SYSTEM.Query.Plan
 	#dim x as %XML.ImportHandler
 	#dim r as %Library.AbstractResultSet
 	#dim z as %ZEN.Report.Display.COSChart.cchartDualY
-	#define mac s x=1
+	#define mac s x=1 
 	s y=2
 	$$$mac
 	s z=3

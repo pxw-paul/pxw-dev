@@ -27,7 +27,7 @@ Method partsGetAt(key As %Integer) As PXW.DEV.Particle
 	Quit part
 }
 
-Method partsGetNext(ByRef key As %Integer = "") As PXW.DEV.Particle
+Method partsGetNext(ByRef key As %Integer = "") As Particle
 {
 	#dim %PXWparts as PXW.DEV.Particle
 	;q ..parts.GetNext(.key)

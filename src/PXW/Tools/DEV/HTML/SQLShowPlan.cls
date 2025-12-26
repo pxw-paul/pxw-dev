@@ -79,7 +79,7 @@ Method writePlanNewline(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers
 
 Method writePlanForEach(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="ForEachContent")
 {
-    Do ..wrapElementHTML(element,"<div style='margin-left:20px; >","</div>")
+    Do ..wrapElementHTML(element,"<div style='margin-left:20px;'>","</div>")
     ;do ..ClearAllButContent(element)
     Quit ""
 }

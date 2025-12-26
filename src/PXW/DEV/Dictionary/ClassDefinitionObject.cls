@@ -79,7 +79,7 @@ Method GetClassStudioText(ClassName As %String, Output Text As %String, Output l
 }
 
 /// Use this if you prefer to deal with * rather than %
-Method ListClassDetailsWild(ClassWild As %String, listHidden As %Boolean = 0, listGenerated As %Boolean = 0) As PXW.DEV.Dictionary.AtelierRS
+Method ListClassDetailsWild(ClassWild As %String, listHidden As %Boolean = 1, listGenerated As %Boolean = 0) As PXW.DEV.Dictionary.AtelierRS
 {
     Set cls=ClassWild,escape=""
 	If cls["%" {
@@ -95,7 +95,7 @@ Method ListClassDetailsWild(ClassWild As %String, listHidden As %Boolean = 0, li
     Quit ..ListClassDetailsLike(cls,escape,listHidden,listGenerated)
 }
 
-Method ListClassDetailsLike(ClassLike As %String, escape As %String = "", listHidden As %Boolean = 0, listGenerated As %Boolean = 0) As PXW.DEV.Dictionary.AtelierRS
+Method ListClassDetailsLike(ClassLike As %String, escape As %String = "", listHidden As %Boolean = 1, listGenerated As %Boolean = 0) As PXW.DEV.Dictionary.AtelierRS
 {
     $$$DEBUGMethodBegin
     Kill parameters

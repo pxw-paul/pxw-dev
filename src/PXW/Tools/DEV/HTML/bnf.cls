@@ -308,7 +308,7 @@ Method writeCDEFClassDefinition(element As PXW.DEV.BNF.Elements.ClassDefinition)
     Set keywordatom=element.FirstAtom()
     Do ..OutputKeywordCommentAsDocumentation(element,.commentid)
     Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This)
-    Set menu="<div class="""_$$$classLensMenu_" nocopy'>"
+    Set menu="<div class="""_$$$classLensMenu_" nocopy"">"
     Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,)_""">Xref ("_count_") </a>"
     Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,"_class","_Extends")
     If overriddenby>0 {
@@ -338,7 +338,7 @@ Method writeCDEFClassProperty(element As PXW.DEV.BNF.Elements.ClassDefinition) A
     If $ISOBJECT(nameelement) {
         Set name=nameelement.ToString(0)
         Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
-        Set menu="<div class="""_$$$classLensMenu_" nocopy'>"
+        Set menu="<div class="""_$$$classLensMenu_" nocopy"">"
         Set overrides=..ClassServer.GetPropertyOverrides(..This_"||"_name)
         If overrides'="" {
             Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_..HREFToClass(overrides,name)_""">Override </a>"
@@ -361,7 +361,7 @@ Method writeCDEFClassParameter(element As PXW.DEV.BNF.Elements.ClassDefinition) 
     If $ISOBJECT(nameelement) {
         Set name=nameelement.ToString(0)
         Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
-        Set menu="<div class="""_$$$classLensMenu_"  nocopy'>"
+        Set menu="<div class="""_$$$classLensMenu_"  nocopy"">"
         Set overrides=..ClassServer.GetParameterOverrides(..This_"||"_name)
         If overrides'="" {
             Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_..HREFToClass(overrides,name)_""">Override </a>"
@@ -385,7 +385,7 @@ Method writeCDEFClassMethod(element As PXW.DEV.BNF.Elements.ClassDefinition) As 
     If $ISOBJECT(nameelement) {
         Set name=nameelement.ToString(0)
         Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
-        Set menu="<div class="""_$$$classLensMenu_"  nocopy'>"
+        Set menu="<div class="""_$$$classLensMenu_"  nocopy"">"
         Set overrides=..ClassServer.GetMethodOverrides(..This_"||"_name)
         If overrides'="" {
             Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_..HREFToClass(overrides,name)_""">Override </a>"
@@ -421,7 +421,7 @@ Method writeCDEFClassQuery(element As PXW.DEV.BNF.Elements.ClassDefinition) As P
     If $ISOBJECT(nameelement) {
         Set name=nameelement.ToString(0)
         Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
-        Set menu="<div class="""_$$$classLensMenu_" nocopy'>"
+        Set menu="<div class="""_$$$classLensMenu_" nocopy"">"
         ; not sure if/how I recognise overridden QUERIES
         /*Set overrides=..ClassServer.GetPropertyOverrides(..This_"||"_name)
         If overrides'="" {
@@ -476,7 +476,7 @@ Method writeCDEFIndex(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DE
     If $ISOBJECT(nameelement) {
         Set name=nameelement.ToString(0)
         Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
-        Set menu="<div class="""_$$$classLensMenu_" nocopy'>"
+        Set menu="<div class="""_$$$classLensMenu_" nocopy"">"
         ; not sure if indices even can be overridden
         /*Set overrides=..ClassServer.GetPropertyOverrides(..This_"||"_name)
         If overrides'="" {
@@ -682,7 +682,7 @@ Method writeCOSCosDirective(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.
                 Do ..AddToIndex(name,"MAC",anchor)
                 Do ..wrapElementHTML(element,"<a name="""_anchor_""">","</a>") ; anchor goes before the member (ie before the comment)
 
-                Set menu="<div class="""_$$$classLensMenu_"  nocopy'>"
+                Set menu="<div class="""_$$$classLensMenu_"  nocopy"">"
                 Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_##class(PXW.Tools.DEV.Xref).HREFTo("INC",..This,name)_""">Xref ("_count_") </a>"
                 Set menu=menu_"</div>"
                 Do ..wrapAtomHTML(keywordatom,menu,"")
@@ -928,8 +928,8 @@ Method writeObjectVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.C
     Set variablename=element.ToStringAtomsOnly(0)
     ; add the hiliting function to the first atom only
     Set atom=element.FirstAtom()
-    Set cssclass="COSVariable"
-    If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(variablename) Set cssclass="COSVariableParameter"
+    Set cssclass=$$$classVariable
+    If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(variablename) Set cssclass=$$$classVariableParameter
     Do ..wrapAtomHTML(atom,"<span class="""_cssclass_""" fetchid="""_variablename_""" onclick=""HiliteSets('"_variablename_"');"">","</span>")
     Quit ""
 }
@@ -941,8 +941,8 @@ Method writeCOSVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.C
     Set variablename=element.ToStringAtomsOnly(0)
     ; add the hiliting function to the first atom only
     Set atom=element.FirstAtom()
-    Set cssclass="COSVariableSet"
-    If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(variablename) Set cssclass="COSVariableParameterSet"
+    Set cssclass=$$$classVariableSet
+    If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(variablename) Set cssclass=$$$classVariableParameterSet
     Do ..wrapAtomHTML(atom,"<span class="""_cssclass_""" varid="""_variablename_""" onclick=""HiliteSets('"_variablename_"');"">","</span>")
 
     If $ISOBJECT(..Analyser),$DATA(..Analyser.stringVarsElement(+element)) {
@@ -984,8 +984,8 @@ Method writeJSIdentifier(element As PXW.DEV.BNF.Elements.JS) As PXW.DEV.BNF.Comp
     Set variablename=element.ToStringAtomsOnly(0)
     ; add the hiliting function to the first atom only
     Set atom=element.FirstAtom()
-    Set cssclass="COSVariable"
-    If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(variablename) Set cssclass="COSVariableParameterSet"
+    Set cssclass=$$$classVariable
+    If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(variablename) Set cssclass=$$$classVariableParameter
     Do ..wrapAtomHTML(atom,"<span class="""_cssclass_""" fetchid="""_variablename_""" onclick=""HiliteSets('"_variablename_"');"">","</span>")
     Quit ""
 }
@@ -1273,8 +1273,8 @@ Method writePYImportFrom(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.
 Method writePYStarTarget(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="StarTarget")
 {
     Set varname=element.ToString(0)
-    Set cssclass="COSVariable"
-    If $ISOBJECT(..PythonAnalyser),..PythonAnalyser.IsParameterVariable(varname) Set cssclass="COSVariableParameter"
+    Set cssclass=$$$classVariable
+    If $ISOBJECT(..PythonAnalyser),..PythonAnalyser.IsParameterVariable(varname) Set cssclass=$$$classVariableParameter
     Do ..wrapElementHTML(element,"<span class="""_cssclass_""" varid="""_varname_""" onclick=""HiliteSets('"_varname_"');"">","</span>")
     Quit ""
 }
@@ -1282,8 +1282,8 @@ Method writePYStarTarget(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.
 Method writePYParam(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="Param")
 {
     Set varname=element.ToString(0)
-    Set cssclass="COSVariable"
-    If $ISOBJECT(..PythonAnalyser),..PythonAnalyser.IsParameterVariable(varname) Set cssclass="COSVariableParameter"
+    Set cssclass=$$$classVariable
+    If $ISOBJECT(..PythonAnalyser),..PythonAnalyser.IsParameterVariable(varname) Set cssclass=$$$classVariableParameter
     Do ..wrapElementHTML(element,"<span class="""_cssclass_""" varid="""_varname_""" onclick=""HiliteSets('"_varname_"');"">","</span>")  
     Quit ""
 }
@@ -1298,9 +1298,9 @@ Method writePYAtom(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compil
             Set type=$PIECE(a.type,":",1)
             If type="Identifier" {
                 Set varname=a.value
-                Set cssclass="COSVariable"
-                If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(varname) Set cssclass="COSVariableParameter"
-                If $ISOBJECT(..PythonAnalyser),..PythonAnalyser.IsParameterVariable(varname) Set cssclass="COSVariableParameter"
+                Set cssclass=$$$classVariable
+                If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(varname) Set cssclass=$$$classVariableParameter
+                If $ISOBJECT(..PythonAnalyser),..PythonAnalyser.IsParameterVariable(varname) Set cssclass=$$$classVariableParameter
                 Do ..wrapAtomHTML(a,"<span class="""_cssclass_""" fetchid="""_varname_""" onclick=""HiliteSets('"_varname_"');"">","</span>")
             } 
         }

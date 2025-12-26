@@ -1,4 +1,4 @@
-/// Created: 2025-12-11 20:19:42 PXW.DEV.BNF.Compilers.Compiler1
+/// Created: 2025-12-24 17:24:36 PXW.DEV.BNF.Compilers.Compiler1
 Class PXW.DEV.BNF.GEN.ClassDefinition Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 
@@ -6200,7 +6200,7 @@ Method ClassReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	quit ok
 }
 
-///  class_reference_list ::= '(' [class_reference] ( ',' class_reference )* ')'
+///  class_reference_list ::= '(' [class_reference] ( ',' [ class_reference ] )* ')'
 /// summary values:(
 /// summary=P&[C]&(?4punctuation:4?)*&P
 Method ClassReferenceList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -6233,7 +6233,7 @@ Method ClassReferenceList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	quit ok
 }
 
-///  ( ',' class_reference )*
+///  ( ',' [ class_reference ] )*
 Method ClassReferenceList13RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
@@ -6250,18 +6250,18 @@ Method ClassReferenceList13RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef s
 	quit ok
 }
 
-///  ',' class_reference
+///  ',' [ class_reference ]
 /// summary values:,
-/// summary=P&C
+/// summary=P&[C]
 Method ClassReferenceList14Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary P&C
+	; rules summary P&[C]
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ /*4*/ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,",")  {
-		if ..ClassReference(.subElement,.addedElement)  {
+		if $S(..ClassReference(.subElement,.addedElement) :1,1:1) {
 			set done=1 ; end compileRules
 		}
 	}
