@@ -7,6 +7,20 @@ ClassMethod WriteMainBody(ByRef scratch)
 
     Do ..HREFFrom(.CodeReference,.utype,.name)
     if utype="DIRECTRUN" {
+        ; Could we deal with parameters here, IE call HREFTo of the destination class
+        ; and then decode the URL and force the results into %request.Data
+        ; so that the final class thinks its a normal call?
+        ; Its probably ok to do this for some tools, but things like ChangeNamespace and ChangeStyle would have 
+        ; already dealt with the actual change before we get this far, we would need to override
+        ; many more methods to get that bit working.
+        ; Getting complicated!
+        ; I am starting to think this should be in the main PAGE code and not as a tool of its own!
+        ;s p1=$p(CodeReference," ",1)
+        ;if p1'="" {
+        ;    s url=$classmethod(name,"HREFTo",p1)
+        ;    d ##class(%Net.URLParser).Decompose(url,.comp)
+        ;    zw CodeReference,p1,comp
+        ;}
         do $CLASSMETHOD(name,"WriteMainBody",.scratch)
     } else {
         If name'="" {
@@ -97,6 +111,7 @@ ClassMethod WriteNav(ByRef scratch)
         }
 
         ; find all tools that match    
+        /*
         Write "<hr>" 
         Set rs=##class(%ResultSet).%New("%Dictionary.ClassDefinition:SubclassOf")
         $$$THROWONERROR(sc,rs.Execute(##class(PXW.Tools.Page).%ClassName(1)))
@@ -124,6 +139,7 @@ ClassMethod WriteNav(ByRef scratch)
                 }
             }
         }
+        */
     }
 }
 
@@ -169,6 +185,8 @@ Query SelectTypes(Namespace As %String, Type As %String) As PXW.LIB.SQL.Query [ 
         AND ((:Type IS NULL) OR (ci.Type=:Type))
 }
 
+/// Create a list of commands the user can enter as shortcuts to some of the tools.
+/// EG - the user could type $ChangeNamespace to go directly to the change namespace tool.
 ClassMethod WriteHeadForm(Page As %String)
 {
     Do ..HREFFrom(.CodeReference,.utype,.name)
@@ -190,12 +208,10 @@ ClassMethod WriteHeadForm(Page As %String)
 		Set name=rs.Data("Name")
 		Set HREFto=##class(%Dictionary.MethodDefinition).%OpenId(name_"||HREFTo")
 		If $isobject(HREFto) {
-                ;Set type=$PARAMETER(name,"ToolType")
-                ;Set css="toolTypeInternal"
-                ;If $$$UPPER(type)="CODE" Set css="toolTypeCode"
                 Set toolname=$PARAMETER(name,"ToolName")
                 if toolname'="" {
-                    set datalist=datalist_"<option value='"_..EscapeHTML(name_".DIRECTRUN")_"'>"_..EscapeHTML(toolname)_"</option>"
+                    set shortname=$tr(toolname," ","")
+                    set datalist=datalist_"<option value='"_..EscapeHTML("$"_shortname_"")_"'>"_..EscapeHTML("$"_toolname)_"</option>"
                 }
         }
 	}
@@ -203,20 +219,23 @@ ClassMethod WriteHeadForm(Page As %String)
 
    &html<
     <form id=toolsFormCodeReference action='PXW.Tools.DEV.Code.cls'>
-					<fieldset id=toolsCodeReference>
-						<legend>Code reference</legend>
-						<input type=hidden name=IFRAME value='0'>
-						<input type=hidden name=%NS value='#(%NS)#'>
-						<input list=toolsAvailable autofocus accesskey=R placeholder="Class.Name.cls" size=20
-							title='Enter Code Reference:#($CHAR(10))#routine.INT, package.name.CLS'
-						type=text id=toolInputCodeReference name=CR value='#(CR)#' size=10>
-						<input type=submit value='Go'>
-					</fieldset>
-				</form>
-                #(datalist)#
+        <fieldset id=toolsCodeReference>
+            <legend>Code reference</legend>
+            <input type=hidden name=IFRAME value='0'>
+            <input type=hidden name=%NS value='#(%NS)#'>
+            <input list=toolsAvailable autofocus accesskey=R placeholder="Class.Name.cls" size=20
+                title='Enter Code Reference:#($CHAR(10))#routine.INT, package.name.CLS'
+            type=text id=toolInputCodeReference name=CR value='#(CR)#' size=10>
+            <input type=submit value='Go'>
+        </fieldset>
+    </form>
+    #(datalist)#
     >
 }
 
+/// Sets CodeReference - the original input
+///      CodeType      - type of thing to search - or DIRECTRUN to run a tool directly
+///      Name          - the thing to search for or class to direct run
 ClassMethod HREFFrom(Output CodeReference As %String, Output CodeType As %String, Output Name As %String)
 {
 	#define ReqGet(%name) %request.Get(%name)
@@ -225,8 +244,18 @@ ClassMethod HREFFrom(Output CodeReference As %String, Output CodeType As %String
     Set type=$PIECE(CodeReference,".",*)
     Set utype=$$$UPPER(type)
 
+    ; code reference may be somthing like:
+    ; PXW*     - search all types for PXW*
+    ; PXW*.CLS - search only classes for PXW*
+    ; PXW.Tools.ChangeNamespace.DIRECTRUN - to run the Changenamespace (maybe get rid if this)
+    ; $ChangeNamespace to run the changenamespace tool directly (new version of direct run)
     If utype="DIRECTRUN" {
         set nam=$PIECE(CodeReference,".",1,*-1)
+    } elseif $e(CodeReference,1)="$" {
+        set nam=..ShortnameToToolClass($p($e(CodeReference,2,*)," ",1))
+        if nam'="" {
+            set utype="DIRECTRUN"
+        }
     } elseif ##class(PXW.DEV.Dictionary.CodeType).%ExistsId(utype) {
         Set nam=$PIECE(CodeReference,".",1,*-1)
     } Else {
@@ -245,6 +274,27 @@ ClassMethod HREFTo(CodeReference As %String) As %String
 	Set sep="&"
 	Set href=href_sep_"CR="_..EscapeURL(CodeReference),sep="&"
 	Quit href
+}
+
+/// Convert the given tool short name and convert it to the class that it relates to
+ClassMethod ShortnameToToolClass(Shortname As %String) As %String
+{
+    Set rs=##class(%ResultSet).%New("%Dictionary.ClassDefinition:SubclassOf")
+	$$$THROWONERROR(sc,rs.Execute(##class(PXW.Tools.Page).%ClassName(1)))
+	
+    set toolclass=""
+	While rs.Next() {
+		Set classname=rs.Data("Name")
+		Set HREFto=##class(%Dictionary.MethodDefinition).%OpenId(classname_"||HREFTo")
+		If $isobject(HREFto) {
+            Set toolname=$PARAMETER(classname,"ToolName")
+            set toolnameshort=$tr(toolname," ","")
+            if toolnameshort=Shortname {
+                set toolclass=classname
+            }
+        }
+	}
+    quit toolclass
 }
 
 }

@@ -86,16 +86,22 @@ Method WriteStyles()
 		--borderGood: green;
 	}	
 
-
-	body {border:0; margin:0; padding:0; 
-            background-color:#1E1E1E; color:white; 
-            height: #("100vh")#; 
+	body {
+	        background-color:#1E1E1E; color:white; 
             font-family:helvetica;  font-stretch:ultra-condensed; font-weight: bold;
-            /* font-family:okuda;*/
-            grid-column-gap:0;
-            grid-row-gap:0; 
-		}
-	a { text-decoration:none;  color: inherit;}
+    		border:0; margin:0; padding:0; 
+			height: 100%; 
+			display: grid; 
+			grid-template-areas:
+				'toolsHead toolsHead'
+				'toolsTitle toolsTitle'
+				'toolsMainBodyNav toolsMainBodyContent'
+				'toolsFooter toolsFooter';
+			grid-template-columns: #(" minmax(15%, auto) 1fr ")#;
+			grid-template-rows: auto auto #("1fr")# auto;
+			grid-column-gap: 0;
+			grid-row-gap: 0;			
+		} 	a { text-decoration:none;  color: inherit;}
 	a:visited { text-decoration:none; color: inherit; }
 	a:hover { text-decoration:none;  color: inherit; }
 	a:active { text-decoration:none;  color: inherit; }

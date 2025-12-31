@@ -418,7 +418,14 @@ Method checkCosDirectiveDimItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.
 		For i=1:1:variablelist.Count() {
 			Set var=variablelist.GetAt(i).ToString(0)
 			Set ..DimmedTypes(var)=classname
-		}	
+		}
+		set dimexprE=element.findFirstElementByType("DimExpression")
+		if $ISOBJECT(dimexprE) {
+			Set derivedtype=..DeriveTypeReturned(dimexprE)
+			if ..FullClassName(classname)'=..FullClassName(derivedtype) {
+				do ..AddElementWarning(dimexprE,"Dimmed as "_classname_" does not match derived:"_derivedtype)
+			}
+		}
 	}
 	Quit ""
 }

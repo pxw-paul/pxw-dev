@@ -59,7 +59,9 @@ The PXW tools Namespace concept and setup requires its own document.
 ### Code
 In the Code prompt you can search for code. You can use wildcards to search. EG. Searching for PXW*.cls will find all code for this project.
 
-Click on program name to display the program.
+Click on program name to display the program using one of the [code display tools](#code-display-tools).
+
+
 
 ## Summary of tools
 
@@ -71,19 +73,16 @@ There are two types of tools:
 
 ### Tools
 
-#### PXW.Tools.DEV.Analyse
-While the code is analysed for cross reference and display purposes there may be problems found that might be interesting to a programmer. This function displays the results of this.
-
-#### PXW.Tools.DEV.ChangeNS
+#### Change Namespace
 Use this tool to switch namespace to another.
 
-#### PXW.Tools.DEV.ChangeStyle
+#### Change Style
 This tool is used to change the style of the pages. There are a couple of styles provided. 
 
-#### PXW.Tools.DEV.ParserTest
+#### Parser Test
 A development tool for testing parsing of code.
 
-#### PXW.Tools.DEV.SQLShowPlan
+#### SQL Show Plan
 
 This is a new version of the SQL Show Plan in the System Management Portal.
 
@@ -96,10 +95,10 @@ On the right hand side a formatted version of the SQL Query Plan is displayed.
 ![Show Plan](/docs/pics/ShowPlan.png)
 
 
-#### PXW.Tools.DEV.Settings
+#### Settings
 Displays the various settings controlling how code is fetched and displayed. The settings cannot be modified here, the data should be updated by an install program.
 
-#### PXW.Tools.DEV.Xref
+#### Xref Search
 This tool is the user interface to the Cross Reference data. 
 
 The cross reference data what makes this tool useful. It attempts to cross reference all properties if they are used in ObjectScript or SQL views, query methods or embedded sql. 
@@ -111,17 +110,17 @@ There are limitations, it is not 100% accurate. Some of these limitations are:
 
 However the accuracy is enough to make this very useful. The class display tool will show some of this data within the class. The data can also be displayed in VSCode using a [CodeLens extension](https://github.com/pxw-paul/pxw-vscode-webpack).
 
-#### PXW.Tools.DEV.XrefBuild
+#### Xref Build
 This tool is used to request a build of the Xref data. Normally data is only built when a class has been changed since the last build. Use the Force option to force a build of the data.
 
 The Xref data needs to be built often so that it keeps up to date. Loading the home page will kick off a build if there has not been a build today. It might be a good idea to schedule a build regularly on a system that is regularly being updated - eg hourly.
 
-#### PXW.Tools.DEV.XrefBuildProblems
+#### Xref Build Problems
 During the Xref build every class is loaded, parsed and analysed. If there are any errors these will appear on this tool. There will be errors, the parser is not yet perfect and also there are some bits of code that are unusual (strange use of $$$Macros etc).
 
 ### Code Display Tools
 
-#### PXW.Tools.DEV.Class
+#### Class
 This is the main page for displaying class code. 
 
 It has a few unique features when displaying code compared with tools such as VSCode and Studio.
@@ -147,26 +146,13 @@ Embedded languages are also parsed and displayed so that there is a clear separa
 
 Note - The formatting is carried over from the original text and wrapped in an HTML block, which means it is spaced out a bit strangely after the first line. This is something I will fix one day.
 
-#### PXW.Tools.DEV.Code
 
-This is the page behind the main "Code Reference" prompt.
-
-It allows searching for any class/routine/include program using * as a wildcard.
-
-You can limit the search to just one type of program by adding an extension.
-```
-PXW*.CLS
-```
-
-#### PXW.Tools.DEV.Include
+#### Include
 
 This page display Include files (.INC). This will also display the number of times each macro is used.
 
 
-#### PXW.Tools.DEV.PythonModule
-This page is used to display Python programs. It is experimental, the Python parsing of this set of tools is not complete. 
-
-#### PXW.Tools.DEV.Routine
+#### Routine
 
 This page displays .INT code.
 

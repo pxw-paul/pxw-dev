@@ -8,11 +8,11 @@ Property Prop2 As %Integer [ Aliases = {property two ,p2}, SqlComputeCode = { s 
 /**/
 ClassMethod WorkOnAList(ObjList As %ListOfObjects(ELEMENTTYPE="PXW.DEV.UnitTests.ClassToDisplay",CLASSNAMEINOID=1)) As ClassToDisplay
 {
-	#dim p as %SYSTEM.Query.Plan
-	#dim x as %XML.ImportHandler
-	#dim r as %Library.AbstractResultSet
-	#dim z as %ZEN.Report.Display.COSChart.cchartDualY
+	#dim a,b,c as PXW.DEV.Element = ##class(PXW.DEV.Atom).%New()
+	#dim d,e,f = ##class(PXW.DEV.Atom).%New()
 	#define mac s x=1 
+	w a.type
+	w e.type
 	s y=2
 	$$$mac
 	s z=3

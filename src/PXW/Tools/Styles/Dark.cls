@@ -90,6 +90,7 @@ Method WriteStyles()
 	
 	table tbody tr { vertical-align:top;}
 	table tbody tr:Hover { background-color: var(--bgHover);  }
+	table tbody tr:Focus-within { background-color: var(--bgHover);  }
 
 	.treeItemName {
 		display: inline-block;
