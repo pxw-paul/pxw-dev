@@ -27,6 +27,11 @@ Parameter ToolType = "Internal";
 /// If the tool does not have a name then it does not appear on the index page by default.
 Parameter ToolName;
 
+/// Set this to a CodeType that this tool is "related" to.
+/// EG, if this is set to CLS then the tool will only appear 
+/// on the home page of Namespaces that have a CLS CodeDisplay Page
+Parameter ToolRelatesToCodeType;
+
 /// This sets up some floating % variables that can be accessed at any time.
 /// <ul>
 /// <li>%NS is the currently selected Namespace.</li>
