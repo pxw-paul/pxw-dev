@@ -24,63 +24,38 @@ ClassMethod WriteMainBody()
 		Write "Backgroung build of Xref data has started. <a href="""_##class(PXW.Tools.DEV.XrefBuild).HREFTo()_""">Check progress</a>"
 	}
 	
-	Set rs=##class(%ResultSet).%New("%Library.ClassDefinition:SubclassOf")
-	$$$THROWONERROR(sc,rs.Execute(##class(PXW.Tools.Page).%ClassName(1)))
+	Set rs=##class(PXW.Tools.Queries).SelectToolsForNamespaceFunc(%NS)
 	
 	Write "<div class='grid-container'>"
-	While rs.Next() {
-		Set name=rs.Data("Name")
-		Do ..WriteForm(name)
+	While rs.%Next() {
+		set name=rs.%Get("ClassName")
+		Set type=rs.%Get("ToolType")
+		Set toolname=rs.%Get("ToolName")
+		Do ..WriteForm(name,type,toolname)
 	}
 	Write "</div>"
-}
-
-ClassMethod WriteNav()
-{
-	Set rs=##class(%ResultSet).%New("%Dictionary.ClassDefinition:SubclassOf")
-	$$$THROWONERROR(sc,rs.Execute(##class(PXW.Tools.Page).%ClassName(1)))
-	
-	While rs.Next() {
-		Set name=rs.Data("Name")
-		Set HREFto=##class(%Dictionary.MethodDefinition).%OpenId(name_"||HREFTo")
-		If HREFto { 
-			Set type=$PARAMETER(name,"ToolType")
-			Set css="toolTypeInternal"
-			If $$$UPPER(type)="CODE" Set css="toolTypeCode"
-			Set toolname=$PARAMETER(name,"ToolName")
-			if toolname'="" {
-				;If toolname="" Set toolname=name
-				Set aname=$TRANSLATE(name,".","")_"anchor"
-				Set legname=$TRANSLATE(name,".","")_"legend"
-				Write "<a onclick='HiliteElement("""_legname_""");' class='"_css_"' href=#"_$TRANSLATE(aname,".","")_">"_..EscapeHTML(toolname)_"</a>"
-			}
-		}
-	}
 }
 
 /// This is a quick way of dumping out a form from the spec of the method HREFTo.
 /// Its following the convention that Capital letters of the parameter will
 /// be used as the name of the parameter in the URL.
 /// Doing it this way for speed of development.
-ClassMethod WriteForm(ClassName As %String) As %Status
+ClassMethod WriteForm(ClassName As %String, Type As %String, ToolName As %String) As %Status
 {
 
 	; if there is no HREFto method then we cannot link to this.
 	Set HREFto=##class(%Dictionary.MethodDefinition).%OpenId(ClassName_"||HREFTo")
 	If HREFto="" Quit 1
-	Set type=$PARAMETER(ClassName,"ToolType")
 	Set css="toolTypeInternal"
-	If $$$UPPER(type)="CODE" Set css="toolTypeCode"	
-	Set toolname=$PARAMETER(ClassName,"ToolName")
-	If toolname'="" {
-		If toolname="" Set toolname=ClassName
+	If $$$UPPER(Type)="CODE" Set css="toolTypeCode"	
+	If ToolName'="" {
 		Set aname=$TRANSLATE(ClassName,".","")_"anchor"
 		Set legname=$TRANSLATE(ClassName,".","")_"legend"
 		&html<
 		<div id="#(aname)#" class=#(css)#>
 			<form action='#(ClassName)#.cls'>
 				<fieldset>
-					<legend id=#(legname)#>#(toolname)#</legend>
+					<legend id=#(legname)#>#(ToolName)#</legend>
 					<input type=hidden name=IFRAME value='0'>
 					<input type=hidden name='%NS' value='#($GET(%NS))#'>
 					<table>
@@ -118,6 +93,28 @@ ClassMethod WriteForm(ClassName As %String) As %Status
 		>
 	}
 	Quit 1
+}
+
+ClassMethod WriteNav()
+{
+	#dim rs as %SQL.StatementResult
+
+	Set rs=##class(PXW.Tools.Queries).SelectToolsForNamespaceFunc(%NS)
+	
+	While rs.%Next() {
+		set name=rs.%Get("ClassName")
+		Set type=rs.%Get("ToolType")
+		Set toolname=rs.%Get("ToolName")
+		
+		Set css="toolTypeInternal"
+		If $$$UPPER(type)="CODE" Set css="toolTypeCode"
+		
+		if toolname'="" {
+			Set aname=$TRANSLATE(name,".","")_"anchor"
+			Set legname=$TRANSLATE(name,".","")_"legend"
+			Write "<a onclick='HiliteElement("""_legname_""");' class='"_css_"' href=#"_$TRANSLATE(aname,".","")_">"_..EscapeHTML(toolname)_"</a>"
+		}
+	}
 }
 
 ClassMethod GetTitle() As %String

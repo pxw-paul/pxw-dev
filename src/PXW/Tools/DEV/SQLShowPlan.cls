@@ -3,6 +3,8 @@ Class PXW.Tools.DEV.SQLShowPlan Extends PXW.Tools.PageTLR
 
 Parameter ToolName = "SQL Show Plan";
 
+Parameter ToolRelatesToCodeType = "CLS";
+
 ClassMethod WriteMainTop(ByRef scratch)
 {
     do ..HREFFrom(.SQL)
