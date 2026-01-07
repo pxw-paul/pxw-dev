@@ -19,16 +19,16 @@ ClassMethod WriteHeadForm(Page As %String)
 
 ClassMethod WriteMainBody()
 {
-	Set rs=##class(%ResultSet).%New(..%ClassName(1)_":SelectNS")
-	$$$THROWONERROR(sc,rs.Execute())
+
+	Set rs=##class(PXW.Tools.Queries).SelectNsTypesFunc()
 
     Write "<table>"
     Write "<thead><tr><th>Name</th><th>Description</th><th>Types</th></thead>"
     Write "<tbody>"
-	While rs.Next() {
-		Set name=rs.Data("Name")
-        Set desc=rs.Data("Description")
-        set types=rs.Data("Types")
+	While rs.%Next() {
+		Set name=rs.%Get("Name")
+        Set desc=rs.%Get("Description")
+        set types=rs.%Get("Types")
         set selected=$SELECT(name=%NS:1,1:0)
         Write "<tr"_$s(selected:" class='"_$$$classHiliteRow_"'",1:"")_">"
         Write "<td><a href="""_..HREFTo(name)_""">"_..EscapeHTML(name)_$s(selected:"*",1:"")_"</a></td>"
@@ -43,15 +43,6 @@ ClassMethod HREFTo(NewServer As %String) As %String
 {
     set NewServer=$G(NewServer,$G(%NS))
 	Quit ..%ClassName(1)_".cls?%NS="_..EscapeURL(NewServer)
-}
-
-/// This should return a string of the href to this page based on the input parameters
-Query SelectNS() As %SQLQuery
-{
-    SELECT ns.Name
-           ,ns.Description
-           ,(select LIST(ci.Type) FROM PXW_DEV_Dictionary.CodeInterface as ci WHERE ci.Namespace=ns.Name) as Types
-    FROM PXW_DEV_Dictionary.Namespace as ns
 }
 
 }
