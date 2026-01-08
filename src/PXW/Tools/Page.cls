@@ -360,7 +360,7 @@ ClassMethod PageStyle() As %String
 				'toolsMainLeft toolsMainRight'
 				'toolsMainFoot toolsMainFoot';
 			grid-template-columns: auto auto;
-			grid-template-rows: auto #("1fr")# auto;
+			grid-template-rows: #("minmax(auto,1fr) minmax(1fr,auto) auto")#;
 			grid-column-gap: 1em;
 			grid-row-gap: 1em;
 		}
@@ -370,6 +370,8 @@ ClassMethod PageStyle() As %String
 		#toolsMainTop {
 			grid-area: toolsMainTop; 
 			scroll-padding-top: 4rem;
+			overflow:auto;
+			resize:vertical;
 		}
 
 		#toolsMainLeft {
@@ -380,7 +382,7 @@ ClassMethod PageStyle() As %String
 		#toolsMainLeft div { width:100%; }
 
 		#toolsMainRight {
-			grid-area: toolsMainRight;
+			grid-area: toolsMainRight; 
 			overflow:auto;
 		}
 		#toolsMainRight div { width:100%; }

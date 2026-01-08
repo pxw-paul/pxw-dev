@@ -79,7 +79,7 @@ Method WriteStyles()
 	
  
 
-    table { width: 100%;}
+    table { width: 100%; font-size: inherit;}
 	table thead, table tfoot { position: sticky;  background: var(--bgAlternate2); color: var(--fgNormal);}
 	table thead { inset-block-start: 0;} /* top */
 	table tfoot { inset-block-end: 0;} /* bottom */
@@ -91,6 +91,8 @@ Method WriteStyles()
 	table tbody tr { vertical-align:top;}
 	table tbody tr:Hover { background-color: var(--bgHover);  }
 	table tbody tr:Focus-within { background-color: var(--bgHover);  }
+
+	td input { width: 100%;}
 
 	.treeItemName {
 		display: inline-block;
@@ -156,7 +158,10 @@ Method WriteStyles()
 
 
 	/* Object script only styles */
-	.CDEFOneClassMember { display:block; margin:0px 0px 0px 20px;  }
+	.CDEFOneClassMember { display:block; 
+							/* 20px indent to make it not on the left side,
+							   but because this is a block we are effectively inserting an unwanted new line so move the whole thing up 1 line (-1em)*/
+							margin:-1em 0px 0px 20px;  }
 
 
 	.XMLTag { color: var(--fgProgramKeyword); }

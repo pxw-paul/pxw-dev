@@ -36,7 +36,7 @@ ClassMethod WriteMainBody()
 							<legend>Main form</legend>
 							<table>
 								<tr><td class=prompt>Main Form Prompt</td>
-									<td><input type=text value='defaul'></td>
+									<td><input type=text value='default'></td>
 								</tr>
 								<tr><td>&nbsp;</td><td><input type=submit></td>
 								</tr>

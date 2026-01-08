@@ -147,6 +147,18 @@ Method writeDebug(indent As %String = "")
 	}
 }
 
+Method writeDebugFull(indent As %String = "")
+{
+	Set akey=""
+	$$$DEBUG(indent_"Element="_..type_" "_..%ClassName(1)_" @"_+$THIS)
+	For  {
+		Set a=..partsGetNext(.akey)
+		Quit:akey=""
+		
+		Do a.writeDebugFull(indent_".")
+	}
+}
+
 Method LastAtom() As PXW.DEV.Atom
 {
 	#dim element as PXW.DEV.Element
