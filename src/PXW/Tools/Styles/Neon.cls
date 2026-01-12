@@ -1,4 +1,4 @@
-Class PXW.Tools.Styles.Dark Extends PXW.Tools.Styles.super
+Class PXW.Tools.Styles.Neon Extends PXW.Tools.Styles.super
 {
 
 Method WriteStyles()
@@ -12,6 +12,8 @@ Method WriteStyles()
 	}
 
 	:root {
+        color-scheme: dark;
+
 		/* background colours: ;*/
 		--bgNormal: #1E1E1E;
 		--bgAlternate1: #2E2E2E;
@@ -44,6 +46,8 @@ Method WriteStyles()
 		--borderWarning: #f3a488;
 		--borderError: red;
 		--borderGood: green;
+
+        --glowColour: rgb(252, 8, 252);
 	}	
 
 	body {border:0; margin:0; padding:0; 
@@ -57,28 +61,6 @@ Method WriteStyles()
 	pre { margin:0px; tab-size:4; font-size: medium;}
     fieldset { border-color: var(--borderNormal); border-radius:10px 0 5px 0;}
     
-    /*
-        +----------------------------------------------+
-        |header #toolsHead                             |
-        |  div #toolsForms                             |
-        +----------------------------------------------+
-        |div #toolsTitle  h1                           |
-        +----------------------------------------------+
-        |div #toolsMainBody                            |
-        |  div #toolsMainBodyContainer                 |
-        |   +------------------+----------------------+|
-        |   |nav               |main                  ||
-        |   |#toolsMainBodyNav |#toolsMainBodyContent ||
-        |   |                  |                      ||
-        |   |                  |                      ||
-        |   +------------------+----------------------+|
-        +----------------------------------------------+
-        |div #toolsFooter                              |
-        +----------------------------------------------+
-    */
-	
- 
-
     table { width: 100%; font-size: inherit;}
 	table thead, table tfoot { position: sticky;  background: var(--bgAlternate2); color: var(--fgNormal);}
 	table thead { inset-block-start: 0;} /* top */
@@ -116,6 +98,76 @@ Method WriteStyles()
 	
     nav a { margin-top: 0.25em;}
 	/* END of nav */
+
+   /*
+        +----------------------------------------------+
+        |header #toolsHead                             |
+        |  div #toolsForms                             |
+        +----------------------------------------------+
+        |div #toolsTitle  h1                           |
+        +----------------------------------------------+
+        |div #toolsMainBody                            |
+        |  div #toolsMainBodyContainer                 |
+        |   +------------------+----------------------+|
+        |   |nav               |main                  ||
+        |   |#toolsMainBodyNav |#toolsMainBodyContent ||
+        |   |                  |                      ||
+        |   |                  |                      ||
+        |   +------------------+----------------------+|
+        +----------------------------------------------+
+        |div #toolsFooter                              |
+        +----------------------------------------------+
+    */
+	#toolsHead form fieldset { display:inline; border:none; }
+	#toolsHead legend { display: none;}
+    #toolsHead {
+        margin:10px;
+        padding: 10px;
+        border-radius: 20px;
+        border:2px solid var(--glowColour);
+        box-shadow:
+            inset 0 0 10px var(--glowColour), 
+            0 0 10px var(--glowColour);       
+    }
+
+    #toolsTitle {
+        margin:10px;
+        padding: 10px;
+        border-radius: 20px;
+        border:2px solid var(--glowColour);
+        box-shadow:
+            inset 0 0 10px var(--glowColour), 
+            0 0 10px var(--glowColour);       
+    }
+
+    #toolsMainBodyNav {
+        margin:10px;
+        padding: 10px;
+        border-radius: 20px;
+        border:2px solid var(--glowColour);
+        box-shadow:
+            inset 0 0 10px var(--glowColour), 
+            0 0 10px var(--glowColour);       
+    }
+    #toolsMainBodyContent {
+        margin:10px;
+        padding: 10px;
+        border-radius: 20px;
+        border:2px solid var(--glowColour);
+        box-shadow:
+            inset 0 0 10px var(--glowColour), 
+            0 0 10px var(--glowColour);       
+    }
+
+    #toolsFooter {
+        margin:10px;
+        padding: 10px;
+        border-radius: 20px;
+        border:2px solid var(--glowColour);
+        box-shadow:
+            inset 0 0 10px var(--glowColour), 
+            0 0 10px var(--glowColour);       
+    }
 
 	/* Start of style for the code display */
 

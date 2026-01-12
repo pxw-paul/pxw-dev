@@ -31,6 +31,7 @@ Method Text(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
             Set ok=1
         }
         Set o=..newAtom(subElement.type,n)
+        Set n=""
         Do subElement.AddPart(o)
         If cos {
             Do ..CosExpression(subElement,.cosSubElement)
@@ -250,10 +251,10 @@ Method CosExpressionBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 		Set ..whitespace=parser.whitespace
         Set done=1
 	} ElseIf parser.Expression(subElement) {
-		$$$BNFCOMMIT(subElement,ParentElement)
 		Set ..comment=parser.GetCurrentComment()
-		Set atom=..newAtom("CosCodeBlock End","")
-		Do ParentElement.AddPart(atom)
+		Set atom=..newAtom("CosCodeExpression End","")
+		Do subElement.AddPart(atom)
+		$$$BNFCOMMIT(subElement,ParentElement)
 		Set ..whitespace=parser.whitespace
 		Set done=1
 	} Else {

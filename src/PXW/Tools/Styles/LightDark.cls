@@ -1,4 +1,4 @@
-Class PXW.Tools.Styles.Dark Extends PXW.Tools.Styles.super
+Class PXW.Tools.Styles.LightDark Extends PXW.Tools.Styles.super
 {
 
 Method WriteStyles()
@@ -10,40 +10,43 @@ Method WriteStyles()
 	* {
  		box-sizing: border-box;
 	}
-
 	:root {
+        color-scheme: light dark;
+
+
 		/* background colours: ;*/
-		--bgNormal: #1E1E1E;
-		--bgAlternate1: #2E2E2E;
-		--bgAlternate2: #3E3E3E;
-		--bgAlternate3: black;
-		--bgHover: #3E3E3E;
-		--bgHilite:#6b6b1d;
-		--bgWarning: #f3a488;
-		--bgError: #9f3d3d;
-		--bgGood: #225922;
+		--bgNormal: light-dark( #ffffff, #1E1E1E);;
+		--bgAlternate1: light-dark( #EEEEEE, #2E2E2E);
+		--bgAlternate2: light-dark( #DDDDDD, #3E3E3E);
+		--bgAlternate3: light-dark( #FFFFFF,black);
+		--bgHover:  light-dark( #CCCCCC, #3E3E3E);
+		--bgHilite: light-dark( #fff793, #6b6b1d);
+		--bgWarning: light-dark( #ffd893, #f3a488);
+		--bgError: light-dark( #ffb3b3, #9f3d3d);
+		--bgGood: light-dark( #b3ffb3,225922);
 
 		/* foreground colours: ;*/
-		--fgNormal: white;
-		--fgAlternate: black;
-		--fgProgramName: #4EC9B0;
-		--fgProgramLabel: #DCDCAA;
-		--fgProgramKeyword: #6596FF;
-		--fgCodeKeyword: white;
-		--fgCodeVariable: #ade2ff;
-		--fgCodeVariableGlobal: #64c9ff;
-		--fgCodeArgument: #ff75f4;
-		--fgCodeLabel: #DCDCAA;
-		--fgCodeString: #D4B57C; 
-		--fgCodeNumber: #D4B57C; 
-		--fgComment: #378D2A;
-		--fgInlineOption: silver;
+		--fgNormal:  light-dark(black,white);
+		--fgAlternate: light-dark(white,black);
+		--fgProgramName:  light-dark( #2EA990, #4EC9B0);
+		--fgProgramLabel: light-dark( #ACAC7A,DCDCAA);
+		--fgProgramKeyword:  light-dark( #6586DF, #6596FF);
+		--fgCodeKeyword:  light-dark(black,white);
+		--fgCodeVariable: light-dark( #6DA2FF, #ade2ff);
+		--fgCodeVariableGlobal: light-dark( #64c9ff, #64c9ff);
+		--fgCodeArgument: light-dark( #ff75f4, #ff75f4);
+		--fgCodeLabel: light-dark( #ACAC7A, #DCDCAA);
+		--fgCodeString: light-dark( #2e8122, #D4B57C); 
+		--fgCodeNumber: light-dark( #B4955C, #D4B57C); 
+		--fgComment: light-dark( #2e8122, #378D2A);
+		--fgInlineOption: light-dark(silver,silver);
 
-        --borderNormal: silver;
-        --borderAlternate1: silver;
-		--borderWarning: #f3a488;
-		--borderError: red;
-		--borderGood: green;
+        --borderNormal:  light-dark(silver,silver);
+        --borderAlternate1:  light-dark(silver,silver);
+		--borderWarning: light-dark( #ffd893, #f3a488);
+		--borderError:  light-dark( #ffb3b3,red);
+		--borderGood: light-dark( #b3ffb3,green);
+
 	}	
 
 	body {border:0; margin:0; padding:0; 
@@ -79,7 +82,7 @@ Method WriteStyles()
 	
  
 
-    table { width: 100%; font-size: inherit;}
+    table { width: 100%; font-size: inherit; }
 	table thead, table tfoot { position: sticky;  background: var(--bgAlternate2); color: var(--fgNormal);}
 	table thead { inset-block-start: 0;} /* top */
 	table tfoot { inset-block-end: 0;} /* bottom */
@@ -90,8 +93,7 @@ Method WriteStyles()
 	
 	table tbody tr { vertical-align:top;}
 	table tbody tr:Hover { background-color: var(--bgHover);  }
-	table tbody tr:Focus-within { background-color: var(--bgHover);  }
-
+	
 	td input { width: 100%;}
 
 	.treeItemName {
@@ -119,7 +121,7 @@ Method WriteStyles()
 
 	/* Start of style for the code display */
 
-	.narrative { color: #80ff80; }
+	.narrative { color: light-dark( #008f00, #80ff80); }
 
 	/* code containers */
 	.EmbeddedJS { background-color: var(--bgAlternate1); display:inline-block;}
@@ -163,7 +165,6 @@ Method WriteStyles()
 							   but because this is a block we are effectively inserting an unwanted new line so move the whole thing up 1 line (-1em)*/
 							margin:-1em 0px 0px 20px;  }
 
-
 	.XMLTag { color: var(--fgProgramKeyword); }
 	.XMLAttribute { color:var(--fgCodeVariable); }
 	.XMLString { color: var(--fgCodeString); }
@@ -179,7 +180,7 @@ Method WriteStyles()
 
 	/* various high-lighting styles */
 
-	.hilite {  background-color: /*#505050;*/ var(--bgHilite); border-bottom:1px solid yellow;
+	.hilite {  background-color: var(--bgHilite); border-bottom:1px solid yellow;
 		animation-name: blinker;
 		animation-duration: 1s;
 		animation-iteration-count:20;

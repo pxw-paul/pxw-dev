@@ -1,4 +1,4 @@
-/// Created: 2026-01-07 18:17:43 PXW.DEV.BNF.Compilers.Compiler1
+/// Created: 2026-01-11 19:27:25 PXW.DEV.BNF.Compilers.Compiler1
 Class PXW.DEV.BNF.GEN.COS Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 
@@ -3540,11 +3540,11 @@ Method DoCommand131Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	quit ok
 }
 
-///  do_item ::= object_variable | this_object | simple_indirection | ( label_reference [ function_parameter_list ] ) | system_object | macrocall | intrinsicfncall | classexpr | ( '(' expression ')' [ object_chain ])
-/// summary=C|C|C|(C&[C])|C|C|C|C|(P&C&P&[C])
+///  do_item ::= object_variable | this_object | ( label_reference [ function_parameter_list ] ) | system_object | macrocall | intrinsicfncall | classexpr | ( '(' expression ')' [ object_chain ])
+/// summary=C|C|(C&[C])|C|C|C|C|(P&C&P&[C])
 Method DoItem(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C|C|C|(C&[C])|C|C|C|C|(P&C&P&[C])
+	; rules summary C|C|(C&[C])|C|C|C|C|(P&C&P&[C])
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -3552,8 +3552,6 @@ Method DoItem(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 	if ..ObjectVariable(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..ThisObject(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..SimpleIndirection(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..DoItem135Sub(.subElement,.addedElement)  {
 		set done=1 ; or
@@ -3868,20 +3866,20 @@ Method Dyadicop(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	quit ok
 }
 
-///  else_block ::= 'else' ( ( '{' [ cos_code_block ] '}' ) | command_list_eol )
-/// summary values:ELSE
-/// summary=K&((P&[C]&P)|C)
+///  else_block ::= [ cos_directive ] 'else' ( ( '{' [ cos_code_block ] '}' ) | command_list_eol )
+/// summary=[C]&K&((P&[C]&P)|C)
 Method ElseBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&((P&[C]&P)|C)
-	if '(..isKeyword("ELSE",.value)) { quit 0 /* normal */ }
+	; rules summary [C]&K&((P&[C]&P)|C)
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(.subElement,"ELSE")  {
-		if ..ElseBlock162Sub(.subElement,.addedElement)  {
-			set done=1 ; end compileRules
+	if $S(..CosDirective(.subElement,.addedElement) :1,1:1) {
+		if ..addKeyword(.subElement,"ELSE")  {
+			if ..ElseBlock162Sub(.subElement,.addedElement)  {
+				set done=1 ; end compileRules
+			}
 		}
 	}
 
@@ -3998,21 +3996,21 @@ Method ElseCommand164Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	quit ok
 }
 
-///  elseif_block ::= 'elseif' expression_list ( ( '{' [ cos_code_block ] '}' ) | command_list_eol )
-/// summary values:ELSEIF
-/// summary=K&C&((P&[C]&P)|C)
+///  elseif_block ::= [ cos_directive ] 'elseif' expression_list ( ( '{' [ cos_code_block ] '}' ) | command_list_eol )
+/// summary=[C]&K&C&((P&[C]&P)|C)
 Method ElseifBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&C&((P&[C]&P)|C)
-	if '(..isKeyword("ELSEIF",.value)) { quit 0 /* normal */ }
+	; rules summary [C]&K&C&((P&[C]&P)|C)
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(.subElement,"ELSEIF")  {
-		if ..ExpressionList(.subElement,.addedElement)  {
-			if ..ElseifBlock160Sub(.subElement,.addedElement)  {
-				set done=1 ; end compileRules
+	if $S(..CosDirective(.subElement,.addedElement) :1,1:1) {
+		if ..addKeyword(.subElement,"ELSEIF")  {
+			if ..ExpressionList(.subElement,.addedElement)  {
+				if ..ElseifBlock160Sub(.subElement,.addedElement)  {
+					set done=1 ; end compileRules
+				}
 			}
 		}
 	}

@@ -44,12 +44,15 @@ Method testcq()
 
 ClientMethod ele() [ Language = javascript ]
 {
+
 	var x=1;
 	/// comment
 }
 
 ClassMethod atom(Output atom As PXW.DEV.Atom)
 {
+	#dim x
+	s x=2
 }
 
 Query testq(p1 As %String) As %SQLQuery

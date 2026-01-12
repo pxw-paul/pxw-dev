@@ -199,20 +199,15 @@ ClassMethod WriteHeadForm(Page As %String)
         If CR'="" Set CR=CR_".*"
     }
 
-    ; find all tools
-    Set rs=##class(%ResultSet).%New("%Dictionary.ClassDefinition:SubclassOf")
-	$$$THROWONERROR(sc,rs.Execute(##class(PXW.Tools.Page).%ClassName(1)))
+    ; find all tools, for the namespace
+    Set rs=##class(PXW.Tools.Queries).SelectToolsForNamespaceFunc(%NS)
 	
     set datalist="<datalist id='toolsAvailable'>"
-	While rs.Next() {
-		Set name=rs.Data("Name")
-		Set HREFto=##class(%Dictionary.MethodDefinition).%OpenId(name_"||HREFTo")
-		If $isobject(HREFto) {
-                Set toolname=$PARAMETER(name,"ToolName")
-                if toolname'="" {
-                    set shortname=$tr(toolname," ","")
-                    set datalist=datalist_"<option value='"_..EscapeHTML("$"_shortname_"")_"'>"_..EscapeHTML("$"_toolname)_"</option>"
-                }
+	While rs.%Next() {
+        Set toolname=rs.%Get("ToolName")
+        if toolname'="" {
+            set shortname=$tr(toolname," ","")
+            set datalist=datalist_"<option value='"_..EscapeHTML("$"_shortname_"")_"'>"_..EscapeHTML("$"_toolname)_"</option>"
         }
 	}
     set datalist=datalist_"</datalist>"

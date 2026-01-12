@@ -459,7 +459,7 @@ do_while                            ::= '{' [ cos_code_block ] '}' 'while' expre
 do_item_list                        ::= do_item [ post_conditional] ( ',' do_item [ post_conditional] )*
 do_item                             ::=  object_variable
                                           | this_object 
-                                          | simple_indirection 
+                                          /*| simple_indirection */
                                           | ( label_reference [ function_parameter_list ] ) 
                                           | system_object
                                           | macrocall
@@ -488,11 +488,19 @@ hang_command                        ::= ('hang' | 'h') [ post_conditional ] hang
 hangtime                            ::= hang_value ( ',' hang_value )*
 hang_value                          ::= expression
 
+
+/* #directives around code bits of the IF is odd 
+   if x 
+#if 0 
+  elseif
+#endif
+ so should we treat elseif and else as commands in their own right so we don't have mid command directives?
+ */
 if_command                          ::= ('if' | 'i')  ( naked | expression_list) ( naked | [then_block] ) [ elseif_block_list ] [ else_block ] /* not sure what "if   set x=1 " means but no expression is possible */
 then_block                          ::= ( '{'  [ cos_code_block ] '}' ) | command_list_eol
 elseif_block_list                   ::= elseif_block ( elseif_block )*
-elseif_block                        ::= 'elseif' expression_list ( ( '{' [ cos_code_block ] '}' ) | command_list_eol )
-else_block                          ::= 'else' ( ( '{' [ cos_code_block ] '}' ) | command_list_eol )
+elseif_block                        ::= [ cos_directive ] 'elseif' expression_list ( ( '{' [ cos_code_block ] '}' ) | command_list_eol )
+else_block                          ::= [ cos_directive ] 'else' ( ( '{' [ cos_code_block ] '}' ) | command_list_eol )
 
 else_command                        ::= ('else' | 'e') naked /* this happen in some situations like if x d .dotstructure else  d .otherdots */
 

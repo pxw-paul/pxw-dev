@@ -98,6 +98,30 @@ Method skipComments(ch10 As %String) As %Boolean
     Quit 0
 }
 
+Method peekKeyword() As %String
+{
+    $$$DEBUGMethodBegin
+    If ..keyword="" {
+        Set word=""
+        ;Set ch50=..peek(50)
+        Set ch50=$EXTRACT(..streaminput,..stream.pos,..stream.pos+50)
+        ; starts with a letter
+        If $EXTRACT(ch50,1)?1A {
+            Set i=2
+            ; carries on with a letter or number or /
+            While ($EXTRACT(ch50,i)?1AN) || ($EXTRACT(ch50,i)="/")  {
+                Set i=i+1
+            }
+            Set word=$EXTRACT(ch50,1,i-1)
+        } 
+        Set ..keyword=" "_word ; so that even null counts as being found
+    } Else {
+        Set word=$EXTRACT(..keyword,2,*) ; remove the space from the start so null is null
+    }
+    $$$DEBUGMethodEnd
+	Quit word
+}
+
 /***************************************************************************************
  Rules that can be recovered if necessary (eg try to go to next class member
 ***************************************************************************************/
