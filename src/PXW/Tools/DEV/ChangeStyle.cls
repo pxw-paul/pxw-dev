@@ -374,6 +374,11 @@ ClassMethod WriteScripts()
 	Do ##class(PXW.Tools.DEV.Class).WriteScripts()
 }
 
+ClassMethod WriteStyles()
+{
+	Do ##class(PXW.Tools.DEV.Class).WriteStyles()
+}
+
 XData example
 {
 <data><![CDATA[

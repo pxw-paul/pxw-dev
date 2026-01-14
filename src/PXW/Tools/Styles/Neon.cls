@@ -20,7 +20,7 @@ Method WriteStyles()
 		--bgAlternate2: #3E3E3E;
 		--bgAlternate3: black;
 		--bgHover: #3E3E3E;
-		--bgHilite:#6b6b1d;
+		--bgHilite:rgb(252, 8, 252);
 		--bgWarning: #f3a488;
 		--bgError: #9f3d3d;
 		--bgGood: #225922;
@@ -65,7 +65,11 @@ Method WriteStyles()
 	table thead, table tfoot { position: sticky;  background: var(--bgAlternate2); color: var(--fgNormal);}
 	table thead { inset-block-start: 0;} /* top */
 	table tfoot { inset-block-end: 0;} /* bottom */
-	table tbody tr:nth-child(odd) {
+	/*table tbody tr:nth-child(odd) {
+ 		background-color: var(--bgAlternate1);
+  		color: var(--fgNormal);
+	}*/
+	table tbody {
  		background-color: var(--bgAlternate1);
   		color: var(--fgNormal);
 	}
@@ -231,12 +235,14 @@ Method WriteStyles()
 
 	/* various high-lighting styles */
 
-	.hilite {  background-color: /*#505050;*/ var(--bgHilite); border-bottom:1px solid yellow;
+	.hilite {  background-color: /*#505050;*/ var(--bgHilite); /*border-bottom:1px solid yellow;*/
 		animation-name: blinker;
 		animation-duration: 1s;
 		animation-iteration-count:20;
 		animation-timing-function:ease-in-out;
-		animation-direction: alternate;		
+		animation-direction: alternate;	
+		box-shadow: 0 0 10px var(--glowColour);   
+		color:black;    	
 	}
 	
 	.hiliterow td { background-color: var(--bgHilite); }
