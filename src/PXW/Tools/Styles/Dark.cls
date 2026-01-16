@@ -12,6 +12,8 @@ Method WriteStyles()
 	}
 
 	:root {
+		color-scheme: dark;
+		
 		/* background colours: ;*/
 		--bgNormal: #1E1E1E;
 		--bgAlternate1: #2E2E2E;

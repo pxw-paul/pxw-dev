@@ -73,9 +73,9 @@ ClassMethod WriteForm(ClassName As %String, Type As %String, ToolName As %String
 							Set DEF=$TRANSLATE(DEF,"""")
 							&html<<tr><td width=25% class=prompt>#(VAR)#</td>>
 							If TYP="%Boolean" {
-								&html<<td width=25%><input type=checkbox name=#(VNAME)# value=1 #($SELECT(DEF=1:"checked",1:""))#></td>>
+								&html<<td width=50%><input type=checkbox name=#(VNAME)# value=1 #($SELECT(DEF=1:"checked",1:""))#></td>>
 							} Else {
-								&html<<td width=25%><input type=text name=#(VNAME)# value='#(DEF)#'></td>>
+								&html<<td width=50%><input type=text name=#(VNAME)# value='#(DEF)#'></td>>
 							}
 							&html<<td width=25%>#(TYP)#</td>
 								</tr>>

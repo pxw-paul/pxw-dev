@@ -43,6 +43,8 @@ Method WriteStyles()
 
 	/* https://codepen.io/Mokurunner/details/wvyKJy */
 	:root {
+		color-scheme: dark;
+
 		--lcars1: #FFDD99;
 		--lcars2: #FFCC66;
 		--lcars3: #FF9933;
@@ -404,6 +406,8 @@ Method WriteStyles()
 	}
 
 	table tbody tr:Hover { background-color:#3e3e3e;  }
+	
+	td input { width: 100%;}
 
 	/* END of style of the app */
 

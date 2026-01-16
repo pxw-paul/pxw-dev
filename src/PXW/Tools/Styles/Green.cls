@@ -14,6 +14,8 @@ Method WriteStyles()
 	}
 
 	:root {
+		color-scheme: dark;
+
 		/* background colours: ;*/
 		--bgNormal: #FFFFFF;
 		--bgAlternate1: #EEEEEE;
@@ -110,6 +112,8 @@ Method WriteStyles()
   		color: #fff;*/
 	}
 	table tbody tr:Hover { background-color:var(--bgHover); color: var(--fgInverse);}
+
+	td input { width: 100%;}
 
 	/* END of style of the app */
 	/* Start of nav */

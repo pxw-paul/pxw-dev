@@ -496,15 +496,13 @@ ClassMethod WriteStatus(sc As %Status)
 /// Find any page that inserts a form into the header.
 ClassMethod WriteHeadForms() As %String
 {
-	Set rs=##class(%ResultSet).%New("%Dictionary.ClassDefinition:SubclassOf")
-	$$$THROWONERROR(sc,rs.Execute(##class(PXW.Tools.Page).%ClassName(1)))
-	
-	While rs.Next() {
-		Set name=rs.Data("Name")
-		Set headform=##class(%Dictionary.MethodDefinition).%OpenId(name_"||WriteHeadForm")
+	s rs=##class(PXW.Tools.Queries).SelectToolsForNamespaceFunc(%NS)
+	While rs.%Next() {
+		Set classname=rs.%Get("ClassName")
+		Set headform=##class(%Dictionary.MethodDefinition).%OpenId(classname_"||WriteHeadForm")
 		If $ISOBJECT(headform) {
-			Set order=$SELECT(name?1"PXW.Tools"1.E:1,1:2)
-			Set index(order,name)=name
+			Set order=$SELECT(classname?1"PXW.Tools"1.E:1,1:2)
+			Set index(order,classname)=classname
 		}
 	}
 	Set k1="",k2=""
@@ -513,10 +511,10 @@ ClassMethod WriteHeadForms() As %String
 		Quit:k1=""
 
 		For  {
-			Set k2=$ORDER(index(k1,k2),1,name)
+			Set k2=$ORDER(index(k1,k2),1,classname)
 			Quit:k2=""
 			
-			Do $CLASSMETHOD(name,"WriteHeadForm",..%ClassName(1))
+			Do $CLASSMETHOD(classname,"WriteHeadForm",..%ClassName(1))
 		}
 	}
 	Quit ""
