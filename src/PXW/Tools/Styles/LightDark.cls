@@ -29,7 +29,7 @@ Method WriteStyles()
 		--fgNormal:  light-dark(black,white);
 		--fgAlternate: light-dark(white,black);
 		--fgProgramName:  light-dark( #2EA990, #4EC9B0);
-		--fgProgramLabel: light-dark( #ACAC7A,DCDCAA);
+		--fgProgramLabel: light-dark( #ACAC7A, #DCDCAA);
 		--fgProgramKeyword:  light-dark( #6586DF, #6596FF);
 		--fgCodeKeyword:  light-dark(black,white);
 		--fgCodeVariable: light-dark( #6DA2FF, #ade2ff);

@@ -32,6 +32,12 @@ ClassMethod WorkOnAList(ObjList As %ListOfObjects(ELEMENTTYPE="PXW.DEV.UnitTests
 	&js< var x=1; /*comment */>
 	&js< var x=1; //comment 
 	>
+
+	s sc=$$$ERROR(5001,"an error")
+	d $system.Status.DisplayError(sc)
+	s ssc=$system.Status.DisplayError(sc)
+
+	s x=$System.SQL.Functions.ABS(-100)
 }
 
 Method testcq()

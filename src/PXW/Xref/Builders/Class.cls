@@ -438,6 +438,31 @@ Method xrefCOSSqlBody(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compil
     Quit ""
 }
 
+Method xrefCOSSpecialSystem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="SpecialSystem")
+{
+    #dim chainE as PXW.DEV.Element
+    Set classname="%SYSTEM"
+    set key="",firstAtomOfClass="",lastAtomOfClass="",chainE=""
+    for  {
+        set part=element.partsGetNext(.key)
+        quit:key=""
+        if $PIECE(part.type,":",1)="ObjectMemberIdentifier" {
+            set:firstAtomOfClass="" firstAtomOfClass=part
+            set lastAtomOfClass=part
+            set classname=classname_"."_part.value
+        } elseif part.type="ObjectChain" {
+            set chainE=part
+        }
+    }
+    ;if $ISOBJECT(firstAtomOfClass),$ISOBJECT(lastAtomOfClass) {
+        ;do ..wrapAtomHTML(firstAtomOfClass,"<a class="""_$$$classProgramName_""" href="""_..HREFToClass(classname)_""">","")
+        ;do ..wrapAtomHTML(lastAtomOfClass,"","</a>")
+    ;}
+    do:$ISOBJECT(chainE) ..FollowObjectChainForType(chainE,classname)
+    
+    Quit ""
+}
+
 Method xrefCOSThisThing(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ThisObject,ThisObjectDirectProperty,ThisObjectSet,ThisObjectDirectPropertySet")
 {
 	If ..CalledByClassName'="" {

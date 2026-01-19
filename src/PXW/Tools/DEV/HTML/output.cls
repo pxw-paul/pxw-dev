@@ -34,6 +34,8 @@ Property preI As %String [ MultiDimensional ];
 /// complicated structure, best to use wrapInnerAtomHTML method to update
 Property postI As %String [ MultiDimensional ];
 
+Property redir As %String [ MultiDimensional ];
+
 Method wrapInnerAtomHTML(atom As PXW.DEV.Atom, pre As %String, post As %String)
 {
     Set n=$GET(..preI(+atom)),n=n+1,..preI(+atom,n)=pre,..preI(+atom)=n
@@ -130,6 +132,23 @@ Method writeAtom(atom As PXW.DEV.Atom, preValue As %String = "", postValue As %S
 	Do ..output(out)
 }
 
+/*Method GenericRedirect(element As PXW.DEV.Element)
+{
+    Set class=$$$UPPER(element.%ClassName(1))
+    Set etype=$$$UPPER(element.type)
+	set m=""
+	;zw class,etype
+	if class'="",etype'="" {
+		f  {
+			s m=$o(..redir(class,etype,m))
+			q:m=""
+		    $$$DEBUG("Begin "_$CLASSNAME()_":"_$PIECE(element.type,":",1)_","_element.%ClassName(1)_","_m) 
+			d $METHOD($this,m,element)
+		    $$$DEBUG("End "_$CLASSNAME()_":"_$PIECE(element.type,":",1)_","_element.%ClassName(1)_","_m) 
+		}
+	}
+}
+*/
 Method GenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator ]
 {
     #dim meth as %Dictionary.MethodDefinition
@@ -191,4 +210,61 @@ Method GenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator 
     Quit $$$OK
 }
 
+/*
+Method %OnNew() As %Status
+{
+	$$$DEBUGMethodBegin
+	d ..GenericRedirectNew()
+	$$$DEBUGMethodEnd
+	q $$$OK
+}
+
+Method GenericRedirectNew() [ CodeMode = objectgenerator ]
+{
+    #dim meth as %Dictionary.MethodDefinition
+    Set opencurly="{",closecurly="}"
+    Set mkey=""
+
+    For  {
+        Set meth=%compiledclass.Methods.GetNext(.mkey)
+        Quit:mkey=""
+
+        If meth.ReturnType="PXW.DEV.BNF.Compilers.elementHandler" {
+            ; Method writeCOSThing(element As PXW.DEV.BNF.Elements.COS) AS  As PXW.DEV.BNF.Compilers.elementHandler(Type="Thing")
+			Set class=$PIECE(meth.FormalSpec,":",2)
+			If class'="" {
+				Set param=meth.ReturnTypeParams
+				If param'="" {
+					Set etypes=$TRANSLATE($PIECE(param,"=",2),"""","")
+					If etypes'="" {
+						For i=1:1:$LENGTH(etypes,",") {
+							Set etype=$PIECE(etypes,",",i)
+							Set methods(class,etype,meth.Name)=meth
+						}
+					}
+				}
+			}
+		} 
+	}
+	Set (class,etype,name)="",cif="If"
+	For  {
+		Set class=$ORDER(methods(class))
+		Quit:class=""
+		For  {
+			Set etype=$ORDER(methods(class,etype))
+			Quit:etype=""
+
+			; etype will contain the quotes			
+			For  {
+				Set name=$ORDER(methods(class,etype,name),1,meth)
+				Quit:name=""
+				
+				Do %code.WriteLine($CHAR(9)_"s ..redir("""_$$$UPPER(class)_""","""_$$$UPPER(etype)_""","""_meth.Name_""")=1")
+			}
+			Set ifcommand="Elseif"
+		}
+    }
+    Quit $$$OK
+}
+*/
 }

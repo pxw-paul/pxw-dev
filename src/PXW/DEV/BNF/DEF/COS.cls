@@ -286,7 +286,8 @@ this_object_self                    ::= ('..' | 'i%' | 'r%' | 'm%' | 's%') [obje
 this_object_this                    ::= ('$this' | '##this') [ object_chain]
 this_object_direct_property         ::= 'i%' object_chain_item  
 
-system_object                       ::='$system.' object_chain_item [ object_chain ]
+/*system_object                       ::='$system.' object_chain_item [ object_chain ]*/
+system_object                       ::='$' special_system
 
 object_variable                     ::= variable_identifier [ array_parameter_list ] object_chain 
 
@@ -347,7 +348,8 @@ special_variable                    ::= '$' ('DEVICE' -- Contains user-specified
                                           | 'STACK' -- Special variable that contains the number of context frames saved on the call stack.
                                           | 'STORAGE' -- Contains the number of bytes available for local variable storage.
                                           | python_import
-                                          | ('SYSTEM' [ object_chain ])  -- Contains system information about system objects.
+                                          /*| ('SYSTEM' [ object_chain ])  -- Contains system information about system objects.*/
+                                          | special_system
                                           | 'SY'
                                           | 'S' -- storage
                                           | 'TEST' -- Contains the truth value resulting from the last command using the timeout option.
@@ -399,6 +401,8 @@ special_variable                    ::= '$' ('DEVICE' -- Contains user-specified
                                           | 'MVERRORS' | 'MVFOOTER' | 'MVMORESUBVALUES' | 'MVMOREVALUES' | 'MVOPTIONS' | 'MVPROCERRORS'
                                           | 'MVPROCNAME' | 'MVPROCPIB' | 'MVPROCPIBOFF' | 'MVPROCPOB' | 'MVPROCSIB' | 'MVPROCSIBOFF' | 'MVPROCSOB'
                                           ) /* should this be just a general "read anything" ?*/
+
+special_system                      ::= 'SYSTEM' ('.' object_member_identifier !'(' )*  [ object_chain ]
 
 /* Special function that we want to deal with  - need to make it so we can extend this without changing this bnf - different apps may want to look for something else. */
 python_import                       ::= 'system' '.' 'python' '.' 'import' '(' string ')' -- $ is already consumed by caller

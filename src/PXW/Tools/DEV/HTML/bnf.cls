@@ -3,9 +3,6 @@ Include PXW.Tools.Styles.macros
 Class PXW.Tools.DEV.HTML.bnf Extends PXW.Tools.DEV.HTML.output
 {
 
-/// Set this to 0 if the descriptions are to be displayed as HTML
-Property Style As PXW.Tools.Styles.super [ InitialExpression = 1 ];
-
 /// Internal array
 Property atomTypeToCSS As %String [ MultiDimensional ];
 
@@ -121,16 +118,6 @@ Method NextIndexItemByName(ByRef Name As %String = "", ByRef Type As %String = "
     Quit (key'="")
 }
 
-Method %OnNew() As %Status
-{
-    If $ISOBJECT($GET(%STYLE)) {
-        Set ..Style=%STYLE 
-    } Else {
-        Set ..Style=##class(PXW.Tools.Styles.super).%New()
-    }
-    Quit $$$OK
-}
-
 /// Output the html directly to destination. No escaping or other formatting is done.
 Method output2(html As %String, newLine As %Boolean = 0)
 {
@@ -167,8 +154,6 @@ Method writeElement(element As PXW.DEV.Element)
     #dim a as PXW.DEV.Atom
     #dim cref as PXW.DEV.Element
     /* CDEF */
-    $$$DEBUG("Begin "_$CLASSNAME()_":"_$PIECE(element.type,":",1))
-    $$$DEBUG("writeElement:"_element.type)
     
     Set oldXMLPath=..XMLPath
     Do ..GenericRedirect(element)
@@ -200,7 +185,6 @@ Method writeElement(element As PXW.DEV.Element)
 
     Do ##super(element)
     Set ..XMLPath=oldXMLPath
-    $$$DEBUG("End "_$CLASSNAME()_":"_$PIECE(element.type,":",1)_$EXTRACT(element.ToString(0),1,10))
 }
 
 Method writeElementBNF1(element As PXW.DEV.Element)
@@ -306,7 +290,7 @@ Method writeCDEFClassReference(element As PXW.DEV.BNF.Elements.ClassDefinition) 
 Method writeCDEFClassDefinition(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassDefinition")
 {
     Set keywordatom=element.FirstAtom()
-    Do ..OutputKeywordCommentAsDocumentation(element,.commentid)
+    ;Do ..OutputKeywordCommentAsDocumentation(element,.commentid)
     Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This)
     Set menu="<div class="""_$$$classLensMenu_" nocopy"">"
     Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,)_""">Xref ("_count_") </a>"
@@ -710,6 +694,31 @@ Method writeCOSClassExpression(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.B
     Set classnameele=element.findFirstElementByType("ClassReference",0)
     Set classname=classnameele.ToString(0)
     Do ..FollowObjectChainForType(element,classname)
+    Quit ""
+}
+
+Method writeCOSSpecialSystem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="SpecialSystem")
+{
+    #dim chainE as PXW.DEV.Element
+    Set classname="%SYSTEM"
+    set key="",firstAtomOfClass="",lastAtomOfClass="",chainE=""
+    for  {
+        set part=element.partsGetNext(.key)
+        quit:key=""
+        if $PIECE(part.type,":",1)="ObjectMemberIdentifier" {
+            set:firstAtomOfClass="" firstAtomOfClass=part
+            set lastAtomOfClass=part
+            set classname=classname_"."_part.value
+        } elseif part.type="ObjectChain" {
+            set chainE=part
+        }
+    }
+    if $ISOBJECT(firstAtomOfClass),$ISOBJECT(lastAtomOfClass) {
+        do ..wrapAtomHTML(firstAtomOfClass,"<a class="""_$$$classProgramName_""" href="""_..HREFToClass(classname)_""">","")
+        do ..wrapAtomHTML(lastAtomOfClass,"","</a>")
+    }
+    do:$ISOBJECT(chainE) ..FollowObjectChainForType(chainE,classname)
+    
     Quit ""
 }
 
@@ -1545,7 +1554,7 @@ Method wrapCommentBlock(Element As PXW.DEV.Element, preValue As %String = "", po
         Set subAtom.comment=""
 	}
 	
-	If 'isFirstCall {
+	/*If 'isFirstCall {
         If ..Style.CDEFDescriptionsAsText {
             Do ..wrapAtomHTML(Element,..html(subAtom.start_subAtom.value_subAtom.end),"")
         } Else {
@@ -1554,6 +1563,7 @@ Method wrapCommentBlock(Element As PXW.DEV.Element, preValue As %String = "", po
             If 'isFirstCall Do ..wrapAtomHTML(Element,subAtom.value,"")
         }
     }
+    */
 
     ; don't forget ALL of this is PRE the atom, including the post value!
     Do ..wrapAtomHTML(Element,postValue,"")
