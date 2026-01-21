@@ -40,7 +40,7 @@ Method getBookmark(ByRef bookmark As %String)
 {
     ;$$$DEBUGMethodBegin
     
-    Set bookmark=$LISTBUILD(..stream.pos,..stream.col,..stream.line,..stream.startOfLinePos,..needsWScheck,..stopAtEOL,..stopAtWhitespace,
+    Set bookmark=$LISTBUILD(..stream.pos,..stream.col,..stream.line,..needsWScheck,..stopAtEOL,..stopAtWhitespace,
                     ..bracketDepth,..sqDepth,..curlyDepth,..currentIndent) 
     Set bookmark("ws")=..whitespace
     Set bookmark("c")=..comment
@@ -55,9 +55,9 @@ Method gotoBookmark(ByRef bookmark As %String)
     Set forward=(..stream.pos<$LISTGET(bookmark,1))
     $$$DEBUG("Going "_$SELECT(forward:"forward",1:"back")_" from:"_$ZCONVERT(..peek(20),"O","JSON"))
     
-    Set $LISTBUILD(pos,col,line,startOfLinePos,needsWScheck,stopeol,stopws,
+    Set $LISTBUILD(pos,col,line,needsWScheck,stopeol,stopws,
             bracketDepth,sqDepth,curlyDepth,indent)=bookmark
-    Set ..stream.pos=pos,..stream.col=col,..stream.line=line,..stream.startOfLinePos=startOfLinePos
+    Set ..stream.pos=pos,..stream.col=col,..stream.line=line
     Set ..bracketDepth=bracketDepth
     Set ..sqDepth=sqDepth
     Set ..curlyDepth=curlyDepth

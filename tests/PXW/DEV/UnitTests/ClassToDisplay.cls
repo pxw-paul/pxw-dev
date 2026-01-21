@@ -29,7 +29,7 @@ ClassMethod WorkOnAList(ObjList As %ListOfObjects(ELEMENTTYPE="PXW.DEV.UnitTests
 	&js< var x=1;>
 	&js< var x=1;
 	>
-	&js< var x=1; /*comment */>
+	&js< var x=#server(..method(a,b))#; /*comment */>
 	&js< var x=1; //comment 
 	>
 

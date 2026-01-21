@@ -259,57 +259,6 @@ Method HexIntegerLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	Quit ok
 }
 
-/// STRING_LITERAL ::= 'NEED STRING LITERAL'
-///  summary=S
-///  type=group
-///  not=0
-Method oldStringLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
-{
-		#dim o as PXW.DEV.Atom
-
-    $$$DEBUGMethodBegin
-	;$$$BNFPATH
-	;;$$$DEBUG("%path="_%path)
-    Do:..needsWScheck ..skipWhiteSpaceAndComments()
-
-    Set ok=0
-    If ..peek(1)'="","""'"[..peek(1) {
-        Set ok=1
-    }
-
-    If ok {
-        $$$BNFSTART(subElement)
-
-        Set q1=..nextNotEOL(1)
-        Set n=""
-        Set instring=1
-        While '..eof() && instring {
-            Set chs=..peek(2)
-            Set ch=$EXTRACT(chs,1),ch2=$EXTRACT(chs,2)
-            ; embedded quotes
-            If ch="\" {
-                If ch2=q1 {
-                    Set n=n_..nextNotEOL(2)
-                } Else {
-                    Set n=n_..nextNotEOL(1)
-                }
-            } ElseIf ch=q1 {
-                    Set instring=0
-                    Set q2=..nextNotEOL(1)
-            } Else {
-                Set n=n_..nextNotEOL(1)
-            }
-        }
-        Set o=..newAtom("String",n)
-        Set o.start=q1
-        Set o.end=q2
-        Do subElement.AddPart(o)
-        $$$BNFCOMMIT(subElement,ParentElement)
-    }
-    $$$DEBUGMethodEnd
-    Quit ok
-}
-
 Method skipComments(ch10 As %String) As %Boolean
 {
     If $EXTRACT(ch10,1,2)="//" Set ..comment=..readLineComment("//") Quit 1
@@ -503,8 +452,7 @@ Method CosMethodReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$BNFSTART(subElement)
 
     ; read all up to the (
-    Set mref=..stream.PeekToString("(")
-    Set atom=..newAtom(subElement.type,..nextNotEOL($LENGTH(mref)))
+    Set atom=..newAtom(subElement.type,..stream.NextToString("("))
     Do subElement.AddPart(atom)
     Do ParentElement.AddPart(subElement)
     Set done=1 

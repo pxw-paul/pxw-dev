@@ -10,12 +10,8 @@ Property line As %Integer;
 
 Property col As %Integer;
 
-Property startOfLinePos As %Integer;
-
 /// greatest pos
 Property lastPos As %Integer;
-
-Property lastStartOfLinePos As %Integer;
 
 Property length As %Integer;
 
@@ -48,7 +44,7 @@ Method Next() As %String
 	Set ch=$EXTRACT(..input,..pos)
 	Set ..pos=..pos+1 
 	If ch=..eolChar {
-		Set ..line=..line+1,..col=0,..startOfLinePos=..pos+1
+		Set ..line=..line+1,..col=0
 	} Else {
 		Set ..col=..col+1
 	}
@@ -146,6 +142,30 @@ Method NextToEol() As %String
 	Quit found
 }
 
+Method NextToString(EndString As %String) As %String
+{
+	Set found=$PIECE($EXTRACT(..input,..pos,*),EndString,1)
+	Set number=$LENGTH(found)
+	Set pos=..pos
+	Set found=$EXTRACT(..input,pos,pos+number-1)
+	Set ..pos=pos+number
+	Set ..col=..col+number
+	If $FIND(found,..eolChar) {
+		Set crcount=$LENGTH(found,..eolChar)
+		Set ..line=..line+crcount-1
+		Set ..col=$LENGTH($PIECE(found,..eolChar,*))
+	}
+    If ..pos>..lastPos {
+		Set ..lastPos=..pos,..nextCount=0
+	} Else {
+		Set ..nextCount=..nextCount+1
+		If ..nextCount>..#nextCountLimit {
+			$$$ThrowStatus($$$ERROR(5001,"NextToString Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
+		}
+	}
+	Quit found
+}
+
 Method Peek(offsetStart As %Integer = 0, offsetEnd As %Integer = {offsetStart}) As %String
 {
 	Quit $EXTRACT(..input,..pos+offsetStart,..pos+offsetEnd)
@@ -154,13 +174,6 @@ Method Peek(offsetStart As %Integer = 0, offsetEnd As %Integer = {offsetStart}) 
 /// returns the string to the EOL but NOT the eol char itself
 Method PeekToEol() As %String
 {
-	/*Set eolpos=$FIND(..input,..eolChar,..pos)
-	; no eol so read whole string
-	If 'eolpos { 
-		Set found=$EXTRACT(..input,..pos,*)
-	} Else {
-		set found=$EXTRACT(..input,..pos,eolpos-2)
-	}*/
 	Set found=$PIECE($EXTRACT(..input,..pos,*),..eolChar,1)
 	Quit found
 }
@@ -168,26 +181,12 @@ Method PeekToEol() As %String
 /// returns the string to the EndString but NOT the EndString char itself
 Method PeekToString(EndString As %String) As %String
 {
-	/*Set eolpos=$FIND(..input,EndString,..pos)
-	; no end so read whole string
-	If 'eolpos {
-		Set found=$EXTRACT(..input,..pos,*)
-	} Else {
-		set found=$EXTRACT(..input,..pos,eolpos-($LENGTH(EndString)+1))
-	} */
 	Set found=$PIECE($EXTRACT(..input,..pos,*),EndString,1)
 	Quit found
 }
 
 Method PeekToEoF() As %String
 {
-	/*Set eolpos=$FIND(..input,..eolChar,..pos)
-	; no eol so read whole string
-	If 'eolpos { 
-		Set found=$EXTRACT(..input,..pos,*)
-	} Else {
-		set found=$EXTRACT(..input,..pos,eolpos-2)
-	}*/
 	Set found=$EXTRACT(..input,..pos,*)
 	Quit found
 }
