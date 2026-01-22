@@ -73,18 +73,20 @@ Property stringVarsElementLast [ MultiDimensional ];
 
 Method %OnNew(ClassServer As PXW.DEV.Dictionary.ClassDefinitionObject = "") As %Status
 {
+	$$$DEBUGMethodBegin
 	Set ..ClassServer=ClassServer
 
 	Set list="BREAK,CASE,CATCH,CLOSE,CONTINUE,DO,ELSE,ELSEIF,ENDIF,EXECUTE,FOR,GOTO,HALT,HANG,IF,JOB,KILL,LOCK,MERGE,NEW,OPEN,PIECE,QUIT,READ,RET,RETURN,TCOMMIT,THROW,TROLLBACK,TRY,TSTART,USE,VIEW,WHILE,WRITE,XECUTE"
 	For i=1:1:$LENGTH(list,",") {
 		Set w=$PIECE(list,",",i),..BadVars(w)=""
 	}
+	$$$DEBUGMethodEnd
 	Quit $$$OK
 }
 
 Method Reset()
 {
-
+	$$$DEBUGMethodBegin
 	Kill ..VariablesTypes
 	Kill ..DimmedTypes
 	Kill ..ElementWarnings
@@ -109,6 +111,7 @@ Method Reset()
 	}
 	Set ..ReturnType=""
 	Set ..ReturnTypeElement=""
+	$$$DEBUGMethodEnd
 }
 
 Method IsParameterVariable(var As %String) As %Boolean
@@ -158,29 +161,34 @@ Method checkCDEFOneClassMember(element As PXW.DEV.BNF.Elements.ClassDefinition) 
 
 Method checkCosReturnTypeClassReference(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ReturnTypeClassReference")
 {
-	Set crE=element.findFirstElementByType("ClassReference")
+	$$$DEBUGMethodBegin
+	Set crE=element.findFirstElementByType("ClassReference",0)
 	If $ISOBJECT(crE) {
 		Set ..ReturnType=crE.ToString(0)
 		Set ..ReturnTypeElement=element
 	}
+	$$$DEBUGMethodEnd
 	Quit ""
 }
 
 /// Look for short commands.
 Method checkCosCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosCommand")
 {
-	Set directiveE=element.findFirstElementByType("CosDirective")
-	; directives count as a command (is this right?) but start with a # atom so would end up being counted as short
-	; therefore only check if its NOT a directive
-	If '$ISOBJECT(directiveE) {
-		Set a=element.FirstAtom()
-		If $LENGTH(a.ToString(0))=1 {
-			If '..ShortCommand {
+
+	$$$DEBUGMethodBegin
+	If '..ShortCommand {
+		Set directiveE=element.findFirstElementByType("CosDirective",0)
+		; directives count as a command (is this right?) but start with a # atom so would end up being counted as short
+		; therefore only check if its NOT a directive
+		If '$ISOBJECT(directiveE) {
+			Set a=element.FirstAtom()
+			If $LENGTH(a.value)=1 {
 				Do ..AddElementWarning(element,"Short command")
 				Set ..ShortCommand=1
 			}
 		}
 	}
+	$$$DEBUGMethodEnd
 	Quit ""
 }
 
@@ -222,6 +230,7 @@ Method checkCDEFFormalSpecItem(element As PXW.DEV.BNF.Elements.ClassDefinition) 
 		  nav to ClassItemIdentifier looking for ELEMENTTYPE
 		  get String
 	*/
+	$$$DEBUGMethodBegin
 	; for listOfObjects we want to know the element type if there is one
 	Set elementType=""
 	Do element.findElementsXPath("AsTypeClassReference/TypeClassReference/TypeParameters/TypeParametersList/TypeParameterItem[ClassItemIdentifier=ELEMENTTYPE]/String",.listOfElementTypes)
@@ -254,6 +263,7 @@ Method checkCDEFFormalSpecItem(element As PXW.DEV.BNF.Elements.ClassDefinition) 
 			}
 		}
 	}
+	$$$DEBUGMethodEnd
 	Quit ""
 }
 
@@ -263,7 +273,7 @@ Method checkCDEFFormalSpecItem(element As PXW.DEV.BNF.Elements.ClassDefinition) 
 Method checkCosSetItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="SetItem")
 {
 	; work out what is being set
-	
+	$$$DEBUGMethodBegin
 	Do element.findElementsXPath("SetValueExpression/VariableSet",.variablelist)
 	For i=1:1:variablelist.Count() {
 		Set varE=variablelist.GetAt(i)
@@ -343,12 +353,13 @@ Method checkCosSetItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compi
 			Kill ..stringVars(var)
 		}
 	}
+	$$$DEBUGMethodEnd
 	Quit ""
 }
 
 Method checkAndRecordVariableType(VariableElement As PXW.DEV.BNF.Elements.COS, Variable As %String, DerivedType As %String)
 {
-
+	$$$DEBUGMethodBegin
 	Set var=Variable
 	Set velement=VariableElement
 	Set derivedtype=..FullClassName(DerivedType)
@@ -374,10 +385,12 @@ Method checkAndRecordVariableType(VariableElement As PXW.DEV.BNF.Elements.COS, V
 	If finaltype'="" {
 		Set ..VariablesTypes(var)=finaltype
 	}
+	$$$DEBUGMethodEnd
 }
 
 Method checkCosVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="Variable,ByrefVariable")
 {
+	$$$DEBUGMethodBegin
 	;  variable name part is the only bit we are interested in
 	Set varname=element.FirstAtom().ToString(0)
 	Set ..VariablesUsed(varname,+element)=element
@@ -388,29 +401,35 @@ Method checkCosVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Comp
 			Set ..BadVarsUsed(uvar)=element
 		}
 	}
+	$$$DEBUGMethodEnd
 	Quit ""
 }
 
 Method checkCosObjectVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ObjectVariable")
 {
+	$$$DEBUGMethodBegin
 	;  variable name part is the only bit we are interested in
 	Set varname=element.FirstAtom().ToString(0)
 	Set ..VariablesUsed(varname)=element
+	$$$DEBUGMethodEnd
 	Quit ""
 }
 
 Method checkCosDirectiveDefine(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosDirectiveDefine")
 {
+	$$$DEBUGMethodBegin
 	Set nameE=element.findFirstElementByType("CosDirectiveDefineName")
 	If $ISOBJECT(nameE) {
 		Set macname=nameE.ToString(0)
 		Set:macname'="" ..DefinedMacros(macname)=""
 	}
+	$$$DEBUGMethodEnd
 	Quit ""
 }
 
 Method checkCosDirectiveDimItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosDirectiveDimItem")
 {
+	$$$DEBUGMethodBegin
 	Set classele=element.findFirstElementByType("ClassReference")
 	If $ISOBJECT(classele) {
 		Set classname=classele.ToString(0)
@@ -427,11 +446,13 @@ Method checkCosDirectiveDimItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.
 			}
 		}
 	}
+	$$$DEBUGMethodEnd
 	Quit ""
 }
 
 Method checkCosDoItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="DoItem")
 {
+	$$$DEBUGMethodBegin
 	If element.partsCount()>0 {
 		; treat this like a method call so we get the byref things set
 		; eg Do ..method(.var1,.var2)
@@ -439,11 +460,13 @@ Method checkCosDoItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compil
 		; not really interested in the return type, we just want the method checked for byref 
 		do ..DeriveTypeReturned(variableElement)
 	}	
+	$$$DEBUGMethodEnd
 	Quit ""
 }
 
 Method checkCosQuitCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="QuitCommand,ReturnCommand")
 {
+	$$$DEBUGMethodBegin
 	if element.type="QuitCommand" {
 		Set quitexpE=element.findFirstElementByType("QuitExpression",1)	
 	} elseif element.type="ReturnCommand" {
@@ -476,11 +499,13 @@ Method checkCosQuitCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.C
 		}
 		Set ..QuitFound=1
 	}
+	$$$DEBUGMethodEnd
 	Quit ""
 }
 
 Method checkOneClassMemeberFINAL(element As PXW.DEV.BNF.Elements.COS)
 {
+	$$$DEBUGMethodBegin
 	Set var=$CHAR($ASCII("%")+1) ; skip over % variables, we don't care if they are used they might be used in deeper, untrackable ways
 	For  {
 		Set var=$ORDER(..VariablesSet(var))
@@ -501,10 +526,12 @@ Method checkOneClassMemeberFINAL(element As PXW.DEV.BNF.Elements.COS)
 			Do ..AddElementWarning(..ReturnTypeElement,"No Quit for method that has a ReturnType")
 		}
 	}
+	$$$DEBUGMethodEnd
 }
 
 Method checkCDEFAttributeCodeModeType(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="AttributeCodemodetype")
 {
+	$$$DEBUGMethodBegin
 	; if [codemode=objectgenerator] then the ReturnType of the method for analysis purposes is %Status
 	Set codemode=$$$UPPER(element.ToString(0))
 	Set ..CodeMode=codemode
@@ -516,15 +543,18 @@ Method checkCDEFAttributeCodeModeType(element As PXW.DEV.BNF.Elements.ClassDefin
 		Set ..ReturnTypeElement=element
 		Set ..VariablesUsed("%code")="" ; % vars are not checked anyway, but leaving here in case this changes in the future
 	}
+	$$$DEBUGMethodEnd
 	Quit ""
 }
 
 Method checkCDEFMethodAttribute(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="MethodAttribute")
 {
+	$$$DEBUGMethodBegin
 	Set attribE=element.findFirstElementByType("AttributeAbstract")
 	If $ISOBJECT(attribE) {
 		Set ..MethodIsAbstract=1
 	}
+	$$$DEBUGMethodEnd
 	Quit ""
 }
 

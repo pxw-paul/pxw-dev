@@ -190,6 +190,7 @@ Method writeElement(element As PXW.DEV.Element)
 Method writeElementBNF1(element As PXW.DEV.Element)
 {
     #dim parser as PXW.DEV.BNF.super
+    $$$DEBUGMethodBegin
     Set input=element.ToString()
     If input["::=" {
        	Set parser=##class(PXW.DEV.BNF.Compilers.BNF1safe).%New()
@@ -206,10 +207,12 @@ Method writeElementBNF1(element As PXW.DEV.Element)
     } Else {
 
     }
+    $$$DEBUGMethodEnd
 }
 
 Method wrapElementBNF1Loop(element As PXW.DEV.Element)
 {
+    $$$DEBUGMethodBegin
     If element.type="Definition" {
         Set labatom=element.FirstAtom()
         Set lab=labatom.value
@@ -238,11 +241,14 @@ Method wrapElementBNF1Loop(element As PXW.DEV.Element)
             Do ..wrapElementBNF1Loop(a)
         }
     }
+    $$$DEBUGMethodEnd
 }
 
 Method writeCDEFIncludeName(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="IncludeName")
 {
+    $$$DEBUGMethodBegin
     Do ..wrapElementHTML(element,"<a class="""_$$$classProgramName_""" href="""_..HREFToInclude(element.ToString(0))_""">","</a>")
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
@@ -255,6 +261,7 @@ Method writeCDEFOneClassMember(element As PXW.DEV.BNF.Elements.ClassDefinition) 
     ;         .. Method
     ; nameE   ..Element=MethodName PXW.DEV.BNF.Element @1910
     ;         ...Element=ClassItemIdentifier PXW.DEV.BNF.Element @1946
+    $$$DEBUGMethodBegin
     Set item=element.partsGetAt(1)
     Set typeA=item.partsGetAt(1)
     Set ..ThisItemType=typeA.ToString(0)
@@ -278,17 +285,21 @@ Method writeCDEFOneClassMember(element As PXW.DEV.BNF.Elements.ClassDefinition) 
 
         Do ..wrapElementHTML(element,"<span class=CDEFOneClassMember>","</span>")
     }
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCDEFClassReference(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassReference,ClassName")
 {
+    $$$DEBUGMethodBegin
     Do ..wrapElementHTML(element,"<a class="_$$$classProgramName_" href="""_..HREFToClass(element.ToString(0))_""">","</a>")
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCDEFClassDefinition(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassDefinition")
 {
+    $$$DEBUGMethodBegin
     Set keywordatom=element.FirstAtom()
     ;Do ..OutputKeywordCommentAsDocumentation(element,.commentid)
     Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This)
@@ -300,11 +311,13 @@ Method writeCDEFClassDefinition(element As PXW.DEV.BNF.Elements.ClassDefinition)
     }
     Set menu=menu_"</div>"
     Do ..wrapAtomHTML(keywordatom,menu,"")
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCDEFAttributeViewQuery(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="AttributeViewquery")
 {
+    $$$DEBUGMethodBegin
     Set ..SqlProgramAnalyser=""
     Set queryE=element.findFirstElementByType("ClassQueryBody")
     ;s formatter=##class(PXW.DEV.BNF.Format.SQL).%New()
@@ -312,11 +325,13 @@ Method writeCDEFAttributeViewQuery(element As PXW.DEV.BNF.Elements.ClassDefiniti
     If $ISOBJECT(queryE) {
         Do ..wrapElementHTML(queryE,"<div>","</div>")
     }
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCDEFClassProperty(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassProperty")
 {
+    $$$DEBUGMethodBegin
     Set keywordatom=element.FirstAtom()
     Set nameelement=element.findFirstElementByType("PropertyName")
     If $ISOBJECT(nameelement) {
@@ -335,11 +350,13 @@ Method writeCDEFClassProperty(element As PXW.DEV.BNF.Elements.ClassDefinition) A
         Set menu=menu_"</div>"
         Do ..wrapAtomHTML(keywordatom,menu,"")
     }
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCDEFClassParameter(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassParameter")
 {
+    $$$DEBUGMethodBegin
     Set keywordatom=element.FirstAtom()
     Set nameelement=element.findFirstElementByType("ClassParameterName")
     If $ISOBJECT(nameelement) {
@@ -358,12 +375,13 @@ Method writeCDEFClassParameter(element As PXW.DEV.BNF.Elements.ClassDefinition) 
         Set menu=menu_"</div>"
         Do ..wrapAtomHTML(keywordatom,menu,"")
     }
-
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCDEFClassMethod(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassClassMethod")
 {
+    $$$DEBUGMethodBegin
     Set keywordatom=element.FirstAtom()
     Set nameelement=element.findFirstElementByType("MethodName")
     If $ISOBJECT(nameelement) {
@@ -382,23 +400,29 @@ Method writeCDEFClassMethod(element As PXW.DEV.BNF.Elements.ClassDefinition) As 
         Set menu=menu_"</div>"
         Do ..wrapAtomHTML(keywordatom,menu,"")
     }
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCDEFMethod(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassMethod")
 {
+    $$$DEBUGMethodBegin
     Do ..writeCDEFClassMethod(element)
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCDEFJavascriptCodeBlock(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="JavascriptCodeBlock")
 {
+    $$$DEBUGMethodBegin
     Do ..wrapElementHTML(element,"<div><span class='EmbeddedJS'>","</span></div>")
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCDEFClassQuery(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassQuery")
 {
+    $$$DEBUGMethodBegin
     Set ..SqlProgramAnalyser=""
     Set keywordatom=element.FirstAtom()
     Set nameelement=element.findFirstElementByType("QueryName")
@@ -419,42 +443,49 @@ Method writeCDEFClassQuery(element As PXW.DEV.BNF.Elements.ClassDefinition) As P
         Set menu=menu_"</div>"
         Do ..wrapAtomHTML(keywordatom,menu,"")
     }
-
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCDEFClassQueryBody(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassQueryBody")
 {
+    $$$DEBUGMethodBegin
     ; not working
     ;Set formatter=##class(PXW.DEV.BNF.Format.SQL).%New()
     ;Do formatter.formatElement(element)
     Do ..wrapElementHTML(element,"<span class='EmbeddedSQL'>","</span>")
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCDEFVariableSet(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="VariableSet")
 {
     #dim strElement as PXW.DEV.Element
-
+    
+    $$$DEBUGMethodBegin
     Set variablename=element.ToStringAtomsOnly(0)
     ; add the hiliting function to the first atom only
     Set atom=element.FirstAtom()
     Set cssclass=$$$classVariableSet
     If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(variablename) Set cssclass=$$$classVariableParameterSet
     Do ..wrapAtomHTML(atom,"<span class="""_cssclass_""" varid="""_variablename_""" onclick=""HiliteSets('"_variablename_"');"">","</span>")
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 /// NOTE: this is a special hand coded type of Xdata (see Run.ClassDefinition)
 Method writeCDEFXdataSql(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="XdataSql")
 {
+    $$$DEBUGMethodBegin
     Set ..SqlProgramAnalyser=""
     Do ..wrapElementHTML(element,"<span class='EmbeddedSQL'>","</span>")
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCDEFIndex(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassIndex")
 {
+    $$$DEBUGMethodBegin
     Set keywordatom=element.FirstAtom()
     Set nameelement=element.findFirstElementByType("IndexName")
     If $ISOBJECT(nameelement) {
@@ -474,12 +505,14 @@ Method writeCDEFIndex(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DE
         Set menu=menu_"</div>"
         Do ..wrapAtomHTML(keywordatom,menu,"")
     }
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCDEFIndexPropertyList(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="IndexPropertyList")
 {
     #dim ClassItemIdentifierE as PXW.DEV.Element
+    $$$DEBUGMethodBegin
     Do element.findElementsXPath("IndexProperty/Fieldname/PropertyReference/ClassItemIdentifier",.props)
     If $ISOBJECT(props) {
         For i=1:1:props.Count() {
@@ -488,6 +521,7 @@ Method writeCDEFIndexPropertyList(element As PXW.DEV.BNF.Elements.ClassDefinitio
             Do ..wrapElementHTML(ClassItemIdentifierE,"<a href="""_..HREFToClass(..This,name)_""">","</a>")
         }
     }
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
@@ -514,7 +548,7 @@ Method writeCDEFTypeClassReference(element As PXW.DEV.BNF.Elements.ClassDefiniti
     ..type=punctuation:
     .. )
     */
-
+    $$$DEBUGMethodBegin
     Set crefE=element.findFirstElementByType("ClassReference",0)
     If $ISOBJECT(crefE) {
         Set class=crefE.ToString(0)
@@ -533,12 +567,13 @@ Method writeCDEFTypeClassReference(element As PXW.DEV.BNF.Elements.ClassDefiniti
             }
         }
     }
-
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCDEFOneClassMember2(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="OneClassmember")
 {
+    $$$DEBUGMethodBegin
     Set ..Analyser=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..ThisType,"COS")
     Set ..Analyser.This=..This
     Set ..Analyser.ClassServer=..ClassServer
@@ -550,34 +585,43 @@ Method writeCDEFOneClassMember2(element As PXW.DEV.BNF.Elements.ClassDefinition)
         Quit:akey=""
         Do ..wrapObjectRefHTML(akey,"<span class="""_$$$classWarning_""" title="""_$ZCONVERT(line,"O","HTML")_""">","</span>")
     }
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCDEFClassItemIdentifier(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassItemIdentifier")
 {
+    $$$DEBUGMethodBegin
     Do ..wrapElementHTML(element,"<span class="_$$$classProgramLabel_">","</span>")
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCDEFFormalSpecList(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="FormalSpecList")
 {
+    $$$DEBUGMethodBegin
     Do ..wrapElementHTML(element,"<span class="""_$$$classFormalSpecList_""">","</span>")
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCDEFFormalSpecItem(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="FormalSpecItem")
 {
+    $$$DEBUGMethodBegin
     Do ..wrapElementHTML(element," <span class="""_$$$classFormalSpecItem_""">","</span>") ; note the space BEFORE the span starts, ensures the new item wraps onto next line if necessary
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCDEFClassXdata(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassXdata")
 {
+    $$$DEBUGMethodBegin
     Set nameE=element.findFirstElementByType("XdataName")
     If $ISOBJECT(nameE) {
         Set name=nameE.ToString(0)
         Set ..XMLPath=..XMLPath_"/"_name
     }
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
@@ -590,31 +634,38 @@ method writeCDEFXdataName(element As PXW.DEV.BNF.Elements.ClassDefinition) AS PX
 */
 Method writeCDEFXmlData(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="XmlData")
 {
+    $$$DEBUGMethodBegin
     Set tagnameE=element.findFirstElementByType("XmlTagName",1)
     If $ISOBJECT(tagnameE) {
         Set ..XMLPath=..XMLPath_"/"_tagnameE.ToString(0)
     }
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCDEFXmlTagName(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="XmlTagName")
 {
+    $$$DEBUGMethodBegin
     Do ..wrapElementHTML(element,"<span class='XMLTag' title="""_..XMLPath_""">","</span>")
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCDEFXmlAttribute(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="XmlAttribute")
 {
+    $$$DEBUGMethodBegin
     Set attnameE=element.findFirstElementByType("XmlAttributeName")
     If $ISOBJECT(attnameE) {
         Set ..XMLPath=..XMLPath_"/"_attnameE.ToString(0)
         Do ..wrapElementHTML(attnameE,"<span class='XMLAttribute'>","</span>")
     }
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCDEFXmlAttributeValue(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="XmlAttributeValue")
 {
+    $$$DEBUGMethodBegin
     If ..XMLPath="/UrlMap/Routes/Route/Call" {
         Set callname=element.ToString(0)
         Set callname=$TRANSLATE(callname,"'""","") ; get rid of quotes
@@ -622,14 +673,17 @@ Method writeCDEFXmlAttributeValue(element As PXW.DEV.BNF.Elements.ClassDefinitio
     } Else {
         Do ..wrapElementHTML(element,"<span class='XMLTag' title="""_..XMLPath_""">","</span>")
     }
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCDEFXmlCdataText(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="XmlCdataText")
 {
+    $$$DEBUGMethodBegin
     If ..XMLPath="/file/bnf/data" {
         Do ..writeElementBNF1(element)
     }
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
@@ -642,6 +696,7 @@ method writeCDEF(element As PXW.DEV.BNF.Elements.ClassDefinition) AS PXW.DEV.BNF
 */
 Method writeCOSCosDirective(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosDirective")
 {
+    $$$DEBUGMethodBegin
     ;#define
     Set keywordatom=element.FirstAtom()
     Set defineE=element.findFirstElementByType("CosDirectiveDefine",0)
@@ -678,28 +733,34 @@ Method writeCOSCosDirective(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.
             }
         }
     }
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCOSCosCommandListContinue(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CommandListEolContinue")
 {
+    $$$DEBUGMethodBegin
     ; make the commands stand out like SQL
     Do ..wrapElementHTML(element,"<span class='EmbeddedSQL'>","</span>")
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCOSClassExpression(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassExpression")
 {
+    $$$DEBUGMethodBegin
     ; ##class()
     Set classnameele=element.findFirstElementByType("ClassReference",0)
     Set classname=classnameele.ToString(0)
     Do ..FollowObjectChainForType(element,classname)
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCOSSpecialSystem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="SpecialSystem")
 {
     #dim chainE as PXW.DEV.Element
+    $$$DEBUGMethodBegin
     Set classname="%SYSTEM"
     set key="",firstAtomOfClass="",lastAtomOfClass="",chainE=""
     for  {
@@ -718,35 +779,38 @@ Method writeCOSSpecialSystem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF
         do ..wrapAtomHTML(lastAtomOfClass,"","</a>")
     }
     do:$ISOBJECT(chainE) ..FollowObjectChainForType(chainE,classname)
-    
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCOSThisThing(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ThisObject,ThisObjectDirectProperty,ThisObjectSet,ThisObjectDirectPropertySet")
 {
+    $$$DEBUGMethodBegin
     If ..This'="" {
         Set classname=..This
         If classname'="" Do ..FollowObjectChainForType(element,classname)
     }
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCOSVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="Variable")
 {
+    $$$DEBUGMethodBegin
     Set variablename=element.ToStringAtomsOnly(0)
     ; add the hiliting function to the first atom only
     Set atom=element.FirstAtom()
     Set cssclass=$$$classVariable
     If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(variablename) Set cssclass=$$$classVariableParameter
     Do ..wrapAtomHTML(atom,"<span class="""_cssclass_""" fetchid="""_variablename_""" onclick=""HiliteSets('"_variablename_"');"">","</span>")
-
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCOSVariableTypes(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="Variable,VariableSet,ObjectVariable")
 {
     ; known variable
-   
+    $$$DEBUGMethodBegin
     Set variablename=element.ToStringAtomsOnly(0)
 
     ; variable could be something like {*} or {field}  so the name above (using atoms only) will not find anything
@@ -769,6 +833,7 @@ Method writeCOSVariableTypes(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF
             }
         }
     }
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
@@ -776,6 +841,7 @@ Method writeCOSLabelDefinition(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.B
 {
     #dim labatom,anchorAtom as PXW.DEV.Atom
 
+    $$$DEBUGMethodBegin
     Set labatom=element.FirstAtom()
     Set lab=labatom.value
     Set ..ThisLabel=lab
@@ -798,11 +864,13 @@ Method writeCOSLabelDefinition(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.B
         /*
         */
     }
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCOSLabelReference(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="LabelReference")
 {
+    $$$DEBUGMethodBegin
     Set lab=element.ToString(0)
     If lab["^" {
         Do ..wrapElementHTML(element,"<a class="""_$$$classLabel_""" href="""_..HREFToRoutine(lab)_""">","</a>")
@@ -810,17 +878,21 @@ Method writeCOSLabelReference(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BN
         Set labname=$TRANSLATE("LAB"_..ThisMethod_lab,"$^%_","")
         Do ..wrapElementHTML(element,"<a class="""_$$$classLabel_""" href=""#"_labname_""">","</a>")
     }
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCOSCosCodeBlock(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosCodeBlock")
 {
+    $$$DEBUGMethodBegin
     Do ..wrapElementHTML(element,"<span class='EmbeddedCOS'>","</span>")
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCOSPythonImport(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="PythonImport")
 {
+    $$$DEBUGMethodBegin
     Set stringE=element.findFirstElementByType("String")
     If $ISOBJECT(stringE) {
         Set atom=stringE.FirstAtom()
@@ -829,12 +901,14 @@ Method writeCOSPythonImport(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.
             Set atom.type="pythonimport"
         }
     }       
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCOSMacrocall(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="Macrocall")
 {
     #dim a as %Dictionary.ClassDefinition
+    $$$DEBUGMethodBegin
     Set macroatom=element.partsGetAt(2)
     If $ISOBJECT(macroatom) {
         Set name=macroatom.ToString(0)
@@ -851,18 +925,21 @@ Method writeCOSMacrocall(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Com
             }
         }
     }
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCOSCosDirectiveIncludeName(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosDirectiveIncludeName")
 {
+    $$$DEBUGMethodBegin
     Do ..wrapElementHTML(element,"<a href="""_..HREFToInclude(element.ToString(0))_""">","</a>")
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCOSClassmethodMethod(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassmethodMethod")
 {
-
+    $$$DEBUGMethodBegin
     If $ISOBJECT(..Analyser) {
         Set expressionE=element.findFirstElementByType("Expression")
         If $ISOBJECT(expressionE) {
@@ -874,17 +951,21 @@ Method writeCOSClassmethodMethod(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV
             }
         }
     }
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCOSClassReference(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassReference,ClassName")
 {
+    $$$DEBUGMethodBegin
     Do ..wrapElementHTML(element,"<a class="_$$$classProgramName_" href="""_..HREFToClass(element.ToString(0))_""">","</a>")
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCOSGlobals(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="GlobalRef,GlobalRefSet")
 {
+    $$$DEBUGMethodBegin
     Set setting=0
     If element.type="GlobalRefSet" Set setting=1
     Set fullrefE=element.findFirstElementByType("GlobalRefFull",0)
@@ -910,36 +991,45 @@ Method writeCOSGlobals(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compi
     } Else {
         ; not sure what we can do with naked refs here (other than make them stand out as a bad thing)
     }
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCOSHtmlBody(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="HtmlBody")
 {
+    $$$DEBUGMethodBegin
     Do ..wrapElementHTML(element,"<span class='EmbeddedXML'>","</span>")
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCOSJsBody(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="JsBody")
 {
+    $$$DEBUGMethodBegin
     Do ..wrapElementHTML(element,"<span class='EmbeddedJS'>","</span>")
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeCOSSqlBody(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="SqlBody")
 {
+    $$$DEBUGMethodBegin
     Set ..SqlProgramAnalyser=""
     Do ..wrapElementHTML(element,"<span class='EmbeddedSQL'>","</span>")
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeObjectVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ObjectVariable")
 {
+    $$$DEBUGMethodBegin
     Set variablename=element.ToStringAtomsOnly(0)
     ; add the hiliting function to the first atom only
     Set atom=element.FirstAtom()
     Set cssclass=$$$classVariable
     If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(variablename) Set cssclass=$$$classVariableParameter
     Do ..wrapAtomHTML(atom,"<span class="""_cssclass_""" fetchid="""_variablename_""" onclick=""HiliteSets('"_variablename_"');"">","</span>")
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
@@ -947,6 +1037,7 @@ Method writeCOSVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.C
 {
     #dim strElement as PXW.DEV.Element
 
+    $$$DEBUGMethodBegin
     Set variablename=element.ToStringAtomsOnly(0)
     ; add the hiliting function to the first atom only
     Set atom=element.FirstAtom()
@@ -973,11 +1064,13 @@ Method writeCOSVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.C
             Do ..wrapElementHTML(element,"","<span title="""_$ZCONVERT(formatted,"O","HTML")_""" class='hiddencopy' onclick=""copyTextToClipboard('"_$ZCONVERT($ZCONVERT(formatted,"O","JS"),"O","HTML")_"');"">copy</span>")
         }
     }
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeJSCosMethodReference(element As PXW.DEV.BNF.Elements.JS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosMethodReference")
 {
+    $$$DEBUGMethodBegin
     Set method=element.ToString(0)
     ; method in ..this class
     If method?1".."1.E {
@@ -985,17 +1078,20 @@ Method writeJSCosMethodReference(element As PXW.DEV.BNF.Elements.JS) As PXW.DEV.
     } Else {
         Do ..wrapElementHTML(element,"<a class="_$$$classProgramLabel_" href="""_..HREFToClass($PIECE(method,".",1,*-1),$PIECE(method,".",*))_""">","</a>")
     }
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeJSIdentifier(element As PXW.DEV.BNF.Elements.JS) As PXW.DEV.BNF.Compilers.elementHandler(Type="Identifier")
 {
+    $$$DEBUGMethodBegin
     Set variablename=element.ToStringAtomsOnly(0)
     ; add the hiliting function to the first atom only
     Set atom=element.FirstAtom()
     Set cssclass=$$$classVariable
     If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(variablename) Set cssclass=$$$classVariableParameter
     Do ..wrapAtomHTML(atom,"<span class="""_cssclass_""" fetchid="""_variablename_""" onclick=""HiliteSets('"_variablename_"');"">","</span>")
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
@@ -1006,14 +1102,17 @@ Method writeJSIdentifier(element As PXW.DEV.BNF.Elements.JS) As PXW.DEV.BNF.Comp
 */
 Method writeSQLStoredProcName(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="StoredProcName")
 {
+    $$$DEBUGMethodBegin
     Set spname=element.ToString(0)
     Do ..wrapElementHTML(element,"<a class="""_$$$classObjectMember_""" href="""_..HREFToClass(spname)_""">","</a>") 
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 /// WHY IS THIS HERE and not just in a WithClause section?
 Method writeSQLWithCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="WithCommand")
 {
+    $$$DEBUGMethodBegin
     Do element.findElementsByType("WithClause",.withlist)
     For i=1:1:withlist.Count() {
         Set withE=withlist.GetAt(i)
@@ -1024,18 +1123,23 @@ Method writeSQLWithCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.C
             Do ..wrapAtomHTML(atom,"<span class='SQLTableAliasSet' title='show alias usage' varid="""_$$$UPPER(aliasname)_""" onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
         }	    
     }    
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeSQLWithClause(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="WithClause")
 {
+    $$$DEBUGMethodBegin
     Do ..wrapElementHTML(element,"<span class='SQLSection'>","</span>")
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeSQLWhereClause(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="WhereClause")
 {
+    $$$DEBUGMethodBegin
     Do ..wrapElementHTML(element,"<span class='SQLSection'>","</span>")
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
@@ -1046,6 +1150,7 @@ Method writeSQLDerivedColumn(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
     ; a single column, that column is the name
     ; then create an ID for it so it can be highlighted
     #dim col as PXW.DEV.Element
+    $$$DEBUGMethodBegin
     Set col=element
     Set classtxt="class='SQLSection'"
     Set colname="colxxxx"
@@ -1071,19 +1176,22 @@ Method writeSQLDerivedColumn(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
         Set classtxt="class="""_$$$classHilite_""""
     }
     Do ..wrapElementHTML(col,"<span "_classtxt_" fetchid="""_$$$UPPER(colname)_""">","</span>")        
-    
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeSQLJoin(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="Join")
 {
+    $$$DEBUGMethodBegin
     Do ..wrapElementHTML(element,"<span class='SQLSection'>","</span>")
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeSQLProgram(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="QuerySpecification")
 {
     #dim sqlanalyse as PXW.DEV.BNF.Analyse.SQL
+    $$$DEBUGMethodBegin
     If ..SqlProgramAnalyser="" {
         Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..ThisType,"SQL")
         Set sqlanalyse.ClassServer=..ClassServer
@@ -1092,12 +1200,14 @@ Method writeSQLProgram(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compi
         Do sqlanalyse.checkElement(element)
         Set ..SqlProgramAnalyser=sqlanalyse
     }
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeSQLSelectCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="SelectCommand")
 {
     #dim subAnalyser as PXW.DEV.BNF.Analyse.SQL
+    $$$DEBUGMethodBegin
     If $ISOBJECT(..SqlProgramAnalyser) {
         Set sqlanalyse=$GET(..SqlProgramAnalyser.SelectCommandAnalysis(+element))
     } Else {
@@ -1135,6 +1245,7 @@ Method writeSQLSelectCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
             Do ..wrapAtomHTML(atom,"<span class='SQLTableAlias' title='show alias usage' fetchid="""_$$$UPPER(aliasname)_""" onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
         }
     }    
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
@@ -1142,6 +1253,7 @@ Method writeSQLInsertCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
 {
     ;Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
     #dim sqlanalyse as PXW.DEV.BNF.Analyse.SQL
+    $$$DEBUGMethodBegin
     Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..ThisType,"SQL")
     Set sqlanalyse.ClassServer=..ClassServer
     Set sqlanalyse.This=..This
@@ -1154,6 +1266,7 @@ Method writeSQLInsertCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
             ; should always be a name
         }
     }    
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
@@ -1161,6 +1274,7 @@ Method writeSQL(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.el
 {
     ;Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
     #dim sqlanalyse as PXW.DEV.BNF.Analyse.SQL
+    $$$DEBUGMethodBegin
     Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..ThisType,"SQL")
     Set sqlanalyse.ClassServer=..ClassServer
     Set sqlanalyse.This=..This
@@ -1173,11 +1287,13 @@ Method writeSQL(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.el
             ; should always be a name
         }
     }    
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeSQLDirectTable(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="DirectTable")
 {
+    $$$DEBUGMethodBegin
     Set direct=element
     If $ISOBJECT(direct) {
         Set tablenameE=direct.findFirstElementByType("TableName",0)
@@ -1192,22 +1308,27 @@ Method writeSQLDirectTable(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.C
             }
         }
     }    
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeSQLTableAlias(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="TableAlias")
 {
+    $$$DEBUGMethodBegin
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writeSQLTableAsClause(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="TableAsClause")
 {
+    $$$DEBUGMethodBegin
     Set aliasE=element.findFirstElementByType("AliasName")
     If $ISOBJECT(aliasE) {
         Set aliasname="alias"_aliasE.ToString(0)
         Set atom=aliasE.FirstAtom()
         Do ..wrapAtomHTML(atom,"<span class='SQLTableAliasSet' title='show alias usage' varid="""_$$$UPPER(aliasname)_""" onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
     }    
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
@@ -1220,23 +1341,28 @@ method writeSQL(element As PXW.DEV.BNF.Elements.SQL) AS PXW.DEV.BNF.Compilers.el
 */
 Method writePYFile(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="File")
 {
+    $$$DEBUGMethodBegin
     Do ..wrapElementHTML(element,"<span class='EmbeddedPython'>","</span>") 
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writePYClassDefRaw(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassDefRaw")
 {
+    $$$DEBUGMethodBegin
     Set nameatom=element.partsGetAt(2) ; should be 2
     If $ISOBJECT(nameatom) {
         Set aname="pyClassName"_nameatom.value
         Do ..AddToIndex(nameatom.value,"Class",aname)
         Do ..wrapAtomHTML(nameatom,"<span id="""_aname_""" class="_$$$classProgramName_">","</span>")
     }    
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writePYFunctionDef(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="FunctionDef")
 {
+    $$$DEBUGMethodBegin
     Set ..PythonAnalyser=##class(PXW.DEV.BNF.Analyse.Python).%New()
     Set ..PythonAnalyser.This=..This
     Do ..PythonAnalyser.middle(element)
@@ -1245,60 +1371,72 @@ Method writePYFunctionDef(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF
     If $ISOBJECT(nameatom) {
         Do ..wrapAtomHTML(nameatom,"<span class="_$$$classProgramLabel_">","</span>")
     }    
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writePYFunctionDefRaw(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="FunctionDefRaw")
 {
+    $$$DEBUGMethodBegin
     Set nameatom=element.partsGetAt(2) ; should be 2
     If $ISOBJECT(nameatom) {
         Set aname="pyDefName"_nameatom.value
         Do ..AddToIndex(nameatom.value,"MethodName",aname)
         Do ..wrapAtomHTML(nameatom,"<span id="""_aname_""" class="_$$$classProgramLabel_">","</span>")
     }    
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writePYImportStmt(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="ImportStmt")
 {
+    $$$DEBUGMethodBegin
     Set nameE=element.findFirstElementByType("DottedName")
     If $ISOBJECT(nameE) {
         Set name=nameE.ToString(0)
         Do ..wrapElementHTML(nameE,"<a class="_$$$classProgramName_" href="""_..HREFToPython(name)_""">","</a>")
     }    
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writePYImportFrom(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="ImportFrom")
 {
+    $$$DEBUGMethodBegin
     Set nameE=element.findFirstElementByType("DottedAsNames")
     If $ISOBJECT(nameE) {
         Set name=nameE.ToString(0)
         Do ..wrapElementHTML(nameE,"<a class="_$$$classProgramName_" href="""_..HREFToPython(name)_""">","</a>")
     }   
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writePYStarTarget(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="StarTarget")
 {
+    $$$DEBUGMethodBegin
     Set varname=element.ToString(0)
     Set cssclass=$$$classVariable
     If $ISOBJECT(..PythonAnalyser),..PythonAnalyser.IsParameterVariable(varname) Set cssclass=$$$classVariableParameter
     Do ..wrapElementHTML(element,"<span class="""_cssclass_""" varid="""_varname_""" onclick=""HiliteSets('"_varname_"');"">","</span>")
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writePYParam(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="Param")
 {
+    $$$DEBUGMethodBegin
     Set varname=element.ToString(0)
     Set cssclass=$$$classVariable
     If $ISOBJECT(..PythonAnalyser),..PythonAnalyser.IsParameterVariable(varname) Set cssclass=$$$classVariableParameter
     Do ..wrapElementHTML(element,"<span class="""_cssclass_""" varid="""_varname_""" onclick=""HiliteSets('"_varname_"');"">","</span>")  
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
 Method writePYAtom(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="Atom")
 {
+    $$$DEBUGMethodBegin
     For  {
         Set a=element.partsGetNext(.akey)
         Quit:akey=""
@@ -1314,6 +1452,7 @@ Method writePYAtom(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compil
             } 
         }
     }    
+    $$$DEBUGMethodEnd
     Quit ""
 }
 
@@ -1367,6 +1506,7 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName
 
 Method writeCOSParameterChecks(ClassName As %String, MethodPath As %String, Element As PXW.DEV.Element)
 {
+    $$$DEBUGMethodBegin
     If ClassName="%Library.ResultSet",MethodPath=".%New" {
         Set paramsE=Element.findFirstElementByType("FunctionParameterList")
         Do paramsE.findElementsByType("FunctionParameter",.plist,0)
@@ -1442,6 +1582,7 @@ Method writeCOSParameterChecks(ClassName As %String, MethodPath As %String, Elem
 
         }
     }
+    $$$DEBUGMethodEnd
 }
 
 ClassMethod flattenlist(Element As PXW.DEV.Element, AtomList As %Library.ListOfObjects) As %List
@@ -1449,6 +1590,7 @@ ClassMethod flattenlist(Element As PXW.DEV.Element, AtomList As %Library.ListOfO
 	#dim a as PXW.DEV.Atom
 	#dim e as PXW.DEV.Element
 	
+    $$$DEBUGMethodBegin
     If '$ISOBJECT($GET(AtomList)) Set AtomList=##class(%Library.ListOfObjects).%New()
     
  	Set akey=""
@@ -1486,6 +1628,7 @@ ClassMethod flattenlist(Element As PXW.DEV.Element, AtomList As %Library.ListOfO
 	If 'single {
         ;Set str=str_"}"
     }
+    $$$DEBUGMethodEnd
 	Quit list
 }
 
@@ -1512,7 +1655,7 @@ Method FollowImplicitJoins(ColumnReference As PXW.DEV.Element, fulltable As %Str
     ;.... Location
     
     ;Set aliasNameE=ColumnReference.findFirstElementByType("AliasName",1) ; hmm, in a group, can we promote in bnf?
-    
+    $$$DEBUGMethodBegin
     Set columnNameE=ColumnReference.findFirstElementByType("ColumnName",0)
     Set crefimpE=ColumnReference.findFirstElementByType("ColumnReferenceImplicit",0)
     Do ..wrapElementHTML(columnNameE,"<a class="""_$$$classObjectMember_""" href="""_..HREFToSQLTable(fulltable,columnNameE.ToString(0))_""">","</a>")
@@ -1527,6 +1670,7 @@ Method FollowImplicitJoins(ColumnReference As PXW.DEV.Element, fulltable As %Str
             Set fulref=fulref_"->"
         }
     }
+    $$$DEBUGMethodEnd
 }
 
 /// Here is line 1 of the description

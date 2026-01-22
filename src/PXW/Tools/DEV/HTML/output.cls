@@ -132,21 +132,24 @@ Method writeAtom(atom As PXW.DEV.Atom, preValue As %String = "", postValue As %S
 	Do ..output(out)
 }
 
-/*Method GenericRedirect(element As PXW.DEV.Element)
+/*
+Method GenericRedirect(element As PXW.DEV.Element)
 {
+	$$$DEBUGMethodBegin
     Set class=$$$UPPER(element.%ClassName(1))
     Set etype=$$$UPPER(element.type)
 	set m=""
 	;zw class,etype
-	if class'="",etype'="" {
+	if class'="",etype'="",$d(..redir(class,etype)) {
 		f  {
 			s m=$o(..redir(class,etype,m))
 			q:m=""
-		    $$$DEBUG("Begin "_$CLASSNAME()_":"_$PIECE(element.type,":",1)_","_element.%ClassName(1)_","_m) 
+		    ;$$$DEBUG("Begin "_$CLASSNAME()_":"_$PIECE(element.type,":",1)_","_element.%ClassName(1)_","_m) 
 			d $METHOD($this,m,element)
-		    $$$DEBUG("End "_$CLASSNAME()_":"_$PIECE(element.type,":",1)_","_element.%ClassName(1)_","_m) 
+		    ;$$$DEBUG("End "_$CLASSNAME()_":"_$PIECE(element.type,":",1)_","_element.%ClassName(1)_","_m) 
 		}
 	}
+	$$$DEBUGMethodEnd
 }
 */
 Method GenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator ]
@@ -155,7 +158,7 @@ Method GenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator 
     Set opencurly="{",closecurly="}"
     Set mkey=""
 
-    
+    Do %code.WriteLine($CHAR(9)_"$$$DEBUGMethodBegin")
     Do %code.WriteLine($CHAR(9)_"Set class=$$$UPPER(element.%ClassName(1))")
     Do %code.WriteLine($CHAR(9)_"Set etype=$$$UPPER(element.type)")
 
@@ -207,6 +210,7 @@ Method GenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator 
 		Do %code.WriteLine($CHAR(9)_closecurly)
 		Set cif="Elseif"
     }
+    Do %code.WriteLine($CHAR(9)_"$$$DEBUGMethodEnd")
     Quit $$$OK
 }
 
@@ -246,7 +250,7 @@ Method GenericRedirectNew() [ CodeMode = objectgenerator ]
 			}
 		} 
 	}
-	Set (class,etype,name)="",cif="If"
+	Set (class,etype,name)=""  ;,cif="If"
 	For  {
 		Set class=$ORDER(methods(class))
 		Quit:class=""
@@ -261,7 +265,7 @@ Method GenericRedirectNew() [ CodeMode = objectgenerator ]
 				
 				Do %code.WriteLine($CHAR(9)_"s ..redir("""_$$$UPPER(class)_""","""_$$$UPPER(etype)_""","""_meth.Name_""")=1")
 			}
-			Set ifcommand="Elseif"
+			;Set ifcommand="Elseif"
 		}
     }
     Quit $$$OK
