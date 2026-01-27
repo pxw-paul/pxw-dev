@@ -243,13 +243,8 @@ Method isStringInList(ListOfStrings As %List, longestLen As %Integer = 50, Outpu
     Set UPP50=$$$UPPER(next50)
     Set ptr=0,notfound=1
     While notfound, $LISTNEXT(ListOfStrings,ptr,value) {
-       Set len=$LENGTH(value)
-       /*If value?1.A {
-            Set peeked=$$$UPPER(..peekKeyword())
-       } Else {
-            Set peeked=$EXTRACT(UPP50,1,len)
-       }*/
-       Set peeked=$EXTRACT(UPP50,1,len)
+        Set len=$LENGTH(value)
+        Set peeked=$EXTRACT(UPP50,1,len)
         If peeked=value {
             Set notfound=0,foundString=$EXTRACT(next50,1,len)
         }
@@ -530,16 +525,15 @@ Method readLineComment(start As %String) As PXW.DEV.Atom
 	Set n=""
     Do {
         Set morecomments=0
-       Set n=n_..stream.NextToEol()
+        Set n=n_..stream.NextToEol()
 
         ; now look to see if the NEXT line has the same type of comment
         ; if it does then add all that to this comment
         Set next50=..peek(50)
-        
-        ; 
+
         If $EXTRACT($ZSTRIP(next50,"<WC"),1,$LENGTH(start))=start {
             Set ws=$CHAR(32,9,13,10,160)
-           Set n=n_..stream.NextChars(ws)
+            Set n=n_..stream.NextChars(ws)
             Set morecomments=1
         }
     } While morecomments

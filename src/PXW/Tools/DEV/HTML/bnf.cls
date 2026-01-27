@@ -154,7 +154,7 @@ Method writeElement(element As PXW.DEV.Element)
     #dim a as PXW.DEV.Atom
     #dim cref as PXW.DEV.Element
     /* CDEF */
-    
+    $$$DEBUGMethodBegin
     Set oldXMLPath=..XMLPath
     Do ..GenericRedirect(element)
 
@@ -183,8 +183,9 @@ Method writeElement(element As PXW.DEV.Element)
 		}
 	}
 
-    Do ##super(element)
-    Set ..XMLPath=oldXMLPath
+    Do ##super(.element)
+    Set ..XMLPath=oldXMLPath 
+    $$$DEBUGMethodEnd
 }
 
 Method writeElementBNF1(element As PXW.DEV.Element)

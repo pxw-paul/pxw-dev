@@ -68,14 +68,14 @@ Method wrapElementHTML(element As PXW.DEV.Element, pre As %String, post As %Stri
 Method output(html As %String)
 {
 	$$$DEBUGMethodBegin
-	If ..WriteMode {
+	;If ..WriteMode {
 		Write html
 		;s %outputhtml=$g(%outputhtml)_html
 		;i $l(%outputhtml)>100000 w %outputhtml s %outputhtml=""
 		;s ^PXW("out",$i(^PXW))=html
-	} Else {
-		Set ..htmlout=..htmlout_html	
-	}
+	;} Else {
+	;	Set ..htmlout=..htmlout_html	
+	;}
 	$$$DEBUGMethodEnd
 }
 
@@ -91,7 +91,9 @@ Method html(string As %String) As %String
 
 Method writeElement(element As PXW.DEV.Element)
 {
+	$$$DEBUGMethodBegin
 	For i=1:1:+$GET(..pre(+element)) Do ..output($GET(..pre(+element,i)))
+
 	For  {
 		Set a=element.partsGetNext(.akey)
 		Quit:akey=""
@@ -102,7 +104,8 @@ Method writeElement(element As PXW.DEV.Element)
 			Do ..writeAtom(a)
 		}
 	}
-    For i=+$GET(..post(+element)):-1:1 Do ..output($GET(..post(+element,i)))
+	For i=+$GET(..post(+element)):-1:1 Do ..output($GET(..post(+element,i)))
+	$$$DEBUGMethodEnd
 }
 
 /// the only method that should actually do any output during the middle processing
@@ -129,7 +132,7 @@ Method writeAtom(atom As PXW.DEV.Atom, preValue As %String = "", postValue As %S
 	    For i=+$GET(..postI(+atom)):-1:1 Set out=out_$GET(..postI(+atom,i))
 	Set out=out_..html(atom.end)_postValue
     For i=+$GET(..post(+atom)):-1:1 Set out=out_$GET(..post(+atom,i))
-	Do ..output(out)
+	Do ..output(.out)
 }
 
 /*
@@ -202,7 +205,7 @@ Method GenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator 
 				Set name=$ORDER(methods(class,etype,name),1,meth)
 				Quit:name=""
 				
-				Do %code.WriteLine($CHAR(9,9,9)_"do .."_meth.Name_"(element)")
+				Do %code.WriteLine($CHAR(9,9,9)_"do .."_meth.Name_"(.element)")
 			}
 			Do %code.WriteLine($CHAR(9,9)_closecurly)
 			Set ifcommand="Elseif"

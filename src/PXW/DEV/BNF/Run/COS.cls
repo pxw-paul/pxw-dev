@@ -82,7 +82,7 @@ readNextLoop2
             If ..peek(1)=$CHAR(13) Set ..whitespace=..newAtom("whitespace",..next(1)) $$$DEBUG("Going to start of next line")
             Goto readNextLoop2
         }
-        $$$DEBUG("End of stopAtEOLContinue")
+        ;$$$DEBUG("End of stopAtEOLContinue")
         Set ..needsWScheck=0
 
     } Else {
@@ -534,11 +534,11 @@ Method Dyadicop(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	$$$BNFSTART(subElement)
 	Set done=0
 	If ..addPunctuationInList(subElement,$LISTBUILD("'<=","']]","'>="),3)
-        || ..addPunctuationInList(subElement,$LISTBUILD("\\",">=","'>","<=","'<","'=","**","&&","]]","']","'[","||"),2)
-        || ..addPunctuationInList(subElement,$LISTBUILD("+","-","/","\",">","<","=","*","]","[","!","_"),1)
-    	 || ..HashOp(subElement,.addedElement)
-		 || ..AmpOp(subElement,.addedElement)	 {
-		Set done=1
+    || ..addPunctuationInList(subElement,$LISTBUILD("\\",">=","'>","<=","'<","'=","**","&&","]]","']","'[","||"),2)
+    || ..addPunctuationInList(subElement,$LISTBUILD("+","-","/","\",">","<","=","*","]","[","!","_"),1)
+    || ..HashOp(subElement,.addedElement)
+    || ..AmpOp(subElement,.addedElement) {
+        Set done=1
 	}
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)
