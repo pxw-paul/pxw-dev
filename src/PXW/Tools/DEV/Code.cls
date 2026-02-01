@@ -6,7 +6,7 @@ ClassMethod WriteMainBody(ByRef scratch)
 {
 
     Do ..HREFFrom(.CodeReference,.utype,.name)
-    if utype="DIRECTRUN" {
+    If utype="DIRECTRUN" {
         ; Could we deal with parameters here, IE call HREFTo of the destination class
         ; and then decode the URL and force the results into %request.Data
         ; so that the final class thinks its a normal call?
@@ -21,8 +21,8 @@ ClassMethod WriteMainBody(ByRef scratch)
         ;    d ##class(%Net.URLParser).Decompose(url,.comp)
         ;    zw CodeReference,p1,comp
         ;}
-        do $CLASSMETHOD(name,"WriteMainBody",.scratch)
-    } else {
+        Do $CLASSMETHOD(name,"WriteMainBody",.scratch)
+    } Else {
         If name'="" {
             ; no type so do lookup
             If utype="" {
@@ -89,9 +89,9 @@ ClassMethod WriteNav(ByRef scratch)
     ; Work out what type of code is being searched, eg *.CLS
     Do ..HREFFrom(.CodeReference,.utype,.name)
 
-    if utype="DIRECTRUN" {
-        do $CLASSMETHOD(name,"WriteNav",.scratch)
-    } else {
+    If utype="DIRECTRUN" {
+        Do $CLASSMETHOD(name,"WriteNav",.scratch)
+    } Else {
         Set type=$PIECE(CodeReference,".",*)
         Set utype=$$$UPPER(type)
 
@@ -106,8 +106,20 @@ ClassMethod WriteNav(ByRef scratch)
 
         While rs.%Next() {
             Set cref=name_"."_rs.%Get("Type")
-            Set class=$s($$$UPPER(rs.%Get("Type"))=utype:"class='"_$$$classHilite_"'",1:"")
+            Set class=$SELECT($$$UPPER(rs.%Get("Type"))=utype:"class='"_$$$classHilite_"'",1:"")
             Write "<a "_class_" href="""_..HREFTo(cref)_""">"_..EscapeHTML(cref)_"</a>",!
+        }
+
+        Set rs=##class(%Library.ResultSet).%New(..%ClassName(1)_":"_"SelectNameSpaces")
+        $$$ThrowOnError(rs.Execute())
+        Write "<hr>"
+        While rs.%Next() {
+            Set nspace=rs.%Get("NameSpace")
+            ;Set class=$s($$$UPPER(nspace)=$$$UPPER(%NS):"class='"_$$$classHilite_"'",1:"")
+            Set class=""
+            If $$$UPPER(nspace)'=$$$UPPER(%NS) {
+                Write "<a "_class_" href="""_..HREFTo(name,nspace)_""">"_..EscapeHTML(nspace_" : "_name)_"</a>",!
+            }
         }
 
         ; find all tools that match    
@@ -148,9 +160,9 @@ ClassMethod WriteScripts()
 {
     Do ..HREFFrom(.CodeReference,.utype,.name)
 
-    if utype="DIRECTRUN" {
-        do $CLASSMETHOD(name,"WriteScripts")
-    } else {
+    If utype="DIRECTRUN" {
+        Do $CLASSMETHOD(name,"WriteScripts")
+    } Else {
     }
 }
 
@@ -166,9 +178,9 @@ ClassMethod WriteStyles()
 {
     Do ..HREFFrom(.CodeReference,.utype,.name)
 
-    if utype="DIRECTRUN" {
-        do $CLASSMETHOD(name,"WriteStyles")
-    } else {
+    If utype="DIRECTRUN" {
+        Do $CLASSMETHOD(name,"WriteStyles")
+    } Else {
     }
 }
 
@@ -185,12 +197,18 @@ Query SelectTypes(Namespace As %String, Type As %String) As PXW.LIB.SQL.Query [ 
         AND ((:Type IS NULL) OR (ci.Type=:Type))
 }
 
+Query SelectNameSpaces() As PXW.LIB.SQL.Query [ SqlProc ]
+{
+    SELECT DISTINCT ci.NameSpace as NameSpace
+      FROM PXW_DEV_Dictionary.CodeInterface as ci
+}
+
 /// Create a list of commands the user can enter as shortcuts to some of the tools.
 /// EG - the user could type $ChangeNamespace to go directly to the change namespace tool.
 ClassMethod WriteHeadForm(Page As %String)
 {
     Do ..HREFFrom(.CodeReference,.utype,.name)
-    Set CR=$S(utype="DIRECTRUN":"",1:CodeReference)
+    Set CR=$SELECT(utype="DIRECTRUN":"",1:CodeReference)
     If Page=..%ClassName(1) {
         ;Do ..HREFFrom(.CR)
     } ElseIf Page="PXW.Tools.DEV.Class" {
@@ -202,15 +220,15 @@ ClassMethod WriteHeadForm(Page As %String)
     ; find all tools, for the namespace
     Set rs=##class(PXW.Tools.Queries).SelectToolsForNamespaceFunc(%NS)
 	
-    set datalist="<datalist id='toolsAvailable'>"
+    Set datalist="<datalist id='toolsAvailable'>"
 	While rs.%Next() {
         Set toolname=rs.%Get("ToolName")
-        if toolname'="" {
-            set shortname=$tr(toolname," ","")
-            set datalist=datalist_"<option value='"_..EscapeHTML("$"_shortname_"")_"'>"_..EscapeHTML("$"_toolname)_"</option>"
+        If toolname'="" {
+            Set shortname=$TRANSLATE(toolname," ","")
+            Set datalist=datalist_"<option value='"_..EscapeHTML("$"_shortname_"")_"'>"_..EscapeHTML("$"_toolname)_"</option>"
         }
 	}
-    set datalist=datalist_"</datalist>"
+    Set datalist=datalist_"</datalist>"
 
    &html<
     <form id=toolsFormCodeReference action='PXW.Tools.DEV.Code.cls'>
@@ -245,13 +263,13 @@ ClassMethod HREFFrom(Output CodeReference As %String, Output CodeType As %String
     ; PXW.Tools.ChangeNamespace.DIRECTRUN - to run the Changenamespace (maybe get rid if this)
     ; $ChangeNamespace to run the changenamespace tool directly (new version of direct run)
     If utype="DIRECTRUN" {
-        set nam=$PIECE(CodeReference,".",1,*-1)
-    } elseif $e(CodeReference,1)="$" {
-        set nam=..ShortnameToToolClass($p($e(CodeReference,2,*)," ",1))
-        if nam'="" {
-            set utype="DIRECTRUN"
+        Set nam=$PIECE(CodeReference,".",1,*-1)
+    } ElseIf $EXTRACT(CodeReference,1)="$" {
+        Set nam=..ShortnameToToolClass($PIECE($EXTRACT(CodeReference,2,*)," ",1))
+        If nam'="" {
+            Set utype="DIRECTRUN"
         }
-    } elseif ##class(PXW.DEV.Dictionary.CodeType).%ExistsId(utype) {
+    } ElseIf ##class(PXW.DEV.Dictionary.CodeType).%ExistsId(utype) {
         Set nam=$PIECE(CodeReference,".",1,*-1)
     } Else {
         Set nam=CodeReference
@@ -261,9 +279,11 @@ ClassMethod HREFFrom(Output CodeReference As %String, Output CodeType As %String
     Set Name=nam
 }
 
-ClassMethod HREFTo(CodeReference As %String) As %String
+ClassMethod HREFTo(CodeReference As %String, NameSpace As %String) As %String
 {
 	If $DATA(%NS) Set ons=%NS
+    New %NS 
+    Set %NS=$SELECT($GET(NameSpace)'="":NameSpace,$DATA(ons):ons,1:"")
 	Set href=##super()
 	If $DATA(ons) Set %NS=ons
 	Set sep="&"
@@ -277,19 +297,19 @@ ClassMethod ShortnameToToolClass(Shortname As %String) As %String
     Set rs=##class(%ResultSet).%New("%Dictionary.ClassDefinition:SubclassOf")
 	$$$THROWONERROR(sc,rs.Execute(##class(PXW.Tools.Page).%ClassName(1)))
 	
-    set toolclass=""
+    Set toolclass=""
 	While rs.Next() {
 		Set classname=rs.Data("Name")
 		Set HREFto=##class(%Dictionary.MethodDefinition).%OpenId(classname_"||HREFTo")
-		If $isobject(HREFto) {
+		If $ISOBJECT(HREFto) {
             Set toolname=$PARAMETER(classname,"ToolName")
-            set toolnameshort=$tr(toolname," ","")
-            if toolnameshort=Shortname {
-                set toolclass=classname
+            Set toolnameshort=$TRANSLATE(toolname," ","")
+            If toolnameshort=Shortname {
+                Set toolclass=classname
             }
         }
 	}
-    quit toolclass
+    Quit toolclass
 }
 
 }

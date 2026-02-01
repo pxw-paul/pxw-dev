@@ -73,7 +73,7 @@ Method compile(Element As PXW.DEV.Element, ToClassName As %String, elementtype A
     Set class.Super=##class(PXW.DEV.BNF.super).%ClassName(1)
     Do class.Methods.Clear()
     Set class.ProcedureBlock=1
-    Set class.Description="Created: "_$ZDATETIME($HOROLOG,3)_" "_..%ClassName(1)
+    ;Set class.Description="Created: "_$ZDATETIME($HOROLOG,3)_" "_..%ClassName(1)
 
      Do class.Parameters.Clear()
     Set parameter=##class(%Dictionary.ParameterDefinition).%New()

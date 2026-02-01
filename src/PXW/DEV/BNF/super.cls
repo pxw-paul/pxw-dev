@@ -639,17 +639,17 @@ Method recoverStopAt(StopAtList As %List) As %Boolean
 /// we consider that the comment here is part of the sql but the CR and TAB on the next line belongs to the objectscript.
 Method GetCurrentComment() As PXW.DEV.Atom
 {
-    set comment=""
-    if $ISOBJECT(..comment) {
-        set comment=..comment
-        set ..comment=""
-    } elseif $isobject(..whitespace) {
-        if $isobject(..whitespace.comment) {
-            set comment=..whitespace.comment
-            set ..whitespace.comment=""
+    Set comment=""
+    If $ISOBJECT(..comment) {
+        Set comment=..comment
+        Set ..comment=""
+    } ElseIf $ISOBJECT(..whitespace) {
+        If $ISOBJECT(..whitespace.comment) {
+            Set comment=..whitespace.comment
+            Set ..whitespace.comment=""
         }
     }
-    q comment
+    Quit comment
 }
 
 }

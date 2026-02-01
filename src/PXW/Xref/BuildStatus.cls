@@ -33,6 +33,8 @@ Property Running As %Boolean [ Calculated, SqlComputeCode = { Set {*}=##class(PX
 
 Index iDate On (RequestNamespace, StartDate);
 
+Index iEndDateTime On EndDateTime;
+
 Method Start()
 {
     set ..StartDate=+$HOROLOG

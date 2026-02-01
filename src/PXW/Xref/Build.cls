@@ -181,6 +181,7 @@ ClassMethod DailyBuild(Namespace As %String) As %Boolean
 	Set rs=..SelectDailyBuildFunc()
 	While rs.%Next() {
 		Job ..Build(rs.Namespace,"","*",0)
+		Hang 1
 		Set started=1
 	}
 	Quit started

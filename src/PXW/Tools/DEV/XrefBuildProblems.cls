@@ -26,7 +26,7 @@ ClassMethod WriteMainBody()
 		Write "<tr>"
 		Write "<td class=''>"_..EscapeHTML(rs.ItemType)_"</td>"
 		Write "<td>"
-			set page=##class(PXW.Tools.DEV.CodeDisplayPage).GetPageClass(rs.ItemType)
+			Set page=##class(PXW.Tools.DEV.CodeDisplayPage).GetPageClass(rs.ItemType)
 			If page'="" {
 				Write "<a class="_$$$classProgramLabel_" href="""_$CLASSMETHOD(page,"HREFToK123",rs.ItemKey1)_""">"
 				Write ..EscapeHTML(rs.ItemKey1)
@@ -52,6 +52,10 @@ ClassMethod WriteNav(ByRef scratch)
 /// This should return a string of the href to this page based on the input parameters
 ClassMethod HREFTo(NameSpace As %String) As %String
 {
+	; this bit of code is all over the place, big mistake; using floater variable for namespace
+	Set ons=%NS
+	New %NS
+	Set %NS=$SELECT(NameSpace'="":NameSpace,1:ons)
     ; note that NameSpace is always %NS
 	Quit ##super()
 }

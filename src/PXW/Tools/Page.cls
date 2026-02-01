@@ -43,9 +43,11 @@ ClassMethod OnPreHTTP() As %Boolean [ ServerOnly = 1 ]
 	#dim %session as %CSP.Session
 	#dim %response as %CSP.Response
 	
-	set defaultDefault="Dark"
+	Set defaultDefault="Dark"
 
-	Set %NS=%request.Get("%NS","LOCAL_USER")
+	Set %NS=%request.Get("%NS","LOCAL_USER") ; there should always be an NS
+	Set %NSORIGINAL=%request.Get("%NSO",%NS) ; there will sometimes be a NSO, eg if the namespace has changed as part of a link to a different namespace
+
 	Set style=%request.Get("%STYLE")
 	Set:style="" style=%request.GetCookie("PXWSTYLE")
 	Set:style="" style=$GET(^PXW("TOOLSv2","PXWSTYLE"))
@@ -59,7 +61,7 @@ ClassMethod OnPreHTTP() As %Boolean [ ServerOnly = 1 ]
 		Set %STYLE=##class(PXW.Tools.Styles.Dark).%New()
 		Set style=defaultDefault
 	}
-	set %STYLENAME=style
+	Set %STYLENAME=style
 	Set expires="Mon, 31 Dec 2035 12:00:00 GMT"
 	Do %response.SetCookie("PXWSTYLE",style,expires)
 	Quit 1
@@ -90,6 +92,7 @@ ClassMethod HREFTo() As %String
 	Set href=..%ClassName(1)_".cls"
 	Set sep="?"
 	Set href=href_sep_"%NS="_..EscapeURL($GET(%NS,"LOCAL_USER")),sep="&"
+	Set:$G(%NS)'=$G(%NSORIGINAL) href=href_sep_"%NSO="_..EscapeURL($GET(%NSORIGINAL,"LOCAL_USER")),sep="&"
 	;s href=href_sep_"C="_..EscapeURL(cls),sep="&"
 	Quit href
 }
@@ -103,7 +106,7 @@ ClassMethod OnPage() As %Status
 	Set title=..GetTitle()	
 	&html<<html>
 		<head>
-			<title>#($g(%NS)_" "_title)#</title>
+			<title>#($GET(%NS)_" "_title)#</title>
 			#(..PageStyle())#
 			<script language=javascript>
 				#(..PageScripts())#
@@ -116,21 +119,21 @@ ClassMethod OnPage() As %Status
 			</div>
 			#(..PageMain())#
 			<div id=toolsFooter>
-					<span id=toolsFooterDTH>datetimeh=#($HOROLOG)#</span> 
-					<span id=toolsFooterDT>datetime=#($ZDATETIME($HOROLOG,3))#</span> 
-					<span id=toolsFooterTIM>processtime=#($ZHOROLOG-zh)#</span> 
-					<span id=toolsFooterPID>$job=#($JOB)#</span>
-					<span id=toolsFooterMEM>$s=#(startmem-$STORAGE)#</span>
+				<span id=toolsFooterDTH>datetimeh=#($HOROLOG)#</span> 
+				<span id=toolsFooterDT>datetime=#($ZDATETIME($HOROLOG,3))#</span> 
+				<span id=toolsFooterTIM>processtime=#($ZHOROLOG-zh)#</span> 
+				<span id=toolsFooterPID>$job=#($JOB)#</span>
+				<span id=toolsFooterMEM>$s=#(startmem-$STORAGE)#</span>
 			</div>
 		</body>
 	</html>>
 	Quit $$$OK
 }
 
-ClassMethod PageScripts()
+ClassMethod PageScripts() As %String
 {
 	#dim err as %Exception.SystemException
-	s lt="<",gt=">"
+	Set lt="<",gt=">"
 	&js<function HiliteElement(id) {
 	    var obj=document.getElementById(id);
 	    obj.className='hilite';
@@ -250,10 +253,13 @@ ClassMethod PageScripts()
 		});
 	}
 	>
+	Try {
+		Do ..WriteScripts()
+	} Catch e {
+		Do ..WriteStatus(e.AsStatus())
+	}
 
-	Do ..WriteScripts()
-
-	quit ""
+	Quit ""
 }
 
 ClassMethod PageHead() As %String
@@ -281,7 +287,10 @@ ClassMethod PageHead() As %String
 			</header>
 		</div>
 	>
-	quit ""
+	; after dealing with the heads we should not need to know
+	; about the original namespace any longer
+	Set %NSORIGINAL=%NS
+	Quit ""
 }
 
 ClassMethod PageMain() As %String
@@ -297,12 +306,16 @@ ClassMethod PageMain() As %String
 		Do ..WriteStatus(e.AsStatus())
 	}
 	Write "</div>" ; function specific
-	write "</main>"
+	Write "</main>"
 	Write "</div>" ; content
 	Write "<div id=toolsMainBodyNav>" 
 	Write "<nav>"
+	Try {
 		Do ..WriteNav(.scratch) ; this is called AFTER the main body so that the main body could build some sort of index from the content
 				               ; but the styling will probably put it BEFORE the content on screen
+	} Catch e {
+		Do ..WriteStatus(e.AsStatus())
+	}
 	Write "</nav>"
 	Write "</div>" ; nav
 	Quit ""
@@ -430,10 +443,14 @@ ClassMethod PageStyle() As %String
 	Do %STYLE.WriteStyles()
 	; styles for this page
 	Write "<style>"
+	Try {
 		Do ..WriteStyles()
+	} Catch e {
+		Do ..WriteStatus(e.AsStatus())
+	}
 	Write "</style>",!
 
-	quit ""
+	Quit ""
 }
 
 /// use scratch to get anything you want to pass to the nav.
@@ -496,7 +513,7 @@ ClassMethod WriteStatus(sc As %Status)
 /// Find any page that inserts a form into the header.
 ClassMethod WriteHeadForms() As %String
 {
-	s rs=##class(PXW.Tools.Queries).SelectToolsForNamespaceFunc(%NS)
+	Set rs=##class(PXW.Tools.Queries).SelectToolsForNamespaceFunc(%NS)
 	While rs.%Next() {
 		Set classname=rs.%Get("ClassName")
 		Set headform=##class(%Dictionary.MethodDefinition).%OpenId(classname_"||WriteHeadForm")
@@ -513,8 +530,11 @@ ClassMethod WriteHeadForms() As %String
 		For  {
 			Set k2=$ORDER(index(k1,k2),1,classname)
 			Quit:k2=""
-			
-			Do $CLASSMETHOD(classname,"WriteHeadForm",..%ClassName(1))
+			Try {
+				Do $CLASSMETHOD(classname,"WriteHeadForm",..%ClassName(1))
+			} Catch e {
+				Do ..WriteStatus(e.AsStatus())
+			}
 		}
 	}
 	Quit ""

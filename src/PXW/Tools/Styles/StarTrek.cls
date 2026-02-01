@@ -190,6 +190,7 @@ Method WriteStyles()
 		position:relative;
 	  }
 
+	/*
 	#toolsTitle:before { content:' '; 
 					margin: 0 10px 0 10px;
 					border-left:10px solid black; border-right:10px solid black;
@@ -201,7 +202,7 @@ Method WriteStyles()
 					border-left:10px solid black; border-right:10px solid black;
 					background: linear-gradient(black 50%,var(--lcars4) 50%);
 					position:absolute; left:600px; top:0; height: 100%; width:20%; }
-
+	*/
 
 	#toolsTitle h1 {
 		margin:0px 10px 0px 10px;

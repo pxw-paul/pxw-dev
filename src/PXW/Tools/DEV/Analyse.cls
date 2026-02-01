@@ -3,6 +3,15 @@ Class PXW.Tools.DEV.Analyse Extends PXW.Tools.Page
 
 Parameter ToolType = "Code";
 
+/// Set this to a CodeType that this tool is "related" to.
+/// EG, if this is set to CLS then the tool will only appear 
+/// on the home page of Namespaces that have a CLS CodeDisplay Page
+Parameter ToolRelatesToCodeType = "CLS";
+
+/// The name of the tool on the main home page (index).
+/// If the tool does not have a name then it does not appear on the index page by default.
+Parameter ToolName = "Code Analysis Results";
+
 ClassMethod WriteMainBody()
 {
 	Do ..HREFFrom(.itemtype,.itemk1,.itemk2,.flags)

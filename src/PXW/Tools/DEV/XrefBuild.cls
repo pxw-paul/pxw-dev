@@ -4,7 +4,7 @@ Class PXW.Tools.DEV.XrefBuild Extends PXW.Tools.Page
 Parameter ToolName = "Xref Build";
 
 /// d ##class(PXW.Tools.DEV.XrefBuild).xrefPackage("LOCAL_USER","PXW")
-ClassMethod xrefPackage(Namespace, Package As %String, Force As %Boolean = 0) As %Status
+ClassMethod xrefPackage(Namespace As %String, Package As %String, Force As %Boolean = 0) As %Status
 {
 	Set pack=$PIECE(Package,"*",1)_"*"
 	Job ##class(PXW.Xref.Build).Build(Namespace,"",pack,Force)
@@ -34,7 +34,7 @@ ClassMethod WriteMainBody()
 	>
 
 	If +deleteold=1 {
-		do ##class(PXW.Xref.BuildStatus).Purge()
+		Do ##class(PXW.Xref.BuildStatus).Purge()
 	}
 
 	If package'="" {
@@ -66,7 +66,7 @@ ClassMethod WriteMainBody()
 	Write "</thead>"
 	Write "<tbody>" 
 
-	set today=$zd(+$h,3)
+	Set today=$ZDATE(+$HOROLOG,3)
 	Set rs=##class(%Library.ResultSet).%New(..%ClassName(1)_":"_"SelectStatus")
 	$$$ThrowOnError(rs.Execute())
 	While rs.%Next() { 
@@ -75,7 +75,7 @@ ClassMethod WriteMainBody()
 		Set running=rs.%Get("Running")
 		If running Set rowclass=" class='"_$$$classHiliteRowWarning_"'"
 		If 'running,enddatetime="" Set rowclass="class='"_$$$classHiliteRowError_"'"
-		If 'running,$p(enddatetime," ",1)=today Set rowclass=" class='"_$$$classHiliteRowGood_"'"
+		If 'running,$PIECE(enddatetime," ",1)=today Set rowclass=" class='"_$$$classHiliteRowGood_"'"
 		Write "<tr "_rowclass_">"
 		Write "<td>"_..EscapeHTML(rs.%Get("ID"))_"</td>"
 		Write "<td>"_..EscapeHTML(rs.%Get("ProcessId"))_"</td>"
@@ -86,7 +86,7 @@ ClassMethod WriteMainBody()
 		Write "<td>"_..EscapeHTML(rs.%Get("CurrentlyBuilding"))_"</td>"
 		Write "<td>"_..EscapeHTML(rs.%Get("Total"))_"</td>"
 		Write "<td>"_..EscapeHTML(rs.%Get("TotalBuilt"))_"</td>"
-		Write "<td>"_..EscapeHTML(rs.%Get("TotalErrors"))_"</td>"
+		Write "<td><a href="""_##class(PXW.Tools.DEV.XrefBuildProblems).HREFTo(rs.%Get("RequestNamespace"))_""">"_..EscapeHTML(rs.%Get("TotalErrors"))_"</a></td>"
 		Write "<td>"_..EscapeHTML(rs.%Get("TotalSkipped"))_"</td>"
 		Write "<td>"_..EscapeHTML(rs.%Get("Total")-rs.%Get("TotalBuilt")-rs.%Get("TotalErrors")-rs.%Get("TotalSkipped"))_"</td>"
 		Write "<td>"_..EscapeHTML(rs.%Get("Status"))_"</td>"
@@ -111,7 +111,7 @@ ClassMethod HREFFrom(Output Package As %String, Output force As %Boolean, Output
 {
 	Set Package=%request.Get("P")
 	Set force=+%request.Get("F")
-  	set DeleteOld=+%request.Get("DO")
+  	Set DeleteOld=+%request.Get("DO")
 }
 
 /// This should return a string of the href to this page based on the input parameters
@@ -130,6 +130,28 @@ ClassMethod WriteNav(ByRef scratch)
 {
 	Write "<a href="""_##class(PXW.Tools.DEV.XrefBuildProblems).HREFTo("")_""">Problems</a>"
 	Write "<a href="""_..HREFTo("","",1)_""">Delete status history</a>"
+}
+
+/// Override this method to insert a form onto the header of the page.
+/// Calling page is passed in so you can decide what to display on the form/if anything.
+ClassMethod WriteHeadForm(Page As %String)
+{
+	Do ##class(PXW.Xref.Build).DailyBuild(%NS) 
+
+	&SQL(SELECT %DLIST(DISTINCT RequestNamespace) INTO :runningNS FROM PXW_Xref.BuildStatus WHERE EndDateTime is null and Running=1)
+	If runningNS'="" {
+		&html<
+			<form id=toolsXrefBuild action='PXW.Tools.DEV.XrefBuild.cls'>
+				<fieldset id=toolsXrefBuild>
+					<legend>Xref Build in progress</legend>
+					<input type=hidden name=IFRAME value='0'>
+					<input type=hidden name=%NS value='#(%NS)#'>
+					<input readonly size=20	type=text id=toolXrefReference name=XRNS value='#($LISTTOSTRING(runningNS))#'>
+					<input type=submit value='Go'>
+				</fieldset>
+			</form>>		
+		;Write "Backgroung build of Xref data has started. <a href="""_##class(PXW.Tools.DEV.XrefBuild).HREFTo()_""">Check progress</a>"
+	}
 }
 
 }
