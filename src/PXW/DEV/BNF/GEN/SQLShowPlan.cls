@@ -1,4 +1,3 @@
-/// Created: 2026-01-19 20:19:15 PXW.DEV.BNF.Compilers.Compiler1
 Class PXW.DEV.BNF.GEN.SQLShowPlan Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 

@@ -31,7 +31,4 @@
     zpm "load /home/irisowner/dev/ -v"
     do ##class(PXW.DEV.Dictionary.Install).Setup()
 
-    // Do the PXW package XREF build first so that its ready by the time the user gets onto the "getting started" demo.
-    do ##class(PXW.Xref.Build).Build("LOCAL_USER","","PXW*")
-    job  ##class(PXW.Xref.Build).Build("LOCAL_USER","","*")
     halt

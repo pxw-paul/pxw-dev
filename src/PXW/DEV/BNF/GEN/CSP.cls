@@ -1,4 +1,3 @@
-/// Created: 2026-01-19 20:19:04 PXW.DEV.BNF.Compilers.Compiler1
 Class PXW.DEV.BNF.GEN.CSP Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 {
 

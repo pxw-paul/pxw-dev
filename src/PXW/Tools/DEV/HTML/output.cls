@@ -20,6 +20,7 @@ Property htmlout As %String;
 Property HiLiteLine As %Integer;
 
 /// Set this to the name of something to bookmark (highlight and anchor)
+/// If the bookmark is +nnn then the bookmark is put on that line number.
 Property BookMark As %String;
 
 /// complicated structure, best to use wrapAtomHTML method to update
@@ -67,7 +68,7 @@ Method wrapElementHTML(element As PXW.DEV.Element, pre As %String, post As %Stri
 /// Output the html directly to destination. No escaping or other formatting is done.
 Method output(html As %String)
 {
-	$$$DEBUGMethodBegin
+	;$$$DEBUGMethodBegin
 	;If ..WriteMode {
 		Write html
 		;s %outputhtml=$g(%outputhtml)_html
@@ -76,7 +77,7 @@ Method output(html As %String)
 	;} Else {
 	;	Set ..htmlout=..htmlout_html	
 	;}
-	$$$DEBUGMethodEnd
+	;$$$DEBUGMethodEnd
 }
 
 Method resetWrappers()
@@ -120,19 +121,34 @@ Method writeAtom(atom As PXW.DEV.Atom, preValue As %String = "", postValue As %S
 
 	; add hilite on whitespace (OR ANYTHING) that is NOT going over more than 1 line
 	If ..HiLiteLine'="",atom.line=..HiLiteLine,atom.value'[$CHAR(13) {
-		Set preValue="<span class='hilite'>"_preValue
-		Set postValue=postValue_"</span>"
+		If ..BookMark?1"+"1.N {
+			Set ..BookMark=""
+			Set preValue="<a id=Bookmark></a><span class='hilite'>"_preValue
+			Set postValue=postValue_"</span>"
+		} Else {
+			Set preValue="<span class='hilite'>"_preValue
+			Set postValue=postValue_"</span>"
+		}
 	}
 	
 	Set out=""
-    For i=1:1:+$GET(..pre(+atom)) Set out=out_$GET(..pre(+atom,i))
+    /*For i=1:1:+$GET(..pre(+atom)) Set out=out_$GET(..pre(+atom,i))
     Set out=out_preValue_..html(atom.start)
 	    For i=1:1:+$GET(..preI(+atom)) Set out=out_$GET(..preI(+atom,i))
 	    Set out=out_..html(atom.value)
 	    For i=+$GET(..postI(+atom)):-1:1 Set out=out_$GET(..postI(+atom,i))
 	Set out=out_..html(atom.end)_postValue
     For i=+$GET(..post(+atom)):-1:1 Set out=out_$GET(..post(+atom,i))
-	Do ..output(.out)
+	Do ..output(.out)*/
+	Set out=""
+    For i=1:1:+$GET(..pre(+atom)) Set out=out_$GET(..pre(+atom,i))
+    Set out=out_preValue_$ZCONVERT(atom.start,"O","HTML")
+	    For i=1:1:+$GET(..preI(+atom)) Set out=out_$GET(..preI(+atom,i))
+	    Set out=out_$ZCONVERT(atom.value,"O","HTML")
+	    For i=+$GET(..postI(+atom)):-1:1 Set out=out_$GET(..postI(+atom,i))
+	Set out=out_$ZCONVERT(atom.end,"O","HTML")_postValue
+    For i=+$GET(..post(+atom)):-1:1 Set out=out_$GET(..post(+atom,i))
+	Write out
 }
 
 /*
@@ -157,13 +173,15 @@ Method GenericRedirect(element As PXW.DEV.Element)
 */
 Method GenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator ]
 {
-    #dim meth as %Dictionary.MethodDefinition
+    #dim meth as %Dictionary.CompiledMethod
     Set opencurly="{",closecurly="}"
     Set mkey=""
 
+    Do %code.WriteLine($CHAR(9)_"Set class=$$$UPPER(element.%ClassName(1)) q:class=""""")
+    Do %code.WriteLine($CHAR(9)_"Set etype=$$$UPPER(element.type) q:etype=""""")
+	;Do %code.WriteLine($CHAR(9)_"q:'$d(..redir(class,etype))")
+
     Do %code.WriteLine($CHAR(9)_"$$$DEBUGMethodBegin")
-    Do %code.WriteLine($CHAR(9)_"Set class=$$$UPPER(element.%ClassName(1))")
-    Do %code.WriteLine($CHAR(9)_"Set etype=$$$UPPER(element.type)")
 
     For  {
         Set meth=%compiledclass.Methods.GetNext(.mkey)
@@ -174,11 +192,16 @@ Method GenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator 
 			Set class=$PIECE(meth.FormalSpec,":",2)
 			If class'="" {
 				Set param=meth.ReturnTypeParams
+				Set seq=meth.SequenceNumber
 				If param'="" {
 					Set etypes=$TRANSLATE($PIECE(param,"=",2),"""","")
 					If etypes'="" {
 						For i=1:1:$LENGTH(etypes,",") {
 							Set etype=$PIECE(etypes,",",i)
+							If '$DATA(methods(class,etype)) {
+								Set defseq=##class(%Dictionary.MethodDefinition).%OpenId(meth.Origin_"||"_meth.Name).SequenceNumber
+								Set methodseq(class,(10000+defseq)_(10000+seq))=etype
+							}
 							Set methods(class,etype,meth.Name)=meth
 						}
 					}
@@ -186,7 +209,7 @@ Method GenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator 
 			}
 		}
 	}
-	Set (class,etype,name)="",cif="If"
+	/*Set (class,etype,name)="",cif="If"
 	For  {
 		Set class=$ORDER(methods(class))
 		Quit:class=""
@@ -214,16 +237,45 @@ Method GenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator 
 		Set cif="Elseif"
     }
     Do %code.WriteLine($CHAR(9)_"$$$DEBUGMethodEnd")
+	*/
+	Set (class,etype,name,seq)="",cif="If"
+	For  {
+		Set class=$ORDER(methodseq(class))
+		Quit:class=""
+
+		Do %code.WriteLine($CHAR(9)_cif_" class="""_$$$UPPER(class)_""" "_opencurly)
+		
+		Set ifcommand="If"
+		For  {
+			Set seq=$ORDER(methodseq(class,seq),1,etype)
+			Quit:seq=""
+
+			; etype will contain the quotes
+			Do %code.WriteLine($CHAR(9,9)_ifcommand_" etype="""_$$$UPPER(etype)_""" "_opencurly)
+			
+			For  {
+				Set name=$ORDER(methods(class,etype,name),1,meth)
+				Quit:name=""
+				
+				Do %code.WriteLine($CHAR(9,9,9)_"do .."_meth.Name_"(.element)")
+			}
+			Do %code.WriteLine($CHAR(9,9)_closecurly)
+			Set ifcommand="Elseif"
+		}
+		Do %code.WriteLine($CHAR(9)_closecurly)
+		Set cif="Elseif"
+    }
+    Do %code.WriteLine($CHAR(9)_"$$$DEBUGMethodEnd")
+	;zw methodseq("PXW.DEV.BNF.Elements.ClassDefinition"),methods("PXW.DEV.BNF.ElementsS")
     Quit $$$OK
 }
 
-/*
-Method %OnNew() As %Status
+/*Method %OnNew() As %Status
 {
 	$$$DEBUGMethodBegin
-	d ..GenericRedirectNew()
+	Do ..GenericRedirectNew()
 	$$$DEBUGMethodEnd
-	q $$$OK
+	Quit $$$OK
 }
 
 Method GenericRedirectNew() [ CodeMode = objectgenerator ]
@@ -261,14 +313,16 @@ Method GenericRedirectNew() [ CodeMode = objectgenerator ]
 			Set etype=$ORDER(methods(class,etype))
 			Quit:etype=""
 
+
 			; etype will contain the quotes			
-			For  {
-				Set name=$ORDER(methods(class,etype,name),1,meth)
-				Quit:name=""
-				
-				Do %code.WriteLine($CHAR(9)_"s ..redir("""_$$$UPPER(class)_""","""_$$$UPPER(etype)_""","""_meth.Name_""")=1")
-			}
-			;Set ifcommand="Elseif"
+			;For  {
+			;	Set name=$ORDER(methods(class,etype,name),1,meth)
+			;	Quit:name=""
+			;	
+			;	Do %code.WriteLine($CHAR(9)_"s ..redir("""_$$$UPPER(class)_""","""_$$$UPPER(etype)_""","""_meth.Name_""")=1")
+			;	
+			;}
+			Do %code.WriteLine($CHAR(9)_"s ..redir("""_$$$UPPER(class)_""","""_$$$UPPER(etype)_""")=1")
 		}
     }
     Quit $$$OK

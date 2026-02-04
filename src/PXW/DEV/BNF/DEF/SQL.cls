@@ -58,8 +58,8 @@ from_optimise				::= ('%firsttable' [alias_name])
 								| '%NOUNIONOROPT'
 								| '%PARALLEL'
 								| '%NOPARALLEL'
-								| ('%IGNOREINDEX' index_reference_list )
-								| ('%IGNOREINDICES' index_reference_list )
+								| ('%IGNOREINDEX' ( '*' | index_reference_list ))
+								| ('%IGNOREINDICES' ('*' | index_reference_list ))
 
 join 						::= [('INNER' | 'OUTER' | 'LEFT' | 'RIGHT' | 'CROSS' | 'NATURAL' |'FULL' )*] 'JOIN' table_reference [ join_on ]
 join_on						::= 'ON' sql_expression 

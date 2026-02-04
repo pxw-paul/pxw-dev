@@ -30,8 +30,15 @@ ClassMethod WriteRoutine(Routine As %String, Label As %String = "", Plus As %Str
 		;summary="ROUTINE PXW.DEV.Atom.1 [Type=INT,Generated]"
 		;zw summary
 		Set output=##class(PXW.Tools.DEV.HTML.bnf).%New()
-		Set output.HiliteLabel=Label
-		Set output.HilitePlus=Plus
+		if Label'="" {
+			Set output.HiliteLabel=Label
+			Set output.HilitePlus=Plus			
+		} else {
+			if Plus'="" {
+				Set output.BookMark="+"_Plus
+				Set output.HiLiteLine=Plus
+			}
+		}
 		set output.This=$s(IsGenerated:$p(Routine,".",1,*-1),1:"")
 		Set scratch=output
 		If Debug="$PATHS" Set output.showPaths=1,%path=""
@@ -88,7 +95,7 @@ ClassMethod HREFTo(Routine As %String = "") As %String
 	Set href=href_sep_"R="_..EscapeURL(rtn)
 	If lbl'="" Set href=href_sep_"L="_..EscapeURL(lbl)
 	If plus'="" Set href=href_sep_"P="_..EscapeURL(plus)
-	If lbl'="" Set href=href_"#Bookmark"
+	If (lbl'="") || (lbl="" && plus'="") Set href=href_"#Bookmark"
 	Quit href
 }
 

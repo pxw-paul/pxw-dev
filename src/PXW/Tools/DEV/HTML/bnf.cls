@@ -695,6 +695,116 @@ method writeCDEF(element As PXW.DEV.BNF.Elements.ClassDefinition) AS PXW.DEV.BNF
     q ""
 }
 */
+Method writeCOSVariableTypes(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="Variable,VariableSet,ObjectVariable")
+{
+    ; known variable
+    $$$DEBUGMethodBegin 
+    Set variablename=element.ToStringAtomsOnly(0)
+
+    ; variable could be something like {*} or {field}  so the name above (using atoms only) will not find anything
+    ; don't worry about that at the moment!
+    If variablename'="",$ISOBJECT(..Analyser) {        
+        ; when working out a type use the #DIM type if there is one
+        Set classname=$GET(..Analyser.DimmedTypes(variablename))
+        If classname="" Set classname=$GET(..Analyser.VariablesTypes(variablename))
+        If classname'="" Do ..FollowObjectChainForType(element,classname)
+
+        ; treat %parameter("xxx") as a parameter
+        If ..Analyser.CodeMode="OBJECTGENERATOR",variablename="%parameter" {
+            Set arrayE=element.findFirstElementByType(("ArrayParameterList"),0)
+            If $ISOBJECT(arrayE) {
+                Set parameter=..Analyser.SimplifySubscripts(arrayE)
+                ; is the paremeter a string
+                If parameter?1"""".AN1"""" {
+                    Do ..wrapElementHTML(arrayE,"<a href="""_..HREFToClass(..This,$TRANSLATE(parameter,"""",""))_""">","</a>")
+                }
+            }
+        }
+    }
+    $$$DEBUGMethodEnd
+    Quit ""
+}
+
+Method writeCOSVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="Variable")
+{
+    $$$DEBUGMethodBegin
+    Set variablename=element.ToStringAtomsOnly(0)
+    ; add the hiliting function to the first atom only
+    Set atom=element.FirstAtom()
+    Set cssclass=$$$classVariable
+    If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(variablename) Set cssclass=$$$classVariableParameter
+    Do ..wrapAtomHTML(atom,"<span class="""_cssclass_""" fetchid="""_variablename_""" onclick=""HiliteSets('"_variablename_"');"">","</span>")
+    $$$DEBUGMethodEnd
+    Quit ""
+}
+
+Method writeCOSVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="VariableSet")
+{
+    #dim strElement as PXW.DEV.Element
+
+    $$$DEBUGMethodBegin
+    Set variablename=element.ToStringAtomsOnly(0)
+    ; add the hiliting function to the first atom only
+    Set atom=element.FirstAtom()
+    Set cssclass=$$$classVariableSet
+    If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(variablename) Set cssclass=$$$classVariableParameterSet
+    Do ..wrapAtomHTML(atom,"<span class="""_cssclass_""" varid="""_variablename_""" onclick=""HiliteSets('"_variablename_"');"">","</span>")
+
+    If $ISOBJECT(..Analyser),$DATA(..Analyser.stringVarsElement(+element)) {
+        Set value=..Analyser.stringVarsElement(+element)
+        If value'="" {
+            Set strElement=..Analyser.stringVarsElement(+element,"element")
+            ; try and format it so its similar to the format in the source code
+            Set formatted="",line=0
+            For i=1:1:strElement.partsCount() {
+                Set atom=strElement.partsGetAt(i)
+                If atom.line>line {
+                    If line>0 {
+                        Set formatted=formatted_$CHAR(13)
+                    }
+                }
+                Set line=atom.line ; always update the line, its possible to go backwards!
+                Set formatted=formatted_atom.value
+            }
+            Do ..wrapElementHTML(element,"","<span title="""_$ZCONVERT(formatted,"O","HTML")_""" class='hiddencopy' onclick=""copyTextToClipboard('"_$ZCONVERT($ZCONVERT(formatted,"O","JS"),"O","HTML")_"');"">copy</span>")
+        }
+    }
+    $$$DEBUGMethodEnd
+    Quit ""
+}
+
+Method writeCOSMacrocall(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="Macrocall")
+{
+    #dim a as %Dictionary.ClassDefinition
+    $$$DEBUGMethodBegin
+    Set macroatom=element.partsGetAt(2)
+    If $ISOBJECT(macroatom) {
+        Set name=macroatom.ToString(0)
+        If name'="" {
+            If $ISOBJECT(..Analyser) {
+                ;zw ..Analyser,name
+                If '$DATA(..Analyser.DefinedMacros(name)) {
+                    Do ..wrapAtomHTML(macroatom,"<a class="""_$$$classProgramLabel_""" href="""_..HREFToInclude(,element.ToString(0))_""">","</a>")
+                } Else {
+                    Do ..wrapAtomHTML(macroatom,"<span class="""_$$$classProgramLabel_""" title'Local macro'>","</span>")
+                }
+            } Else {
+                Do ..wrapAtomHTML(macroatom,"<a class="""_$$$classProgramLabel_""" href="""_..HREFToInclude(,element.ToString(0))_""">","</a>")
+            }
+        }
+    }
+    $$$DEBUGMethodEnd
+    Quit ""
+}
+
+Method writeCOSCosCodeBlock(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosCodeBlock")
+{
+    $$$DEBUGMethodBegin
+    Do ..wrapElementHTML(element,"<span class='EmbeddedCOS'>","</span>")
+    $$$DEBUGMethodEnd
+    Quit ""
+}
+
 Method writeCOSCosDirective(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosDirective")
 {
     $$$DEBUGMethodBegin
@@ -761,7 +871,7 @@ Method writeCOSClassExpression(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.B
 Method writeCOSSpecialSystem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="SpecialSystem")
 {
     #dim chainE as PXW.DEV.Element
-    $$$DEBUGMethodBegin
+    $$$DEBUGMethodBegin  
     Set classname="%SYSTEM"
     set key="",firstAtomOfClass="",lastAtomOfClass="",chainE=""
     for  {
@@ -790,49 +900,6 @@ Method writeCOSThisThing(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Com
     If ..This'="" {
         Set classname=..This
         If classname'="" Do ..FollowObjectChainForType(element,classname)
-    }
-    $$$DEBUGMethodEnd
-    Quit ""
-}
-
-Method writeCOSVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="Variable")
-{
-    $$$DEBUGMethodBegin
-    Set variablename=element.ToStringAtomsOnly(0)
-    ; add the hiliting function to the first atom only
-    Set atom=element.FirstAtom()
-    Set cssclass=$$$classVariable
-    If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(variablename) Set cssclass=$$$classVariableParameter
-    Do ..wrapAtomHTML(atom,"<span class="""_cssclass_""" fetchid="""_variablename_""" onclick=""HiliteSets('"_variablename_"');"">","</span>")
-    $$$DEBUGMethodEnd
-    Quit ""
-}
-
-Method writeCOSVariableTypes(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="Variable,VariableSet,ObjectVariable")
-{
-    ; known variable
-    $$$DEBUGMethodBegin
-    Set variablename=element.ToStringAtomsOnly(0)
-
-    ; variable could be something like {*} or {field}  so the name above (using atoms only) will not find anything
-    ; don't worry about that at the moment!
-    If variablename'="",$ISOBJECT(..Analyser) {        
-        ; when working out a type use the #DIM type if there is one
-        Set classname=$GET(..Analyser.DimmedTypes(variablename))
-        If classname="" Set classname=$GET(..Analyser.VariablesTypes(variablename))
-        If classname'="" Do ..FollowObjectChainForType(element,classname)
-
-        ; treat %parameter("xxx") as a parameter
-        If ..Analyser.CodeMode="OBJECTGENERATOR",variablename="%parameter" {
-            Set arrayE=element.findFirstElementByType(("ArrayParameterList"),0)
-            If $ISOBJECT(arrayE) {
-                Set parameter=..Analyser.SimplifySubscripts(arrayE)
-                ; is the paremeter a string
-                If parameter?1"""".AN1"""" {
-                    Do ..wrapElementHTML(arrayE,"<a href="""_..HREFToClass(..This,$TRANSLATE(parameter,"""",""))_""">","</a>")
-                }
-            }
-        }
     }
     $$$DEBUGMethodEnd
     Quit ""
@@ -883,14 +950,6 @@ Method writeCOSLabelReference(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BN
     Quit ""
 }
 
-Method writeCOSCosCodeBlock(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosCodeBlock")
-{
-    $$$DEBUGMethodBegin
-    Do ..wrapElementHTML(element,"<span class='EmbeddedCOS'>","</span>")
-    $$$DEBUGMethodEnd
-    Quit ""
-}
-
 Method writeCOSPythonImport(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="PythonImport")
 {
     $$$DEBUGMethodBegin
@@ -906,34 +965,10 @@ Method writeCOSPythonImport(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.
     Quit ""
 }
 
-Method writeCOSMacrocall(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="Macrocall")
-{
-    #dim a as %Dictionary.ClassDefinition
-    $$$DEBUGMethodBegin
-    Set macroatom=element.partsGetAt(2)
-    If $ISOBJECT(macroatom) {
-        Set name=macroatom.ToString(0)
-        If name'="" {
-            If $ISOBJECT(..Analyser) {
-                ;zw ..Analyser,name
-                If '$DATA(..Analyser.DefinedMacros(name)) {
-                    Do ..wrapAtomHTML(macroatom,"<a class="""_$$$classProgramLabel_""" href="""_..HREFToInclude(,element.ToString(0))_""">","</a>")
-                } Else {
-                    Do ..wrapAtomHTML(macroatom,"<span class="""_$$$classProgramLabel_""" title'Local macro'>","</span>")
-                }
-            } Else {
-                Do ..wrapAtomHTML(macroatom,"<a class="""_$$$classProgramLabel_""" href="""_..HREFToInclude(,element.ToString(0))_""">","</a>")
-            }
-        }
-    }
-    $$$DEBUGMethodEnd
-    Quit ""
-}
-
 Method writeCOSCosDirectiveIncludeName(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosDirectiveIncludeName")
 {
     $$$DEBUGMethodBegin
-    Do ..wrapElementHTML(element,"<a href="""_..HREFToInclude(element.ToString(0))_""">","</a>")
+    Do ..wrapElementHTML(element,"<a class="""_$$$classProgramName_""" href="""_..HREFToInclude(element.ToString(0))_""">","</a>")
     $$$DEBUGMethodEnd
     Quit ""
 }
@@ -1030,41 +1065,6 @@ Method writeObjectVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.C
     Set cssclass=$$$classVariable
     If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(variablename) Set cssclass=$$$classVariableParameter
     Do ..wrapAtomHTML(atom,"<span class="""_cssclass_""" fetchid="""_variablename_""" onclick=""HiliteSets('"_variablename_"');"">","</span>")
-    $$$DEBUGMethodEnd
-    Quit ""
-}
-
-Method writeCOSVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="VariableSet")
-{
-    #dim strElement as PXW.DEV.Element
-
-    $$$DEBUGMethodBegin
-    Set variablename=element.ToStringAtomsOnly(0)
-    ; add the hiliting function to the first atom only
-    Set atom=element.FirstAtom()
-    Set cssclass=$$$classVariableSet
-    If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(variablename) Set cssclass=$$$classVariableParameterSet
-    Do ..wrapAtomHTML(atom,"<span class="""_cssclass_""" varid="""_variablename_""" onclick=""HiliteSets('"_variablename_"');"">","</span>")
-
-    If $ISOBJECT(..Analyser),$DATA(..Analyser.stringVarsElement(+element)) {
-        Set value=..Analyser.stringVarsElement(+element)
-        If value'="" {
-            Set strElement=..Analyser.stringVarsElement(+element,"element")
-            ; try and format it so its similar to the format in the source code
-            Set formatted="",line=0
-            For i=1:1:strElement.partsCount() {
-                Set atom=strElement.partsGetAt(i)
-                If atom.line>line {
-                    If line>0 {
-                        Set formatted=formatted_$CHAR(13)
-                    }
-                }
-                Set line=atom.line ; always update the line, its possible to go backwards!
-                Set formatted=formatted_atom.value
-            }
-            Do ..wrapElementHTML(element,"","<span title="""_$ZCONVERT(formatted,"O","HTML")_""" class='hiddencopy' onclick=""copyTextToClipboard('"_$ZCONVERT($ZCONVERT(formatted,"O","JS"),"O","HTML")_"');"">copy</span>")
-        }
-    }
     $$$DEBUGMethodEnd
     Quit ""
 }

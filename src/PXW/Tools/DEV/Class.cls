@@ -108,9 +108,6 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 	Kill %pxw1
 	#dim ele,element as PXW.DEV.Element
 	Set zh=$ZHOROLOG
-    Set output=##class(PXW.Tools.DEV.HTML.bnf).%New()
-	Set output.ThisType=..#CodeType
-	Set output.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)
 
 	Set showPaths=0,forceXref=0
     Write "<pre>"
@@ -121,6 +118,9 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 	If Debug["$TIME" $$$DEBUGNew(##class(PXW.Tools.DebugTiming).%ClassName(1))
 	If Debug["$XREF" Set forceXref=1
 	
+    Set output=##class(PXW.Tools.DEV.HTML.bnf).%New()
+	Set output.ThisType=..#CodeType
+	Set output.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)
 	Set sc=output.ClassServer.GetClassStudioText(ClassName,.text,.linesOfCode,.timestamp)
 	Set zh(1,"load")=$ZHOROLOG-zh,zh=$ZHOROLOG
 
