@@ -382,7 +382,7 @@ Method ListIndexDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierRS
     $$$DEBUGMethodBegin
  	Set server=..AtelierSettings.ServerName
 	Set sql=""
-    Set sql=sql_"SELECT parent,Name,TypeClass,Origin " ; stub is undocumented but it seems to be "source name.method name.source type (i=index,a=property)
+    Set sql=sql_"SELECT parent,Name,TypeClass,Origin,Properties " ; stub is undocumented but it seems to be "source name.method name.source type (i=index,a=property)
     Set sql=sql_"FROM %Dictionary.CompiledIndex "
     Set sql=sql_"WHERE parent=?"
     Set parameters($INCREMENT(parameters))=ClassName
@@ -401,7 +401,7 @@ Method CacheListIndexDetails(ClassName As %String)
         Set cn=rs.%Get("parent")
         Set mname=rs.%Get("Name")
         Set tc=rs.%Get("TypeClass")
-        Set data=$LISTBUILD(mname,tc,rs.%Get("Origin"))
+        Set data=$LISTBUILD(mname,tc,rs.%Get("Origin"),rs.%Get("Properties"))
         Set ^PXW.Cache("CDEF",%NS,$$$UPPER(cn),"GID",$$$UPPER(mname))=data
     }
 }
@@ -587,7 +587,7 @@ Method GetMethodReturnType(ClassName As %String, Name As %String, Output FormalS
 }
 
 /// Returns 1 if details were found
-Method GetIndexDetails(ClassName As %String, Name As %String, Output TypeClass As %String, Output Origin As %String) As %Boolean
+Method GetIndexDetails(ClassName As %String, Name As %String, Output TypeClass As %String, Output Origin As %String, Output Properties As %String) As %Boolean
 {
     New %NS Set %NS=..Namespace.Name
     If ClassName="" Quit 0
@@ -604,6 +604,7 @@ Method GetIndexDetails(ClassName As %String, Name As %String, Output TypeClass A
     If data="" Quit 0
     Set TypeClass=$LISTGET(data,2)
     Set Origin=$LISTGET(data,3)
+    Set Properties=$LISTGET(data,4)
 	Quit 1
 }
 

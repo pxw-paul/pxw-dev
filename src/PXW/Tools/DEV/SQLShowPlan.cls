@@ -5,6 +5,11 @@ Parameter ToolName = "SQL Show Plan";
 
 Parameter ToolRelatesToCodeType = "CLS";
 
+ClassMethod GetTitle() As %String
+{
+	Quit "SQL Show Plan"
+}
+
 ClassMethod WriteMainTop(ByRef scratch)
 {
     do ..HREFFrom(.SQL)

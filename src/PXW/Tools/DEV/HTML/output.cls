@@ -198,10 +198,9 @@ Method GenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator 
 					If etypes'="" {
 						For i=1:1:$LENGTH(etypes,",") {
 							Set etype=$PIECE(etypes,",",i)
-							If '$DATA(methods(class,etype)) {
-								Set defseq=##class(%Dictionary.MethodDefinition).%OpenId(meth.Origin_"||"_meth.Name).SequenceNumber
-								Set methodseq(class,(10000+defseq)_(10000+seq))=etype
-							}
+							; key by sequence for potential speed saving - not implemented properly
+							;Set defseq=##class(%Dictionary.MethodDefinition).%OpenId(meth.Origin_"||"_meth.Name).SequenceNumber
+							;Set methodseq(class,(10000+defseq)_(10000+seq),etype,meth.Name)=meth
 							Set methods(class,etype,meth.Name)=meth
 						}
 					}
@@ -209,7 +208,7 @@ Method GenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator 
 			}
 		}
 	}
-	/*Set (class,etype,name)="",cif="If"
+	Set (class,etype,name)="",cif="If"
 	For  {
 		Set class=$ORDER(methods(class))
 		Quit:class=""
@@ -237,36 +236,8 @@ Method GenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator 
 		Set cif="Elseif"
     }
     Do %code.WriteLine($CHAR(9)_"$$$DEBUGMethodEnd")
-	*/
-	Set (class,etype,name,seq)="",cif="If"
-	For  {
-		Set class=$ORDER(methodseq(class))
-		Quit:class=""
-
-		Do %code.WriteLine($CHAR(9)_cif_" class="""_$$$UPPER(class)_""" "_opencurly)
-		
-		Set ifcommand="If"
-		For  {
-			Set seq=$ORDER(methodseq(class,seq),1,etype)
-			Quit:seq=""
-
-			; etype will contain the quotes
-			Do %code.WriteLine($CHAR(9,9)_ifcommand_" etype="""_$$$UPPER(etype)_""" "_opencurly)
-			
-			For  {
-				Set name=$ORDER(methods(class,etype,name),1,meth)
-				Quit:name=""
-				
-				Do %code.WriteLine($CHAR(9,9,9)_"do .."_meth.Name_"(.element)")
-			}
-			Do %code.WriteLine($CHAR(9,9)_closecurly)
-			Set ifcommand="Elseif"
-		}
-		Do %code.WriteLine($CHAR(9)_closecurly)
-		Set cif="Elseif"
-    }
-    Do %code.WriteLine($CHAR(9)_"$$$DEBUGMethodEnd")
-	;zw methodseq("PXW.DEV.BNF.Elements.ClassDefinition"),methods("PXW.DEV.BNF.ElementsS")
+	
+	;zw methodseq("PXW.DEV.BNF.Elements.ClassDefinition"),methods("PXW.DEV.BNF.Elements.ClassDefinition")
     Quit $$$OK
 }
 

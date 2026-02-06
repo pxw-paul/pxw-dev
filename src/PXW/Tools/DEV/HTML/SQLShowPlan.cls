@@ -236,6 +236,10 @@ Method writeSQLPlanTableIndex(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Com
         Set table=schemaE.ToString(0)_"."_tableE.ToString(0)
         Set index=indexE.ToString(0)
         Do ..wrapElementHTML(indexE,"<a class='"_$$$classObjectMember_"' href="""_..HREFToClass(table,index)_""">","</a>")
+        set class=..ClassServer.GetClassNameFromTableName(table)
+        if ..ClassServer.GetIndexDetails(class,index,,,.properties) {
+            do ..wrapElementHTML(indexE,"","<span class="_$$$classNarrative_"> /* "_..html(properties)_" */ </span>")
+        }
     }
  
     Quit ""
