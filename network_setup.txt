@@ -1,0 +1,19 @@
+docker network create my-network
+docker network connect my-network pxw-debug_iris_1
+docker network connect my-network pxw-dev_iris_1
+docker network connect my-network pxw-lib-sql_iris_1
+
+
+
+
+zpm 
+repo -n registry -r -url http://zpm-registry_iris_1:52773/registry/ -user _SYSTEM -pass SYS
+
+
+to reinstall a container:
+in the dir: 
+C:\Users\water\OneDrive\Documents\GitHub\pxw-dev>docker compose stop
+C:\Users\water\OneDrive\Documents\GitHub\pxw-dev>docker compose rm
+C:\Users\water\OneDrive\Documents\GitHub\pxw-dev>docker compose build
+C:\Users\water\OneDrive\Documents\GitHub\pxw-dev>docker compose up -d
+C:\Users\water\OneDrive\Documents\GitHub\pxw-dev>docker network connect my-network pxw-dev-iris-1

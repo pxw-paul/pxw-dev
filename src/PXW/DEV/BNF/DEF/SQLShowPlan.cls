@@ -91,6 +91,7 @@ index_keys          ::= ',' 'using' 'the' index_keys_given ',' 'and' index_keys_
 index_keys_given    ::= 'given' index_key (',' ['and'] !'looping' index_key)* ['and' !'looping' index_key]
 index_keys_looping  ::= 'looping' 'on' index_key (',' ['and'] !'getting' index_key)* ['and' !'given' index_key]
 index_key           ::= ('%SQLUPPER(' index_key_name ')') | index_key_name
+index_key_name ::= alias_property | property_name
 
 alias_name      ::= IDENTIFIER
 word            ::= WORD_REGEX
@@ -101,7 +102,6 @@ index_name     ::= IDENTIFIER
 property_name  ::= IDENTIFIER
 module_name    ::= MODULE_IDENTIFIER
 subquery_name  ::= MODULE_IDENTIFIER 
-index_key_name ::= IDENTIFIER
 
 NOSPACE           ::= 'CODE THIS TO ENSURE NO SPACE'
 INDENT            ::= 'CODE THIS TAKE NOTE OF CURRENT INDENT' 

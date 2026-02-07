@@ -241,7 +241,7 @@ Method writeSQLPlanTableIndex(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Com
             Set givenE=element.findFirstElementByType("IndexKeysGiven",1)
             If $ISOBJECT(givenE) {
                 Set list=""
-                Do givenE.findElementsByType("IndexKeyName",.list,1)
+                Do givenE.findElementsByType("PropertyName",.list,1)
                 If $ISOBJECT(list) {
                     For i=1:1:list.Count() {
                         Set item=list.GetAt(i).ToString(0)

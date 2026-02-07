@@ -752,16 +752,18 @@ Method IndexKey42Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	quit ok
 }
 
-///  index_key_name ::= IDENTIFIER
-/// summary=C
+///  index_key_name ::= alias_property | property_name
+/// summary=C|C
 Method IndexKeyName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C
+	; rules summary C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Identifier(.subElement,.addedElement)  {
+	if ..AliasProperty(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..PropertyName(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
