@@ -92,7 +92,7 @@ ClassMethod HREFTo() As %String
 	Set href=..%ClassName(1)_".cls"
 	Set sep="?"
 	Set href=href_sep_"%NS="_..EscapeURL($GET(%NS,"LOCAL_USER")),sep="&"
-	Set:$G(%NS)'=$G(%NSORIGINAL) href=href_sep_"%NSO="_..EscapeURL($GET(%NSORIGINAL,"LOCAL_USER")),sep="&"
+	Set:$GET(%NS)'=$GET(%NSORIGINAL) href=href_sep_"%NSO="_..EscapeURL($GET(%NSORIGINAL,"LOCAL_USER")),sep="&"
 	;s href=href_sep_"C="_..EscapeURL(cls),sep="&"
 	Quit href
 }
@@ -467,7 +467,9 @@ ClassMethod WriteNav(ByRef scratch)
 
 ClassMethod GetTitle() As %String
 {
-	Quit ..%ClassName(1)
+	Set title=..#ToolName
+	If title="" Set title=..%ClassName(1)
+	Quit title
 }
 
 /// Write out extra styles here, the STYLE tags are already in place.

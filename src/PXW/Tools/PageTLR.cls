@@ -17,7 +17,11 @@ ClassMethod WriteMainBody(ByRef scratch)
             ; top
             Write "<div id='toolsMainTop'>"
                 Write "<div>"
-                Do ..WriteMainTop(.scratch)
+                Try {
+                    Do ..WriteMainTop(.scratch)
+                } Catch e {
+                    Do ..WriteStatus(e.AsStatus())
+                }
                 Write "</div>"
             ; /top
             Write "</div>"
@@ -26,7 +30,11 @@ ClassMethod WriteMainBody(ByRef scratch)
             Write "<div id='toolsMainLeft'>"
                 Write "<h2>"_..GetMainLeftTitle()_"</h2>"
                 Write "<div>"
+                Try {
                     Do ..WriteMainLeft(.scratch)
+                } Catch e {
+                    Do ..WriteStatus(e.AsStatus())
+                }
                 Write "</div>"
             Write "</div>"
             ; /left
@@ -34,7 +42,11 @@ ClassMethod WriteMainBody(ByRef scratch)
             Write "<div id='toolsMainRight'>"
                 Write "<h2>"_..GetMainRightTitle()_"</h2>"
                 Write "<div>"
+                Try {
                     Do ..WriteMainRight(.scratch)
+                } Catch e {
+                    Do ..WriteStatus(e.AsStatus())
+                }
                 Write "</div>"
             ; /right
             Write "</div>"
@@ -42,7 +54,11 @@ ClassMethod WriteMainBody(ByRef scratch)
             ;foot
             Write "<div id='toolsMainFoot'>"
                 ;w "<div>"
-                Do ..WriteMainFoot(.scratch)
+                Try {
+                    Do ..WriteMainFoot(.scratch)
+                } Catch e {
+                    Do ..WriteStatus(e.AsStatus())
+                }
                 ;w "</div>"
             ;/foot
             Write "</div>" 

@@ -893,6 +893,48 @@ Method SQLInternalXREF(Element As PXW.DEV.Element, table As %String = "", column
 Method xrefCOSParameterChecks(ClassName As %String, MethodPath As %String, Element As PXW.DEV.Element)
 {
 	; NOTE that METHOD PATH HAS NO LEADING DOT HERE
+   If ClassName="%SQL.Statement",MethodPath=".%PrepareClassQuery" {
+        ;ClassName As %String = "", pQueryName As %String = "",
+        Set paramsE=Element.findFirstElementByType("FunctionParameterList")
+        Do paramsE.findElementsByType("FunctionParameter",.plist,0)
+        If $ISOBJECT($GET(plist)) {
+            set class="",query=""
+            Set p1=plist.GetAt(1),p2=plist.GetAt(2)
+            ; ----- P1 (classname)
+            Kill atoms
+            Set flat1=..flattenlist(p1,.atoms)
+            ;zw flat1,atoms
+            ; "classname"
+            ; flat1=$lb($lb("String","PXW.DEV.UnitTests.ClassToDisplay"))
+            if atoms.Count()=1,$Piece(atoms.GetAt(1).type,":",1)="String" {
+                Set class=atoms.GetAt(1).value
+            }
+            ; ..%ClassName(1)
+            ; flat1=$lb($lb("ObjectMemberIdentifier","%ClassName"),$lb("Number","1"))
+            If atoms.Count()=2,$$$UPPER(atoms.GetAt(1).value)="%CLASSNAME" {
+                Set class=..This
+            }
+            ; $classname()
+            ; flat1=$lb($lb("keyword","classname"))
+            If atoms.Count()=1,$$$UPPER(atoms.GetAt(1).value)="CLASSNAME" {
+                Set class=..This
+            }
+ 
+            ; ----- P2 (query)
+            if class'="" {
+                Kill atoms
+                Set flat2=..flattenlist(p2,.atoms)
+                ; "classname"
+                ; flat=$lb($lb("String","PXW.DEV.UnitTests.ClassToDisplay"))
+                if atoms.Count()=1,$Piece(atoms.GetAt(1).type,":",1)="String" {
+                    Set query=atoms.GetAt(1).value
+                    Set a=atoms.GetAt(1)
+                    ;Do ..wrapAtomHTML(a,"<a class="_$$$classProgramName_" href="""_..HREFToClass(class,query)_""">","</a>")
+					Do ..SaveCOSXref("CLS",class,query,"ResultSet",a)
+                }
+            }
+        }
+    }
     If ClassName="%Library.ResultSet",MethodPath="%New" {
         Set paramsE=Element.findFirstElementByType("FunctionParameterList")
         Do paramsE.findElementsByType("FunctionParameter",.plist,0)

@@ -11,9 +11,9 @@ Property ThisMethod As %String;
 
 Property WriteMode As %Boolean [ InitialExpression = 1 ];
 
-/// Does this need things like the PRE tags?
+/*/// Does this need things like the PRE tags?
 Property Embedded As %Boolean [ InitialExpression = 0 ];
-
+*/
 Property htmlout As %String;
 
 /// If the atom is on this line (number) then we should highlight it

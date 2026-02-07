@@ -225,7 +225,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 		ZWrite %pxwdebug
 	}
 
-	ZWrite %peek
+	;ZWrite %peek
 	;zw %atoms
 	;d %session.EndSession()
 	;zw zh
@@ -234,7 +234,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 
 ClassMethod WriteNav(ByRef scratch)
 {
-	
+	#dim output as PXW.Tools.DEV.HTML.bnf
 	If $ISOBJECT($GET(scratch)) {
 		Set output=scratch
 		While output.NextIndexItemByName(.name,.type,.anchor,.error) {

@@ -3,9 +3,6 @@ Include PXW.Tools.Styles.macros
 Class PXW.Tools.DEV.HTML.bnf Extends PXW.Tools.DEV.HTML.output
 {
 
-/// Internal array
-Property atomTypeToCSS As %String [ MultiDimensional ];
-
 Property Analyser As PXW.DEV.BNF.Analyse.COS;
 
 /// Array of the items to add to an index, use the AddToIndex and NextIndexItems to access
@@ -13,9 +10,6 @@ Property Analyser As PXW.DEV.BNF.Analyse.COS;
 Property Index As %String [ MultiDimensional, Private ];
 
 Property IndexError As %String [ MultiDimensional, Private ];
-
-/// keep track of indent when displaying XML
-Property xmlIndent As %Integer [ InitialExpression = 0 ];
 
 /// Set this to put the paths in the tooltip (useful for debugging)
 Property showPaths As %Boolean [ InitialExpression = 0 ];
@@ -484,6 +478,15 @@ Method writeCDEFXdataSql(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW
     Quit ""
 }
 
+/*Method writeCDEFXdataXml(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="XdataXml")
+{
+    $$$DEBUGMethodBegin
+    set formatter=##class(PXW.DEV.BNF.Format.XML).%New()
+    do formatter.formatElement(element)
+    $$$DEBUGMethodEnd
+    Quit ""
+}
+*/
 Method writeCDEFIndex(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassIndex")
 {
     $$$DEBUGMethodBegin
@@ -522,6 +525,17 @@ Method writeCDEFIndexPropertyList(element As PXW.DEV.BNF.Elements.ClassDefinitio
             Do ..wrapElementHTML(ClassItemIdentifierE,"<a href="""_..HREFToClass(..This,name)_""">","</a>")
         }
     }
+    $$$DEBUGMethodEnd
+    Quit ""
+}
+
+Method writeCDEFStorageXml(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="StorageXml")
+{
+    $$$DEBUGMethodBegin
+    ;do element.write()
+    set formatter=##class(PXW.DEV.BNF.Format.CDefXML).%New()
+    set formatter.indent=1
+    do formatter.formatElement(element)
     $$$DEBUGMethodEnd
     Quit ""
 }
@@ -1508,9 +1522,7 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName
 Method writeCOSParameterChecks(ClassName As %String, MethodPath As %String, Element As PXW.DEV.Element)
 {
     $$$DEBUGMethodBegin
-    ;#dim x as %SQL.Statement
-    ;s y=x.%PrepareClassQuery()
-    If ClassName="%SQL.Statement",MethodPath=".%PrepareClassQuery" {
+   If ClassName="%SQL.Statement",MethodPath=".%PrepareClassQuery" {
         ;ClassName As %String = "", pQueryName As %String = "",
         Set paramsE=Element.findFirstElementByType("FunctionParameterList")
         Do paramsE.findElementsByType("FunctionParameter",.plist,0)
@@ -1755,29 +1767,6 @@ Method wrapCommentBlock(Element As PXW.DEV.Element, preValue As %String = "", po
 
     ; don't forget ALL of this is PRE the atom, including the post value!
     Do ..wrapAtomHTML(Element,postValue,"")
-    $$$DEBUGMethodEnd
-}
-
-/// the only method that should actually do any output during the middle processing
-Method writeAtom(atom As PXW.DEV.Atom, preValue As %String = "", postValue As %String = "", isWhitespace As %Boolean = 0)
-{
-    $$$DEBUGMethodBegin
-    /* XML (and storage) */
-    Set type=$PIECE(atom.type,":",1)
-    If type="XmlTagSA" {   ; <
-        Set ..xmlIndent=..xmlIndent+1
-    } ElseIf type="XmlTagEB" {  ; >
-        Set ..xmlIndent=..xmlIndent-1
-    } ElseIf type="XmlTagSC" {  ; />
-        Set ..xmlIndent=..xmlIndent-1
-    }
-	If isWhitespace {
-		; make the indent out of tabs
-        Set indent=""
-		Set $PIECE(indent,$CHAR(9),..xmlIndent+1)=""
-		Set atom.value=$REPLACE(atom.value,$CHAR(13),$CHAR(13)_indent)
-	}	
-    Do ##super(atom,preValue,postValue,isWhitespace)
     $$$DEBUGMethodEnd
 }
 
