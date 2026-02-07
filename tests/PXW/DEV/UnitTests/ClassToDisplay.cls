@@ -7,6 +7,9 @@ Property Prop2 As %Integer [ Aliases = {property two ,p2}, SqlComputeCode = { s 
 
 ClassMethod t()
 {
+	
+	s stmt=##class(%SQL.Statement).%New()
+	s sc=stmt.%PrepareClassQuery("PXW.DEV.UnitTests.ClassToDisplay","testq")
 	w ..t2()
 }
 

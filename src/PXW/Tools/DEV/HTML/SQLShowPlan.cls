@@ -236,9 +236,34 @@ Method writeSQLPlanTableIndex(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Com
         Set table=schemaE.ToString(0)_"."_tableE.ToString(0)
         Set index=indexE.ToString(0)
         Do ..wrapElementHTML(indexE,"<a class='"_$$$classObjectMember_"' href="""_..HREFToClass(table,index)_""">","</a>")
-        set class=..ClassServer.GetClassNameFromTableName(table)
-        if ..ClassServer.GetIndexDetails(class,index,,,.properties) {
-            do ..wrapElementHTML(indexE,"","<span class="_$$$classNarrative_"> /* "_..html(properties)_" */ </span>")
+        Set class=..ClassServer.GetClassNameFromTableName(table)
+        If ..ClassServer.GetIndexDetails(class,index,,,.properties) {
+            Set givenE=element.findFirstElementByType("IndexKeysGiven",1)
+            If $ISOBJECT(givenE) {
+                Set list=""
+                Do givenE.findElementsByType("IndexKeyName",.list,1)
+                If $ISOBJECT(list) {
+                    For i=1:1:list.Count() {
+                        Set item=list.GetAt(i).ToString(0)
+                        If item'="" {
+                            Set givenidents($$$UPPER(item))=i
+                        }
+                    }
+                }
+                Set html="",sep=""
+                For i=1:1:$LENGTH(properties,",") {
+                    Set item=$PIECE(properties,",",i)
+                    If $DATA(givenidents($$$UPPER(item))) {
+                        Set html=html_sep_"<b>"_..html(item)_"</b>"
+                    } Else {
+                        Set html=html_sep_..html(item)
+                    }
+                    Set sep=","
+                }
+                Do ..wrapElementHTML(indexE,"","<span class="_$$$classNarrative_"> /* "_html_" */ </span>")
+            } Else {
+                Do ..wrapElementHTML(indexE,"","<span class="_$$$classNarrative_"> /* "_..html(properties)_" */ </span>")
+            }
         }
     }
  

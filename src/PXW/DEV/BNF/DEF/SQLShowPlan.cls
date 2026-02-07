@@ -81,12 +81,16 @@ call_subquery       ::= 'subquery' subquery_name
 call_subqueries     ::= 'subqueries' subquery_name ( ',' ['and'] subquery_name )* ['and' subquery_name]
 
 table                 ::= 'table' schema_name '.' table_name
-table_index           ::=  schema_name '.'  table_name [ table_subscript_imply | table_subscript_alias ] '.' index_name
+table_index           ::=  schema_name '.'  table_name [ table_subscript_imply | table_subscript_alias ] '.' index_name [index_keys]
 table_subscript_imply ::= '(' schema_name '.' table_name '.' (property_name '->')* ')'
 table_subscript_alias ::= '(' alias_name ['.' ( property_name '->')* ] ')'
 
 alias_property      ::= alias_name NOSPACE '.' NOSPACE property_name
 
+index_keys          ::= ',' 'using' 'the' index_keys_given ',' 'and' index_keys_looping
+index_keys_given    ::= 'given' index_key (',' ['and'] !'looping' index_key)* ['and' !'looping' index_key]
+index_keys_looping  ::= 'looping' 'on' index_key (',' ['and'] !'getting' index_key)* ['and' !'given' index_key]
+index_key           ::= ('%SQLUPPER(' index_key_name ')') | index_key_name
 
 alias_name      ::= IDENTIFIER
 word            ::= WORD_REGEX
@@ -97,6 +101,7 @@ index_name     ::= IDENTIFIER
 property_name  ::= IDENTIFIER
 module_name    ::= MODULE_IDENTIFIER
 subquery_name  ::= MODULE_IDENTIFIER 
+index_key_name ::= IDENTIFIER
 
 NOSPACE           ::= 'CODE THIS TO ENSURE NO SPACE'
 INDENT            ::= 'CODE THIS TAKE NOTE OF CURRENT INDENT' 

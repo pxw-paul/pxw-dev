@@ -3,7 +3,7 @@ Class PXW.DEV.BNF.GEN.SQLShowPlan Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 
 Parameter KeywordPattern = "1.A";
 
-Parameter Keywords = "AND,BITMAP,EACH,EXTENT,FOR,ID,INDEX,LOOPING,MAP,MASTER,MODULE,MODULES,ON,READ,SUBQUERIES,SUBQUERY,TABLE";
+Parameter Keywords = "AND,BITMAP,EACH,EXTENT,FOR,GETTING,GIVEN,ID,INDEX,LOOPING,MAP,MASTER,MODULE,MODULES,ON,READ,SUBQUERIES,SUBQUERY,TABLE,THE,USING";
 
 ///  alias_name ::= IDENTIFIER
 /// summary=C
@@ -695,6 +695,337 @@ Method Indent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 		set ok=0 ; normal rollback
 	}
 	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  index_key ::= ('%SQLUPPER(' index_key_name ')') | index_key_name
+/// summary=(P&C&P)|C
+Method IndexKey(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary (P&C&P)|C
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..IndexKey42Sub(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..IndexKeyName(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0 ; normal rollback
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+/// '%SQLUPPER(' index_key_name ')'
+/// summary values:%SQLUPPER(
+/// summary=P&C&P
+Method IndexKey42Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&C&P
+	; first rule summary P
+	if '(..isStringSingle("%SQLUPPER(",.value)) { quit 0 /* normal */ /*4*/ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"%SQLUPPER(")  {
+		if ..IndexKeyName(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,")")  {
+				set done=1 ; end compileRules
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0 ; normal rollback
+	}
+	quit ok
+}
+
+///  index_key_name ::= IDENTIFIER
+/// summary=C
+Method IndexKeyName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary C
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..Identifier(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0 ; normal rollback
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  index_keys ::= ',' 'using' 'the' index_keys_given ',' 'and' index_keys_looping
+/// summary values:,
+/// summary=P&K&K&C&P&K&C
+Method IndexKeys(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary P&K&K&C&P&K&C
+	; first rule summary P
+	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ /*4*/ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,",")  {
+		if ..addKeyword(.subElement,"USING")  {
+			if ..addKeyword(.subElement,"THE")  {
+				if ..IndexKeysGiven(.subElement,.addedElement)  {
+					if ..addPunctuation(.subElement,",")  {
+						if ..addKeyword(.subElement,"AND")  {
+							if ..IndexKeysLooping(.subElement,.addedElement)  {
+								set done=1 ; end compileRules
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0 ; normal rollback
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  index_keys_given ::= 'given' index_key (',' ['and'] !'looping' index_key)* ['and' !'looping' index_key]
+/// summary values:GIVEN
+/// summary=K&C&(?4punctuation:4?)*&[K&?4NotRule4?&C]
+Method IndexKeysGiven(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary K&C&(?4punctuation:4?)*&[K&?4NotRule4?&C]
+	if '(..isKeyword("GIVEN",.value)) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"GIVEN")  {
+		if ..IndexKey(.subElement,.addedElement)  {
+			if ..IndexKeysGiven36RepZero(.subElement,.addedElement)  {
+				if ..IndexKeysGiven38OptGrp(.subElement,.addedElement)  {
+					set done=1 ; end compileRules
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0 ; normal rollback
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  (',' ['and'] !'looping' index_key)*
+Method IndexKeysGiven36RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary ?4punctuation:4?
+	set subElement=ParentElement
+	set done=0 ; method start
+	while ..IndexKeysGiven37Sub(.subElement,.addedElement)  {
+		set done=1
+	}
+	if done {
+		set ok=1
+	} else {
+		set ok=1 /* nothing found is ok in RZ */
+	}
+	quit ok
+}
+
+/// ',' ['and'] !'looping' index_key
+/// summary values:,
+/// summary=P&[K]&?4NotRule4?&C
+Method IndexKeysGiven37Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&[K]&?4NotRule4?&C
+	; first rule summary P
+	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ /*4*/ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,",")  {
+		if $S(..addKeyword(.subElement,"AND") :1,1:1) {
+			if '..addKeyword(.subElement,"LOOPING")  {
+				if ..IndexKey(.subElement,.addedElement)  {
+					set done=1 ; end compileRules
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0 ; normal rollback
+	}
+	quit ok
+}
+
+/// 
+/// summary values:AND
+/// summary=K&?4NotRule4?&C
+Method IndexKeysGiven38OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&?4NotRule4?&C
+	if '(..isKeyword("AND",.value)) { quit 1 /* not found is OK */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"AND")  {
+		if '..addKeyword(.subElement,"LOOPING")  {
+			if ..IndexKey(.subElement,.addedElement)  {
+				set done=1 ; end compileRules
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+///  index_keys_looping ::= 'looping' 'on' index_key (',' ['and'] !'getting' index_key)* ['and' !'given' index_key]
+/// summary values:LOOPING
+/// summary=K&K&C&(?4punctuation:4?)*&[K&?4NotRule4?&C]
+Method IndexKeysLooping(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary K&K&C&(?4punctuation:4?)*&[K&?4NotRule4?&C]
+	if '(..isKeyword("LOOPING",.value)) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"LOOPING")  {
+		if ..addKeyword(.subElement,"ON")  {
+			if ..IndexKey(.subElement,.addedElement)  {
+				if ..IndexKeysLooping39RepZero(.subElement,.addedElement)  {
+					if ..IndexKeysLooping41OptGrp(.subElement,.addedElement)  {
+						set done=1 ; end compileRules
+					}
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0 ; normal rollback
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  (',' ['and'] !'getting' index_key)*
+Method IndexKeysLooping39RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary ?4punctuation:4?
+	set subElement=ParentElement
+	set done=0 ; method start
+	while ..IndexKeysLooping40Sub(.subElement,.addedElement)  {
+		set done=1
+	}
+	if done {
+		set ok=1
+	} else {
+		set ok=1 /* nothing found is ok in RZ */
+	}
+	quit ok
+}
+
+/// ',' ['and'] !'getting' index_key
+/// summary values:,
+/// summary=P&[K]&?4NotRule4?&C
+Method IndexKeysLooping40Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&[K]&?4NotRule4?&C
+	; first rule summary P
+	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ /*4*/ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,",")  {
+		if $S(..addKeyword(.subElement,"AND") :1,1:1) {
+			if '..addKeyword(.subElement,"GETTING")  {
+				if ..IndexKey(.subElement,.addedElement)  {
+					set done=1 ; end compileRules
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0 ; normal rollback
+	}
+	quit ok
+}
+
+/// 
+/// summary values:AND
+/// summary=K&?4NotRule4?&C
+Method IndexKeysLooping41OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&?4NotRule4?&C
+	if '(..isKeyword("AND",.value)) { quit 1 /* not found is OK */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"AND")  {
+		if '..addKeyword(.subElement,"GIVEN")  {
+			if ..IndexKey(.subElement,.addedElement)  {
+				set done=1 ; end compileRules
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
 	quit ok
 }
 
@@ -1671,11 +2002,11 @@ Method Table(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 	quit ok
 }
 
-///  table_index ::= schema_name '.' table_name [ table_subscript_imply | table_subscript_alias ] '.' index_name
-/// summary=C&P&C&[C|C]&P&C
+///  table_index ::= schema_name '.' table_name [ table_subscript_imply | table_subscript_alias ] '.' index_name [index_keys]
+/// summary=C&P&C&[C|C]&P&C&[C]
 Method TableIndex(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C&P&C&[C|C]&P&C
+	; rules summary C&P&C&[C|C]&P&C&[C]
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1686,7 +2017,9 @@ Method TableIndex(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 				if ..TableIndex30OptGrp(.subElement,.addedElement)  {
 					if ..addPunctuation(.subElement,".")  {
 						if ..IndexName(.subElement,.addedElement)  {
-							set done=1 ; end compileRules
+							if $S(..IndexKeys(.subElement,.addedElement) :1,1:1) {
+								set done=1 ; end compileRules
+							}
 						}
 					}
 				}
