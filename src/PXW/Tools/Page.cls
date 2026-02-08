@@ -141,6 +141,14 @@ ClassMethod PageScripts() As %String
 	>
 
 	&js<
+	function submitOnNewTab(formId) {
+		var form=document.getElementById(formId);
+		if (form) {
+			form.target='_blank';
+			form.submit();
+		}
+	}
+
 	/*****************************************************************/
 	/// Any tables with a filename attribute is downloadable
 	/// eg: <table filename='download'>
@@ -268,20 +276,14 @@ ClassMethod PageHead() As %String
 		<div id=toolsHead>
 			<header>
 				<div id=toolsForms>
-					<form id=toolsFormHome action='PXW.Tools.Index.cls'>
-						<fieldset id=toolsHome>
-						<legend>Home</legend>
-							<input type=hidden name=%NS value='#(%NS)#'>
-							<input type=submit value='Home'>
-						</fieldset>
-					</form>
-					<form target=_blank id=toolsFormHome action='PXW.Tools.Index.cls'>
-						<fieldset id=toolsHome>
-						<legend>Home</legend>
-							<input type=hidden name=%NS value='#(%NS)#'>
-							<input type=submit value='+'>
-						</fieldset>
-					</form>
+						<form id=toolsFormHome action='PXW.Tools.Index.cls'>
+							<fieldset id=toolsHome>
+								<legend>Home</legend>
+								<input type=hidden name=%NS value='#(%NS)#'>
+								<input type=submit value='Home'>
+								<input type='button' onclick='submitOnNewTab("toolsFormHome");' value='+'>
+							</fieldset>
+						</form>
 					#(..WriteHeadForms())#
 				</div>
 			</header>

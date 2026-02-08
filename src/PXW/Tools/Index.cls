@@ -23,7 +23,8 @@ ClassMethod WriteMainBody()
 
 	Set rs=##class(PXW.Tools.Queries).SelectToolsForNamespaceFunc(%NS)
 	
-	Write "<div class='grid-container'>"
+	;Write "<div class='grid-container'>"
+	Write "<div>"
 	While rs.%Next() {
 		set name=rs.%Get("ClassName")
 		Set type=rs.%Get("ToolType")
@@ -49,7 +50,8 @@ ClassMethod WriteForm(ClassName As %String, Type As %String, ToolName As %String
 		Set aname=$TRANSLATE(ClassName,".","")_"anchor"
 		Set legname=$TRANSLATE(ClassName,".","")_"legend"
 		&html<
-		<div id="#(aname)#" class=#(css)#>
+		<details id="#(aname)#" class=#(css)#>
+			<summary>#(ToolName)#</summary>
 			<form action='#(ClassName)#.cls'>
 				<fieldset>
 					<legend id=#(legname)#>#(ToolName)#</legend>
@@ -86,7 +88,7 @@ ClassMethod WriteForm(ClassName As %String, Type As %String, ToolName As %String
 						</table>
 				</fieldset>
 			</form>
-		</div>
+		</details>
 		>
 	}
 	Quit 1
@@ -109,7 +111,7 @@ ClassMethod WriteNav()
 		if toolname'="" {
 			Set aname=$TRANSLATE(name,".","")_"anchor"
 			Set legname=$TRANSLATE(name,".","")_"legend"
-			Write "<a onclick='HiliteElement("""_legname_""");' class='"_css_"' href=#"_$TRANSLATE(aname,".","")_">"_..EscapeHTML(toolname)_"</a>"
+			Write "<a href="""_$CLASSMETHOD(name,"HREFTo")_""">"_..EscapeHTML(toolname)_"</a>"
 		}
 	}
 }

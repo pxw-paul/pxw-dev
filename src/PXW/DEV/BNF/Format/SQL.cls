@@ -134,7 +134,7 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %Stri
 	    If a.%IsA("PXW.DEV.Element") {
 			Do ..setAll(a,indent,flags)
 		} else {
-            set a.line=..currentLine
+           ; set a.line=..currentLine
         }
 	}
 
@@ -158,7 +158,7 @@ Method setWhitespaceNewLine(Atom As PXW.DEV.Atom, indent As %Integer)
     Set ..currentLine=..currentLine+1
     Set Atom.whitespace=##class(PXW.DEV.Atom).%New()
     Set Atom.whitespace.value=cr_$EXTRACT(tabs,1,indent)
-    Set Atom.line=..currentLine
+    ;Set Atom.line=..currentLine
 }
 
 }

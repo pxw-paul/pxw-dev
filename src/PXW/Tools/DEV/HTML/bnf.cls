@@ -31,6 +31,9 @@ Property HilitePlus As %Integer;
 
 Property ClassServer As PXW.DEV.Dictionary.ClassDefinitionObject;
 
+/// Set to 1 if embedded SQL should get formatted.
+Property FormatEmbeddedSQl As %Boolean [ InitialExpression = 1 ];
+
 /// maintained by xml elements
 Property XMLPath As %String;
 
@@ -1064,6 +1067,10 @@ Method writeCOSJsBody(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compil
 Method writeCOSSqlBody(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="SqlBody")
 {
     $$$DEBUGMethodBegin
+    if ..FormatEmbeddedSQl {
+        set formatter=##class(PXW.DEV.BNF.Format.SQL).%New()
+        do formatter.formatElement(element)
+    }
     Set ..SqlProgramAnalyser=""
     Do ..wrapElementHTML(element,"<span class='EmbeddedSQL'>","</span>")
     $$$DEBUGMethodEnd

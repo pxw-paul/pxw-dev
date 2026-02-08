@@ -55,7 +55,7 @@ ClassMethod HREFTo(NameSpace As %String) As %String
 	; this bit of code is all over the place, big mistake; using floater variable for namespace
 	Set ons=%NS
 	New %NS
-	Set %NS=$SELECT(NameSpace'="":NameSpace,1:ons)
+	Set %NS=$SELECT($g(NameSpace)'="":NameSpace,1:ons)
     ; note that NameSpace is always %NS
 	Quit ##super()
 }

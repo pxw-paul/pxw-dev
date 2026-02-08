@@ -3,11 +3,6 @@
 Class PXW.DEV.Element Extends PXW.DEV.Particle
 {
 
-/// This needs to be set to the name of the Base class
-/// EG for COS it should be set to PXW.DEV.COS.Element
-/// nothing that extends COS should override this parameter
-Parameter Base = "PXW.DEV.Element";
-
 Property type As %String;
 
 /// property parts as temp.mylist;

@@ -177,12 +177,6 @@ Method GenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator 
     Set opencurly="{",closecurly="}"
     Set mkey=""
 
-    Do %code.WriteLine($CHAR(9)_"Set class=$$$UPPER(element.%ClassName(1)) q:class=""""")
-    Do %code.WriteLine($CHAR(9)_"Set etype=$$$UPPER(element.type) q:etype=""""")
-	;Do %code.WriteLine($CHAR(9)_"q:'$d(..redir(class,etype))")
-
-    Do %code.WriteLine($CHAR(9)_"$$$DEBUGMethodBegin")
-
     For  {
         Set meth=%compiledclass.Methods.GetNext(.mkey)
         Quit:mkey=""
@@ -198,7 +192,7 @@ Method GenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator 
 					If etypes'="" {
 						For i=1:1:$LENGTH(etypes,",") {
 							Set etype=$PIECE(etypes,",",i)
-							; key by sequence for potential speed saving - not implemented properly
+							; key by sequence for potential time saving - not implemented properly
 							;Set defseq=##class(%Dictionary.MethodDefinition).%OpenId(meth.Origin_"||"_meth.Name).SequenceNumber
 							;Set methodseq(class,(10000+defseq)_(10000+seq),etype,meth.Name)=meth
 							Set methods(class,etype,meth.Name)=meth
@@ -208,6 +202,10 @@ Method GenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator 
 			}
 		}
 	}
+    Do %code.WriteLine($CHAR(9)_"Set class=$$$UPPER($classname(element)) q:class=""""")
+    Do %code.WriteLine($CHAR(9)_"Set etype=$$$UPPER(element.type) q:etype=""""")
+    Do %code.WriteLine($CHAR(9)_"$$$DEBUGMethodBegin")
+	Do %code.WriteLine($CHAR(9)_"i '$d(..redir(class,etype)) {")
 	Set (class,etype,name)="",cif="If"
 	For  {
 		Set class=$ORDER(methods(class))
@@ -232,9 +230,12 @@ Method GenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator 
 			Do %code.WriteLine($CHAR(9,9)_closecurly)
 			Set ifcommand="Elseif"
 		}
+		; set flag to say that this type of thing does NOT have a redirect
+		Do %code.WriteLine($CHAR(9,9)_" else { s ..redir(class,etype)=0 }")
 		Do %code.WriteLine($CHAR(9)_closecurly)
 		Set cif="Elseif"
     }
+	Do %code.WriteLine($CHAR(9)_"}")
     Do %code.WriteLine($CHAR(9)_"$$$DEBUGMethodEnd")
 	
 	;zw methodseq("PXW.DEV.BNF.Elements.ClassDefinition"),methods("PXW.DEV.BNF.Elements.ClassDefinition")

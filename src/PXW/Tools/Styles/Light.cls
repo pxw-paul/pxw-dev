@@ -96,16 +96,14 @@ Method WriteStyles()
 	
 	td input { width: 100%;}
 
-	.treeItemName {
-		display: inline-block;
-		font-weight: bold;
-		min-width: 100px;
+	details {
+		margin:0.5em;
 	}
 
-	.treeItemValue {
-		min-width: 100px;
+	details summary {
+		font-size:1.5em;
+		padding-bottom:0.2em;
 	}
-
 	/* END of style of the app */
 	/* Start of nav */
 	#toolsMainBodyNav .CDEFPropertyName::after  { white-space: nowrap;  content: " property"; color:silver;}

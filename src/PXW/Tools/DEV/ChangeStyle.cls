@@ -6,31 +6,30 @@ Parameter ToolName = "Change Style";
 ClassMethod WriteMainBody()
 {
 	&html<
-		<div class=section1>
-			<h1>Section (H1) header</h1>
-			This DIV is section1.
-			<div class=section2> 
-				<h2 id="Selection">Selection</h2>
+			<h2>Section (H2) header</h2>
+			This is just text on the page. Each section below is a details and summary section.
+			<details open> 
+				<summary id="Selection">Selection</summary>
 				#(..WriteStyleChangeSelection())#
-			</div>
-			<div class=section2> 
-				<h2 id="ExampleTable">Example table (h2) header</h2>
+			</details>
+			<details open> 
+				<summary id="ExampleTable">Example table (summary) header</summary>
 				#(..WriteExampleTable())#
-			</div>
-			<!--<div class=section2> 
-				<h2 id="ExampleXref">Example X-Ref</h2>
+			</details>
+			<!--<details open> 
+				<summary id="ExampleXref">Example X-Ref</summary>
 				#(..WriteExampleXref())#
-			</div>-->
-				<div class=section2 >
-					<h2 id="ExampleCode">Example Code</h2>
+			</details>-->
+				<details open >
+					<summary id="ExampleCode">Example Code</summary>
 					#(..WriteExampleCode())#
-				</div>
-				<div class=section2 >
-					<h2 id="VariableHilite">Variable high light colours</h2>
+				</details>
+				<details open >
+					<summary id="VariableHilite">Variable high light colours</summary>
 					#(..WriteHilite())#
-				</div>
-				<div class=section2>
-					<h2 id="MainForm">Main Form</h2>
+				</details>
+				<details open>
+					<summary id="MainForm">Main Form</summary>
 					<form>
 						<fieldset>
 							<legend>Main form</legend>
@@ -43,9 +42,9 @@ ClassMethod WriteMainBody()
 							</table>
 						</fieldset>
 					</form>
-				</div>
+				</details>
 		<!-- /*</div> -->
-		</div>
+		
 
 	>
 }

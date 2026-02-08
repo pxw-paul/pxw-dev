@@ -5,8 +5,8 @@ Parameter CodeType = "CLS";
 
 ClassMethod WriteMainBody(ByRef scratch)
 {
-	Do ..HREFFrom(.cls,.path,.instance,.linenumber,.debug,.PropertyParameter)
-
+	Do ..HREFFrom(.cls,.path,.instance,.linenumber,.debug,.PropertyParameter,.FormatOptions)
+	
 	If cls["*" {
 		Do ..WriteClassDir(cls) 
 		Quit
@@ -16,8 +16,12 @@ ClassMethod WriteMainBody(ByRef scratch)
 	If ocls'=cls {
 		Write "<p>Redirected from "_..EscapeHTML(cls)_"</p>"
 	} 
-	;zw ocls,debug,bookmark,linenumber
-	Do ..WriteClass(ocls,debug,bookmark,linenumber,.scratch) 
+
+	if ocls'="" {
+		Do ..WriteClass(ocls,debug,bookmark,linenumber,.scratch,FormatOptions) 
+	} else {
+		Write "<p>Unable to find class "_cls_"</p>"
+	}
 	Quit
 }
 
@@ -102,13 +106,13 @@ ClassMethod GetClassToLoad(cls As %String, path As %String, Output bookmark As %
 }
 
 /// s %NS="LOCAL_USER" d ##class(PXW.Tools.DEV.Class).WriteClass("%iKnow.Classification.UI.ClassifierBuilder",1,"",0,.s)
-ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %String = "", hiliteLineNo As %Integer, ByRef scratch)
+ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %String = "", hiliteLineNo As %Integer, ByRef scratch, FormatOptions As %String = "")
 {
 	New %path
 	Kill %pxw1
 	#dim ele,element as PXW.DEV.Element
 	Set zh=$ZHOROLOG
-
+	zw ClassName,FormatOptions
 	Set showPaths=0,forceXref=0
     Write "<pre>"
 	; Debug is only for the DISPLAY of the page, if you want to debug the parsing use the ParserTest page.
@@ -120,6 +124,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 	
     Set output=##class(PXW.Tools.DEV.HTML.bnf).%New()
 	Set output.ThisType=..#CodeType
+	Set output.FormatEmbeddedSQl=$s($$$UPPER(FormatOptions)["NOSQLFORMATTING":0,1:1)
 	Set output.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)
 	Set sc=output.ClassServer.GetClassStudioText(ClassName,.text,.linesOfCode,.timestamp)
 	Set zh(1,"load")=$ZHOROLOG-zh,zh=$ZHOROLOG
@@ -246,7 +251,14 @@ ClassMethod WriteNav(ByRef scratch)
 		}
 		Write "<hr>"
 	}
+	do ..HREFFrom(.class,.path,.instanceclass,.linenumber,,.propertyparam,.formatoptions)
     Write "<a href=# onclick='MakeStringsInteresting(); '>Strings</a>"
+    if formatoptions'["NOSQLFORMATTING" {
+		Write "<a href="""_..HREFTo(class,path,linenumber,%NS,instanceclass,propertyparam,formatoptions_"NOSQLFORMATTING")_""">No Embedded SQL Formatting</a>"
+	} else {
+		set off=$replace(formatoptions,"NOSQLFORMATTING","")
+		Write "<a href="""_..HREFTo(class,path,linenumber,%NS,instanceclass,propertyparam,off)_""">Embedded SQL Formatting</a>"
+	}
 }
 
 ClassMethod methodAName(Name As %String) As %String
@@ -259,7 +271,7 @@ ClassMethod propertyAName(Name As %String) As %String
 	Quit "property"_Name
 }
 
-ClassMethod HREFFrom(Output Class As %String, Output Path As %String, Output InstanceClass As %String, Output LineNumber As %Integer, Output Debug As %String, Output PropertyParameter As %String)
+ClassMethod HREFFrom(Output Class As %String, Output Path As %String, Output InstanceClass As %String, Output LineNumber As %Integer, Output Debug As %String, Output PropertyParameter As %String, Output FormatOptions As %String)
 {
 	#define ReqGet(%name) %request.Get(%name)
 	Set Class=$$$ReqGet("C")
@@ -268,13 +280,14 @@ ClassMethod HREFFrom(Output Class As %String, Output Path As %String, Output Ins
 	Set LineNumber=$$$ReqGet("LN")
 	Set Debug=$$$ReqGet("DEBUG")
 	Set PropertyParameter=$$$ReqGet("PP")
+	set FormatOptions=$$$ReqGet("FO")
 }
 
 /// Class=name of base class to display
 /// Path=name of properties/methods to follow (eg .race.circuit.name)
 /// Caller class is the class that is being displayed (not the class of my code doing the call)
 /// PropertyParameter is the name of the parameter from the property definition (eg property x as %String(XMLNAME=xxx); - "XMLNAME" will be in PP)
-ClassMethod HREFTo(Class As %String, Path As %String = "", LineNumber As %Integer = "", NameSpace As %String = "", CallerClass As %String = "", PropertyParameter As %String = "") As %String
+ClassMethod HREFTo(Class As %String, Path As %String = "", LineNumber As %Integer = "", NameSpace As %String = "", CallerClass As %String = "", PropertyParameter As %String = "", FormatOptions As %String = "") As %String
 {
 	If NameSpace'="",$DATA(%NS) Set ons=%NS
 	Set href=##super()
@@ -284,15 +297,16 @@ ClassMethod HREFTo(Class As %String, Path As %String = "", LineNumber As %Intege
 	Set cls=$GET(Class),instance=""
 
 	Set package=""
-	If CallerClass'="" Set package=$PIECE(CallerClass,".",1,*-1)
+	Set:CallerClass'="" package=$PIECE(CallerClass,".",1,*-1)
 
 	Set cls=##class(PXW.DEV.Dictionary.ClassDefinitionObject).FullClassName(cls,package)
 
 	Set href=href_sep_"C="_..EscapeURL(cls),sep="&"
-	If instance'="" Set href=href_sep_"I="_..EscapeURL(instance),sep="&"
-	If LineNumber'="" Set href=href_sep_"LN="_..EscapeURL(LineNumber),sep="&"
-	If PropertyParameter'="" Set href=href_sep_"PP="_..EscapeURL(PropertyParameter),sep="&"
-	Set href=href_sep_"P="_..EscapeURL(Path),sep="&"
+	Set:instance'="" href=href_sep_"I="_..EscapeURL(instance),sep="&"
+	Set:LineNumber'="" href=href_sep_"LN="_..EscapeURL(LineNumber),sep="&"
+	Set:PropertyParameter'="" href=href_sep_"PP="_..EscapeURL(PropertyParameter),sep="&"
+	Set:Path'="" href=href_sep_"P="_..EscapeURL(Path),sep="&"
+	Set:FormatOptions'="" href=href_sep_"FO="_..EscapeURL(FormatOptions),sep="&"
 
 	; must go last
 	; always put the bookmark on, because the link to stored procedures is not working correctly yet

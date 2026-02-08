@@ -115,6 +115,16 @@ Method WriteStyles()
 
 	td input { width: 100%;}
 
+	details {
+		margin:0.5em;
+	}
+
+	details summary {
+		font-size:1.5em;
+		padding-bottom:0.2em;
+	}
+
+
 	/* END of style of the app */
 	/* Start of nav */
 	#toolsMainBodyNav .CDEFPropertyName::after  {  content: ".pty"; /* color:silver;*/}

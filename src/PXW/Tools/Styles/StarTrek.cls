@@ -231,7 +231,8 @@ Method WriteStyles()
 	#toolsMainBodyNav a { text-transform: uppercase; text-align: right; color:black; 
 	                 width:100%; display: block; 
 					 min-height:5%; 
-					 border-top: 4px solid black;
+					 border-top: 2px solid black;
+					 border-bottom: 2px solid black;
 					 padding-top:30px; 
 					 font-weight: bold;	
 					 }
@@ -291,30 +292,33 @@ Method WriteStyles()
 					font-weight: bold; font-stretch:ultra-condensed;/*font-family:helvetica; */
 					border:0px;
 					}
-	#toolsMainBodyContent .section1 {  display:block; margin:10px 0px 0px 0px; inset-block-start: 0;}
 
-	#toolsMainBodyContent .section1 .comment { border:0; padding-left:20px;}
-	#toolsMainBodyContent .section2 {  display:block; margin:10px 0px 0px 0px;
-										border-color: var(--lcars6);
-										border-radius: 0px 20px 20px 0px;
-										border-width: 0px 40px 0px 0px;
-										border-style: solid;
-	}
-	#toolsMainBodyContent .section2 h2 { background-color: var(--lcars6);
-						text-transform: uppercase;
-						border-radius: 20px 0 0 20px;
-						padding-left: 20px;
-						margin-top:0px;		
-						color:black;								
+	details {
+		margin:0.5em;
+		border-color: var(--lcars6);
+		border-radius: 0px 20px 20px 0px;
+		border-width: 0px 40px 0px 0px;
+		border-style: solid;
 	}
 
-	#toolsMainBodyContent .section2:nth-child(odd) {  border-color: var(--lcars7);}
-	#toolsMainBodyContent .section2:nth-child(odd) h2 {  background-color: var(--lcars7);}
+	details:open::details-content {
+		padding:5px 5px 0 0;
+	}
 
+	details summary {
+		font-size:1.5em;
+		padding-bottom:0.2em;
+		background-color: var(--lcars6);
+		text-transform: uppercase;
+		border-radius: 20px 0 0 20px;
+		padding-left: 20px;
+		margin-top:0px;		
+		color:black;			
+	}
 
-	#toolsMainBodyContent .section2 .comment { border:0; padding-left:10px;}
-	#toolsMainBodyContent .section3 {  display:block; margin:5px 0px 0px 0px;}
-	#toolsMainBodyContent .section3 .comment { border:0; padding-left:10px;}
+	details:nth-child(odd) {  border-color: var(--lcars7);}
+	details:nth-child(odd) summary {  background-color: var(--lcars7);}
+
 
    #toolsMainTLR main {
         border:0; margin: 0; padding: 0; border-radius: 0; height:100%;
@@ -425,6 +429,7 @@ Method WriteStyles()
 	#toolsMainBodyNav .toolTypeCode  { background-color: var(--lcars5); }	
 	#toolsMainBodyNav .warning { background-color: orange;}
 	#toolsMainBodyNav .error { background-color: red;}
+	#toolsMainBodyNav form { background-color: black; padding-top: 2px; padding-bottom: 2px;}
 	/* END of nav */
 	/* Start of style for the code display */
 

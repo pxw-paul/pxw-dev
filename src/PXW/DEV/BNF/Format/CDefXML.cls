@@ -33,7 +33,6 @@ Method resetAll(element As PXW.DEV.Element)
 }
 
 /// If there is NO whitespace leave alone, otherwise make it a single space.
-/// Whitespace on Comments is untouched. - WHICH IS NOT QUITE RIGHT FOR LINECOMMENTS (--)
 Method resetWhitespace(Atom As PXW.DEV.Atom)
 {
     If $ISOBJECT(Atom.whitespace) {
