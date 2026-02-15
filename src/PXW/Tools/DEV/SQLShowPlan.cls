@@ -12,7 +12,7 @@ ClassMethod WriteMainTop(ByRef scratch)
         <fieldset>
         <input name='%NS' value='#(%NS)#' type=hidden>
         <table style='width:100%'>
-            <tr><td>SQL</td><td><textarea autofocus spellcheck="false" style='width:100%' name='SQL' rows=20>#(SQL)#</textarea></td></tr>
+            <tr><td>SQL</td><td><textarea id='SQLTextArea' autofocus spellcheck="false" style='width:100%' name='SQL' rows=20>#(SQL)#</textarea></td></tr>
             <tr><td>&nbsp;</td><td><input type=submit value='Show Plan'></td></tr>
         </table>
         </fieldset>
@@ -23,7 +23,7 @@ ClassMethod WriteMainTop(ByRef scratch)
 ClassMethod WriteMainLeft(ByRef scratch)
 {
     do ..HREFFrom(.SQL)
-    Write "<pre>" 
+    Write "<pre id='SQLFormattedText'>" 
     Try {
         Do:SQL'="" ..WriteSQL(SQL,0)
     } Catch e {
@@ -79,7 +79,7 @@ ClassMethod WriteSQLPlan(sql As %String, Output modules)
 		Set parser=##class(PXW.DEV.BNF.Run.SQLShowPlan).%New()
 		Set parser.stream=##class(PXW.DEV.InputStream).NewString(xml)
 		Set element=##class(PXW.DEV.Element).%New()
-		New %path Set %path=""
+		;New %path Set %path=""
 		If parser.Plans(element) {
 			;d element.write()
 			Set output=##class(PXW.Tools.DEV.HTML.SQLShowPlan).%New()
@@ -128,6 +128,8 @@ ClassMethod WriteNav(ByRef scratch)
 
         Write "<a href=""#"_aname_""">"_aname_"</a>"
     }
+    w "<hr>"
+    w "<a href=# onclick='document.getElementById(""SQLTextArea"").value=document.getElementById(""SQLFormattedText"").innerText;'>Tinker</a>"
 }
 
 /// Write out extra styles here, the STYLE tags are already in place
@@ -136,7 +138,8 @@ ClassMethod WriteStyles()
     do ##super()
 	Do ##class(PXW.Tools.DEV.Class).WriteStyles()
     Write "div.EmbeddedSQLcontainer { display:inline-block; vertical-align:top;}",!
-    Write "pre.EmbeddedSQLSub { border:1px solid var(--borderNormal); margin-left:40px; }",!
+    ;Write "pre.EmbeddedSQLSub { border:1px solid var(--borderNormal); margin-left:40px; }",!
+    Write "pre.EmbeddedSQLSub { border:1px solid var(--borderNormal); }",!
     Write "p.newline { padding-left:20px; text-indent: -20px; }",!
     
     ; not working

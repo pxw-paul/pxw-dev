@@ -1,6 +1,6 @@
 /// This class was created by Generating PXW.DEV.BNF.GEN.BNF1 and then copying the code into here.
 /// The idea is that this code is never generated directly by compiling something and therefore
-/// potentially breaking the bnf compiler beyond compare.
+/// potentially breaking the bnf compiler beyond repair.
 /// 
 /// There ARE some tweaks in here so do NOT replace methods from newly generated versions without 
 /// thinking carefully.

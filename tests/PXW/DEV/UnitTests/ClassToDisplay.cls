@@ -5,6 +5,12 @@ Property Prop1 As %String;
 
 Property Prop2 As %Integer [ Aliases = {property two ,p2}, SqlComputeCode = { s {*}={Prop_1} } ];
 
+Query callproc() As %SQLQuery
+{
+
+	select PXW_Xref.queries_getCode('LOCAL_USER','CLS','PXW.DEV.UnitTests.ClassToDisplay',11,1) AS CallingCode
+}
+
 ClassMethod t()
 {
 	
@@ -31,8 +37,21 @@ ClassMethod WorkOnAList(ObjList As %ListOfObjects(ELEMENTTYPE="PXW.DEV.UnitTests
 	$$$mac
 	s z=3
 	&sql(
-		select 1,2,3
-		-- dummy select
+	SELECT COUNT(*) AS Number
+	FROM PXW_Xref.Data
+	WHERE NameSpace=:NameSpace
+	--IF ItemType'=""
+		AND ItemType=:ItemType
+	--ENDIF
+	--IF ItemKey1'=""
+		AND ItemKey1=:ItemKey1
+	--ENDIF
+	--IF ItemKey2'=""
+		AND ItemKey2=:ItemKey2
+	--ENDIF
+	--IF CalledByCommand'=""
+		AND CalledByCommand=:CalledByCommand
+	--ENDIF
 		)
 	&sql(
 		select 1,2,3)

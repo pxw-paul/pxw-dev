@@ -306,23 +306,37 @@ Method compileMethodStart(Method As %Dictionary.MethodDefinition, indent As %Int
     $$$WRITECR($$$Tab(indent)_"set done=0 ; method start")
 }
 
-Method compileMethodEnd(Method As %Dictionary.MethodDefinition, indent As %Integer, rollbackReturns As %String = "0 ; normal rollback", needsTransation As %Boolean = 1, needsDebug As %Boolean = 1, copyMode As %Boolean = 0)
+Method compileMethodEnd(Method As %Dictionary.MethodDefinition, indent As %Integer, rollbackReturns As %String = "0", needsTransation As %Boolean = 1, needsDebug As %Boolean = 1, copyMode As %Boolean = 0)
 {
     #define WRITE(%code) $$$WRITENOLINE(Method,%code)
     #define WRITECR(%code) $$$WRITELINE(Method,%code)
 
-    $$$WRITECR($$$Tab(indent)_"if done {")
 	If needsTransation {
+        $$$WRITECR($$$Tab(indent)_"if done {")
         If copyMode=0 $$$WRITECR($$$Tab(indent+1)_"$$$BNFCOMMIT(subElement,ParentElement)")
         If copyMode=1 $$$WRITECR($$$Tab(indent+1)_"$$$BNFCOMMITCOPY(subElement,ParentElement)")
+        $$$WRITECR($$$Tab(indent+1)_"set ok=1")
+        $$$WRITECR($$$Tab(indent)_"} else {")
+        $$$WRITECR($$$Tab(indent+1)_"$$$BNFROLLBACK(subElement)")
+        $$$WRITECR($$$Tab(indent+1)_"set ok="_rollbackReturns)
+        $$$WRITECR($$$Tab(indent)_"}")
+        if needsDebug $$$WRITECR($$$Tab(indent)_"$$$DEBUGMethodEnd")
+        $$$WRITECR($$$Tab(indent)_"quit ok")
     }
-	$$$WRITECR($$$Tab(indent+1)_"set ok=1")
-	$$$WRITECR($$$Tab(indent)_"} else {")
-	If needsTransation $$$WRITECR($$$Tab(indent+1)_"$$$BNFROLLBACK(subElement)")
-	$$$WRITECR($$$Tab(indent+1)_"set ok="_rollbackReturns)
-	$$$WRITECR($$$Tab(indent)_"}")
-	If needsDebug $$$WRITECR($$$Tab(indent)_"$$$DEBUGMethodEnd")
-	$$$WRITECR($$$Tab(indent)_"quit ok")
+    else {
+     	;$$$WRITECR($$$Tab(indent)_"if done {")
+        ;$$$WRITECR($$$Tab(indent+1)_"set ok=1")
+        ;$$$WRITECR($$$Tab(indent)_"} else {")
+        ;$$$WRITECR($$$Tab(indent+1)_"set ok="_rollbackReturns)
+        ;$$$WRITECR($$$Tab(indent)_"}")
+        if +rollbackReturns=1 {
+            $$$WRITECR($$$Tab(indent)_"set ok=1")
+        } else {
+            $$$WRITECR($$$Tab(indent)_"set ok=$s(done:1,1:"_+rollbackReturns_")")
+        }
+        If needsDebug $$$WRITECR($$$Tab(indent)_"$$$DEBUGMethodEnd")
+        $$$WRITECR($$$Tab(indent)_"quit ok")
+    }
 }
 
 Method NewMethod(Name As %String, Element As PXW.DEV.Element) As %Dictionary.MethodDefinition

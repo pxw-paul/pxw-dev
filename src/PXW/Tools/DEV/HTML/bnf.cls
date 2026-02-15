@@ -5,12 +5,6 @@ Class PXW.Tools.DEV.HTML.bnf Extends PXW.Tools.DEV.HTML.output
 
 Property Analyser As PXW.DEV.BNF.Analyse.COS;
 
-/// Array of the items to add to an index, use the AddToIndex and NextIndexItems to access
-/// 
-Property Index As %String [ MultiDimensional, Private ];
-
-Property IndexError As %String [ MultiDimensional, Private ];
-
 /// Set this to put the paths in the tooltip (useful for debugging)
 Property showPaths As %Boolean [ InitialExpression = 0 ];
 
@@ -81,51 +75,6 @@ Method OutputKeywordCommentAsDocumentation(Element As PXW.DEV.Element, Output co
     ;*/
 }
 
-Method AddToIndex(Name As %String, Type As %String, Anchor As %String) As %Status
-{
-    Set data=$LISTBUILD(Name,Type,Anchor)
-    Set ..Index("Name",$$$UPPER(Name)_"||"_Type)=data
-    Set ..Index("Type",Type_"||"_$$$UPPER(Name))=data
-    Set ..Index("Seq",$INCREMENT(..Index("Seq")))=data
-    Quit $$$OK
-}
-
-Method AddToIndexError(Name As %String, Error As %String) As %Status
-{
-    If Name'="" {
-        Set data=$LISTBUILD(Error)
-        Set ..IndexError("Name",Name)=data
-    }
-    Quit $$$OK
-}
-
-/// Call in a loop using byref parameters to get the index out
-/// while x.NextIndexItem(.name,.type) {
-/// 
-/// }
-Method NextIndexItemByName(ByRef Name As %String = "", ByRef Type As %String = "", ByRef Anchor As %String = "", ByRef Error As %String = "") As %Boolean
-{
-    Set key=$GET(..Index("NameKey"))
-    Set key=$ORDER(..Index("Name",key),1,data)
-    If key'="" {
-        Set Name=$LISTGET(data,1),Type=$LISTGET(data,2),Anchor=$LISTGET(data,3)
-        Set Error=$GET(..IndexError("Name",Name))
-    }
-    Set ..Index("NameKey")=key
-    Quit (key'="")
-}
-
-/// Output the html directly to destination. No escaping or other formatting is done.
-Method output2(html As %String, newLine As %Boolean = 0)
-{
-	If ..WriteMode {
-		If html'="" Write html If newLine Write !
-		;s ^PXW("out",$i(^PXW))=html
-	} Else {
-		Set ..htmlout=..htmlout_html	
-	}
-}
-
 Method begin()
 {
     ;s %outputhtml=""
@@ -148,38 +97,8 @@ Method middle(element As PXW.DEV.Element)
 
 Method writeElement(element As PXW.DEV.Element)
 {
-    #dim a as PXW.DEV.Atom
-    #dim cref as PXW.DEV.Element
-    /* CDEF */
     $$$DEBUGMethodBegin
     Set oldXMLPath=..XMLPath
-    Do ..GenericRedirect(element)
-
-    For  {
-		Set a=element.partsGetNext(.akey)
-		Quit:akey=""
-
-		If a.%IsA("PXW.DEV.Atom") {
-            ; some very basic atoms we can deal with in a common way across all languages
-            Set type=$PIECE(a.type,":",1)
-            If type="Keyword" {
-            	Do ..wrapAtomHTML(a,"<span class="""_$$$classKeyword_""">","</span>")
-            } ElseIf type="CDEFKeyword" {
-            	Do ..wrapAtomHTML(a,"<span class="""_$$$classProgramKeyword_""">","</span>")
-            } ElseIf type="String" {
-                Do ..wrapInnerAtomHTML(a,"<span class="""_$$$classString_""">","</span>")
-            } ElseIf type="Number" {
-                Do ..wrapAtomHTML(a,"<span class="""_$$$classNumber_""">","</span>")
-            } ElseIf type="ERROR" {
-                Do ..wrapAtomHTML(a,"<span class="""_$$$classError_""">","</span>")
-                Do ..AddToIndexError(..ThisMethod,a.value)
-            }
-
-            Do:..showPaths ..wrapAtomHTML(a,"<span title="""_+a_":"_element.%ClassName(1)_":"_a.type_""">","</span>")
- 
-		}
-	}
-
     Do ##super(.element)
     Set ..XMLPath=oldXMLPath 
     $$$DEBUGMethodEnd

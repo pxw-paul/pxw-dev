@@ -102,6 +102,7 @@ class_property_attribute            ::= attribute_Aliases
 
 
 class_relationship                  ::= 'relationship' property_name  [ class_property_type ]  class_property_attributes ';'
+/*
 relationship_attributes             ::= '[' relationship_attribute ( ',' relationship_attribute )* ']'
 relationship_attribute             ::= attribute_Cardinality
                                         | attribute_Final
@@ -111,6 +112,7 @@ relationship_attribute             ::= attribute_Cardinality
                                         | attribute_SQLFieldname
                                         | attribute_Private
                                         | attribute_OnDelete
+*/
 
 class_attribute                     ::= attribute_Abstract
                                         | attribute_ClassType
@@ -170,12 +172,13 @@ class_method                        ::= 'method' method_name '(' [ formal_spec_l
 method_name                         ::= class_item_identifier
 method_reference                    ::= class_item_identifier
 formal_spec_list                    ::= formal_spec_item( ',' formal_spec_item )*
-variable                            ::= variable_identifier
-variable_set                        ::= variable_identifier
-
 formal_spec_item                    ::= [ formal_spec_mode ] variable_set ['...'] [ as_type_class_reference ] [ parameter_default_value ]
 formal_spec_mode                    ::= 'byref' | 'output' | 'byval'
 as_type_class_reference             ::= 'as' type_class_reference
+
+variable_set                        ::= variable_identifier
+
+
 method_attribute_list               ::= '[' method_attribute ( ',' method_attribute )* ']'
 method_attribute                    ::= attribute_Abstract
                                         | attribute_ClientName
@@ -247,6 +250,7 @@ storage_name                        ::= class_item_identifier
 storage_xml                         ::= (xml_data)*
  
 /* a good idea at the time, but ended up being WAY too complex. It may be better to leave it as xml and deal with it by the caller */
+/*
 storage_xml_complex                         ::= ( storage_xml_data 
                                             | storage_xml_data_location 
                                             | storage_xml_default_data 
@@ -344,6 +348,7 @@ storage_xml_sqlmap_sub_next_code    ::= xml_tag_s_a 'NextCode' xml_tag_s_b cos_c
 storage_xml_sqlmap_rowidspec        ::= xml_tag_s_a 'RowIdSpec' 'name' '=' string xml_tag_s_b (storage_xml_sqlmap_row_expression | storage_xml_sqlmap_row_field)* xml_tag_e_a 'RowIdSpec' xml_tag_e_b
 storage_xml_sqlmap_row_expression   ::= xml_tag_s_a 'Expression' xml_tag_s_b cos_expression_storage xml_tag_e_a 'Expression' xml_tag_e_b
 storage_xml_sqlmap_row_field        ::= xml_tag_s_a 'Field' xml_tag_s_b identifier xml_tag_e_a 'Field' xml_tag_e_b
+*/
 
 global                              ::= cos_expression_sql /* '^' identifier [ '(' string ')' ] */
 

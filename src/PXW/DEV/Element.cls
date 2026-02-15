@@ -59,6 +59,18 @@ Method partsRemove(key As %Integer)
 	If key'="" Kill %PXWparts(+$THIS,key)
 }
 
+Method partsReplace(oldElement As PXW.DEV.Element, newElement As PXW.DEV.Element) As %Boolean
+{
+	set this=+$THIS,replaced=0
+	for i=1:1:$get(%PXWparts(this)) {
+		set part=%PXWparts(this,i)
+		if part=oldElement {
+			set %PXWparts(this,i)=newElement,replaced=1
+		}
+	}
+	quit replaced
+}
+
 Method %OnClose() As %Status
 {
 	Kill:$DATA(%PXWparts(+$THIS)) %PXWparts(+$THIS)

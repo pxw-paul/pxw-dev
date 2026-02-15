@@ -65,13 +65,13 @@ cos_directive                       ::= '#' ( cos_directive_define
                                         | cos_directive_classcontext
                                         | cos_directive_generator
                                         | cos_directive_classmethod
+                                        | cos_directive_import
                                         )
 
-cos_directive_defonearg             ::= 'def1arg' cos_directive_define_name [ array_parameter_list ] [cos_directive_define_subst] /* text_to_eol_continue */
-cos_directive_define                ::= 'define' cos_directive_define_name [ array_parameter_list ] [cos_directive_define_subst]  /*[ text_to_eol_continue]*/
+cos_directive_defonearg             ::= 'def1arg' cos_directive_define_name [ array_parameter_list ] [cos_directive_define_subst]
+cos_directive_define                ::= 'define' cos_directive_define_name [ array_parameter_list ] [cos_directive_define_subst]
 cos_directive_define_name           ::= macro_identifier
 cos_directive_define_subst          ::= [ command_list_eol_continue | expression_list ] text_to_eol_continue 
-cos_directive_define_subst_old      ::= [command_list_eol | expression_list ] text_to_eol_continue 
 cos_directive_dim                   ::= 'dim' cos_directive_dim_item (',' cos_directive_dim_item )* /*Studio and VSCode do not allow multiple dims on one line, but the compiler does not complain (unless there is an =) and some intersystems code has it! %Installer.Invoke  */
 cos_directive_dim_item              ::= variable_set [(',' variable_set )*] [ 'as' [('array' | 'list') 'of'] class_reference ] [ '=' dim_expression ] 
 cos_directive_else                  ::= 'else'
@@ -93,6 +93,7 @@ cos_directive_include_name          ::= include_identifier
 cos_directive_classcontext          ::= 'classcontext' class_reference
 cos_directive_generator             ::= 'generator'
 cos_directive_classmethod           ::= 'classmethod' object_member_identifier
+cos_directive_import                ::= 'import' identifier
 
 include_identifier                  ::= 'regexp:(\%|[a-zA-Z])[a-zA-Z0-9\.]*'
 
@@ -156,7 +157,8 @@ cos_command                         ::=  set_command
                                          | mpv_command
                                          | ZZ_COMMAND
 
-command_list                        ::= cos_command ( cos_command )*
+/*command_list                        ::= cos_command ( cos_command )**/
+
 command_list_eol                    ::= cos_command_or_macro ( cos_command_or_macro )* /* needs to stop at end of line */
 /* continue version is only called from macro definition (rename?) so does not worry about macros too much */
 command_list_eol_continue           ::= cos_command ( cos_command )* /* needs to stop at end of line and look for ##continue*/
@@ -248,9 +250,10 @@ special_intrinsic                   ::= case_function_call
                                         | vector_function_call
 general_intrinsic                   ::= any_keyword function_parameter_list  [ object_chain ]
 
-
+/*
 intrinsicfncall_parameter_list      ::= open_bracket [expression] ( ',' [expression]  )*  close_bracket
 intrinsicfncall_parameter           ::= expression
+*/
 
 function_parameter_list             ::= open_bracket [ function_parameter? ( ',' function_parameter? )* ] ['...'] close_bracket
 function_parameter_list_items       ::= [ function_parameter? ( ',' function_parameter? )* ] ['...']
@@ -267,10 +270,11 @@ special_intrinsic_set               ::= extract_function_call_set
                                         | mv_function_set
 general_intrinsic_set               ::= any_keyword function_parameter_list  [ object_chain ]
  
-
+/*
 parameter_list                      ::= '(' [ parameter_values ] ')'
 parameter_values                    ::= one_parameter_value ( ',' [ one_parameter_value ] )*
 one_parameter_value                 ::= ( [ '.' ] variable ) | ( variable '...' ) | expression
+*/
 
 macro_expression                    ::= expression_function_call | safeexpression_function_call
 
@@ -413,10 +417,8 @@ variable_identifier                 ::= 'regexp:(\%|[a-zA-Z])[a-zA-Z0-9]*' /* % 
 variable_identifier_pattern         ::= (['%'] | '?1A') '?AN'   /* EXPERIMENT % or A followed by AN* */
 array_parameter_list                ::= open_bracket  expression ( ',' expression )*  close_bracket
 
-object_chain99                        ::= '.' object_chain_item ( '.' object_chain_item )* 
 object_chain                        ::= '.' object_member_identifier [ function_parameter_list ] [ object_chain ]
 object_chain_no_dot                 ::= object_member_identifier [ function_parameter_list ] [ object_chain ]
-object_dot                          ::= '.' /* this exists simply so that extra checks can be coded on the generated method to check for white*/
 object_chain_item                   ::= object_member_identifier [ function_parameter_list ] 
 object_member_identifier            ::= 'regexp:(\%|\#|[a-zA-Z])[a-zA-Z0-9\.]*'
 
@@ -449,7 +451,7 @@ break_extend                        ::= expression
 break_flag                          ::= expression
 
 close_command                       ::= ('close' | 'c') [ post_conditional ]  close_item (',' close_item)*
-close_item                          ::= open_device [ ':' close_device_parameters ]
+close_item                          ::= close_device [ ':' close_device_parameters ]
 close_device                        ::= expression
 close_device_parameters             ::= ( '(' close_device_parameter_list ')' ) | one_close_device_parameter
 close_device_parameter_list         ::= ( one_close_device_parameter ( ':' one_close_device_parameter )* )
@@ -598,8 +600,10 @@ set_command                         ::= ('set' | 's') [ post_conditional ] set_i
 set_item_list                       ::= set_item ( ',' set_item )*
 set_item                            ::= (( set_value_expression | ('(' set_value_expression ( ',' set_value_expression )* ')'  )) '=' set_expression) | simple_indirection /* PXW deal with set @x */
 set_item_single                     ::= lvalue_expression
+/*
 set_item_varlist                    ::= '(' set_item_single_list ')'
 set_item_single_list                ::= set_item_single ( ',' set_item_single )*
+*/
 set_value_expression                   ::= this_object_set
                                         | variable_set
                                         | macrocall
@@ -664,11 +668,12 @@ mpv_command                         ::= ('mvprint' | 'mvp') [ post_conditional ]
 
 
 read_command                        ::= ('read' | 'r') [ post_conditional ] read_argument ( ',' read_argument )*
-read_argument                       ::= read_format_character /* _set PXW removed set */
+read_argument                       ::= read_format_character 
                                         | read_prompt
                                         | read_single_char
                                         | read_length
-read_format_character_set           ::= read_format_character+
+/*read_format_character_set           ::= read_format_character+*/
+
 read_format_character               ::= '!'
                                         | '#'
                                         | ('?' expression)
@@ -684,7 +689,6 @@ read_length                         ::= lvalue_expression [ '#' expression ] [ '
 
 xecute_command                      ::= ( 'xecute' | 'x') [ post_conditional ] xecute_args
 xecute_args                         ::= one_xecute_arg ( ',' one_xecute_arg )*
-my_one_xecute_arg                      ::= expression [ post_conditional] 
 one_xecute_arg                      ::= ( xecute_arg_with_params | xecute_arg_no_params ) [ post_conditional ]
 xecute_arg_with_params              ::= '(' xecute_command_text ',' xecute_param_list ')'
 xecute_arg_no_params                ::= xecute_command_text
@@ -777,7 +781,7 @@ extract_function_call_set           ::= ('extract' | 'e') open_bracket set_value
 piece_function_call                 ::= ('piece' | 'p') open_bracket expression ',' expression [ ',' star_parameter [ ',' star_parameter ] ] close_bracket
 piece_function_call_set             ::= ('piece' | 'p') open_bracket set_value_expression ',' expression [ ',' star_parameter [ ',' star_parameter ] ] close_bracket
 
-listbuild_function_call             ::= ('listbuild' | 'lb') open_bracket  expression (',' expression)* close_bracket
+/*listbuild_function_call             ::= ('listbuild' | 'lb') open_bracket  expression (',' expression)* close_bracket*/
 listbuild_function_call_set         ::= ('listbuild' | 'lb') open_bracket  set_value_expression (',' variable_set)* close_bracket
 
 listupdate_function_call            ::= ('listupdate' | 'lu') open_bracket  expression ',' expression (',' [ expression ':' expression] )* close_bracket
@@ -812,7 +816,7 @@ zobjclassmethod_function_call       ::= 'zobjclassmethod' open_bracket classmeth
 
 select_function_call                ::= ('select' | 's') '(' select_clauses ')' [ object_chain ] /* who returns an object from a $s? */
 select_clauses                      ::= select_clause ( ',' select_clause )*
-select_clause_default               ::= '1' ':' expression
+/*select_clause_default               ::= '1' ':' expression*/
 select_clause                       ::= expression ':' expression
 
     /* NO IDEA ABOUT MV, guessing!, from docs: SET $MV(dynval,-1::1)="" // appends 2nd delimiter */

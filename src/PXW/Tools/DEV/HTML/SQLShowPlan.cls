@@ -18,12 +18,13 @@ Method writeSQLDirectTableExpand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV
                 Set schemaE=tablenameE.findFirstElementByType("SchemaName",0)
                 Set tableE=tablenameE.findFirstElementByType("QualifiedIdentifier",0)
                 If $ISOBJECT(schemaE),$ISOBJECT(tableE) {
+                    set fullname=schemaE.ToString(0)_"."_tableE.ToString(0)
                     Set sql=..GetViewSQL(schemaE.ToString(0),tableE.ToString(0))
                     If sql'="" {
-                        Set subElement=..SubSQLToEmbeddedViewElement(sql)
+                        Set subElement=..SubSQLToEmbeddedViewElement(sql,tablenameE)
                         If $ISOBJECT(subElement) {
                             Do ..wrapElementHTML(element,"<div class='EmbeddedSQLcontainer'>","</div>")
-                            Do element.AddPart(subElement)
+                            Do element.partsReplace(tablenameE,subElement) 
                         }
                     }
                 }
@@ -35,21 +36,50 @@ Method writeSQLDirectTableExpand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV
 
 Method writeSQLEmbeddedView(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="EmbeddedView")
 {
-    Do ..wrapElementHTML(element,"<br><pre class='EmbeddedSQLSub'>","</pre>")
+     Do ..wrapElementHTML(element,"<br><pre class='EmbeddedSQLSub'>","</pre>")
     Quit ""
 }
 
-Method SubSQLToEmbeddedViewElement(sql As %String) As PXW.DEV.BNF.Elements.SQL
+Method SubSQLToEmbeddedViewElement(sql As %String, tablenameElement As PXW.DEV.Element) As PXW.DEV.BNF.Elements.SQL
 {
 
     ;n %NS s %NS=$znspace
 	Set parser=##class(PXW.DEV.BNF.Run.SQL).%New()
 	Set parser.stream=##class(PXW.DEV.InputStream).NewString(sql)
 	Set Element=##class(PXW.DEV.BNF.Elements.SQL).%New("EmbeddedView")
-	Set parsed=parser.SqlProgram(Element)
+   
+    ; insert some code that is
+    ; ( /* tablename */
+    set openbracket=parser.newAtom("punctuation","( ")
+    do Element.AddPart(openbracket)
+    set opencomment=parser.newAtom("blockcomment","/*")
+    do Element.AddPart(opencomment)
+    do Element.AddPart(tablenameElement)
+    set closecomment=parser.newAtom("blockcomment"," */")
+    do Element.AddPart(closecomment)
+
+  
+    set selectE=##class(PXW.DEV.BNF.Elements.SQL).%New("dummy")
+    Set parsed=parser.SqlProgram(selectE)
     If parsed {
 		Set formatter=##class(PXW.DEV.BNF.Format.SQL).%New()
-		Do formatter.formatElement(Element)
+		Do formatter.formatElement(selectE)
+        do Element.AddPart(selectE)
+
+        ; now add
+        ; /* tablename */ )
+        set parser.whitespace="" ; clear current whitespace (the newAtom function uses it)
+        set parser.whitespace=parser.newAtom("whitespace",parser.stream.eolChar)
+        set opencomment=parser.newAtom("blockcomment","/*")
+        do Element.AddPart(opencomment)
+        do Element.AddPart(tablenameElement)
+        set closecomment=parser.newAtom("blockcomment"," */")
+        do Element.AddPart(closecomment)
+        set closebracket=parser.newAtom("punctuation"," )")
+        do Element.AddPart(closebracket)
+
+    } else {
+        set Element=""
     }
     Quit Element
 }
@@ -250,19 +280,24 @@ Method writeSQLPlanTableIndex(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Com
                         }
                     }
                 }
+                ; for all the keys on the index work out which ones are given and highlight them
                 Set html="",sep=""
                 For i=1:1:$LENGTH(properties,",") {
                     Set item=$PIECE(properties,",",i)
-                    If $DATA(givenidents($$$UPPER(item))) {
-                        Set html=html_sep_"<b>"_..html(item)_"</b>"
+                    If item'="",$DATA(givenidents($$$UPPER(item))) {
+                        Set html=html_sep_"<b>"_$$$HTMLENCODE(item)_"</b>"
                     } Else {
-                        Set html=html_sep_..html(item)
+                        Set html=html_sep_$$$HTMLENCODE(item)
                     }
                     Set sep=","
                 }
-                Do ..wrapElementHTML(indexE,"","<span class="_$$$classNarrative_"> /* "_html_" */ </span>")
+                if html'="" {
+                    Do ..wrapElementHTML(indexE,"","<span class="_$$$classNarrative_"> /* "_html_" */ </span>")
+                }
             } Else {
-                Do ..wrapElementHTML(indexE,"","<span class="_$$$classNarrative_"> /* "_..html(properties)_" */ </span>")
+                if properties'="" {
+                    Do ..wrapElementHTML(indexE,"","<span class="_$$$classNarrative_"> /* "_$$$HTMLENCODE(properties)_" */ </span>")
+                }
             }
         }
     }

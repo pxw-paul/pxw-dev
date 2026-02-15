@@ -92,9 +92,9 @@ ClassMethod HREFTo(Routine As %String = "") As %String
 	}
 
 	Set sep="&"
-	Set href=href_sep_"R="_..EscapeURL(rtn)
-	If lbl'="" Set href=href_sep_"L="_..EscapeURL(lbl)
-	If plus'="" Set href=href_sep_"P="_..EscapeURL(plus)
+	Set href=href_sep_"R="_$$$URLENCODE(rtn)
+	If lbl'="" Set href=href_sep_"L="_$$$URLENCODE(lbl)
+	If plus'="" Set href=href_sep_"P="_$$$URLENCODE(plus)
 	If (lbl'="") || (lbl="" && plus'="") Set href=href_"#Bookmark"
 	Quit href
 }

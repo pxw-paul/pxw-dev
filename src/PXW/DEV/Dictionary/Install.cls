@@ -139,7 +139,9 @@ ClassMethod GenAll()
 ClassMethod ExportAll()
 {
     Set dt=$TRANSLATE($ZDATETIME($HOROLOG,3),":- ","")
-    Do $SYSTEM.OBJ.Export("PXW.*.CLS,PXW.*.INC","/home/irisowner/dev/debug/PXWALLINC_"_dt_".xml")
+    Set file="/home/irisowner/dev/debug/PXWALLINC_"_dt_".xml"
+    Do $SYSTEM.OBJ.Export("PXW.*.CLS,PXW.*.INC",file)
+    w !,"File="_file,!
 }
 
 ClassMethod ExportGEN()

@@ -38,9 +38,9 @@ ClassMethod ClearCache() [ CodeMode = objectgenerator ]
 {
     ;
     ; create the code that clears the cache that can be called from elsewhere
-    Do %code.WriteLine($CHAR(9)_"k ^PXW.Cache(""CDEF""),^PXW.Cache(""CDEFSQL"")")
+    Do %code.WriteLine($CHAR(9)_"k ^PXW.Cache(""CDEF""),^PXW.Cache(""CDEFSQL""),^PXW.Cache(""CDEFPROC"")")
     ; actually clear the cache now (on compile)
-    Kill ^PXW.Cache("CDEF"),^PXW.Cache("CDEFSQL")
+    Kill ^PXW.Cache("CDEF"),^PXW.Cache("CDEFSQL"),^PXW.Cache("CDEFPROC")
     Quit $$$OK
 }
 
@@ -145,11 +145,9 @@ Method ListClassDetailsLike(ClassLike As %String, escape As %String = "", listHi
 	Quit rs
 }
 
-Method CacheAll(ClassNameLike As %String, LoggerClass As %String = "")
+Method CacheAll(ClassNameLike As %String)
 {
-    ;If LoggerClass'="" $$$LOGNew(LoggerClass)
-    ;$$$DEBUGtoLOG
-    Set rs=..ListClassDetailsLike(.ClassNameLike)
+    Set rs=..ListClassDetailsLike(ClassNameLike)
     While rs.%Next() {
         Set cname=rs.%Get("Name") 
         Set ts=rs.%Get("TimeChanged") 
@@ -351,6 +349,7 @@ Method ListMethodDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierRS
  	Set server=..AtelierSettings.ServerName
 	Set sql=""
     Set sql=sql_"SELECT parent,Name,ReturnType,Origin,Stub,' ' || FormalSpecParsed as fsp, CodeMode" ; stub is undocumented but it seems to be "source name.method name.source type (i=index,a=property)
+    Set sql=sql_" ,parent->SqlSchemaName,SqlName "
     Set sql=sql_" FROM %Dictionary.CompiledMethod "
     Set sql=sql_" WHERE parent=?"
     Set parameters($INCREMENT(parameters))=ClassName
@@ -372,8 +371,11 @@ Method CacheListMethodDetails(ClassName As %String)
         Set rt=rs.%Get("ReturnType")
         Set fs=$e(rs.%Get("fsp"),2,*) ; remove leading " " because atelier does not like the encoded list (in v2)
         Set codemode=rs.%Get("CodeMode")
-        Set data=$LISTBUILD(mname,rt,rs.%Get("Origin"),stub,fs,codemode)
+        Set sqlschema=rs.%Get("SqlSchemaName")
+        set sqlname=rs.%Get("SqlName")
+        Set data=$LISTBUILD(mname,rt,rs.%Get("Origin"),stub,fs,codemode,sqlschema,sqlname)
         Set ^PXW.Cache("CDEF",%NS,$$$UPPER(cn),"GMD",$$$UPPER(mname))=data
+        if sqlschema'="",sqlname'="" Set ^PXW.Cache("CDEFPROC",%NS,$$$UPPER(sqlschema),$$$UPPER(sqlname))=$lb(cn,mname)
     }
 }
 
@@ -412,6 +414,7 @@ Method ListQueryDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierRS
  	Set server=..AtelierSettings.ServerName
 	Set sql=""
     Set sql=sql_"SELECT parent,Name,Type,Origin " ; stub is undocumented but it seems to be "source name.method name.source type (i=index,a=property)
+    Set sql=sql_" ,parent->SqlSchemaName,SqlName "
     Set sql=sql_"FROM %Dictionary.CompiledQuery "
     Set sql=sql_"WHERE parent=?"
     Set parameters($INCREMENT(parameters))=ClassName
@@ -430,8 +433,11 @@ Method CacheListQueryDetails(ClassName As %String)
         Set cn=rs.%Get("parent")
         Set mname=rs.%Get("Name")
         Set type=rs.%Get("Type")
-        Set data=$LISTBUILD(mname,type,rs.%Get("Origin"))
+        Set sqlschema=rs.%Get("SqlSchemaName")
+        set sqlname=rs.%Get("SqlName")
+        Set data=$LISTBUILD(mname,type,rs.%Get("Origin"),sqlschema,sqlname)
         Set ^PXW.Cache("CDEF",%NS,$$$UPPER(cn),"GQD",$$$UPPER(mname))=data
+        if sqlschema'="",sqlname'="" Set ^PXW.Cache("CDEFPROC",%NS,$$$UPPER(sqlschema),$$$UPPER(sqlname))=$lb(cn,mname)
     }
 }
 
@@ -549,6 +555,8 @@ Method GetMethodDetails(ClassName As %String, Name As %String, Output ReturnType
     Set Stub=$LISTGET(data,4)
     Set FormalSpecParsed=$LISTGET(data,5)
     Set CodeMode=$LISTGET(data,6)
+    Set SQLSchemaName=$LISTGET(data,7)
+    Set SQLName=$LISTGET(data,8)
 
     If data="" Quit 0
 	Quit 1
@@ -740,7 +748,7 @@ Method GetClassNameFromTableName(SQLTableName As %String, OwningClassName As %St
         Set schema=$PIECE(OwningClassName,".",1,*-1)
         Set schema=$TRANSLATE(schema,".","_")
         Set table=schema_"."_table
-    }
+    } 
 
     ; use a local var as a cache, so that the next time a different process looks at
     ; for the table name it might have been set up
@@ -774,11 +782,37 @@ Method GetClassNameFromStoredProc(SQLProcName As %String, Output method As %Stri
 {
     
     ; simple formula to start with
-    Set cn=$PIECE(SQLProcName,"_",1,*-1)
-    Set cn=$TRANSLATE(cn,"_",".")
-    Set classname=..GetClassName(cn)
-    Set mn=$PIECE(SQLProcName,"_",*)
-    Set method=mn
+    ;Set cn=$PIECE(SQLProcName,"_",1,*-1)
+    ;Set cn=$TRANSLATE(cn,"_",".")
+    ;Set classname=..GetClassNameFromTableName(cn) ; might not be a table but we can treat as such
+    ;Set mn=$PIECE(SQLProcName,"_",*)
+    ;Set method=mn
+    New %NS Set %NS=..Namespace.Name
+    s schema=$$$UPPER($P(SQLProcName,".",1))
+    s name=$$$UPPER($P(SQLProcName,".",2))
+    i schema'="",name'="" {
+        ; use a local var as a cache, so that the next time a different process looks
+        ; for the table name it might have been set up
+        If '$DATA(%PXWSQLProc(schema,name)) {
+            set data=$G(^PXW.Cache("CDEFPROC",%NS,schema,name))
+            if data="" {
+                ; when can we refresh cache? 
+                ; tricky since we can guess the class its in but not really be sure
+                set classname=..GetClassNameFromTableName(schema_"."_$p(name,"_",1),"")
+                If classname'="" {
+                    Do ..CacheIfNecessary(classname,"")
+                    set data=$G(^PXW.Cache("CDEFPROC",%NS,schema,name))
+                }
+            }
+            Set classname=$lg(data,1),method=$lg(data,2)
+            Set %PXWSQLProc(schema,name)=$lb(classname,name)
+        } Else {
+            set data=$G(^PXW.Cache("CDEFPROC",%NS,schema,name))
+            Set classname=$lg(data,1),method=$lg(data,2)
+        }
+    } else {
+        s classname="",method=""
+    }
 	Quit classname
 }
 

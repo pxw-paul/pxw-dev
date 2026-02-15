@@ -1,6 +1,6 @@
 Include (PXW.Debuggers.Macros, PXW.Tools.Styles.macros)
 
-Class PXW.Tools.DEV.HTML.output Extends %RegisteredObject
+Class PXW.Tools.DEV.HTML.output Extends PXW.DEV.BNF.processor
 {
 
 /// Name of the main thing being written
@@ -35,7 +35,45 @@ Property preI As %String [ MultiDimensional ];
 /// complicated structure, best to use wrapInnerAtomHTML method to update
 Property postI As %String [ MultiDimensional ];
 
-Property redir As %String [ MultiDimensional ];
+/// Array of the items to add to an index, use the AddToIndex and NextIndexItems to access
+/// 
+Property Index As %String [ MultiDimensional, Private ];
+
+Property IndexError As %String [ MultiDimensional, Private ];
+
+Method AddToIndex(Name As %String, Type As %String, Anchor As %String) As %Status
+{
+    Set data=$LISTBUILD(Name,Type,Anchor)
+    Set ..Index("Name",$$$UPPER(Name)_"||"_Type)=data
+    Set ..Index("Type",Type_"||"_$$$UPPER(Name))=data
+    Set ..Index("Seq",$INCREMENT(..Index("Seq")))=data
+    Quit $$$OK
+}
+
+Method AddToIndexError(Name As %String, Error As %String) As %Status
+{
+    If Name'="" {
+        Set data=$LISTBUILD(Error)
+        Set ..IndexError("Name",Name)=data
+    }
+    Quit $$$OK
+}
+
+/// Call in a loop using byref parameters to get the index out
+/// while x.NextIndexItem(.name,.type) {
+/// 
+/// }
+Method NextIndexItemByName(ByRef Name As %String = "", ByRef Type As %String = "", ByRef Anchor As %String = "", ByRef Error As %String = "") As %Boolean
+{
+    Set key=$GET(..Index("NameKey"))
+    Set key=$ORDER(..Index("Name",key),1,data)
+    If key'="" {
+        Set Name=$LISTGET(data,1),Type=$LISTGET(data,2),Anchor=$LISTGET(data,3)
+        Set Error=$GET(..IndexError("Name",Name))
+    }
+    Set ..Index("NameKey")=key
+    Quit (key'="")
+}
 
 Method wrapInnerAtomHTML(atom As PXW.DEV.Atom, pre As %String, post As %String)
 {
@@ -85,27 +123,36 @@ Method resetWrappers()
 	Kill ..pre,..post,..preI,..postI
 }
 
-Method html(string As %String) As %String
-{
-	Quit $ZCONVERT(string,"O","HTML")
-}
-
 Method writeElement(element As PXW.DEV.Element)
 {
 	$$$DEBUGMethodBegin
-	For i=1:1:+$GET(..pre(+element)) Do ..output($GET(..pre(+element,i)))
+    Do ..processSpecificElement(element)
+	
+	;For i=1:1:+$GET(..pre(+element)) Do ..output($GET(..pre(+element,i)))
+	i +$GET(..pre(+element)) {
+		s out=""
+		For i=1:1:..pre(+element) set out=out_$GET(..pre(+element,i))
+		do ..output(.out)
+	}
 
 	For  {
 		Set a=element.partsGetNext(.akey)
 		Quit:akey=""
 		
 		If a.%IsA("PXW.DEV.Element") {
-			Do ..writeElement(a)
+			Do ..writeElement(.a)
 		} Else {
-			Do ..writeAtom(a)
+			Do ..writeAtom(.a)
 		}
 	}
-	For i=+$GET(..post(+element)):-1:1 Do ..output($GET(..post(+element,i)))
+	
+	;For i=+$GET(..post(+element)):-1:1 Do ..output($GET(..post(+element,i)))
+	i +$get(..post(+element)) {
+		set out=""
+		For i=..post(+element):-1:1 set out=out_$GET(..post(+element,i))
+		do ..output(.out)
+	}
+	
 	$$$DEBUGMethodEnd
 }
 
@@ -130,9 +177,24 @@ Method writeAtom(atom As PXW.DEV.Atom, preValue As %String = "", postValue As %S
 			Set postValue=postValue_"</span>"
 		}
 	}
-	
-	Set out=""
-    /*For i=1:1:+$GET(..pre(+atom)) Set out=out_$GET(..pre(+atom,i))
+
+    ; some very basic atoms we can deal with in a common way across all languages
+ 	Set type=$PIECE(atom.type,":",1)
+	If type="Keyword" {
+		Do ..wrapAtomHTML(.atom,"<span class="""_$$$classKeyword_""">","</span>")
+	} ElseIf type="CDEFKeyword" {
+		Do ..wrapAtomHTML(.atom,"<span class="""_$$$classProgramKeyword_""">","</span>")
+	} ElseIf type="String" {
+		Do ..wrapInnerAtomHTML(.atom,"<span class="""_$$$classString_""">","</span>")
+	} ElseIf type="Number" {
+		Do ..wrapAtomHTML(.atom,"<span class="""_$$$classNumber_""">","</span>")
+	} ElseIf type="ERROR" {
+		Do ..wrapAtomHTML(.atom,"<span class="""_$$$classError_""">","</span>")
+		Do ..AddToIndexError(..ThisMethod,atom.value)
+	}
+
+	/*Set out=""
+    For i=1:1:+$GET(..pre(+atom)) Set out=out_$GET(..pre(+atom,i))
     Set out=out_preValue_..html(atom.start)
 	    For i=1:1:+$GET(..preI(+atom)) Set out=out_$GET(..preI(+atom,i))
 	    Set out=out_..html(atom.value)
@@ -151,153 +213,4 @@ Method writeAtom(atom As PXW.DEV.Atom, preValue As %String = "", postValue As %S
 	Write out
 }
 
-/*
-Method GenericRedirect(element As PXW.DEV.Element)
-{
-	$$$DEBUGMethodBegin
-    Set class=$$$UPPER(element.%ClassName(1))
-    Set etype=$$$UPPER(element.type)
-	set m=""
-	;zw class,etype
-	if class'="",etype'="",$d(..redir(class,etype)) {
-		f  {
-			s m=$o(..redir(class,etype,m))
-			q:m=""
-		    ;$$$DEBUG("Begin "_$CLASSNAME()_":"_$PIECE(element.type,":",1)_","_element.%ClassName(1)_","_m) 
-			d $METHOD($this,m,element)
-		    ;$$$DEBUG("End "_$CLASSNAME()_":"_$PIECE(element.type,":",1)_","_element.%ClassName(1)_","_m) 
-		}
-	}
-	$$$DEBUGMethodEnd
-}
-*/
-Method GenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator ]
-{
-    #dim meth as %Dictionary.CompiledMethod
-    Set opencurly="{",closecurly="}"
-    Set mkey=""
-
-    For  {
-        Set meth=%compiledclass.Methods.GetNext(.mkey)
-        Quit:mkey=""
-
-        If meth.ReturnType="PXW.DEV.BNF.Compilers.elementHandler" {
-            ; Method writeCOSThing(element As PXW.DEV.BNF.Elements.COS) AS  As PXW.DEV.BNF.Compilers.elementHandler(Type="Thing")
-			Set class=$PIECE(meth.FormalSpec,":",2)
-			If class'="" {
-				Set param=meth.ReturnTypeParams
-				Set seq=meth.SequenceNumber
-				If param'="" {
-					Set etypes=$TRANSLATE($PIECE(param,"=",2),"""","")
-					If etypes'="" {
-						For i=1:1:$LENGTH(etypes,",") {
-							Set etype=$PIECE(etypes,",",i)
-							; key by sequence for potential time saving - not implemented properly
-							;Set defseq=##class(%Dictionary.MethodDefinition).%OpenId(meth.Origin_"||"_meth.Name).SequenceNumber
-							;Set methodseq(class,(10000+defseq)_(10000+seq),etype,meth.Name)=meth
-							Set methods(class,etype,meth.Name)=meth
-						}
-					}
-				}
-			}
-		}
-	}
-    Do %code.WriteLine($CHAR(9)_"Set class=$$$UPPER($classname(element)) q:class=""""")
-    Do %code.WriteLine($CHAR(9)_"Set etype=$$$UPPER(element.type) q:etype=""""")
-    Do %code.WriteLine($CHAR(9)_"$$$DEBUGMethodBegin")
-	Do %code.WriteLine($CHAR(9)_"i '$d(..redir(class,etype)) {")
-	Set (class,etype,name)="",cif="If"
-	For  {
-		Set class=$ORDER(methods(class))
-		Quit:class=""
-
-		Do %code.WriteLine($CHAR(9)_cif_" class="""_$$$UPPER(class)_""" "_opencurly)
-		
-		Set ifcommand="If"
-		For  {
-			Set etype=$ORDER(methods(class,etype))
-			Quit:etype=""
-
-			; etype will contain the quotes
-			Do %code.WriteLine($CHAR(9,9)_ifcommand_" etype="""_$$$UPPER(etype)_""" "_opencurly)
-			
-			For  {
-				Set name=$ORDER(methods(class,etype,name),1,meth)
-				Quit:name=""
-				
-				Do %code.WriteLine($CHAR(9,9,9)_"do .."_meth.Name_"(.element)")
-			}
-			Do %code.WriteLine($CHAR(9,9)_closecurly)
-			Set ifcommand="Elseif"
-		}
-		; set flag to say that this type of thing does NOT have a redirect
-		Do %code.WriteLine($CHAR(9,9)_" else { s ..redir(class,etype)=0 }")
-		Do %code.WriteLine($CHAR(9)_closecurly)
-		Set cif="Elseif"
-    }
-	Do %code.WriteLine($CHAR(9)_"}")
-    Do %code.WriteLine($CHAR(9)_"$$$DEBUGMethodEnd")
-	
-	;zw methodseq("PXW.DEV.BNF.Elements.ClassDefinition"),methods("PXW.DEV.BNF.Elements.ClassDefinition")
-    Quit $$$OK
-}
-
-/*Method %OnNew() As %Status
-{
-	$$$DEBUGMethodBegin
-	Do ..GenericRedirectNew()
-	$$$DEBUGMethodEnd
-	Quit $$$OK
-}
-
-Method GenericRedirectNew() [ CodeMode = objectgenerator ]
-{
-    #dim meth as %Dictionary.MethodDefinition
-    Set opencurly="{",closecurly="}"
-    Set mkey=""
-
-    For  {
-        Set meth=%compiledclass.Methods.GetNext(.mkey)
-        Quit:mkey=""
-
-        If meth.ReturnType="PXW.DEV.BNF.Compilers.elementHandler" {
-            ; Method writeCOSThing(element As PXW.DEV.BNF.Elements.COS) AS  As PXW.DEV.BNF.Compilers.elementHandler(Type="Thing")
-			Set class=$PIECE(meth.FormalSpec,":",2)
-			If class'="" {
-				Set param=meth.ReturnTypeParams
-				If param'="" {
-					Set etypes=$TRANSLATE($PIECE(param,"=",2),"""","")
-					If etypes'="" {
-						For i=1:1:$LENGTH(etypes,",") {
-							Set etype=$PIECE(etypes,",",i)
-							Set methods(class,etype,meth.Name)=meth
-						}
-					}
-				}
-			}
-		} 
-	}
-	Set (class,etype,name)=""  ;,cif="If"
-	For  {
-		Set class=$ORDER(methods(class))
-		Quit:class=""
-		For  {
-			Set etype=$ORDER(methods(class,etype))
-			Quit:etype=""
-
-
-			; etype will contain the quotes			
-			;For  {
-			;	Set name=$ORDER(methods(class,etype,name),1,meth)
-			;	Quit:name=""
-			;	
-			;	Do %code.WriteLine($CHAR(9)_"s ..redir("""_$$$UPPER(class)_""","""_$$$UPPER(etype)_""","""_meth.Name_""")=1")
-			;	
-			;}
-			Do %code.WriteLine($CHAR(9)_"s ..redir("""_$$$UPPER(class)_""","""_$$$UPPER(etype)_""")=1")
-		}
-    }
-    Quit $$$OK
-}
-*/
 }

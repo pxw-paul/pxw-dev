@@ -13,7 +13,7 @@ Query Get(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = 
 {
 	SELECT NameSpace,ItemType,ItemKey1,ItemKey2,
 	       CalledByType,CalledByCommand,CalledByKey1,CalledByKey2,CalledByKey3,LineNumber,Parameters,
-	       PXW_Xref.Queries_GetCode(NameSpace,CalledByType,CalledByKey1,CalledByKey2,CalledByKey3,ItemKey1,ItemKey2,LineNumber,:WindowSize) AS CallingCode 
+	       PXW_Xref.Queries_GetCode(NameSpace,CalledByType,CalledByKey1,LineNumber,:WindowSize) AS CallingCode 
 	FROM PXW_Xref.Data
 	WHERE NameSpace=:NameSpace
 	--IF ItemType'=""
@@ -64,7 +64,7 @@ Query Get(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = 
 		AND CalledByKey1!=ItemKey1
 	--ENDIF
 	--IF CodeSearch'="",WindowSize>0
-		AND UPPER(PXW_Xref.Queries_GetCode(NameSpace,CalledByType,CalledByKey1,CalledByKey2,CalledByKey3,ItemKey1,ItemKey2,LineNumber,:WindowSize)) LIKE UPPER(replace(replace(:CodeSearch,'%','\%'),'*','%')) ESCAPE '\'
+		AND UPPER(PXW_Xref.Queries_GetCode(NameSpace,CalledByType,CalledByKey1,LineNumber,:WindowSize)) LIKE UPPER(replace(replace(:CodeSearch,'%','\%'),'*','%')) ESCAPE '\'
 	--ENDIF
 		ORDER BY 
 		--IF Flags["BY CALLED"
@@ -80,7 +80,7 @@ Query GetSuper(NameSpace As %String, ItemType As %String = "", ItemKey1 As %Stri
 {
 	SELECT dat.NameSpace,dat.ItemType,dat.ItemKey1,dat.ItemKey2,
 	       dat.CalledByType,dat.CalledByCommand,dat.CalledByKey1,dat.CalledByKey2,dat.CalledByKey3,dat.LineNumber,dat.Parameters,
-	       PXW_Xref.Queries_GetCode(dat.NameSpace,dat.CalledByType,dat.CalledByKey1,dat.CalledByKey2,dat.CalledByKey3,dat.ItemKey1,dat.ItemKey2,dat.LineNumber,:WindowSize) AS CallingCode 
+	       PXW_Xref.Queries_GetCode(dat.NameSpace,dat.CalledByType,dat.CalledByKey1,dat.LineNumber,:WindowSize) AS CallingCode 
 	FROM PXW_Xref.Queries_GetOverrideTree(:NameSpace,:ItemKey1,:ItemKey2) as overs
 	INNER JOIN PXW_Xref.Data as dat ON dat.NameSpace=%SQLUPPER(overs.NameSpace)
 	      AND ((overs.itemkey1 IS NULL) OR (dat.itemkey1=%SQLUPPER(overs.itemkey1)))
@@ -144,7 +144,7 @@ ClassMethod GetCount(NameSpace As %String, ItemType As %String = "", ItemKey1 As
 		Quit count
 }
 
-ClassMethod GetCode(%NS As %String, CodeType As %String, CodeKey1 As %String, CodeKey2 As %String, CodeKey3 As %String, ItemKey1 As %String, ItemKey2 As %String, LineNumber As %Integer, WindowSize As %Integer = 0) As %String [ SqlProc ]
+ClassMethod GetCode(%NS As %String, CodeType As %String, CodeKey1 As %String, LineNumber As %Integer, WindowSize As %Integer = 0) As %String [ SqlProc ]
 {
 	#dim e as %Exception.SystemException
 

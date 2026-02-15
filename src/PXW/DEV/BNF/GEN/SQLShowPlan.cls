@@ -23,7 +23,7 @@ Method AliasName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -55,7 +55,7 @@ Method AliasProperty(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -83,7 +83,7 @@ Method Attribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -111,7 +111,7 @@ Method CallModule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -143,7 +143,7 @@ Method CallModules(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -158,11 +158,7 @@ Method CallModules24RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	while ..CallModules25Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -189,7 +185,7 @@ Method CallModules25Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -245,7 +241,7 @@ Method CallSubqueries(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -260,11 +256,7 @@ Method CallSubqueries27RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	while ..CallSubqueries28Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -291,7 +283,7 @@ Method CallSubqueries28Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -343,7 +335,7 @@ Method CallSubquery(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -411,7 +403,7 @@ Method Content(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -442,7 +434,7 @@ Method CostSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -457,11 +449,7 @@ Method CostSection15RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	while ..Attribute(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -493,7 +481,7 @@ Method ForEach(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -508,11 +496,7 @@ Method ForEach20RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	while ..ForEach21Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -527,11 +511,7 @@ Method ForEach21Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -557,7 +537,7 @@ Method ForEachContent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -572,11 +552,7 @@ Method ForEachContent22RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	while ..ForEachContent23Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -598,7 +574,7 @@ Method ForEachContent23Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -628,7 +604,7 @@ Method FrozenSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -643,11 +619,7 @@ Method FrozenSection16RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	while ..Attribute(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -663,11 +635,7 @@ Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	$$$DEBUGMethodEnd
 	quit ok
 }
@@ -692,7 +660,7 @@ Method Indent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -718,7 +686,7 @@ Method IndexKey(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -747,7 +715,7 @@ Method IndexKey42Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -772,7 +740,7 @@ Method IndexKeyName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -811,7 +779,7 @@ Method IndexKeys(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -843,7 +811,7 @@ Method IndexKeysGiven(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -858,11 +826,7 @@ Method IndexKeysGiven36RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	while ..IndexKeysGiven37Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -891,7 +855,7 @@ Method IndexKeysGiven37Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -951,7 +915,7 @@ Method IndexKeysLooping(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -966,11 +930,7 @@ Method IndexKeysLooping39RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 	while ..IndexKeysLooping40Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -999,7 +959,7 @@ Method IndexKeysLooping40Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -1049,7 +1009,7 @@ Method IndexName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1084,7 +1044,7 @@ Method InfoSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1099,11 +1059,7 @@ Method InfoSection17RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	while ..Attribute(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -1116,11 +1072,7 @@ Method InfoSection18RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	while ..InfoSection19Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -1142,7 +1094,7 @@ Method InfoSection19Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -1159,11 +1111,7 @@ Method ModuleIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	$$$DEBUGMethodEnd
 	quit ok
 }
@@ -1186,7 +1134,7 @@ Method ModuleName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1221,7 +1169,7 @@ Method ModuleSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1236,11 +1184,7 @@ Method ModuleSection12RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	while ..Attribute(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -1253,11 +1197,7 @@ Method ModuleSection13RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	while ..ModuleSection14Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -1279,7 +1219,7 @@ Method ModuleSection14Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -1304,7 +1244,7 @@ Method Newline(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1330,7 +1270,7 @@ Method Nospace(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1356,7 +1296,7 @@ Method Outdent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1387,7 +1327,7 @@ Method Plan(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1402,11 +1342,7 @@ Method Plan3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	while ..Plan4Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -1428,7 +1364,7 @@ Method Plan4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -1458,7 +1394,7 @@ Method Plans(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1473,11 +1409,7 @@ Method Plans1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	while ..Plans2Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -1499,7 +1431,7 @@ Method Plans2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -1522,7 +1454,7 @@ Method PropertyName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1546,7 +1478,7 @@ Method Punctuation(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1564,11 +1496,7 @@ Method PunctuationRegex(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	$$$DEBUGMethodEnd
 	quit ok
 }
@@ -1597,7 +1525,7 @@ Method ReadBitmapIndex(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1627,7 +1555,7 @@ Method ReadExtentBitmap(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1657,7 +1585,7 @@ Method ReadIndex(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1689,7 +1617,7 @@ Method ReadMaster(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1729,7 +1657,7 @@ Method ReadMasterScan(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1753,7 +1681,7 @@ Method SchemaName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1784,7 +1712,7 @@ Method SqlSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1799,11 +1727,7 @@ Method SqlSection5RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	while ..SqlSection6Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -1825,7 +1749,7 @@ Method SqlSection6Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -1850,7 +1774,7 @@ Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1874,7 +1798,7 @@ Method SubqueryName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1909,7 +1833,7 @@ Method SubquerySection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1924,11 +1848,7 @@ Method SubquerySection10RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	while ..SubquerySection11Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -1950,7 +1870,7 @@ Method SubquerySection11Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -1964,11 +1884,7 @@ Method SubquerySection9RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	while ..Attribute(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -1998,7 +1914,7 @@ Method Table(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2034,7 +1950,7 @@ Method TableIndex(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2053,11 +1969,7 @@ Method TableIndex30OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* failure rollsback but returns OK */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -2079,7 +1991,7 @@ Method TableName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2112,7 +2024,7 @@ Method TableSubscriptAlias(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2153,11 +2065,7 @@ Method TableSubscriptAlias34RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef 
 	while ..TableSubscriptAlias35Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -2179,7 +2087,7 @@ Method TableSubscriptAlias35Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -2217,7 +2125,7 @@ Method TableSubscriptImply(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2232,11 +2140,7 @@ Method TableSubscriptImply31RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef 
 	while ..TableSubscriptImply32Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -2258,7 +2162,7 @@ Method TableSubscriptImply32Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -2288,7 +2192,7 @@ Method WarningSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2303,11 +2207,7 @@ Method WarningSection7RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	while ..WarningSection8Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -2329,7 +2229,7 @@ Method WarningSection8Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -2352,7 +2252,7 @@ Method Word(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2370,11 +2270,7 @@ Method WordRegex(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	$$$DEBUGMethodEnd
 	quit ok
 }
@@ -2391,11 +2287,7 @@ Method WordRegexOld(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	$$$DEBUGMethodEnd
 	quit ok
 }

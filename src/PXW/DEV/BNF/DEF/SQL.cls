@@ -43,7 +43,7 @@ as_clause                   ::= [ 'AS' ] column_name
 
 table_expression            ::= from_clause	[ where_clause ] [ group_by_clause ] [ having_clause ] [ order_by_clause ]
 
-from_clause                 ::= 'FROM' [from_optimise_list] ( table_reference) [ ( ',' table_reference )* ] ( join )*
+from_clause                 ::= 'FROM' [from_optimise_list] ( bracket_table | (( table_reference) [ ( ',' table_reference )* ] ( join )*) )
 from_optimise_list			::= from_optimise ( from_optimise )*
 from_optimise				::= ('%firsttable' [alias_name])
 								| '%ALLINDEX'
@@ -63,7 +63,9 @@ from_optimise				::= ('%firsttable' [alias_name])
 
 join 						::= [('INNER' | 'OUTER' | 'LEFT' | 'RIGHT' | 'CROSS' | 'NATURAL' |'FULL' )*] 'JOIN' table_reference [ join_on ]
 join_on						::= 'ON' sql_expression 
-	
+
+bracket_table				::= '(' ( (bracket_table join*) | (table_reference join*) ) ')'
+
 table_reference             ::= stored_proc_table | direct_table | derived_table
 direct_table				::= table_name [ table_as_clause ]
 

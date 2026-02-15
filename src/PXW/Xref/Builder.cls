@@ -1,4 +1,4 @@
-Class PXW.Xref.Builder Extends %RegisteredObject
+Class PXW.Xref.Builder Extends PXW.DEV.BNF.processor
 {
 
 Parameter CodeType;

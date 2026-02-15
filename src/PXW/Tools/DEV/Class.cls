@@ -112,7 +112,6 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 	Kill %pxw1
 	#dim ele,element as PXW.DEV.Element
 	Set zh=$ZHOROLOG
-	zw ClassName,FormatOptions
 	Set showPaths=0,forceXref=0
     Write "<pre>"
 	; Debug is only for the DISPLAY of the page, if you want to debug the parsing use the ParserTest page.
@@ -301,12 +300,15 @@ ClassMethod HREFTo(Class As %String, Path As %String = "", LineNumber As %Intege
 
 	Set cls=##class(PXW.DEV.Dictionary.ClassDefinitionObject).FullClassName(cls,package)
 
-	Set href=href_sep_"C="_..EscapeURL(cls),sep="&"
-	Set:instance'="" href=href_sep_"I="_..EscapeURL(instance),sep="&"
-	Set:LineNumber'="" href=href_sep_"LN="_..EscapeURL(LineNumber),sep="&"
-	Set:PropertyParameter'="" href=href_sep_"PP="_..EscapeURL(PropertyParameter),sep="&"
-	Set:Path'="" href=href_sep_"P="_..EscapeURL(Path),sep="&"
-	Set:FormatOptions'="" href=href_sep_"FO="_..EscapeURL(FormatOptions),sep="&"
+	;$zconvert($zconvert(in,"O",$select($data(charset)#10=1:charset,1:$replace($$$GETIO,"JSML","UTF8"))),"O","URL")
+	;s x=$$$URLENCODE(z)
+
+	Set href=href_sep_"C="_$$$URLENCODE(cls),sep="&"
+	Set:instance'="" href=href_sep_"I="_$$$URLENCODE(instance),sep="&"
+	Set:LineNumber'="" href=href_sep_"LN="_$$$URLENCODE(LineNumber),sep="&"
+	Set:PropertyParameter'="" href=href_sep_"PP="_$$$URLENCODE(PropertyParameter),sep="&"
+	Set:Path'="" href=href_sep_"P="_$$$URLENCODE(Path),sep="&"
+	Set:FormatOptions'="" href=href_sep_"FO="_$$$URLENCODE(FormatOptions),sep="&"
 
 	; must go last
 	; always put the bookmark on, because the link to stored procedures is not working correctly yet

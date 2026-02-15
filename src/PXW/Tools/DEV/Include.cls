@@ -99,13 +99,13 @@ ClassMethod HREFTo(Include As %String = "", CallingClass As %String = "", Macro 
 {
 	Set href=##super()
 	Set sep="&"
-	If Include'="" Set href=href_sep_"I="_..EscapeURL(Include)
-    If CallingClass'="" Set href=href_sep_"CC="_..EscapeURL(CallingClass)
+	If Include'="" Set href=href_sep_"I="_$$$URLENCODE(Include)
+    If CallingClass'="" Set href=href_sep_"CC="_$$$URLENCODE(CallingClass)
     If Macro'="" {
         If Macro?1"$$$".E {
-            Set href=href_sep_"M="_..EscapeURL($PIECE(Macro,"$$$",2))
+            Set href=href_sep_"M="_$$$URLENCODE($PIECE(Macro,"$$$",2))
         } Else {
-            Set href=href_sep_"M="_..EscapeURL(Macro)
+            Set href=href_sep_"M="_$$$URLENCODE(Macro)
         }
     }
 

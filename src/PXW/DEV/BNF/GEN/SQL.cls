@@ -23,7 +23,7 @@ Method AliasName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -49,7 +49,7 @@ Method AnyTextUptoCloseBracket(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -75,9 +75,135 @@ Method AsClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  bracket_table ::= '(' ( (bracket_table join*) | (table_reference join*) ) ')'
+/// summary values:(
+/// summary=P&((C&(?4Call:4?)*)|(C&(?4Call:4?)*))&P
+Method BracketTable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary P&((C&(?4Call:4?)*)|(C&(?4Call:4?)*))&P
+	; first rule summary P
+	if '(..isStringSingle("(",.value)) { quit 0 /* normal */ /*4*/ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"(")  {
+		if ..BracketTable35Sub(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,")")  {
+				set done=1 ; end compileRules
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  (bracket_table join*) | (table_reference join*)
+/// summary=(C&(?4Call:4?)*)|(C&(?4Call:4?)*)
+Method BracketTable35Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary (C&(?4Call:4?)*)|(C&(?4Call:4?)*)
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..BracketTable36Sub(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..BracketTable38Sub(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// bracket_table join*
+/// summary=C&(?4Call:4?)*
+Method BracketTable36Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary C&(?4Call:4?)*
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..BracketTable(.subElement,.addedElement)  {
+		if ..BracketTable37RepZero(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+///  join*
+Method BracketTable37RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary ?4Call:4?
+	set subElement=ParentElement
+	set done=0 ; method start
+	while ..Join(.subElement,.addedElement)  {
+		set done=1
+	}
+	set ok=1
+	quit ok
+}
+
+/// table_reference join*
+/// summary=C&(?4Call:4?)*
+Method BracketTable38Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary C&(?4Call:4?)*
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..TableReference(.subElement,.addedElement)  {
+		if ..BracketTable39RepZero(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+///  join*
+Method BracketTable39RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary ?4Call:4?
+	set subElement=ParentElement
+	set done=0 ; method start
+	while ..Join(.subElement,.addedElement)  {
+		set done=1
+	}
+	set ok=1
 	quit ok
 }
 
@@ -103,7 +229,7 @@ Method CallCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -123,7 +249,7 @@ Method CheckprivCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"%CHECKPRIV")  {
 		if ..CheckprivObjpriv(.subElement,.addedElement)  {
-			if ..CheckprivCommand74OptGrp(.subElement,.addedElement)  {
+			if ..CheckprivCommand81OptGrp(.subElement,.addedElement)  {
 				if ..addKeyword(.subElement,"ON")  {
 					if ..TableReference(.subElement,.addedElement)  {
 						set done=1 ; end compileRules
@@ -138,7 +264,7 @@ Method CheckprivCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -147,7 +273,7 @@ Method CheckprivCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 /// 
 /// summary values:(
 /// summary=P&C&(?4punctuation:4?)*&P
-Method CheckprivCommand74OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method CheckprivCommand81OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C&(?4punctuation:4?)*&P
 	; first rule summary P
@@ -156,7 +282,7 @@ Method CheckprivCommand74OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"(")  {
 		if ..ColumnName(.subElement,.addedElement)  {
-			if ..CheckprivCommand75RepZero(.subElement,.addedElement)  {
+			if ..CheckprivCommand82RepZero(.subElement,.addedElement)  {
 				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
@@ -175,26 +301,22 @@ Method CheckprivCommand74OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 }
 
 ///  ( ',' column_name)*
-Method CheckprivCommand75RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method CheckprivCommand82RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..CheckprivCommand76Sub(.subElement,.addedElement)  {
+	while ..CheckprivCommand83Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 ///  ',' column_name
 /// summary values:,
 /// summary=P&C
-Method CheckprivCommand76Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method CheckprivCommand83Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	; first rule summary P
@@ -212,7 +334,7 @@ Method CheckprivCommand76Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -247,7 +369,7 @@ Method CheckprivObjpriv(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -275,7 +397,7 @@ Method CloseCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -291,7 +413,7 @@ Method ColList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..ColumnReference(.subElement,.addedElement)  {
-		if ..ColList163RepZero(.subElement,.addedElement)  {
+		if ..ColList170RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -301,33 +423,29 @@ Method ColList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
 }
 
 ///  ( ',' column_reference )*
-Method ColList163RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ColList170RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..ColList164Sub(.subElement,.addedElement)  {
+	while ..ColList171Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 ///  ',' column_reference
 /// summary values:,
 /// summary=P&C
-Method ColList164Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ColList171Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	; first rule summary P
@@ -345,7 +463,7 @@ Method ColList164Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -373,7 +491,7 @@ Method ColonSqlCosVariable(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -397,7 +515,7 @@ Method ColumnName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -413,7 +531,7 @@ Method ColumnNameList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..ColumnName(.subElement,.addedElement)  {
-		if ..ColumnNameList49RepZero(.subElement,.addedElement)  {
+		if ..ColumnNameList56RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -423,33 +541,29 @@ Method ColumnNameList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
 }
 
 ///  ( ',' column_name )*
-Method ColumnNameList49RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ColumnNameList56RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..ColumnNameList50Sub(.subElement,.addedElement)  {
+	while ..ColumnNameList57Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 ///  ',' column_name
 /// summary values:,
 /// summary=P&C
-Method ColumnNameList50Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ColumnNameList57Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	; first rule summary P
@@ -467,7 +581,7 @@ Method ColumnNameList50Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -481,7 +595,7 @@ Method ColumnReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ColumnReference165OptGrp(.subElement,.addedElement)  {
+	if ..ColumnReference172OptGrp(.subElement,.addedElement)  {
 		if ..ColumnName(.subElement,.addedElement)  {
 			if $S(..ColumnReferenceImplicit(.subElement,.addedElement) :1,1:1) {
 				set done=1 ; end compileRules
@@ -494,7 +608,7 @@ Method ColumnReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -502,7 +616,7 @@ Method ColumnReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 /// 
 /// summary=C&P
-Method ColumnReference165OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ColumnReference172OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C&P
 	$$$BNFSTART(subElement)
@@ -532,7 +646,7 @@ Method ColumnReferenceImplicit(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ColumnReferenceImplicit166RepZero(.subElement,.addedElement)  {
+	if ..ColumnReferenceImplicit173RepZero(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -541,33 +655,29 @@ Method ColumnReferenceImplicit(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
 }
 
 ///  ('->' column_name)*
-Method ColumnReferenceImplicit166RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ColumnReferenceImplicit173RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..ColumnReferenceImplicit167Sub(.subElement,.addedElement)  {
+	while ..ColumnReferenceImplicit174Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 /// '->' column_name
 /// summary values:->
 /// summary=P&C
-Method ColumnReferenceImplicit167Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ColumnReferenceImplicit174Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	; first rule summary P
@@ -585,7 +695,7 @@ Method ColumnReferenceImplicit167Sub(ParentElement As PXW.DEV.BNF.Element, ByRef
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -614,7 +724,7 @@ Method CrossJoin(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -638,7 +748,7 @@ Method CursorName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -660,7 +770,7 @@ Method DeclareCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 			if ..addKeyword(.subElement,"CURSOR")  {
 				if ..addKeyword(.subElement,"FOR")  {
 					if ..QuerySpecification(.subElement,.addedElement)  {
-						if ..DeclareCommand69OptGrp(.subElement,.addedElement)  {
+						if ..DeclareCommand76OptGrp(.subElement,.addedElement)  {
 							set done=1 ; end compileRules
 						}
 					}
@@ -674,7 +784,7 @@ Method DeclareCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -683,14 +793,14 @@ Method DeclareCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 /// 
 /// summary values:FOR
 /// summary=K&(K|(K&K))
-Method DeclareCommand69OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method DeclareCommand76OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K&(K|(K&K))
 	if '(..isKeyword("FOR",.value)) { quit 1 /* not found is OK */ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"FOR")  {
-		if ..DeclareCommand70Sub(.subElement,.addedElement)  {
+		if ..DeclareCommand77Sub(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -707,14 +817,14 @@ Method DeclareCommand69OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 /// 'UPDATE' | ('READ' 'ONLY')
 /// summary=K|(K&K)
-Method DeclareCommand70Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method DeclareCommand77Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K|(K&K)
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"UPDATE")  {
 		set done=1 ; or
-	} elseif ..DeclareCommand71Sub(.subElement,.addedElement)  {
+	} elseif ..DeclareCommand78Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -723,7 +833,7 @@ Method DeclareCommand70Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -731,7 +841,7 @@ Method DeclareCommand70Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 /// 'READ' 'ONLY'
 /// summary values:READ
 /// summary=K&K
-Method DeclareCommand71Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method DeclareCommand78Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K&K
 	if '(..isKeyword("READ",.value)) { quit 0 /* normal */ }
@@ -748,7 +858,7 @@ Method DeclareCommand71Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -765,7 +875,7 @@ Method DeleteCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"DELETE")  {
-		if ..DeleteCommand72RepZero(.subElement,.addedElement)  {
+		if ..DeleteCommand79RepZero(.subElement,.addedElement)  {
 			if $S(..addKeyword(.subElement,"FROM") :1,1:1) {
 				if ..DirectTable(.subElement,.addedElement)  {
 					if $S(..WhereClause(.subElement,.addedElement) :1,1:1) {
@@ -781,32 +891,28 @@ Method DeleteCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
 }
 
 ///  (update_keyword)*
-Method DeleteCommand72RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method DeleteCommand79RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..DeleteCommand73Sub(.subElement,.addedElement)  {
+	while ..DeleteCommand80Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 /// update_keyword
 /// summary=C
-Method DeleteCommand73Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method DeleteCommand80Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C
 	set subElement=ParentElement
@@ -815,11 +921,7 @@ Method DeleteCommand73Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -843,7 +945,7 @@ Method DerivedColumn(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -869,7 +971,7 @@ Method DerivedTable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -893,7 +995,7 @@ Method DerivedTableNoalias(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -919,7 +1021,7 @@ Method DirectTable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -943,7 +1045,7 @@ Method DirectTableNoalias(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -961,7 +1063,7 @@ Method DropCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"DROP")  {
-		if ..DropCommand36Sub(.subElement,.addedElement)  {
+		if ..DropCommand43Sub(.subElement,.addedElement)  {
 			if ..DirectTable(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
@@ -973,7 +1075,7 @@ Method DropCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -982,7 +1084,7 @@ Method DropCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 ///  'VIEW' | 'TABLE'
 /// summary values:VIEW,TABLE
 /// summary=K|K
-Method DropCommand36Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method DropCommand43Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K|K
 	if '(..isKeywordInList($lb("VIEW","TABLE"),.value)) { quit 0 /* normal */ }
@@ -994,11 +1096,7 @@ Method DropCommand36Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -1026,18 +1124,18 @@ Method FetchCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
 }
 
-///  from_clause ::= 'FROM' [from_optimise_list] ( table_reference) [ ( ',' table_reference )* ] ( join )*
+///  from_clause ::= 'FROM' [from_optimise_list] ( bracket_table | (( table_reference) [ ( ',' table_reference )* ] ( join )*) )
 /// summary values:FROM
-/// summary=K&[C]&(C)&[(?4punctuation:4?)*]&(?4punctuation:4?)*
+/// summary=K&[C]&(C|((C)&[(?4punctuation:4?)*]&(?4punctuation:4?)*))
 Method FromClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&[C]&(C)&[(?4punctuation:4?)*]&(?4punctuation:4?)*
+	; rules summary K&[C]&(C|((C)&[(?4punctuation:4?)*]&(?4punctuation:4?)*))
 	if '(..isKeyword("FROM",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -1046,11 +1144,7 @@ Method FromClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	if ..addKeyword(.subElement,"FROM")  {
 		if $S(..FromOptimiseList(.subElement,.addedElement) :1,1:1) {
 			if ..FromClause19Sub(.subElement,.addedElement)  {
-				if $S(..FromClause20RepZero(.subElement,.addedElement) :1,1:1) {
-					if ..FromClause22RepZero(.subElement,.addedElement)  {
-						set done=1 ; end compileRules
-					}
-				}
+				set done=1 ; end compileRules
 			}
 		}
 	}
@@ -1060,15 +1154,63 @@ Method FromClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
 }
 
+///  bracket_table | (( table_reference) [ ( ',' table_reference )* ] ( join )*)
+/// summary=C|((C)&[(?4punctuation:4?)*]&(?4punctuation:4?)*)
+Method FromClause19Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary C|((C)&[(?4punctuation:4?)*]&(?4punctuation:4?)*)
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..BracketTable(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..FromClause20Sub(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// ( table_reference) [ ( ',' table_reference )* ] ( join )*
+/// summary=(C)&[(?4punctuation:4?)*]&(?4punctuation:4?)*
+Method FromClause20Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary (C)&[(?4punctuation:4?)*]&(?4punctuation:4?)*
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..FromClause21Sub(.subElement,.addedElement)  {
+		if $S(..FromClause22RepZero(.subElement,.addedElement) :1,1:1) {
+			if ..FromClause24RepZero(.subElement,.addedElement)  {
+				set done=1 ; end compileRules
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
 ///  table_reference
 /// summary=C
-Method FromClause19Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method FromClause21Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C
 	set subElement=ParentElement
@@ -1077,35 +1219,27 @@ Method FromClause19Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
 ///  ( ',' table_reference )*
-Method FromClause20RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method FromClause22RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..FromClause21Sub(.subElement,.addedElement)  {
+	while ..FromClause23Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 ///  ',' table_reference
 /// summary values:,
 /// summary=P&C
-Method FromClause21Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method FromClause23Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	; first rule summary P
@@ -1123,31 +1257,27 @@ Method FromClause21Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
 
 ///  ( join )*
-Method FromClause22RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method FromClause24RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..FromClause23Sub(.subElement,.addedElement)  {
+	while ..FromClause25Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 ///  join
 /// summary=C
-Method FromClause23Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method FromClause25Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C
 	set subElement=ParentElement
@@ -1156,11 +1286,7 @@ Method FromClause23Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -1173,7 +1299,7 @@ Method FromOptimise(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..FromOptimise26Sub(.subElement,.addedElement)  {
+	if ..FromOptimise28Sub(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..addPunctuation(.subElement,"%ALLINDEX")  {
 		set done=1 ; or
@@ -1199,9 +1325,9 @@ Method FromOptimise(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		set done=1 ; or
 	} elseif ..addPunctuation(.subElement,"%NOPARALLEL")  {
 		set done=1 ; or
-	} elseif ..FromOptimise27Sub(.subElement,.addedElement)  {
-		set done=1 ; or
 	} elseif ..FromOptimise29Sub(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..FromOptimise31Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -1210,7 +1336,7 @@ Method FromOptimise(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1219,7 +1345,7 @@ Method FromOptimise(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 /// '%firsttable' [alias_name]
 /// summary values:%FIRSTTABLE
 /// summary=P&[C]
-Method FromOptimise26Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method FromOptimise28Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&[C]
 	; first rule summary P
@@ -1237,7 +1363,7 @@ Method FromOptimise26Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -1245,7 +1371,7 @@ Method FromOptimise26Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 /// '%IGNOREINDEX' ( '*' | index_reference_list )
 /// summary values:%IGNOREINDEX
 /// summary=P&(P|C)
-Method FromOptimise27Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method FromOptimise29Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&(P|C)
 	; first rule summary P
@@ -1253,55 +1379,6 @@ Method FromOptimise27Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"%IGNOREINDEX")  {
-		if ..FromOptimise28Sub(.subElement,.addedElement)  {
-			set done=1 ; end compileRules
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-///  '*' | index_reference_list
-/// summary=P|C
-Method FromOptimise28Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P|C
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"*")  {
-		set done=1 ; or
-	} elseif ..IndexReferenceList(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// '%IGNOREINDICES' ('*' | index_reference_list )
-/// summary values:%IGNOREINDICES
-/// summary=P&(P|C)
-Method FromOptimise29Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P&(P|C)
-	; first rule summary P
-	if '(..isStringSingle("%IGNOREINDICES",.value)) { quit 0 /* normal */ /*4*/ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"%IGNOREINDICES")  {
 		if ..FromOptimise30Sub(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
@@ -1312,12 +1389,12 @@ Method FromOptimise29Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
 
-/// '*' | index_reference_list
+///  '*' | index_reference_list
 /// summary=P|C
 Method FromOptimise30Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
@@ -1335,7 +1412,56 @@ Method FromOptimise30Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
+	}
+	quit ok
+}
+
+/// '%IGNOREINDICES' ('*' | index_reference_list )
+/// summary values:%IGNOREINDICES
+/// summary=P&(P|C)
+Method FromOptimise31Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&(P|C)
+	; first rule summary P
+	if '(..isStringSingle("%IGNOREINDICES",.value)) { quit 0 /* normal */ /*4*/ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"%IGNOREINDICES")  {
+		if ..FromOptimise32Sub(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// '*' | index_reference_list
+/// summary=P|C
+Method FromOptimise32Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P|C
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"*")  {
+		set done=1 ; or
+	} elseif ..IndexReferenceList(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
 	}
 	quit ok
 }
@@ -1350,7 +1476,7 @@ Method FromOptimiseList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..FromOptimise(.subElement,.addedElement)  {
-		if ..FromOptimiseList24RepZero(.subElement,.addedElement)  {
+		if ..FromOptimiseList26RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -1360,32 +1486,28 @@ Method FromOptimiseList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
 }
 
 ///  ( from_optimise )*
-Method FromOptimiseList24RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method FromOptimiseList26RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..FromOptimiseList25Sub(.subElement,.addedElement)  {
+	while ..FromOptimiseList27Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 ///  from_optimise
 /// summary=C
-Method FromOptimiseList25Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method FromOptimiseList27Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C
 	set subElement=ParentElement
@@ -1394,11 +1516,7 @@ Method FromOptimiseList25Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -1426,7 +1544,7 @@ Method GroupByClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1450,7 +1568,7 @@ Method GroupingColumnReference(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1466,7 +1584,7 @@ Method GroupingColumnReferenceList(ParentElement As PXW.DEV.BNF.Element, ByRef s
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..GroupingColumnReference(.subElement,.addedElement)  {
-		if ..GroupingColumnReferenceList41RepZero(.subElement,.addedElement)  {
+		if ..GroupingColumnReferenceList48RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -1476,33 +1594,29 @@ Method GroupingColumnReferenceList(ParentElement As PXW.DEV.BNF.Element, ByRef s
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
 }
 
 ///  ( ',' grouping_column_reference )*
-Method GroupingColumnReferenceList41RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method GroupingColumnReferenceList48RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..GroupingColumnReferenceList42Sub(.subElement,.addedElement)  {
+	while ..GroupingColumnReferenceList49Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 ///  ',' grouping_column_reference
 /// summary values:,
 /// summary=P&C
-Method GroupingColumnReferenceList42Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method GroupingColumnReferenceList49Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	; first rule summary P
@@ -1520,7 +1634,7 @@ Method GroupingColumnReferenceList42Sub(ParentElement As PXW.DEV.BNF.Element, By
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -1547,7 +1661,7 @@ Method HavingClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1565,11 +1679,7 @@ Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	$$$DEBUGMethodEnd
 	quit ok
 }
@@ -1583,7 +1693,7 @@ Method IndexReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..IndexReference33OptGrp(.subElement,.addedElement)  {
+	if ..IndexReference40OptGrp(.subElement,.addedElement)  {
 		if ..Identifier(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
@@ -1594,7 +1704,7 @@ Method IndexReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1602,7 +1712,7 @@ Method IndexReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 /// 
 /// summary=C&P
-Method IndexReference33OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method IndexReference40OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C&P
 	$$$BNFSTART(subElement)
@@ -1633,7 +1743,7 @@ Method IndexReferenceList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..IndexReference(.subElement,.addedElement)  {
-		if ..IndexReferenceList34RepZero(.subElement,.addedElement)  {
+		if ..IndexReferenceList41RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -1643,33 +1753,29 @@ Method IndexReferenceList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
 }
 
 ///  ( ',' index_reference )*
-Method IndexReferenceList34RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method IndexReferenceList41RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..IndexReferenceList35Sub(.subElement,.addedElement)  {
+	while ..IndexReferenceList42Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 ///  ',' index_reference
 /// summary values:,
 /// summary=P&C
-Method IndexReferenceList35Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method IndexReferenceList42Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	; first rule summary P
@@ -1687,7 +1793,7 @@ Method IndexReferenceList35Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -1704,7 +1810,7 @@ Method InsertCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"INSERT")  {
-		if ..InsertCommand52RepZero(.subElement,.addedElement)  {
+		if ..InsertCommand59RepZero(.subElement,.addedElement)  {
 			if $S(..addKeyword(.subElement,"INTO") :1,1:1) {
 				if ..DirectTable(.subElement,.addedElement)  {
 					if ..InsertMethod(.subElement,.addedElement)  {
@@ -1720,32 +1826,28 @@ Method InsertCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
 }
 
 ///  (update_keyword)*
-Method InsertCommand52RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method InsertCommand59RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..InsertCommand53Sub(.subElement,.addedElement)  {
+	while ..InsertCommand60Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 /// update_keyword
 /// summary=C
-Method InsertCommand53Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method InsertCommand60Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C
 	set subElement=ParentElement
@@ -1754,11 +1856,7 @@ Method InsertCommand53Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -1784,7 +1882,7 @@ Method InsertMethod(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1810,7 +1908,7 @@ Method InsertMultirow(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1838,7 +1936,7 @@ Method InsertSet(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1857,7 +1955,7 @@ Method InsertSetList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"SET")  {
 		if ..InsertSet(.subElement,.addedElement)  {
-			if ..InsertSetList54RepZero(.subElement,.addedElement)  {
+			if ..InsertSetList61RepZero(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -1868,33 +1966,29 @@ Method InsertSetList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
 }
 
 ///  (',' insert_set)*
-Method InsertSetList54RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method InsertSetList61RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..InsertSetList55Sub(.subElement,.addedElement)  {
+	while ..InsertSetList62Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 /// ',' insert_set
 /// summary values:,
 /// summary=P&C
-Method InsertSetList55Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method InsertSetList62Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	; first rule summary P
@@ -1912,7 +2006,7 @@ Method InsertSetList55Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -1939,7 +2033,7 @@ Method InsertValuesList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -1954,7 +2048,7 @@ Method Join(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if $S(..Join31RepZero(.subElement,.addedElement) :1,1:1) {
+	if $S(..Join33RepZero(.subElement,.addedElement) :1,1:1) {
 		if ..addKeyword(.subElement,"JOIN")  {
 			if ..TableReference(.subElement,.addedElement)  {
 				if $S(..JoinOn(.subElement,.addedElement) :1,1:1) {
@@ -1969,33 +2063,29 @@ Method Join(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
 }
 
 /// ('INNER' | 'OUTER' | 'LEFT' | 'RIGHT' | 'CROSS' | 'NATURAL' |'FULL' )*
-Method Join31RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method Join33RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..Join32Sub(.subElement,.addedElement)  {
+	while ..Join34Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 /// 'INNER' | 'OUTER' | 'LEFT' | 'RIGHT' | 'CROSS' | 'NATURAL' |'FULL'
 /// summary values:INNER,OUTER,LEFT,RIGHT,CROSS,NATURAL,FULL
 /// summary=K|K|K|K|K|K|K
-Method Join32Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method Join34Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K|K|K|K|K|K|K
 	if '(..isKeywordInList($lb("INNER","OUTER","LEFT","RIGHT","CROSS","NATURAL","FULL"),.value)) { quit 0 /* normal */ }
@@ -2017,11 +2107,7 @@ Method Join32Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -2043,7 +2129,7 @@ Method JoinColumnList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2071,7 +2157,7 @@ Method JoinCondition(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2099,7 +2185,7 @@ Method JoinOn(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2125,7 +2211,7 @@ Method JoinSpecification(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2142,7 +2228,7 @@ Method JoinType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"INNER")  {
 		set done=1 ; or
-	} elseif ..JoinType40Sub(.subElement,.addedElement)  {
+	} elseif ..JoinType47Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -2151,7 +2237,7 @@ Method JoinType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2159,7 +2245,7 @@ Method JoinType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 
 /// outer_join_type [ 'OUTER' ]
 /// summary=C&[K]
-Method JoinType40Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method JoinType47Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C&[K]
 	$$$BNFSTART(subElement)
@@ -2175,7 +2261,7 @@ Method JoinType40Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -2193,7 +2279,7 @@ Method JoinedTable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		set done=1 ; or
 	} elseif ..QualifiedJoin(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..JoinedTable39Sub(.subElement,.addedElement)  {
+	} elseif ..JoinedTable46Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -2202,7 +2288,7 @@ Method JoinedTable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2211,7 +2297,7 @@ Method JoinedTable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 /// '(' joined_table ')'
 /// summary values:(
 /// summary=P&C&P
-Method JoinedTable39Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method JoinedTable46Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C&P
 	; first rule summary P
@@ -2231,7 +2317,7 @@ Method JoinedTable39Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -2254,7 +2340,7 @@ Method MacroIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2278,7 +2364,7 @@ Method MacroParameter(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2297,7 +2383,7 @@ Method MacroParameterList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"(")  {
-		if ..MacroParameterList85OptGrp(.subElement,.addedElement)  {
+		if ..MacroParameterList92OptGrp(.subElement,.addedElement)  {
 			if ..addPunctuation(.subElement,")")  {
 				set done=1 ; end compileRules
 			}
@@ -2309,7 +2395,7 @@ Method MacroParameterList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2317,13 +2403,13 @@ Method MacroParameterList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 /// 
 /// summary=[C]&(?4punctuation:4?)*
-Method MacroParameterList85OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method MacroParameterList92OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary [C]&(?4punctuation:4?)*
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if $S(..MacroParameter(.subElement,.addedElement) :1,1:1) {
-		if ..MacroParameterList86RepZero(.subElement,.addedElement)  {
+		if ..MacroParameterList93RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -2339,26 +2425,22 @@ Method MacroParameterList85OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef su
 }
 
 ///  ( ',' [macro_parameter] )*
-Method MacroParameterList86RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method MacroParameterList93RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..MacroParameterList87Sub(.subElement,.addedElement)  {
+	while ..MacroParameterList94Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 ///  ',' [macro_parameter]
 /// summary values:,
 /// summary=P&[C]
-Method MacroParameterList87Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method MacroParameterList94Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&[C]
 	; first rule summary P
@@ -2376,7 +2458,7 @@ Method MacroParameterList87Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -2406,7 +2488,7 @@ Method MacroParameterText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2426,7 +2508,7 @@ Method Macrocall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"$$$")  {
 		if ..MacroIdentifier(.subElement,.addedElement)  {
-			if ..Macrocall84OptGrp(.subElement,.addedElement)  {
+			if ..Macrocall91OptGrp(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -2437,7 +2519,7 @@ Method Macrocall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2445,7 +2527,7 @@ Method Macrocall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 
 /// 
 /// summary=C|C
-Method Macrocall84OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method Macrocall91OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C|C
 	set subElement=ParentElement
@@ -2456,11 +2538,7 @@ Method Macrocall84OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* failure rollsback but returns OK */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -2490,7 +2568,7 @@ Method NamedColumnsJoin(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2514,7 +2592,7 @@ Method NonJoinQueryExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2531,7 +2609,7 @@ Method NonJoinQueryPrimary(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	set done=0 ; method start
 	if ..SimpleTable(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..NonJoinQueryPrimary48Sub(.subElement,.addedElement)  {
+	} elseif ..NonJoinQueryPrimary55Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -2540,7 +2618,7 @@ Method NonJoinQueryPrimary(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2549,7 +2627,7 @@ Method NonJoinQueryPrimary(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 ///  '(' non_join_query_expression ')'
 /// summary values:(
 /// summary=P&C&P
-Method NonJoinQueryPrimary48Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method NonJoinQueryPrimary55Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C&P
 	; first rule summary P
@@ -2569,7 +2647,7 @@ Method NonJoinQueryPrimary48Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -2592,7 +2670,7 @@ Method NonJoinQueryTerm(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2607,9 +2685,9 @@ Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Number172Sub(.subElement,.addedElement)  {
+	if ..Number179Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..Number176Sub(.subElement,.addedElement)  {
+	} elseif ..Number183Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -2618,7 +2696,7 @@ Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2626,14 +2704,14 @@ Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 
 /// 'regexp:[0-9]*' [ '.' 'regexp:[0-9]+'] [ ('e' | 'E') 'regexp:[0-9]+']
 /// summary=R&[P&R]&[(K|K)&R]
-Method Number172Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method Number179Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary R&[P&R]&[(K|K)&R]
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addRegex(.subElement,"[0-9]*")  {
-		if ..Number173OptGrp(.subElement,.addedElement)  {
-			if ..Number174OptGrp(.subElement,.addedElement)  {
+		if ..Number180OptGrp(.subElement,.addedElement)  {
+			if ..Number181OptGrp(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -2644,7 +2722,7 @@ Method Number172Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -2652,7 +2730,7 @@ Method Number172Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 /// 
 /// summary values:.
 /// summary=P&R
-Method Number173OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method Number180OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&R
 	; first rule summary P
@@ -2678,13 +2756,13 @@ Method Number173OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 /// 
 /// summary values:E,E
 /// summary=(K|K)&R
-Method Number174OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method Number181OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary (K|K)&R
 	if '(..isKeywordInList($lb("E","E"),.value)) { quit 1 /* not found is OK */ /*1*/ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Number175Sub(.subElement,.addedElement)  {
+	if ..Number182Sub(.subElement,.addedElement)  {
 		if ..addRegex(.subElement,"[0-9]+")  {
 			set done=1 ; end compileRules
 		}
@@ -2703,7 +2781,7 @@ Method Number174OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 /// 'e' | 'E'
 /// summary values:E,E
 /// summary=K|K
-Method Number175Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method Number182Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K|K
 	if '(..isKeywordInList($lb("E","E"),.value)) { quit 0 /* normal */ }
@@ -2715,18 +2793,14 @@ Method Number175Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
 /// '.' 'regexp:[0-9]+' [ ('e' | 'E') 'regexp:[0-9]+']
 /// summary values:.
 /// summary=P&R&[(K|K)&R]
-Method Number176Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method Number183Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&R&[(K|K)&R]
 	; first rule summary P
@@ -2735,7 +2809,7 @@ Method Number176Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,".")  {
 		if ..addRegex(.subElement,"[0-9]+")  {
-			if ..Number177OptGrp(.subElement,.addedElement)  {
+			if ..Number184OptGrp(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -2746,7 +2820,7 @@ Method Number176Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -2754,13 +2828,13 @@ Method Number176Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 /// 
 /// summary values:E,E
 /// summary=(K|K)&R
-Method Number177OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method Number184OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary (K|K)&R
 	if '(..isKeywordInList($lb("E","E"),.value)) { quit 1 /* not found is OK */ /*1*/ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Number178Sub(.subElement,.addedElement)  {
+	if ..Number185Sub(.subElement,.addedElement)  {
 		if ..addRegex(.subElement,"[0-9]+")  {
 			set done=1 ; end compileRules
 		}
@@ -2779,7 +2853,7 @@ Method Number177OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 /// 'e' | 'E'
 /// summary values:E,E
 /// summary=K|K
-Method Number178Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method Number185Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K|K
 	if '(..isKeywordInList($lb("E","E"),.value)) { quit 0 /* normal */ }
@@ -2791,11 +2865,7 @@ Method Number178Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -2821,7 +2891,7 @@ Method OpenCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2851,7 +2921,7 @@ Method OrderByClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2867,7 +2937,7 @@ Method OrderingColumnReference(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..SqlExpression(.subElement,.addedElement)  {
-		if ..OrderingColumnReference45OptGrp(.subElement,.addedElement)  {
+		if ..OrderingColumnReference52OptGrp(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -2877,7 +2947,7 @@ Method OrderingColumnReference(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -2886,7 +2956,7 @@ Method OrderingColumnReference(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 /// 
 /// summary values:ASC,DESC
 /// summary=K|K
-Method OrderingColumnReference45OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method OrderingColumnReference52OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K|K
 	if '(..isKeywordInList($lb("ASC","DESC"),.value)) { quit 1 /* not found is OK */ }
@@ -2898,11 +2968,7 @@ Method OrderingColumnReference45OptGrp(ParentElement As PXW.DEV.BNF.Element, ByR
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* failure rollsback but returns OK */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -2916,7 +2982,7 @@ Method OrderingColumnReferenceList(ParentElement As PXW.DEV.BNF.Element, ByRef s
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..OrderingColumnReference(.subElement,.addedElement)  {
-		if ..OrderingColumnReferenceList43RepZero(.subElement,.addedElement)  {
+		if ..OrderingColumnReferenceList50RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -2926,33 +2992,29 @@ Method OrderingColumnReferenceList(ParentElement As PXW.DEV.BNF.Element, ByRef s
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
 }
 
 ///  ( ',' ordering_column_reference )*
-Method OrderingColumnReferenceList43RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method OrderingColumnReferenceList50RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..OrderingColumnReferenceList44Sub(.subElement,.addedElement)  {
+	while ..OrderingColumnReferenceList51Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 ///  ',' ordering_column_reference
 /// summary values:,
 /// summary=P&C
-Method OrderingColumnReferenceList44Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method OrderingColumnReferenceList51Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	; first rule summary P
@@ -2970,7 +3032,7 @@ Method OrderingColumnReferenceList44Sub(ParentElement As PXW.DEV.BNF.Element, By
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -2999,7 +3061,7 @@ Method OuterJoinType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -3023,7 +3085,7 @@ Method QualifiedIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -3057,7 +3119,7 @@ Method QualifiedJoin(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -3081,7 +3143,7 @@ Method Qualifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -3107,7 +3169,7 @@ Method QueryExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -3135,7 +3197,7 @@ Method QuerySpecification(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -3150,11 +3212,7 @@ Method QuerySpecification2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	while ..QuerySpecification3Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -3176,7 +3234,7 @@ Method QuerySpecification3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -3199,7 +3257,7 @@ Method SchemaName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -3233,7 +3291,7 @@ Method SelectCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -3252,7 +3310,7 @@ Method SelectInto(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"INTO")  {
 		if ..SelectIntoVariable(.subElement,.addedElement)  {
-			if ..SelectInto37RepZero(.subElement,.addedElement)  {
+			if ..SelectInto44RepZero(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -3263,33 +3321,29 @@ Method SelectInto(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
 }
 
 ///  ( ',' select_into_variable)*
-Method SelectInto37RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SelectInto44RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..SelectInto38Sub(.subElement,.addedElement)  {
+	while ..SelectInto45Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 ///  ',' select_into_variable
 /// summary values:,
 /// summary=P&C
-Method SelectInto38Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SelectInto45Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	; first rule summary P
@@ -3307,7 +3361,7 @@ Method SelectInto38Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -3332,7 +3386,7 @@ Method SelectIntoVariable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -3358,7 +3412,7 @@ Method SelectList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -3373,11 +3427,7 @@ Method SelectList16RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	while ..SelectList17Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -3402,7 +3452,7 @@ Method SelectList17Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -3427,7 +3477,7 @@ Method SelectSublist(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -3453,7 +3503,7 @@ Method SelectSublist18Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -3476,7 +3526,7 @@ Method SetQuantifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -3502,7 +3552,7 @@ Method SetQuantifier10Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -3547,11 +3597,7 @@ Method SetQuantifier12RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	while ..SetQuantifier13Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -3576,7 +3622,7 @@ Method SetQuantifier13Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -3601,7 +3647,7 @@ Method SetQuantifier14Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -3627,7 +3673,7 @@ Method SetQuantifier15Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -3641,11 +3687,7 @@ Method SetQuantifier8RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	while ..SetQuantifier9Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -3677,7 +3719,7 @@ Method SetQuantifier9Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -3700,7 +3742,7 @@ Method SimpleTable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -3728,7 +3770,7 @@ Method SqlCaseElse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -3754,7 +3796,7 @@ Method SqlCaseEnd(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -3772,7 +3814,7 @@ Method SqlCaseExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"CASE")  {
-		if ..SqlCaseExpression158Sub(.subElement,.addedElement)  {
+		if ..SqlCaseExpression165Sub(.subElement,.addedElement)  {
 			if $S(..SqlCaseElse(.subElement,.addedElement) :1,1:1) {
 				if ..SqlCaseEnd(.subElement,.addedElement)  {
 					set done=1 ; end compileRules
@@ -3786,7 +3828,7 @@ Method SqlCaseExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -3802,7 +3844,7 @@ Method SqlCaseExpression1(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..SqlCaseWhen(.subElement,.addedElement)  {
-		if ..SqlCaseExpression1159RepZero(.subElement,.addedElement)  {
+		if ..SqlCaseExpression1166RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -3812,32 +3854,28 @@ Method SqlCaseExpression1(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
 }
 
 ///  ( sql_case_when )*
-Method SqlCaseExpression1159RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlCaseExpression1166RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..SqlCaseExpression1160Sub(.subElement,.addedElement)  {
+	while ..SqlCaseExpression1167Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 ///  sql_case_when
 /// summary=C
-Method SqlCaseExpression1160Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlCaseExpression1167Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C
 	set subElement=ParentElement
@@ -3846,17 +3884,13 @@ Method SqlCaseExpression1160Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
 ///  sql_case_expression1 | sql_case_expression2
 /// summary=C|C
-Method SqlCaseExpression158Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlCaseExpression165Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C|C
 	set subElement=ParentElement
@@ -3867,11 +3901,7 @@ Method SqlCaseExpression158Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -3885,7 +3915,7 @@ Method SqlCaseExpression2(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..SqlExpression(.subElement,.addedElement)  {
-		if ..SqlCaseExpression2161RepZero(.subElement,.addedElement)  {
+		if ..SqlCaseExpression2168RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -3895,32 +3925,28 @@ Method SqlCaseExpression2(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
 }
 
 ///  ( sql_case_when )*
-Method SqlCaseExpression2161RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlCaseExpression2168RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..SqlCaseExpression2162Sub(.subElement,.addedElement)  {
+	while ..SqlCaseExpression2169Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 ///  sql_case_when
 /// summary=C
-Method SqlCaseExpression2162Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlCaseExpression2169Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C
 	set subElement=ParentElement
@@ -3929,11 +3955,7 @@ Method SqlCaseExpression2162Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -3963,7 +3985,7 @@ Method SqlCaseWhen(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -3989,7 +4011,7 @@ Method SqlCosVariable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -4072,7 +4094,7 @@ Method SqlDyadicop(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		set done=1 ; or
 	} elseif ..SqlPredicate(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlDyadicop79Sub(.subElement,.addedElement)  {
+	} elseif ..SqlDyadicop86Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -4081,7 +4103,7 @@ Method SqlDyadicop(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -4090,7 +4112,7 @@ Method SqlDyadicop(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 /// "NOT" sql_predicate
 /// summary values:NOT
 /// summary=K&C
-Method SqlDyadicop79Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlDyadicop86Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K&C
 	if '(..isKeyword("NOT",.value)) { quit 0 /* normal */ }
@@ -4107,7 +4129,7 @@ Method SqlDyadicop79Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -4122,7 +4144,7 @@ Method SqlExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..SqlFactor(.subElement,.addedElement)  {
-		if ..SqlExpression77RepZero(.subElement,.addedElement)  {
+		if ..SqlExpression84RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -4132,32 +4154,28 @@ Method SqlExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
 }
 
 ///  ( sql_dyadicop sql_factor )*
-Method SqlExpression77RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlExpression84RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..SqlExpression78Sub(.subElement,.addedElement)  {
+	while ..SqlExpression85Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 ///  sql_dyadicop sql_factor
 /// summary=C&C
-Method SqlExpression78Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlExpression85Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C&C
 	$$$BNFSTART(subElement)
@@ -4173,7 +4191,7 @@ Method SqlExpression78Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -4198,7 +4216,7 @@ Method SqlFactor(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -4231,7 +4249,7 @@ Method SqlFnFunction(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -4246,43 +4264,43 @@ Method SqlFunction(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlFunction88Sub(.subElement,.addedElement)  {
+	if ..SqlFunction95Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction92Sub(.subElement,.addedElement)  {
+	} elseif ..SqlFunction99Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction93Sub(.subElement,.addedElement)  {
+	} elseif ..SqlFunction100Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction94Sub(.subElement,.addedElement)  {
+	} elseif ..SqlFunction101Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction98Sub(.subElement,.addedElement)  {
+	} elseif ..SqlFunction105Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction104Sub(.subElement,.addedElement)  {
+	} elseif ..SqlFunction111Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction110Sub(.subElement,.addedElement)  {
+	} elseif ..SqlFunction117Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction116Sub(.subElement,.addedElement)  {
+	} elseif ..SqlFunction123Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction122Sub(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..SqlFunction126Sub(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..SqlFunction127Sub(.subElement,.addedElement)  {
+	} elseif ..SqlFunction129Sub(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..SqlFunction133Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction139Sub(.subElement,.addedElement)  {
+	} elseif ..SqlFunction134Sub(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..SqlFunction140Sub(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..SqlFunction143Sub(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..SqlFunction144Sub(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..SqlFunction145Sub(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..SqlFunction146Sub(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..SqlFunction147Sub(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..SqlFunction150Sub(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..SqlFunction151Sub(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..SqlFunction152Sub(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..SqlFunction153Sub(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..SqlFunction154Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -4291,1580 +4309,16 @@ Method SqlFunction(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-///  'distinct' ['by' '(' col_list ')']
-/// summary values:DISTINCT
-/// summary=K&[K&P&C&P]
-Method SqlFunction100Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K&[K&P&C&P]
-	if '(..isKeyword("DISTINCT",.value)) { quit 0 /* normal */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"DISTINCT")  {
-		if ..SqlFunction101OptGrp(.subElement,.addedElement)  {
-			set done=1 ; end compileRules
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 
-/// summary values:BY
-/// summary=K&P&C&P
-Method SqlFunction101OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K&P&C&P
-	if '(..isKeyword("BY",.value)) { quit 1 /* not found is OK */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"BY")  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..ColList(.subElement,.addedElement)  {
-				if ..addPunctuation(.subElement,")")  {
-					set done=1 ; end compileRules
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
-	}
-	quit ok
-}
-
-/// '*' | sql_expression
-/// summary=P|C
-Method SqlFunction102Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P|C
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"*")  {
-		set done=1 ; or
-	} elseif ..SqlExpression(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 
-/// summary values:%FOREACH
-/// summary=P&P&C&P
-Method SqlFunction103OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P&P&C&P
-	; first rule summary P
-	if '(..isStringSingle("%FOREACH",.value)) { quit 1 /* not found is OK */ /*4*/ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"%FOREACH")  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..ColList(.subElement,.addedElement)  {
-				if ..addPunctuation(.subElement,")")  {
-					set done=1 ; end compileRules
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
-	}
-	quit ok
-}
-
-/// 'max' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ]
-/// summary values:MAX
-/// summary=K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C]
-Method SqlFunction104Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C]
-	if '(..isKeyword("MAX",.value)) { quit 0 /* normal */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"MAX")  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..SqlFunction105OptGrp(.subElement,.addedElement)  {
-				if ..SqlFunction108Sub(.subElement,.addedElement)  {
-					if ..SqlFunction109OptGrp(.subElement,.addedElement)  {
-						if ..addPunctuation(.subElement,")")  {
-							if $S(..SqlWindow(.subElement,.addedElement) :1,1:1) {
-								set done=1 ; end compileRules
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 
-/// summary=(K&[K&P&C&P])|K
-Method SqlFunction105OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary (K&[K&P&C&P])|K
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..SqlFunction106Sub(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"ALL")  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
-	}
-	quit ok
-}
-
-///  'distinct' ['by' '(' col_list ')']
-/// summary values:DISTINCT
-/// summary=K&[K&P&C&P]
-Method SqlFunction106Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K&[K&P&C&P]
-	if '(..isKeyword("DISTINCT",.value)) { quit 0 /* normal */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"DISTINCT")  {
-		if ..SqlFunction107OptGrp(.subElement,.addedElement)  {
-			set done=1 ; end compileRules
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 
-/// summary values:BY
-/// summary=K&P&C&P
-Method SqlFunction107OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K&P&C&P
-	if '(..isKeyword("BY",.value)) { quit 1 /* not found is OK */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"BY")  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..ColList(.subElement,.addedElement)  {
-				if ..addPunctuation(.subElement,")")  {
-					set done=1 ; end compileRules
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
-	}
-	quit ok
-}
-
-/// '*' | sql_expression
-/// summary=P|C
-Method SqlFunction108Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P|C
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"*")  {
-		set done=1 ; or
-	} elseif ..SqlExpression(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 
-/// summary values:%FOREACH
-/// summary=P&P&C&P
-Method SqlFunction109OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P&P&C&P
-	; first rule summary P
-	if '(..isStringSingle("%FOREACH",.value)) { quit 1 /* not found is OK */ /*4*/ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"%FOREACH")  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..ColList(.subElement,.addedElement)  {
-				if ..addPunctuation(.subElement,")")  {
-					set done=1 ; end compileRules
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
-	}
-	quit ok
-}
-
-/// 'sum' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ]
-/// summary values:SUM
-/// summary=K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C]
-Method SqlFunction110Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C]
-	if '(..isKeyword("SUM",.value)) { quit 0 /* normal */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"SUM")  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..SqlFunction111OptGrp(.subElement,.addedElement)  {
-				if ..SqlFunction114Sub(.subElement,.addedElement)  {
-					if ..SqlFunction115OptGrp(.subElement,.addedElement)  {
-						if ..addPunctuation(.subElement,")")  {
-							if $S(..SqlWindow(.subElement,.addedElement) :1,1:1) {
-								set done=1 ; end compileRules
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 
-/// summary=(K&[K&P&C&P])|K
-Method SqlFunction111OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary (K&[K&P&C&P])|K
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..SqlFunction112Sub(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"ALL")  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
-	}
-	quit ok
-}
-
-///  'distinct' ['by' '(' col_list ')']
-/// summary values:DISTINCT
-/// summary=K&[K&P&C&P]
-Method SqlFunction112Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K&[K&P&C&P]
-	if '(..isKeyword("DISTINCT",.value)) { quit 0 /* normal */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"DISTINCT")  {
-		if ..SqlFunction113OptGrp(.subElement,.addedElement)  {
-			set done=1 ; end compileRules
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 
-/// summary values:BY
-/// summary=K&P&C&P
-Method SqlFunction113OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K&P&C&P
-	if '(..isKeyword("BY",.value)) { quit 1 /* not found is OK */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"BY")  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..ColList(.subElement,.addedElement)  {
-				if ..addPunctuation(.subElement,")")  {
-					set done=1 ; end compileRules
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
-	}
-	quit ok
-}
-
-/// '*' | sql_expression
-/// summary=P|C
-Method SqlFunction114Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P|C
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"*")  {
-		set done=1 ; or
-	} elseif ..SqlExpression(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 
-/// summary values:%FOREACH
-/// summary=P&P&C&P
-Method SqlFunction115OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P&P&C&P
-	; first rule summary P
-	if '(..isStringSingle("%FOREACH",.value)) { quit 1 /* not found is OK */ /*4*/ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"%FOREACH")  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..ColList(.subElement,.addedElement)  {
-				if ..addPunctuation(.subElement,")")  {
-					set done=1 ; end compileRules
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
-	}
-	quit ok
-}
-
-/// 'avg' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ]
-/// summary values:AVG
-/// summary=K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C]
-Method SqlFunction116Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C]
-	if '(..isKeyword("AVG",.value)) { quit 0 /* normal */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"AVG")  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..SqlFunction117OptGrp(.subElement,.addedElement)  {
-				if ..SqlFunction120Sub(.subElement,.addedElement)  {
-					if ..SqlFunction121OptGrp(.subElement,.addedElement)  {
-						if ..addPunctuation(.subElement,")")  {
-							if $S(..SqlWindow(.subElement,.addedElement) :1,1:1) {
-								set done=1 ; end compileRules
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 
-/// summary=(K&[K&P&C&P])|K
-Method SqlFunction117OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary (K&[K&P&C&P])|K
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..SqlFunction118Sub(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"ALL")  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
-	}
-	quit ok
-}
-
-///  'distinct' ['by' '(' col_list ')']
-/// summary values:DISTINCT
-/// summary=K&[K&P&C&P]
-Method SqlFunction118Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K&[K&P&C&P]
-	if '(..isKeyword("DISTINCT",.value)) { quit 0 /* normal */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"DISTINCT")  {
-		if ..SqlFunction119OptGrp(.subElement,.addedElement)  {
-			set done=1 ; end compileRules
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 
-/// summary values:BY
-/// summary=K&P&C&P
-Method SqlFunction119OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K&P&C&P
-	if '(..isKeyword("BY",.value)) { quit 1 /* not found is OK */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"BY")  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..ColList(.subElement,.addedElement)  {
-				if ..addPunctuation(.subElement,")")  {
-					set done=1 ; end compileRules
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
-	}
-	quit ok
-}
-
-/// '*' | sql_expression
-/// summary=P|C
-Method SqlFunction120Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P|C
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"*")  {
-		set done=1 ; or
-	} elseif ..SqlExpression(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 
-/// summary values:%FOREACH
-/// summary=P&P&C&P
-Method SqlFunction121OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P&P&C&P
-	; first rule summary P
-	if '(..isStringSingle("%FOREACH",.value)) { quit 1 /* not found is OK */ /*4*/ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"%FOREACH")  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..ColList(.subElement,.addedElement)  {
-				if ..addPunctuation(.subElement,")")  {
-					set done=1 ; end compileRules
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
-	}
-	quit ok
-}
-
-/// 'cast' '(' sql_expression 'as' identifier ['(' sql_expression ( ',' sql_expression)* ')' ] ')'
-/// summary values:CAST
-/// summary=K&P&C&K&C&[P&C&(?4punctuation:4?)*&P]&P
-Method SqlFunction122Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K&P&C&K&C&[P&C&(?4punctuation:4?)*&P]&P
-	if '(..isKeyword("CAST",.value)) { quit 0 /* normal */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"CAST")  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..SqlExpression(.subElement,.addedElement)  {
-				if ..addKeyword(.subElement,"AS")  {
-					if ..Identifier(.subElement,.addedElement)  {
-						if ..SqlFunction123OptGrp(.subElement,.addedElement)  {
-							if ..addPunctuation(.subElement,")")  {
-								set done=1 ; end compileRules
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 
-/// summary values:(
-/// summary=P&C&(?4punctuation:4?)*&P
-Method SqlFunction123OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P&C&(?4punctuation:4?)*&P
-	; first rule summary P
-	if '(..isStringSingle("(",.value)) { quit 1 /* not found is OK */ /*4*/ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"(")  {
-		if ..SqlExpression(.subElement,.addedElement)  {
-			if ..SqlFunction124RepZero(.subElement,.addedElement)  {
-				if ..addPunctuation(.subElement,")")  {
-					set done=1 ; end compileRules
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
-	}
-	quit ok
-}
-
-///  ( ',' sql_expression)*
-Method SqlFunction124RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary ?4punctuation:4?
-	set subElement=ParentElement
-	set done=0 ; method start
-	while ..SqlFunction125Sub(.subElement,.addedElement)  {
-		set done=1
-	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
-	quit ok
-}
-
-///  ',' sql_expression
-/// summary values:,
-/// summary=P&C
-Method SqlFunction125Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P&C
-	; first rule summary P
-	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ /*4*/ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,",")  {
-		if ..SqlExpression(.subElement,.addedElement)  {
-			set done=1 ; end compileRules
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 'exists' '(' subquery_specification ')'
-/// summary values:EXISTS
-/// summary=K&P&C&P
-Method SqlFunction126Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K&P&C&P
-	if '(..isKeyword("EXISTS",.value)) { quit 0 /* normal */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"EXISTS")  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..SubquerySpecification(.subElement,.addedElement)  {
-				if ..addPunctuation(.subElement,")")  {
-					set done=1 ; end compileRules
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 'list' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')'
-/// summary values:LIST
-/// summary=K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P
-Method SqlFunction127Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P
-	if '(..isKeyword("LIST",.value)) { quit 0 /* normal */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"LIST")  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..SqlFunction128OptGrp(.subElement,.addedElement)  {
-				if ..SqlFunction131Sub(.subElement,.addedElement)  {
-					if ..SqlFunction132OptGrp(.subElement,.addedElement)  {
-						if ..addPunctuation(.subElement,")")  {
-							set done=1 ; end compileRules
-						}
-					}
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 
-/// summary=(K&[K&P&C&P])|K
-Method SqlFunction128OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary (K&[K&P&C&P])|K
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..SqlFunction129Sub(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"ALL")  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
-	}
-	quit ok
-}
-
-///  'distinct' ['by' '(' col_list ')']
-/// summary values:DISTINCT
-/// summary=K&[K&P&C&P]
-Method SqlFunction129Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K&[K&P&C&P]
-	if '(..isKeyword("DISTINCT",.value)) { quit 0 /* normal */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"DISTINCT")  {
-		if ..SqlFunction130OptGrp(.subElement,.addedElement)  {
-			set done=1 ; end compileRules
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 
-/// summary values:BY
-/// summary=K&P&C&P
-Method SqlFunction130OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K&P&C&P
-	if '(..isKeyword("BY",.value)) { quit 1 /* not found is OK */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"BY")  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..ColList(.subElement,.addedElement)  {
-				if ..addPunctuation(.subElement,")")  {
-					set done=1 ; end compileRules
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
-	}
-	quit ok
-}
-
-/// '*' | sql_expression
-/// summary=P|C
-Method SqlFunction131Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P|C
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"*")  {
-		set done=1 ; or
-	} elseif ..SqlExpression(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 
-/// summary values:%FOREACH
-/// summary=P&P&C&P
-Method SqlFunction132OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P&P&C&P
-	; first rule summary P
-	if '(..isStringSingle("%FOREACH",.value)) { quit 1 /* not found is OK */ /*4*/ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"%FOREACH")  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..ColList(.subElement,.addedElement)  {
-				if ..addPunctuation(.subElement,")")  {
-					set done=1 ; end compileRules
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
-	}
-	quit ok
-}
-
-/// '%dlist' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')'
-/// summary values:%DLIST
-/// summary=P&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P
-Method SqlFunction133Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P
-	; first rule summary P
-	if '(..isStringSingle("%DLIST",.value)) { quit 0 /* normal */ /*4*/ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"%dlist")  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..SqlFunction134OptGrp(.subElement,.addedElement)  {
-				if ..SqlFunction137Sub(.subElement,.addedElement)  {
-					if ..SqlFunction138OptGrp(.subElement,.addedElement)  {
-						if ..addPunctuation(.subElement,")")  {
-							set done=1 ; end compileRules
-						}
-					}
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 
-/// summary=(K&[K&P&C&P])|K
-Method SqlFunction134OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary (K&[K&P&C&P])|K
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..SqlFunction135Sub(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"ALL")  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
-	}
-	quit ok
-}
-
-///  'distinct' ['by' '(' col_list ')']
-/// summary values:DISTINCT
-/// summary=K&[K&P&C&P]
-Method SqlFunction135Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K&[K&P&C&P]
-	if '(..isKeyword("DISTINCT",.value)) { quit 0 /* normal */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"DISTINCT")  {
-		if ..SqlFunction136OptGrp(.subElement,.addedElement)  {
-			set done=1 ; end compileRules
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 
-/// summary values:BY
-/// summary=K&P&C&P
-Method SqlFunction136OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K&P&C&P
-	if '(..isKeyword("BY",.value)) { quit 1 /* not found is OK */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"BY")  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..ColList(.subElement,.addedElement)  {
-				if ..addPunctuation(.subElement,")")  {
-					set done=1 ; end compileRules
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
-	}
-	quit ok
-}
-
-/// '*' | sql_expression
-/// summary=P|C
-Method SqlFunction137Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P|C
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"*")  {
-		set done=1 ; or
-	} elseif ..SqlExpression(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 
-/// summary values:%FOREACH
-/// summary=P&P&C&P
-Method SqlFunction138OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P&P&C&P
-	; first rule summary P
-	if '(..isStringSingle("%FOREACH",.value)) { quit 1 /* not found is OK */ /*4*/ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"%FOREACH")  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..ColList(.subElement,.addedElement)  {
-				if ..addPunctuation(.subElement,")")  {
-					set done=1 ; end compileRules
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
-	}
-	quit ok
-}
-
-/// 'FOR' 'SOME' '%ELEMENT' '(' sql_expression ')' sql_expression
-/// summary values:FOR
-/// summary=K&K&P&P&C&P&C
-Method SqlFunction139Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K&K&P&P&C&P&C
-	if '(..isKeyword("FOR",.value)) { quit 0 /* normal */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"FOR")  {
-		if ..addKeyword(.subElement,"SOME")  {
-			if ..addPunctuation(.subElement,"%ELEMENT")  {
-				if ..addPunctuation(.subElement,"(")  {
-					if ..SqlExpression(.subElement,.addedElement)  {
-						if ..addPunctuation(.subElement,")")  {
-							if ..SqlExpression(.subElement,.addedElement)  {
-								set done=1 ; end compileRules
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 'trim' '(' ['leading' | 'trailing' | 'both'] [(sql_expression 'from')] sql_expression ')'
-/// summary values:TRIM
-/// summary=K&P&[K|K|K]&[(C&K)]&C&P
-Method SqlFunction140Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K&P&[K|K|K]&[(C&K)]&C&P
-	if '(..isKeyword("TRIM",.value)) { quit 0 /* normal */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"TRIM")  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..SqlFunction141OptGrp(.subElement,.addedElement)  {
-				if $S(..SqlFunction142Sub(.subElement,.addedElement) :1,1:1) {
-					if ..SqlExpression(.subElement,.addedElement)  {
-						if ..addPunctuation(.subElement,")")  {
-							set done=1 ; end compileRules
-						}
-					}
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 
-/// summary values:LEADING,TRAILING,BOTH
-/// summary=K|K|K
-Method SqlFunction141OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K|K|K
-	if '(..isKeywordInList($lb("LEADING","TRAILING","BOTH"),.value)) { quit 1 /* not found is OK */ }
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"LEADING")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"TRAILING")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"BOTH")  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* failure rollsback but returns OK */
-	}
-	quit ok
-}
-
-/// sql_expression 'from'
-/// summary=C&K
-Method SqlFunction142Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C&K
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..SqlExpression(.subElement,.addedElement)  {
-		if ..addKeyword(.subElement,"FROM")  {
-			set done=1 ; end compileRules
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 'dateadd' '(' sql_function_datepart_part ',' sql_expression ',' sql_expression ')'
-/// summary values:DATEADD
-/// summary=K&P&C&P&C&P&C&P
-Method SqlFunction143Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K&P&C&P&C&P&C&P
-	if '(..isKeyword("DATEADD",.value)) { quit 0 /* normal */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"DATEADD")  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..SqlFunctionDatepartPart(.subElement,.addedElement)  {
-				if ..addPunctuation(.subElement,",")  {
-					if ..SqlExpression(.subElement,.addedElement)  {
-						if ..addPunctuation(.subElement,",")  {
-							if ..SqlExpression(.subElement,.addedElement)  {
-								if ..addPunctuation(.subElement,")")  {
-									set done=1 ; end compileRules
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 'datediff' '(' sql_function_datepart_part ',' sql_expression ',' sql_expression ')'
-/// summary values:DATEDIFF
-/// summary=K&P&C&P&C&P&C&P
-Method SqlFunction144Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K&P&C&P&C&P&C&P
-	if '(..isKeyword("DATEDIFF",.value)) { quit 0 /* normal */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"DATEDIFF")  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..SqlFunctionDatepartPart(.subElement,.addedElement)  {
-				if ..addPunctuation(.subElement,",")  {
-					if ..SqlExpression(.subElement,.addedElement)  {
-						if ..addPunctuation(.subElement,",")  {
-							if ..SqlExpression(.subElement,.addedElement)  {
-								if ..addPunctuation(.subElement,")")  {
-									set done=1 ; end compileRules
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 'datename' '(' sql_function_datepart_part ',' sql_expression ')'
-/// summary values:DATENAME
-/// summary=K&P&C&P&C&P
-Method SqlFunction145Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K&P&C&P&C&P
-	if '(..isKeyword("DATENAME",.value)) { quit 0 /* normal */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"DATENAME")  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..SqlFunctionDatepartPart(.subElement,.addedElement)  {
-				if ..addPunctuation(.subElement,",")  {
-					if ..SqlExpression(.subElement,.addedElement)  {
-						if ..addPunctuation(.subElement,")")  {
-							set done=1 ; end compileRules
-						}
-					}
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 'datepart' '(' sql_function_datepart_part ',' sql_expression ')'
-/// summary values:DATEPART
-/// summary=K&P&C&P&C&P
-Method SqlFunction146Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K&P&C&P&C&P
-	if '(..isKeyword("DATEPART",.value)) { quit 0 /* normal */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"DATEPART")  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..SqlFunctionDatepartPart(.subElement,.addedElement)  {
-				if ..addPunctuation(.subElement,",")  {
-					if ..SqlExpression(.subElement,.addedElement)  {
-						if ..addPunctuation(.subElement,")")  {
-							set done=1 ; end compileRules
-						}
-					}
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// identifier '(' [ '*' | (sql_expression ( ',' sql_expression)*) ] ')' [ sql_window ]
-/// summary=C&P&[P|(C&(?4punctuation:4?)*)]&P&[C]
-Method SqlFunction147Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C&P&[P|(C&(?4punctuation:4?)*)]&P&[C]
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..Identifier(.subElement,.addedElement)  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..SqlFunction148OptGrp(.subElement,.addedElement)  {
-				if ..addPunctuation(.subElement,")")  {
-					if $S(..SqlWindow(.subElement,.addedElement) :1,1:1) {
-						set done=1 ; end compileRules
-					}
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 
-/// summary=P|(C&(?4punctuation:4?)*)
-Method SqlFunction148OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P|(C&(?4punctuation:4?)*)
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"*")  {
-		set done=1 ; or
-	} elseif ..SqlFunction149Sub(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
-	}
-	quit ok
-}
-
-/// sql_expression ( ',' sql_expression)*
-/// summary=C&(?4punctuation:4?)*
-Method SqlFunction149Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C&(?4punctuation:4?)*
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..SqlExpression(.subElement,.addedElement)  {
-		if ..SqlFunction150RepZero(.subElement,.addedElement)  {
-			set done=1 ; end compileRules
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-///  ( ',' sql_expression)*
-Method SqlFunction150RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary ?4punctuation:4?
-	set subElement=ParentElement
-	set done=0 ; method start
-	while ..SqlFunction151Sub(.subElement,.addedElement)  {
-		set done=1
-	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
-	quit ok
-}
-
-///  ',' sql_expression
-/// summary values:,
-/// summary=P&C
-Method SqlFunction151Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P&C
-	; first rule summary P
-	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ /*4*/ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,",")  {
-		if ..SqlExpression(.subElement,.addedElement)  {
-			set done=1 ; end compileRules
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// '$' identifier '(' [ sql_expression ( ',' sql_expression)* ] ')'
-/// summary values:$
-/// summary=P&C&P&[C&(?4punctuation:4?)*]&P
-Method SqlFunction88Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P&C&P&[C&(?4punctuation:4?)*]&P
-	; first rule summary P
-	if '(..isStringSingle("$",.value)) { quit 0 /* normal */ /*4*/ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"$")  {
-		if ..Identifier(.subElement,.addedElement)  {
-			if ..addPunctuation(.subElement,"(")  {
-				if ..SqlFunction89OptGrp(.subElement,.addedElement)  {
-					if ..addPunctuation(.subElement,")")  {
-						set done=1 ; end compileRules
-					}
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// 
-/// summary=C&(?4punctuation:4?)*
-Method SqlFunction89OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C&(?4punctuation:4?)*
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..SqlExpression(.subElement,.addedElement)  {
-		if ..SqlFunction90RepZero(.subElement,.addedElement)  {
-			set done=1 ; end compileRules
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
-	}
-	quit ok
-}
-
-///  ( ',' sql_expression)*
-Method SqlFunction90RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary ?4punctuation:4?
-	set subElement=ParentElement
-	set done=0 ; method start
-	while ..SqlFunction91Sub(.subElement,.addedElement)  {
-		set done=1
-	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
-	quit ok
-}
-
-///  ',' sql_expression
-/// summary values:,
-/// summary=P&C
-Method SqlFunction91Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P&C
-	; first rule summary P
-	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ /*4*/ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,",")  {
-		if ..SqlExpression(.subElement,.addedElement)  {
-			set done=1 ; end compileRules
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
-	quit ok
-}
-
-/// '%exact' sql_expression
-/// summary values:%EXACT
-/// summary=P&C
-Method SqlFunction92Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P&C
-	; first rule summary P
-	if '(..isStringSingle("%EXACT",.value)) { quit 0 /* normal */ /*4*/ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"%exact")  {
-		if ..SqlExpression(.subElement,.addedElement)  {
-			set done=1 ; end compileRules
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
-	}
 	quit ok
 }
 
 /// 'count' '(' ')' [ sql_window ]
 /// summary values:COUNT
 /// summary=K&P&P&[C]
-Method SqlFunction93Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlFunction100Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K&P&P&[C]
 	if '(..isKeyword("COUNT",.value)) { quit 0 /* normal */ }
@@ -5885,7 +4339,7 @@ Method SqlFunction93Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -5893,7 +4347,7 @@ Method SqlFunction93Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 /// 'count' '(' ['distinct' | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ]
 /// summary values:COUNT
 /// summary=K&P&[K|K]&(P|C)&[P&P&C&P]&P&[C]
-Method SqlFunction94Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlFunction101Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K&P&[K|K]&(P|C)&[P&P&C&P]&P&[C]
 	if '(..isKeyword("COUNT",.value)) { quit 0 /* normal */ }
@@ -5901,9 +4355,9 @@ Method SqlFunction94Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"COUNT")  {
 		if ..addPunctuation(.subElement,"(")  {
-			if ..SqlFunction95OptGrp(.subElement,.addedElement)  {
-				if ..SqlFunction96Sub(.subElement,.addedElement)  {
-					if ..SqlFunction97OptGrp(.subElement,.addedElement)  {
+			if ..SqlFunction102OptGrp(.subElement,.addedElement)  {
+				if ..SqlFunction103Sub(.subElement,.addedElement)  {
+					if ..SqlFunction104OptGrp(.subElement,.addedElement)  {
 						if ..addPunctuation(.subElement,")")  {
 							if $S(..SqlWindow(.subElement,.addedElement) :1,1:1) {
 								set done=1 ; end compileRules
@@ -5920,7 +4374,7 @@ Method SqlFunction94Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -5928,7 +4382,7 @@ Method SqlFunction94Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 /// 
 /// summary values:DISTINCT,ALL
 /// summary=K|K
-Method SqlFunction95OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlFunction102OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K|K
 	if '(..isKeywordInList($lb("DISTINCT","ALL"),.value)) { quit 1 /* not found is OK */ }
@@ -5940,17 +4394,13 @@ Method SqlFunction95OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* failure rollsback but returns OK */
-	}
+	set ok=1
 	quit ok
 }
 
 /// '*' | sql_expression
 /// summary=P|C
-Method SqlFunction96Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlFunction103Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P|C
 	$$$BNFSTART(subElement)
@@ -5966,7 +4416,7 @@ Method SqlFunction96Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -5974,7 +4424,7 @@ Method SqlFunction96Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 /// 
 /// summary values:%FOREACH
 /// summary=P&P&C&P
-Method SqlFunction97OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlFunction104OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&P&C&P
 	; first rule summary P
@@ -6004,7 +4454,7 @@ Method SqlFunction97OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 /// 'min' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ]
 /// summary values:MIN
 /// summary=K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C]
-Method SqlFunction98Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlFunction105Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C]
 	if '(..isKeyword("MIN",.value)) { quit 0 /* normal */ }
@@ -6012,9 +4462,9 @@ Method SqlFunction98Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"MIN")  {
 		if ..addPunctuation(.subElement,"(")  {
-			if ..SqlFunction99OptGrp(.subElement,.addedElement)  {
-				if ..SqlFunction102Sub(.subElement,.addedElement)  {
-					if ..SqlFunction103OptGrp(.subElement,.addedElement)  {
+			if ..SqlFunction106OptGrp(.subElement,.addedElement)  {
+				if ..SqlFunction109Sub(.subElement,.addedElement)  {
+					if ..SqlFunction110OptGrp(.subElement,.addedElement)  {
 						if ..addPunctuation(.subElement,")")  {
 							if $S(..SqlWindow(.subElement,.addedElement) :1,1:1) {
 								set done=1 ; end compileRules
@@ -6031,19 +4481,19 @@ Method SqlFunction98Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
 
 /// 
 /// summary=(K&[K&P&C&P])|K
-Method SqlFunction99OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlFunction106OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary (K&[K&P&C&P])|K
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlFunction100Sub(.subElement,.addedElement)  {
+	if ..SqlFunction107Sub(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..addKeyword(.subElement,"ALL")  {
 		set done=1 ; end compileRules
@@ -6055,6 +4505,1554 @@ Method SqlFunction99OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	} else {
 		$$$BNFROLLBACK(subElement)
 		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+///  'distinct' ['by' '(' col_list ')']
+/// summary values:DISTINCT
+/// summary=K&[K&P&C&P]
+Method SqlFunction107Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&[K&P&C&P]
+	if '(..isKeyword("DISTINCT",.value)) { quit 0 /* normal */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"DISTINCT")  {
+		if ..SqlFunction108OptGrp(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 
+/// summary values:BY
+/// summary=K&P&C&P
+Method SqlFunction108OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&P&C&P
+	if '(..isKeyword("BY",.value)) { quit 1 /* not found is OK */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"BY")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
+					set done=1 ; end compileRules
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+/// '*' | sql_expression
+/// summary=P|C
+Method SqlFunction109Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P|C
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"*")  {
+		set done=1 ; or
+	} elseif ..SqlExpression(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 
+/// summary values:%FOREACH
+/// summary=P&P&C&P
+Method SqlFunction110OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&P&C&P
+	; first rule summary P
+	if '(..isStringSingle("%FOREACH",.value)) { quit 1 /* not found is OK */ /*4*/ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"%FOREACH")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
+					set done=1 ; end compileRules
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+/// 'max' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ]
+/// summary values:MAX
+/// summary=K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C]
+Method SqlFunction111Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C]
+	if '(..isKeyword("MAX",.value)) { quit 0 /* normal */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"MAX")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlFunction112OptGrp(.subElement,.addedElement)  {
+				if ..SqlFunction115Sub(.subElement,.addedElement)  {
+					if ..SqlFunction116OptGrp(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,")")  {
+							if $S(..SqlWindow(.subElement,.addedElement) :1,1:1) {
+								set done=1 ; end compileRules
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 
+/// summary=(K&[K&P&C&P])|K
+Method SqlFunction112OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary (K&[K&P&C&P])|K
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..SqlFunction113Sub(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"ALL")  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+///  'distinct' ['by' '(' col_list ')']
+/// summary values:DISTINCT
+/// summary=K&[K&P&C&P]
+Method SqlFunction113Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&[K&P&C&P]
+	if '(..isKeyword("DISTINCT",.value)) { quit 0 /* normal */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"DISTINCT")  {
+		if ..SqlFunction114OptGrp(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 
+/// summary values:BY
+/// summary=K&P&C&P
+Method SqlFunction114OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&P&C&P
+	if '(..isKeyword("BY",.value)) { quit 1 /* not found is OK */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"BY")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
+					set done=1 ; end compileRules
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+/// '*' | sql_expression
+/// summary=P|C
+Method SqlFunction115Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P|C
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"*")  {
+		set done=1 ; or
+	} elseif ..SqlExpression(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 
+/// summary values:%FOREACH
+/// summary=P&P&C&P
+Method SqlFunction116OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&P&C&P
+	; first rule summary P
+	if '(..isStringSingle("%FOREACH",.value)) { quit 1 /* not found is OK */ /*4*/ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"%FOREACH")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
+					set done=1 ; end compileRules
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+/// 'sum' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ]
+/// summary values:SUM
+/// summary=K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C]
+Method SqlFunction117Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C]
+	if '(..isKeyword("SUM",.value)) { quit 0 /* normal */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"SUM")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlFunction118OptGrp(.subElement,.addedElement)  {
+				if ..SqlFunction121Sub(.subElement,.addedElement)  {
+					if ..SqlFunction122OptGrp(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,")")  {
+							if $S(..SqlWindow(.subElement,.addedElement) :1,1:1) {
+								set done=1 ; end compileRules
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 
+/// summary=(K&[K&P&C&P])|K
+Method SqlFunction118OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary (K&[K&P&C&P])|K
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..SqlFunction119Sub(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"ALL")  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+///  'distinct' ['by' '(' col_list ')']
+/// summary values:DISTINCT
+/// summary=K&[K&P&C&P]
+Method SqlFunction119Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&[K&P&C&P]
+	if '(..isKeyword("DISTINCT",.value)) { quit 0 /* normal */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"DISTINCT")  {
+		if ..SqlFunction120OptGrp(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 
+/// summary values:BY
+/// summary=K&P&C&P
+Method SqlFunction120OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&P&C&P
+	if '(..isKeyword("BY",.value)) { quit 1 /* not found is OK */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"BY")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
+					set done=1 ; end compileRules
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+/// '*' | sql_expression
+/// summary=P|C
+Method SqlFunction121Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P|C
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"*")  {
+		set done=1 ; or
+	} elseif ..SqlExpression(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 
+/// summary values:%FOREACH
+/// summary=P&P&C&P
+Method SqlFunction122OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&P&C&P
+	; first rule summary P
+	if '(..isStringSingle("%FOREACH",.value)) { quit 1 /* not found is OK */ /*4*/ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"%FOREACH")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
+					set done=1 ; end compileRules
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+/// 'avg' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ]
+/// summary values:AVG
+/// summary=K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C]
+Method SqlFunction123Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C]
+	if '(..isKeyword("AVG",.value)) { quit 0 /* normal */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"AVG")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlFunction124OptGrp(.subElement,.addedElement)  {
+				if ..SqlFunction127Sub(.subElement,.addedElement)  {
+					if ..SqlFunction128OptGrp(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,")")  {
+							if $S(..SqlWindow(.subElement,.addedElement) :1,1:1) {
+								set done=1 ; end compileRules
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 
+/// summary=(K&[K&P&C&P])|K
+Method SqlFunction124OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary (K&[K&P&C&P])|K
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..SqlFunction125Sub(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"ALL")  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+///  'distinct' ['by' '(' col_list ')']
+/// summary values:DISTINCT
+/// summary=K&[K&P&C&P]
+Method SqlFunction125Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&[K&P&C&P]
+	if '(..isKeyword("DISTINCT",.value)) { quit 0 /* normal */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"DISTINCT")  {
+		if ..SqlFunction126OptGrp(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 
+/// summary values:BY
+/// summary=K&P&C&P
+Method SqlFunction126OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&P&C&P
+	if '(..isKeyword("BY",.value)) { quit 1 /* not found is OK */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"BY")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
+					set done=1 ; end compileRules
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+/// '*' | sql_expression
+/// summary=P|C
+Method SqlFunction127Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P|C
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"*")  {
+		set done=1 ; or
+	} elseif ..SqlExpression(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 
+/// summary values:%FOREACH
+/// summary=P&P&C&P
+Method SqlFunction128OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&P&C&P
+	; first rule summary P
+	if '(..isStringSingle("%FOREACH",.value)) { quit 1 /* not found is OK */ /*4*/ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"%FOREACH")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
+					set done=1 ; end compileRules
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+/// 'cast' '(' sql_expression 'as' identifier ['(' sql_expression ( ',' sql_expression)* ')' ] ')'
+/// summary values:CAST
+/// summary=K&P&C&K&C&[P&C&(?4punctuation:4?)*&P]&P
+Method SqlFunction129Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&P&C&K&C&[P&C&(?4punctuation:4?)*&P]&P
+	if '(..isKeyword("CAST",.value)) { quit 0 /* normal */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"CAST")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlExpression(.subElement,.addedElement)  {
+				if ..addKeyword(.subElement,"AS")  {
+					if ..Identifier(.subElement,.addedElement)  {
+						if ..SqlFunction130OptGrp(.subElement,.addedElement)  {
+							if ..addPunctuation(.subElement,")")  {
+								set done=1 ; end compileRules
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 
+/// summary values:(
+/// summary=P&C&(?4punctuation:4?)*&P
+Method SqlFunction130OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&C&(?4punctuation:4?)*&P
+	; first rule summary P
+	if '(..isStringSingle("(",.value)) { quit 1 /* not found is OK */ /*4*/ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"(")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
+			if ..SqlFunction131RepZero(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
+					set done=1 ; end compileRules
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+///  ( ',' sql_expression)*
+Method SqlFunction131RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary ?4punctuation:4?
+	set subElement=ParentElement
+	set done=0 ; method start
+	while ..SqlFunction132Sub(.subElement,.addedElement)  {
+		set done=1
+	}
+	set ok=1
+	quit ok
+}
+
+///  ',' sql_expression
+/// summary values:,
+/// summary=P&C
+Method SqlFunction132Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&C
+	; first rule summary P
+	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ /*4*/ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,",")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 'exists' '(' subquery_specification ')'
+/// summary values:EXISTS
+/// summary=K&P&C&P
+Method SqlFunction133Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&P&C&P
+	if '(..isKeyword("EXISTS",.value)) { quit 0 /* normal */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"EXISTS")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SubquerySpecification(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
+					set done=1 ; end compileRules
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 'list' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')'
+/// summary values:LIST
+/// summary=K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P
+Method SqlFunction134Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P
+	if '(..isKeyword("LIST",.value)) { quit 0 /* normal */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"LIST")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlFunction135OptGrp(.subElement,.addedElement)  {
+				if ..SqlFunction138Sub(.subElement,.addedElement)  {
+					if ..SqlFunction139OptGrp(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,")")  {
+							set done=1 ; end compileRules
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 
+/// summary=(K&[K&P&C&P])|K
+Method SqlFunction135OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary (K&[K&P&C&P])|K
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..SqlFunction136Sub(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"ALL")  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+///  'distinct' ['by' '(' col_list ')']
+/// summary values:DISTINCT
+/// summary=K&[K&P&C&P]
+Method SqlFunction136Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&[K&P&C&P]
+	if '(..isKeyword("DISTINCT",.value)) { quit 0 /* normal */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"DISTINCT")  {
+		if ..SqlFunction137OptGrp(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 
+/// summary values:BY
+/// summary=K&P&C&P
+Method SqlFunction137OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&P&C&P
+	if '(..isKeyword("BY",.value)) { quit 1 /* not found is OK */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"BY")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
+					set done=1 ; end compileRules
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+/// '*' | sql_expression
+/// summary=P|C
+Method SqlFunction138Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P|C
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"*")  {
+		set done=1 ; or
+	} elseif ..SqlExpression(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 
+/// summary values:%FOREACH
+/// summary=P&P&C&P
+Method SqlFunction139OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&P&C&P
+	; first rule summary P
+	if '(..isStringSingle("%FOREACH",.value)) { quit 1 /* not found is OK */ /*4*/ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"%FOREACH")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
+					set done=1 ; end compileRules
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+/// '%dlist' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')'
+/// summary values:%DLIST
+/// summary=P&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P
+Method SqlFunction140Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P
+	; first rule summary P
+	if '(..isStringSingle("%DLIST",.value)) { quit 0 /* normal */ /*4*/ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"%dlist")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlFunction141OptGrp(.subElement,.addedElement)  {
+				if ..SqlFunction144Sub(.subElement,.addedElement)  {
+					if ..SqlFunction145OptGrp(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,")")  {
+							set done=1 ; end compileRules
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 
+/// summary=(K&[K&P&C&P])|K
+Method SqlFunction141OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary (K&[K&P&C&P])|K
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..SqlFunction142Sub(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"ALL")  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+///  'distinct' ['by' '(' col_list ')']
+/// summary values:DISTINCT
+/// summary=K&[K&P&C&P]
+Method SqlFunction142Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&[K&P&C&P]
+	if '(..isKeyword("DISTINCT",.value)) { quit 0 /* normal */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"DISTINCT")  {
+		if ..SqlFunction143OptGrp(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 
+/// summary values:BY
+/// summary=K&P&C&P
+Method SqlFunction143OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&P&C&P
+	if '(..isKeyword("BY",.value)) { quit 1 /* not found is OK */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"BY")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
+					set done=1 ; end compileRules
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+/// '*' | sql_expression
+/// summary=P|C
+Method SqlFunction144Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P|C
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"*")  {
+		set done=1 ; or
+	} elseif ..SqlExpression(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 
+/// summary values:%FOREACH
+/// summary=P&P&C&P
+Method SqlFunction145OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&P&C&P
+	; first rule summary P
+	if '(..isStringSingle("%FOREACH",.value)) { quit 1 /* not found is OK */ /*4*/ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"%FOREACH")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..ColList(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
+					set done=1 ; end compileRules
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+/// 'FOR' 'SOME' '%ELEMENT' '(' sql_expression ')' sql_expression
+/// summary values:FOR
+/// summary=K&K&P&P&C&P&C
+Method SqlFunction146Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&K&P&P&C&P&C
+	if '(..isKeyword("FOR",.value)) { quit 0 /* normal */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"FOR")  {
+		if ..addKeyword(.subElement,"SOME")  {
+			if ..addPunctuation(.subElement,"%ELEMENT")  {
+				if ..addPunctuation(.subElement,"(")  {
+					if ..SqlExpression(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,")")  {
+							if ..SqlExpression(.subElement,.addedElement)  {
+								set done=1 ; end compileRules
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 'trim' '(' ['leading' | 'trailing' | 'both'] [(sql_expression 'from')] sql_expression ')'
+/// summary values:TRIM
+/// summary=K&P&[K|K|K]&[(C&K)]&C&P
+Method SqlFunction147Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&P&[K|K|K]&[(C&K)]&C&P
+	if '(..isKeyword("TRIM",.value)) { quit 0 /* normal */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"TRIM")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlFunction148OptGrp(.subElement,.addedElement)  {
+				if $S(..SqlFunction149Sub(.subElement,.addedElement) :1,1:1) {
+					if ..SqlExpression(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,")")  {
+							set done=1 ; end compileRules
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 
+/// summary values:LEADING,TRAILING,BOTH
+/// summary=K|K|K
+Method SqlFunction148OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K|K|K
+	if '(..isKeywordInList($lb("LEADING","TRAILING","BOTH"),.value)) { quit 1 /* not found is OK */ }
+	set subElement=ParentElement
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"LEADING")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"TRAILING")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"BOTH")  {
+		set done=1 ; end compileRules
+	}
+
+	set ok=1
+	quit ok
+}
+
+/// sql_expression 'from'
+/// summary=C&K
+Method SqlFunction149Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary C&K
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..SqlExpression(.subElement,.addedElement)  {
+		if ..addKeyword(.subElement,"FROM")  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 'dateadd' '(' sql_function_datepart_part ',' sql_expression ',' sql_expression ')'
+/// summary values:DATEADD
+/// summary=K&P&C&P&C&P&C&P
+Method SqlFunction150Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&P&C&P&C&P&C&P
+	if '(..isKeyword("DATEADD",.value)) { quit 0 /* normal */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"DATEADD")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlFunctionDatepartPart(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,",")  {
+					if ..SqlExpression(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,",")  {
+							if ..SqlExpression(.subElement,.addedElement)  {
+								if ..addPunctuation(.subElement,")")  {
+									set done=1 ; end compileRules
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 'datediff' '(' sql_function_datepart_part ',' sql_expression ',' sql_expression ')'
+/// summary values:DATEDIFF
+/// summary=K&P&C&P&C&P&C&P
+Method SqlFunction151Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&P&C&P&C&P&C&P
+	if '(..isKeyword("DATEDIFF",.value)) { quit 0 /* normal */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"DATEDIFF")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlFunctionDatepartPart(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,",")  {
+					if ..SqlExpression(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,",")  {
+							if ..SqlExpression(.subElement,.addedElement)  {
+								if ..addPunctuation(.subElement,")")  {
+									set done=1 ; end compileRules
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 'datename' '(' sql_function_datepart_part ',' sql_expression ')'
+/// summary values:DATENAME
+/// summary=K&P&C&P&C&P
+Method SqlFunction152Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&P&C&P&C&P
+	if '(..isKeyword("DATENAME",.value)) { quit 0 /* normal */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"DATENAME")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlFunctionDatepartPart(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,",")  {
+					if ..SqlExpression(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,")")  {
+							set done=1 ; end compileRules
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 'datepart' '(' sql_function_datepart_part ',' sql_expression ')'
+/// summary values:DATEPART
+/// summary=K&P&C&P&C&P
+Method SqlFunction153Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&P&C&P&C&P
+	if '(..isKeyword("DATEPART",.value)) { quit 0 /* normal */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"DATEPART")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlFunctionDatepartPart(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,",")  {
+					if ..SqlExpression(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,")")  {
+							set done=1 ; end compileRules
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// identifier '(' [ '*' | (sql_expression ( ',' sql_expression)*) ] ')' [ sql_window ]
+/// summary=C&P&[P|(C&(?4punctuation:4?)*)]&P&[C]
+Method SqlFunction154Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary C&P&[P|(C&(?4punctuation:4?)*)]&P&[C]
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..Identifier(.subElement,.addedElement)  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlFunction155OptGrp(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
+					if $S(..SqlWindow(.subElement,.addedElement) :1,1:1) {
+						set done=1 ; end compileRules
+					}
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 
+/// summary=P|(C&(?4punctuation:4?)*)
+Method SqlFunction155OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P|(C&(?4punctuation:4?)*)
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"*")  {
+		set done=1 ; or
+	} elseif ..SqlFunction156Sub(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+/// sql_expression ( ',' sql_expression)*
+/// summary=C&(?4punctuation:4?)*
+Method SqlFunction156Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary C&(?4punctuation:4?)*
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..SqlExpression(.subElement,.addedElement)  {
+		if ..SqlFunction157RepZero(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+///  ( ',' sql_expression)*
+Method SqlFunction157RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary ?4punctuation:4?
+	set subElement=ParentElement
+	set done=0 ; method start
+	while ..SqlFunction158Sub(.subElement,.addedElement)  {
+		set done=1
+	}
+	set ok=1
+	quit ok
+}
+
+///  ',' sql_expression
+/// summary values:,
+/// summary=P&C
+Method SqlFunction158Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&C
+	; first rule summary P
+	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ /*4*/ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,",")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// '$' identifier '(' [ sql_expression ( ',' sql_expression)* ] ')'
+/// summary values:$
+/// summary=P&C&P&[C&(?4punctuation:4?)*]&P
+Method SqlFunction95Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&C&P&[C&(?4punctuation:4?)*]&P
+	; first rule summary P
+	if '(..isStringSingle("$",.value)) { quit 0 /* normal */ /*4*/ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"$")  {
+		if ..Identifier(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,"(")  {
+				if ..SqlFunction96OptGrp(.subElement,.addedElement)  {
+					if ..addPunctuation(.subElement,")")  {
+						set done=1 ; end compileRules
+					}
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 
+/// summary=C&(?4punctuation:4?)*
+Method SqlFunction96OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary C&(?4punctuation:4?)*
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..SqlExpression(.subElement,.addedElement)  {
+		if ..SqlFunction97RepZero(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+///  ( ',' sql_expression)*
+Method SqlFunction97RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary ?4punctuation:4?
+	set subElement=ParentElement
+	set done=0 ; method start
+	while ..SqlFunction98Sub(.subElement,.addedElement)  {
+		set done=1
+	}
+	set ok=1
+	quit ok
+}
+
+///  ',' sql_expression
+/// summary values:,
+/// summary=P&C
+Method SqlFunction98Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&C
+	; first rule summary P
+	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ /*4*/ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,",")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// '%exact' sql_expression
+/// summary values:%EXACT
+/// summary=P&C
+Method SqlFunction99Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&C
+	; first rule summary P
+	if '(..isStringSingle("%EXACT",.value)) { quit 0 /* normal */ /*4*/ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"%exact")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
 	}
 	quit ok
 }
@@ -6081,7 +6079,7 @@ Method SqlFunctionDatepartPart(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -6173,7 +6171,7 @@ Method SqlFunctionDatepartPartWord(ParentElement As PXW.DEV.BNF.Element, ByRef s
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -6203,7 +6201,7 @@ Method SqlMonadicop(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -6229,7 +6227,7 @@ Method SqlNumber(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -6267,7 +6265,7 @@ Method SqlPredicate(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -6302,9 +6300,9 @@ Method SqlPrimary(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set done=1 ; or
 	} elseif ..Macrocall(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlPrimary80Sub(.subElement,.addedElement)  {
+	} elseif ..SqlPrimary87Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlPrimary81Sub(.subElement,.addedElement)  {
+	} elseif ..SqlPrimary88Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -6313,7 +6311,7 @@ Method SqlPrimary(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -6322,7 +6320,7 @@ Method SqlPrimary(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 ///  '(' subquery_specification ')'
 /// summary values:(
 /// summary=P&C&P
-Method SqlPrimary80Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlPrimary87Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C&P
 	; first rule summary P
@@ -6342,7 +6340,7 @@ Method SqlPrimary80Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -6350,7 +6348,7 @@ Method SqlPrimary80Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 ///  '(' sql_expression ( ',' sql_expression )* ')'
 /// summary values:(
 /// summary=P&C&(?4punctuation:4?)*&P
-Method SqlPrimary81Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlPrimary88Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C&(?4punctuation:4?)*&P
 	; first rule summary P
@@ -6359,7 +6357,7 @@ Method SqlPrimary81Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"(")  {
 		if ..SqlExpression(.subElement,.addedElement)  {
-			if ..SqlPrimary82RepZero(.subElement,.addedElement)  {
+			if ..SqlPrimary89RepZero(.subElement,.addedElement)  {
 				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
@@ -6372,32 +6370,28 @@ Method SqlPrimary81Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
 
 ///  ( ',' sql_expression )*
-Method SqlPrimary82RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlPrimary89RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..SqlPrimary83Sub(.subElement,.addedElement)  {
+	while ..SqlPrimary90Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 ///  ',' sql_expression
 /// summary values:,
 /// summary=P&C
-Method SqlPrimary83Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlPrimary90Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	; first rule summary P
@@ -6415,7 +6409,7 @@ Method SqlPrimary83Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -6460,7 +6454,7 @@ Method SqlProgram(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -6486,7 +6480,7 @@ Method SqlProgram1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -6519,7 +6513,7 @@ Method SqlSpecialVariable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -6545,7 +6539,7 @@ Method SqlString(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -6569,7 +6563,7 @@ Method SqlTerm(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -6590,7 +6584,7 @@ Method SqlWindow(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 		if ..addPunctuation(.subElement,"(")  {
 			if $S(..SqlWindowPartition(.subElement,.addedElement) :1,1:1) {
 				if $S(..OrderByClause(.subElement,.addedElement) :1,1:1) {
-					if $S(..SqlWindow152Sub(.subElement,.addedElement) :1,1:1) {
+					if $S(..SqlWindow159Sub(.subElement,.addedElement) :1,1:1) {
 						if ..addPunctuation(.subElement,")")  {
 							set done=1 ; end compileRules
 						}
@@ -6605,7 +6599,7 @@ Method SqlWindow(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -6613,7 +6607,7 @@ Method SqlWindow(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 
 /// sql_window_rows_between | sql_window_rows
 /// summary=C|C
-Method SqlWindow152Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlWindow159Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C|C
 	set subElement=ParentElement
@@ -6624,11 +6618,7 @@ Method SqlWindow152Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -6641,15 +6631,15 @@ Method SqlWindowFrame(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SqlWindowFrame153Sub(.subElement,.addedElement)  {
+	if ..SqlWindowFrame160Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlWindowFrame154Sub(.subElement,.addedElement)  {
+	} elseif ..SqlWindowFrame161Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlWindowFrame155Sub(.subElement,.addedElement)  {
+	} elseif ..SqlWindowFrame162Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlWindowFrame156Sub(.subElement,.addedElement)  {
+	} elseif ..SqlWindowFrame163Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlWindowFrame157Sub(.subElement,.addedElement)  {
+	} elseif ..SqlWindowFrame164Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -6658,7 +6648,7 @@ Method SqlWindowFrame(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -6667,7 +6657,7 @@ Method SqlWindowFrame(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 /// 'UNBOUNDED' 'PRECEDING'
 /// summary values:UNBOUNDED
 /// summary=K&K
-Method SqlWindowFrame153Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlWindowFrame160Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K&K
 	if '(..isKeyword("UNBOUNDED",.value)) { quit 0 /* normal */ }
@@ -6684,14 +6674,14 @@ Method SqlWindowFrame153Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
 
 /// sql_expression 'PRECEDING'
 /// summary=C&K
-Method SqlWindowFrame154Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlWindowFrame161Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C&K
 	$$$BNFSTART(subElement)
@@ -6707,7 +6697,7 @@ Method SqlWindowFrame154Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -6715,7 +6705,7 @@ Method SqlWindowFrame154Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 /// 'CURRENT' 'ROW'
 /// summary values:CURRENT
 /// summary=K&K
-Method SqlWindowFrame155Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlWindowFrame162Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K&K
 	if '(..isKeyword("CURRENT",.value)) { quit 0 /* normal */ }
@@ -6732,7 +6722,7 @@ Method SqlWindowFrame155Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -6740,7 +6730,7 @@ Method SqlWindowFrame155Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 /// 'UNBOUNDED' 'FOLLOWING'
 /// summary values:UNBOUNDED
 /// summary=K&K
-Method SqlWindowFrame156Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlWindowFrame163Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K&K
 	if '(..isKeyword("UNBOUNDED",.value)) { quit 0 /* normal */ }
@@ -6757,14 +6747,14 @@ Method SqlWindowFrame156Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
 
 /// sql_expression 'FOLLOWING'
 /// summary=C&K
-Method SqlWindowFrame157Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlWindowFrame164Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C&K
 	$$$BNFSTART(subElement)
@@ -6780,7 +6770,7 @@ Method SqlWindowFrame157Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -6809,7 +6799,7 @@ Method SqlWindowPartition(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -6837,7 +6827,7 @@ Method SqlWindowRows(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -6871,7 +6861,7 @@ Method SqlWindowRowsBetween(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -6897,7 +6887,7 @@ Method StoredProcCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -6912,7 +6902,7 @@ Method StoredProcName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..StoredProcName171OptGrp(.subElement,.addedElement)  {
+	if ..StoredProcName178OptGrp(.subElement,.addedElement)  {
 		if ..QualifiedIdentifier(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
@@ -6923,7 +6913,7 @@ Method StoredProcName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -6931,7 +6921,7 @@ Method StoredProcName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 /// 
 /// summary=C&P
-Method StoredProcName171OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method StoredProcName178OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C&P
 	$$$BNFSTART(subElement)
@@ -6970,7 +6960,7 @@ Method StoredProcParameter(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -6989,7 +6979,7 @@ Method StoredProcParameterList(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"(")  {
-		if ..StoredProcParameterList168OptGrp(.subElement,.addedElement)  {
+		if ..StoredProcParameterList175OptGrp(.subElement,.addedElement)  {
 			if ..addPunctuation(.subElement,")")  {
 				set done=1 ; end compileRules
 			}
@@ -7001,7 +6991,7 @@ Method StoredProcParameterList(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -7009,13 +6999,13 @@ Method StoredProcParameterList(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 /// 
 /// summary=[C]&(?4punctuation:4?)*
-Method StoredProcParameterList168OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method StoredProcParameterList175OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary [C]&(?4punctuation:4?)*
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if $S(..StoredProcParameter(.subElement,.addedElement) :1,1:1) {
-		if ..StoredProcParameterList169RepZero(.subElement,.addedElement)  {
+		if ..StoredProcParameterList176RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -7031,26 +7021,22 @@ Method StoredProcParameterList168OptGrp(ParentElement As PXW.DEV.BNF.Element, By
 }
 
 ///  ( ',' [stored_proc_parameter] )*
-Method StoredProcParameterList169RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method StoredProcParameterList176RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..StoredProcParameterList170Sub(.subElement,.addedElement)  {
+	while ..StoredProcParameterList177Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 ///  ',' [stored_proc_parameter]
 /// summary values:,
 /// summary=P&[C]
-Method StoredProcParameterList170Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method StoredProcParameterList177Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&[C]
 	; first rule summary P
@@ -7068,7 +7054,7 @@ Method StoredProcParameterList170Sub(ParentElement As PXW.DEV.BNF.Element, ByRef
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -7095,7 +7081,7 @@ Method StoredProcTable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -7126,7 +7112,7 @@ Method Subquery(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -7152,7 +7138,7 @@ Method SubquerySpecification(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -7167,11 +7153,7 @@ Method SubquerySpecification4RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef
 	while ..SubquerySpecification5Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -7193,7 +7175,7 @@ Method SubquerySpecification5Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -7218,7 +7200,7 @@ Method TableAsClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -7250,7 +7232,7 @@ Method TableExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -7265,7 +7247,7 @@ Method TableName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..TableName51OptGrp(.subElement,.addedElement)  {
+	if ..TableName58OptGrp(.subElement,.addedElement)  {
 		if ..QualifiedIdentifier(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
@@ -7276,7 +7258,7 @@ Method TableName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -7284,7 +7266,7 @@ Method TableName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 
 /// 
 /// summary=C&P
-Method TableName51OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method TableName58OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C&P
 	$$$BNFSTART(subElement)
@@ -7327,7 +7309,7 @@ Method TableReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -7353,7 +7335,7 @@ Method TableReferenceNoalias(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -7377,7 +7359,7 @@ Method TableSubquery(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -7395,7 +7377,7 @@ Method Union(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"UNION")  {
-		if ..Union46RepZero(.subElement,.addedElement)  {
+		if ..Union53RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -7405,32 +7387,28 @@ Method Union(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
 }
 
 ///  ('ALL' | '%PARALLEL')*
-Method Union46RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method Union53RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..Union47Sub(.subElement,.addedElement)  {
+	while ..Union54Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 /// 'ALL' | '%PARALLEL'
 /// summary=K|P
-Method Union47Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method Union54Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K|P
 	$$$BNFSTART(subElement)
@@ -7446,7 +7424,7 @@ Method Union47Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -7465,7 +7443,7 @@ Method UpdateColumns(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"(")  {
 		if ..ColumnName(.subElement,.addedElement)  {
-			if ..UpdateColumns65RepZero(.subElement,.addedElement)  {
+			if ..UpdateColumns72RepZero(.subElement,.addedElement)  {
 				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
@@ -7478,33 +7456,29 @@ Method UpdateColumns(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
 }
 
 ///  ( ',' column_name)*
-Method UpdateColumns65RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method UpdateColumns72RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..UpdateColumns66Sub(.subElement,.addedElement)  {
+	while ..UpdateColumns73Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 ///  ',' column_name
 /// summary values:,
 /// summary=P&C
-Method UpdateColumns66Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method UpdateColumns73Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	; first rule summary P
@@ -7522,7 +7496,7 @@ Method UpdateColumns66Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -7539,9 +7513,9 @@ Method UpdateCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"UPDATE")  {
-		if ..UpdateCommand56RepZero(.subElement,.addedElement)  {
+		if ..UpdateCommand63RepZero(.subElement,.addedElement)  {
 			if ..DirectTable(.subElement,.addedElement)  {
-				if ..UpdateCommand58Sub(.subElement,.addedElement)  {
+				if ..UpdateCommand65Sub(.subElement,.addedElement)  {
 					if $S(..FromClause(.subElement,.addedElement) :1,1:1) {
 						if $S(..WhereClause(.subElement,.addedElement) :1,1:1) {
 							set done=1 ; end compileRules
@@ -7557,32 +7531,28 @@ Method UpdateCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
 }
 
 ///  (update_keyword)*
-Method UpdateCommand56RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method UpdateCommand63RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..UpdateCommand57Sub(.subElement,.addedElement)  {
+	while ..UpdateCommand64Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 /// update_keyword
 /// summary=C
-Method UpdateCommand57Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method UpdateCommand64Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C
 	set subElement=ParentElement
@@ -7591,24 +7561,20 @@ Method UpdateCommand57Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set done=1 ; end compileRules
 	}
 
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
 ///  ('SET' update_set (',' update_set)* ) | ( update_columns (('VALUES' update_values) | select_command) )
 /// summary=(K&C&(?4punctuation:4?)*)|(C&((K&C)|C))
-Method UpdateCommand58Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method UpdateCommand65Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary (K&C&(?4punctuation:4?)*)|(C&((K&C)|C))
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..UpdateCommand59Sub(.subElement,.addedElement)  {
+	if ..UpdateCommand66Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..UpdateCommand62Sub(.subElement,.addedElement)  {
+	} elseif ..UpdateCommand69Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -7617,7 +7583,7 @@ Method UpdateCommand58Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -7625,7 +7591,7 @@ Method UpdateCommand58Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 /// 'SET' update_set (',' update_set)*
 /// summary values:SET
 /// summary=K&C&(?4punctuation:4?)*
-Method UpdateCommand59Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method UpdateCommand66Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K&C&(?4punctuation:4?)*
 	if '(..isKeyword("SET",.value)) { quit 0 /* normal */ }
@@ -7633,7 +7599,7 @@ Method UpdateCommand59Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"SET")  {
 		if ..UpdateSet(.subElement,.addedElement)  {
-			if ..UpdateCommand60RepZero(.subElement,.addedElement)  {
+			if ..UpdateCommand67RepZero(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -7644,32 +7610,28 @@ Method UpdateCommand59Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
 
 ///  (',' update_set)*
-Method UpdateCommand60RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method UpdateCommand67RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..UpdateCommand61Sub(.subElement,.addedElement)  {
+	while ..UpdateCommand68Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 /// ',' update_set
 /// summary values:,
 /// summary=P&C
-Method UpdateCommand61Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method UpdateCommand68Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	; first rule summary P
@@ -7687,20 +7649,20 @@ Method UpdateCommand61Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
 
 ///  update_columns (('VALUES' update_values) | select_command)
 /// summary=C&((K&C)|C)
-Method UpdateCommand62Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method UpdateCommand69Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C&((K&C)|C)
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..UpdateColumns(.subElement,.addedElement)  {
-		if ..UpdateCommand63Sub(.subElement,.addedElement)  {
+		if ..UpdateCommand70Sub(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -7710,19 +7672,19 @@ Method UpdateCommand62Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
 
 /// ('VALUES' update_values) | select_command
 /// summary=(K&C)|C
-Method UpdateCommand63Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method UpdateCommand70Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary (K&C)|C
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..UpdateCommand64Sub(.subElement,.addedElement)  {
+	if ..UpdateCommand71Sub(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..SelectCommand(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
@@ -7733,7 +7695,7 @@ Method UpdateCommand63Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -7741,7 +7703,7 @@ Method UpdateCommand63Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 /// 'VALUES' update_values
 /// summary values:VALUES
 /// summary=K&C
-Method UpdateCommand64Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method UpdateCommand71Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K&C
 	if '(..isKeyword("VALUES",.value)) { quit 0 /* normal */ }
@@ -7758,7 +7720,7 @@ Method UpdateCommand64Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -7797,7 +7759,7 @@ Method UpdateKeyword(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -7825,7 +7787,7 @@ Method UpdateSet(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -7845,7 +7807,7 @@ Method UpdateValues(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"(")  {
 		if ..SqlExpression(.subElement,.addedElement)  {
-			if ..UpdateValues67RepZero(.subElement,.addedElement)  {
+			if ..UpdateValues74RepZero(.subElement,.addedElement)  {
 				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
@@ -7858,33 +7820,29 @@ Method UpdateValues(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
 }
 
 ///  ( ',' sql_expression )*
-Method UpdateValues67RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method UpdateValues74RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..UpdateValues68Sub(.subElement,.addedElement)  {
+	while ..UpdateValues75Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
 ///  ',' sql_expression
 /// summary values:,
 /// summary=P&C
-Method UpdateValues68Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method UpdateValues75Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	; first rule summary P
@@ -7902,7 +7860,7 @@ Method UpdateValues68Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }
@@ -7929,7 +7887,7 @@ Method WhereClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -7961,7 +7919,7 @@ Method WithClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -7991,7 +7949,7 @@ Method WithCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	$$$DEBUGMethodEnd
 	quit ok
@@ -8006,11 +7964,7 @@ Method WithCommand6RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	while ..WithCommand7Sub(.subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -8035,7 +7989,7 @@ Method WithCommand7Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 		set ok=1
 	} else {
 		$$$BNFROLLBACK(subElement)
-		set ok=0 ; normal rollback
+		set ok=0
 	}
 	quit ok
 }

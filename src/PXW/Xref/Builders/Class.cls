@@ -47,8 +47,9 @@ Property FixedLineNumber As %Integer;
 /// d ##class(PXW.Xref.Builders.Class).test()
 ClassMethod test()
 {
+	$$$DEBUGNew("")
 	; GET RID OF %NS
-	Set %NS="LOCAL_USER",cls="PXW.Xref.Builders.Class"
+	Set %NS="LOCAL_USER",cls="PXW.Xref.Queries"
 	Set x=..%New()
 	Set cs=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)
 	Do cs.Load(cls,.text)
@@ -77,11 +78,15 @@ Method Build(Namespace As %String, ItemKey1 As %String, PreLoadedText As %String
   		    Set x.stream=##class(PXW.DEV.InputStream).NewString(text)
   			
 			Set element=##class(PXW.DEV.Element).%New()
+			$$$DEBUGPause
 			While x.cheese(element) {
+				$$$DEBUGResume
    				Do ..xrefElement(element)
+				$$$DEBUGPause
    				If ..ERROR'="" $$$ThrowStatus($$$ERROR(5001,..ERROR))
 				Set element=##class(PXW.DEV.Element).%New()
 			}
+			$$$DEBUGResume
 			If 'x.stream.EOF() Set sc=$$$ERROR(5001,"Not at end:"_x.stream.line_":"_x.stream.pos_":"_x.stream.length_":"_$EXTRACT(x.stream.input,x.stream.lastPos,x.stream.lastPos+20))
 		} Catch e {
 			Set sc=e.AsStatus()
@@ -228,7 +233,8 @@ Method xrefElement(element As PXW.DEV.Element)
 {
     #dim a as PXW.DEV.Atom
 
-	Do ..GenericRedirect(element)
+	;Do ..GenericRedirect(element)
+	do ..processSpecificElement(element)
 
 	If element.type="WithClause" {
        Set aliasE=element.findFirstElementByType("AliasName")	
