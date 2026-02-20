@@ -675,7 +675,7 @@ Method IndexKey(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..IndexKey42Sub(.subElement,.addedElement)  {
+	if ..IndexKey45Sub(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..IndexKeyName(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
@@ -695,7 +695,7 @@ Method IndexKey(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 /// '%SQLUPPER(' index_key_name ')'
 /// summary values:%SQLUPPER(
 /// summary=P&C&P
-Method IndexKey42Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method IndexKey45Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C&P
 	; first rule summary P
@@ -743,6 +743,51 @@ Method IndexKeyName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  index_key_with_range ::= index_key ( '(with a given set of values)' | '(with a range condition)' )
+/// summary=C&(P|P)
+Method IndexKeyWithRange(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary C&(P|P)
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..IndexKey(.subElement,.addedElement)  {
+		if ..IndexKeyWithRange46Sub(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  '(with a given set of values)' | '(with a range condition)'
+/// summary values:(WITH A GIVEN SET OF VALUES),(WITH A RANGE CONDITION)
+/// summary=P|P
+Method IndexKeyWithRange46Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P|P
+	if '(..isStringInList($lb("(WITH A GIVEN SET OF VALUES)","(WITH A RANGE CONDITION)"),28,.value)) { quit 0 /* normal */ }
+	set subElement=ParentElement
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"(with a given set of values)")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"(with a range condition)")  {
+		set done=1 ; end compileRules
+	}
+
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -887,12 +932,12 @@ Method IndexKeysGiven38OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	quit ok
 }
 
-///  index_keys_looping ::= 'looping' 'on' index_key (',' ['and'] !'getting' index_key)* ['and' !'given' index_key]
+///  index_keys_looping ::= 'looping' 'on' ( index_key_with_range | index_key ) (',' ['and'] !'getting' ( index_key_with_range | index_key))* ['and' !'given' (index_key_with_range | index_key) ]
 /// summary values:LOOPING
-/// summary=K&K&C&(?4punctuation:4?)*&[K&?4NotRule4?&C]
+/// summary=K&K&(C|C)&(?4punctuation:4?)*&[K&?4NotRule4?&(C|C)]
 Method IndexKeysLooping(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&K&C&(?4punctuation:4?)*&[K&?4NotRule4?&C]
+	; rules summary K&K&(C|C)&(?4punctuation:4?)*&[K&?4NotRule4?&(C|C)]
 	if '(..isKeyword("LOOPING",.value)) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -900,9 +945,9 @@ Method IndexKeysLooping(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"LOOPING")  {
 		if ..addKeyword(.subElement,"ON")  {
-			if ..IndexKey(.subElement,.addedElement)  {
-				if ..IndexKeysLooping39RepZero(.subElement,.addedElement)  {
-					if ..IndexKeysLooping41OptGrp(.subElement,.addedElement)  {
+			if ..IndexKeysLooping39Sub(.subElement,.addedElement)  {
+				if ..IndexKeysLooping40RepZero(.subElement,.addedElement)  {
+					if ..IndexKeysLooping43OptGrp(.subElement,.addedElement)  {
 						set done=1 ; end compileRules
 					}
 				}
@@ -921,25 +966,42 @@ Method IndexKeysLooping(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	quit ok
 }
 
-///  (',' ['and'] !'getting' index_key)*
-Method IndexKeysLooping39RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+///  index_key_with_range | index_key
+/// summary=C|C
+Method IndexKeysLooping39Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary C|C
+	set subElement=ParentElement
+	set done=0 ; method start
+	if ..IndexKeyWithRange(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..IndexKey(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	set ok=$s(done:1,1:0)
+	quit ok
+}
+
+///  (',' ['and'] !'getting' ( index_key_with_range | index_key))*
+Method IndexKeysLooping40RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..IndexKeysLooping40Sub(.subElement,.addedElement)  {
+	while ..IndexKeysLooping41Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	set ok=1
 	quit ok
 }
 
-/// ',' ['and'] !'getting' index_key
+/// ',' ['and'] !'getting' ( index_key_with_range | index_key)
 /// summary values:,
-/// summary=P&[K]&?4NotRule4?&C
-Method IndexKeysLooping40Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+/// summary=P&[K]&?4NotRule4?&(C|C)
+Method IndexKeysLooping41Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary P&[K]&?4NotRule4?&C
+	; rules summary P&[K]&?4NotRule4?&(C|C)
 	; first rule summary P
 	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ /*4*/ }
 	$$$BNFSTART(subElement)
@@ -947,7 +1009,7 @@ Method IndexKeysLooping40Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	if ..addPunctuation(.subElement,",")  {
 		if $S(..addKeyword(.subElement,"AND") :1,1:1) {
 			if '..addKeyword(.subElement,"GETTING")  {
-				if ..IndexKey(.subElement,.addedElement)  {
+				if ..IndexKeysLooping42Sub(.subElement,.addedElement)  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -964,18 +1026,35 @@ Method IndexKeysLooping40Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	quit ok
 }
 
+///  index_key_with_range | index_key
+/// summary=C|C
+Method IndexKeysLooping42Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary C|C
+	set subElement=ParentElement
+	set done=0 ; method start
+	if ..IndexKeyWithRange(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..IndexKey(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	set ok=$s(done:1,1:0)
+	quit ok
+}
+
 /// 
 /// summary values:AND
-/// summary=K&?4NotRule4?&C
-Method IndexKeysLooping41OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+/// summary=K&?4NotRule4?&(C|C)
+Method IndexKeysLooping43OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary K&?4NotRule4?&C
+	; rules summary K&?4NotRule4?&(C|C)
 	if '(..isKeyword("AND",.value)) { quit 1 /* not found is OK */ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"AND")  {
 		if '..addKeyword(.subElement,"GIVEN")  {
-			if ..IndexKey(.subElement,.addedElement)  {
+			if ..IndexKeysLooping44Sub(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -988,6 +1067,23 @@ Method IndexKeysLooping41OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 		$$$BNFROLLBACK(subElement)
 		set ok=1 /* failure rollsback but returns OK */
 	}
+	quit ok
+}
+
+/// index_key_with_range | index_key
+/// summary=C|C
+Method IndexKeysLooping44Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary C|C
+	set subElement=ParentElement
+	set done=0 ; method start
+	if ..IndexKeyWithRange(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..IndexKey(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 

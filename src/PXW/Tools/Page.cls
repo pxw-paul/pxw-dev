@@ -402,8 +402,9 @@ ClassMethod PageStyle() As %String
 		}
 		#toolsMainRight div { width:100%; }
 
-		#toosMainFoot {
+		#toolsMainFoot {
 			grid-area: toolsMainFoot;
+			overflow:scroll;
 		}
 
 		.nocopy	{

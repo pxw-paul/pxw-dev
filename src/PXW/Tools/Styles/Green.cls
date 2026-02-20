@@ -135,6 +135,13 @@ Method WriteStyles()
 	#toolsMainBodyNav .CDEFIndexName::after  {  content: ".idx"; /*color:silver;*/}
 	#toolsMainBodyNav .CDEFXdataName::after  {  content: ".xda"; /*color:silver;*/}
 	
+	nav details::details-content {
+		padding-left:2em;
+	}
+	nav details summary { 
+		font-size:1em;
+		padding-bottom:0.2em;
+	}
 	/* END of nav */
 
 	/* Start of style for the code display */

@@ -5,9 +5,6 @@ Class PXW.Tools.DEV.HTML.bnf Extends PXW.Tools.DEV.HTML.output
 
 Property Analyser As PXW.DEV.BNF.Analyse.COS;
 
-/// Set this to put the paths in the tooltip (useful for debugging)
-Property showPaths As %Boolean [ InitialExpression = 0 ];
-
 /// Used when looking at routines
 Property ThisLabel As %String;
 

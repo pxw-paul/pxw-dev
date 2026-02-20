@@ -268,37 +268,47 @@ Method writeSQLPlanTableIndex(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Com
         Do ..wrapElementHTML(indexE,"<a class='"_$$$classObjectMember_"' href="""_..HREFToClass(table,index)_""">","</a>")
         Set class=..ClassServer.GetClassNameFromTableName(table)
         If ..ClassServer.GetIndexDetails(class,index,,,.properties) {
-            Set givenE=element.findFirstElementByType("IndexKeysGiven",1)
-            If $ISOBJECT(givenE) {
-                Set list=""
-                Do givenE.findElementsByType("PropertyName",.list,1)
-                If $ISOBJECT(list) {
-                    For i=1:1:list.Count() {
-                        Set item=list.GetAt(i).ToString(0)
-                        If item'="" {
-                            Set givenidents($$$UPPER(item))=i
-                        }
+            Do element.findElementsXPath("IndexKeys/IndexKeysGiven/IndexKey/IndexKeyName/PropertyName",.list)
+            If $ISOBJECT(list) {
+                For i=1:1:list.Count() {
+                    Set item=list.GetAt(i).ToString(0)
+                    If item'="" {
+                        Set givenidents($$$UPPER(item))=2 ; GIVEN = 
                     }
-                }
-                ; for all the keys on the index work out which ones are given and highlight them
-                Set html="",sep=""
-                For i=1:1:$LENGTH(properties,",") {
-                    Set item=$PIECE(properties,",",i)
-                    If item'="",$DATA(givenidents($$$UPPER(item))) {
-                        Set html=html_sep_"<b>"_$$$HTMLENCODE(item)_"</b>"
-                    } Else {
-                        Set html=html_sep_$$$HTMLENCODE(item)
-                    }
-                    Set sep=","
-                }
-                if html'="" {
-                    Do ..wrapElementHTML(indexE,"","<span class="_$$$classNarrative_"> /* "_html_" */ </span>")
-                }
-            } Else {
-                if properties'="" {
-                    Do ..wrapElementHTML(indexE,"","<span class="_$$$classNarrative_"> /* "_$$$HTMLENCODE(properties)_" */ </span>")
                 }
             }
+            Do element.findElementsXPath("IndexKeys/IndexKeysLooping/IndexKeyWithRange/IndexKey/IndexKeyName/PropertyName",.list)
+            If $ISOBJECT(list) {
+                For i=1:1:list.Count() {
+                    Set item=list.GetAt(i).ToString(0)
+                    If item'="" {
+                        Set givenidents($$$UPPER(item))=1 ; GIVEN RANGE
+                    }
+                }
+            }
+
+            if $d(givenidents) {
+               ; for all the keys on the index work out which ones are given and highlight them
+               Set html="",sep=""
+               For i=1:1:$LENGTH(properties,",") {
+                   Set item=$PIECE(properties,",",i)
+                   If item'="",$G(givenidents($$$UPPER(item)))=2 {
+                       Set html=html_sep_"<b>"_$$$HTMLENCODE(item)_"</b>"
+                   } elseIf item'="",$G(givenidents($$$UPPER(item)))=1 {
+                       Set html=html_sep_"<u>"_$$$HTMLENCODE(item)_"</u>"
+                   } Else {
+                       Set html=html_sep_$$$HTMLENCODE(item)
+                   }
+                   Set sep=","
+               }
+               if html'="" {
+                   Do ..wrapElementHTML(indexE,"","<span class="_$$$classNarrative_"> /* "_html_" */ </span>")
+               }
+           } Else {
+               if properties'="" {
+                   Do ..wrapElementHTML(indexE,"","<span class="_$$$classNarrative_"> /* "_$$$HTMLENCODE(properties)_" */ </span>")
+               }
+           }
         }
     }
  

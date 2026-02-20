@@ -78,6 +78,9 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %Stri
     If element.type="FromClause" {
         Do ..setWhitespaceNewLineElement(element,indent)
     }
+    If element.type="TableSubquery" {
+        Set indent=indent+1
+    }
 
     If element.type="Join" {
         Do ..setWhitespaceNewLineElement(element,indent)
@@ -86,18 +89,18 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %Stri
 
     If element.type="JoinOn" {
         Do ..setWhitespaceNewLineElement(element,indent)
-        set flags="CONDITION"
+        Set flags="CONDITION"
     }
 
     If element.type="WhereClause" {
         Do ..setWhitespaceNewLineElement(element,indent)
-        set flags="CONDITION"
+        Set flags="CONDITION"
         Set indent=indent+1
     }
 
     ; put each AND on a new line, only applies to certain types of conditions (eg JOIN ON, WHERE)
-    if flags["CONDITION" {
-        if element.type="SqlDyadicop",$$$UPPER(element.ToString(0))="AND" {
+    If flags["CONDITION" {
+        If element.type="SqlDyadicop",$$$UPPER(element.ToString(0))="AND" {
             Do ..setWhitespaceNewLineElement(element,indent)
         }
     }
@@ -116,7 +119,7 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %Stri
         Do ..setWhitespaceNewLineElement(element,indent)
     }
 
-    if element.type="Union" {
+    If element.type="Union" {
         Do ..setWhitespaceNewLineElement(element,indent)
     }
 
@@ -133,7 +136,7 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %Stri
 		
 	    If a.%IsA("PXW.DEV.Element") {
 			Do ..setAll(a,indent,flags)
-		} else {
+		} Else {
            ; set a.line=..currentLine
         }
 	}
@@ -156,7 +159,9 @@ Method setWhitespaceNewLine(Atom As PXW.DEV.Atom, indent As %Integer)
     Set tabs=$CHAR(9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9)
     ;s tabs="..................."
     Set ..currentLine=..currentLine+1
-    Set Atom.whitespace=##class(PXW.DEV.Atom).%New()
+    If '$ISOBJECT(Atom.whitespace) {
+        Set Atom.whitespace=##class(PXW.DEV.Atom).%New()
+    }
     Set Atom.whitespace.value=cr_$EXTRACT(tabs,1,indent)
     ;Set Atom.line=..currentLine
 }

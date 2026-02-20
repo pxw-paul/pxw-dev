@@ -8,7 +8,7 @@ Parameter ToolRelatesToCodeType = "CLS";
 ClassMethod WriteMainTop(ByRef scratch)
 {
     do ..HREFFrom(.SQL)
-    &html<<form action='PXW.Tools.DEV.SQLShowPlan.cls'> 
+    &html<<form action='PXW.Tools.DEV.SQLShowPlan.cls' method='POST'> 
         <fieldset>
         <input name='%NS' value='#(%NS)#' type=hidden>
         <table style='width:100%'>
@@ -79,7 +79,7 @@ ClassMethod WriteSQLPlan(sql As %String, Output modules)
 		Set parser=##class(PXW.DEV.BNF.Run.SQLShowPlan).%New()
 		Set parser.stream=##class(PXW.DEV.InputStream).NewString(xml)
 		Set element=##class(PXW.DEV.Element).%New()
-		;New %path Set %path=""
+		New %path Set %path=""
 		If parser.Plans(element) {
 			;d element.write()
 			Set output=##class(PXW.Tools.DEV.HTML.SQLShowPlan).%New()
@@ -97,6 +97,7 @@ ClassMethod WriteSQLPlan(sql As %String, Output modules)
 
 ClassMethod WriteSQL(sql As %String, hiliteLine As %Integer)
 {
+    n %path s %path=""
 	Set parser=##class(PXW.DEV.BNF.Run.SQL).%New()
 	Set parser.stream=##class(PXW.DEV.InputStream).NewString(sql)
 	Set Element=##class(PXW.DEV.Element).%New()
@@ -112,6 +113,7 @@ ClassMethod WriteSQL(sql As %String, hiliteLine As %Integer)
 	Set output.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)	
 	Set output.HiLiteLine=hiliteLine
 	Set output.ThisType="CLS" ; behave like a class until we want to analyse in a different way
+    set:$d(%path) output.showPaths=1
 	Do output.begin()
     Do output.writeElement(Element)
     Do output.end()
@@ -138,10 +140,10 @@ ClassMethod WriteStyles()
     do ##super()
 	Do ##class(PXW.Tools.DEV.Class).WriteStyles()
     Write "div.EmbeddedSQLcontainer { display:inline-block; vertical-align:top;}",!
-    ;Write "pre.EmbeddedSQLSub { border:1px solid var(--borderNormal); margin-left:40px; }",!
     Write "pre.EmbeddedSQLSub { border:1px solid var(--borderNormal); }",!
     Write "p.newline { padding-left:20px; text-indent: -20px; }",!
-    
+    Write "pre.PlanSQL p.newline { margin:0; }",!
+
     ; not working
     ;w "p.newline:nth-child(odd) { background-color: var(--bgAlternate1); color: var(--fgNormal); }",!
 }

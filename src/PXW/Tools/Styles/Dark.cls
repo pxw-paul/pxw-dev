@@ -116,6 +116,14 @@ Method WriteStyles()
 	#toolsMainBodyNav .CDEFXdataName::after  { white-space: nowrap; content: " xdata"; color:silver;}
 	
     nav a { margin-top: 0.25em;}
+
+	nav details::details-content {
+		padding-left:2em;
+	}
+	nav details summary { 
+		font-size:1em;
+		padding-bottom:0.2em;
+	}
 	/* END of nav */
 
 	/* Start of style for the code display */

@@ -120,7 +120,7 @@ Method ToStringAtomsOnly(wspace As %String = "") As %String
 Method write(indent As %String = "")
 {
 	Set akey=""
-	Write indent_"Element="_..type_" "_..%ClassName(1)_" @"_+$THIS,!
+	Write ($j($l(indent),2))_indent_"Element="_..type_" "_..%ClassName(1)_" @"_+$THIS,!
 	For  {
 		Set a=..partsGetNext(.akey)
 		Quit:akey=""
@@ -132,7 +132,7 @@ Method write(indent As %String = "")
 Method writeFull(indent As %String = "")
 {
 	Set akey=""
-	Write indent_"Element="_..type_" "_..%ClassName(1)_" @"_+$THIS,!
+	Write ($j($l(indent),2))_indent_"Element="_..type_" "_..%ClassName(1)_" @"_+$THIS,!
 	
 	For  {
 		Set a=..partsGetNext(.akey)
@@ -145,7 +145,7 @@ Method writeFull(indent As %String = "")
 Method writeDebug(indent As %String = "")
 {
 	Set akey=""
-	$$$DEBUG(indent_"Element="_..type_" "_..%ClassName(1)_" @"_+$THIS)
+	$$$DEBUG(($j($l(indent),2))_indent_"Element="_..type_" "_..%ClassName(1)_" @"_+$THIS)
 	For  {
 		Set a=..partsGetNext(.akey)
 		Quit:akey=""
@@ -157,7 +157,7 @@ Method writeDebug(indent As %String = "")
 Method writeDebugFull(indent As %String = "")
 {
 	Set akey=""
-	$$$DEBUG(indent_"Element="_..type_" "_..%ClassName(1)_" @"_+$THIS)
+	$$$DEBUG(($j($l(indent),2))_indent_"Element="_..type_" "_..%ClassName(1)_" @"_+$THIS)
 	For  {
 		Set a=..partsGetNext(.akey)
 		Quit:akey=""

@@ -50,35 +50,35 @@ Method ToString(wspace As %String = "") As %String
 /// write out basic info of the atom
 Method write(indent As %String)
 {
-	Write indent_"type="_..type,!
+	Write ($j($l(indent),2))_indent_"type="_..type,!
 	;i $isobject(..whitespace) d ..whitespace.display(indent_"  ")
-	Write indent_" "_..start_..value_..end,!
+	Write ($j($l(indent),2))_indent_" "_..start_..value_..end,!
 }
 
 /// write out the full details of the atom (with comments etc)
 Method writeFull(indent As %String)
 {
-	Write indent_"type="_..type,!
+	Write ($j($l(indent),2))_indent_"type="_..type,!
 	Do:$ISOBJECT(..whitespace) ..whitespace.writeFull(indent_"  ")
 	Do:$ISOBJECT(..comment) ..comment.writeFull(indent_"  ")
-	Write indent_" "_$zconvert(..start_..value_..end,"O","JS"),!
+	Write ($j($l(indent),2))_indent_" "_$zconvert(..start_..value_..end,"O","JS"),!
 }
 
 /// write out basic info of the atom
 Method writeDebug(indent As %String)
 {
-	$$$DEBUG(indent_"type="_..type)
+	$$$DEBUG(($j($l(indent),2))_indent_"type="_..type)
 	;i $isobject(..whitespace) d ..whitespace.display(indent_"  ")
-	$$$DEBUG(indent_" "_$zconvert(..start_..value_..end,"O","JS"))
+	$$$DEBUG(($j($l(indent),2))_indent_" "_$zconvert(..start_..value_..end,"O","JS"))
 }
 
 /// write out basic info of the atom
 Method writeDebugFull(indent As %String)
 {
-	$$$DEBUG(indent_"type="_..type)
+	$$$DEBUG(($j($l(indent),2))_indent_"type="_..type)
 	Do:$ISOBJECT(..whitespace) ..whitespace.writeDebugFull(indent_"  ")
 	Do:$ISOBJECT(..comment) ..comment.writeDebugFull(indent_"  ")
-	$$$DEBUG(indent_" "_$zconvert(..start_..value_..end,"O","JS"))
+	$$$DEBUG(($j($l(indent),2))_indent_" "_$zconvert(..start_..value_..end,"O","JS"))
 }
 
 /// Find the left-most comment which could be before some whitespace.

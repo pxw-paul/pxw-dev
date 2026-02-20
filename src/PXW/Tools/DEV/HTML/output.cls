@@ -41,6 +41,9 @@ Property Index As %String [ MultiDimensional, Private ];
 
 Property IndexError As %String [ MultiDimensional, Private ];
 
+/// Set this to put the paths in the tooltip (useful for debugging)
+Property showPaths As %Boolean [ InitialExpression = 0 ];
+
 Method AddToIndex(Name As %String, Type As %String, Anchor As %String) As %Status
 {
     Set data=$LISTBUILD(Name,Type,Anchor)
@@ -192,7 +195,8 @@ Method writeAtom(atom As PXW.DEV.Atom, preValue As %String = "", postValue As %S
 		Do ..wrapAtomHTML(.atom,"<span class="""_$$$classError_""">","</span>")
 		Do ..AddToIndexError(..ThisMethod,atom.value)
 	}
-
+	Do:..showPaths ..wrapAtomHTML(atom,"<span title="""_+atom_":"_atom.type_""">","</span>")
+	
 	/*Set out=""
     For i=1:1:+$GET(..pre(+atom)) Set out=out_$GET(..pre(+atom,i))
     Set out=out_preValue_..html(atom.start)

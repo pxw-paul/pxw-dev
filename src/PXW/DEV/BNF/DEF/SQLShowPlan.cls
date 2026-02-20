@@ -89,9 +89,12 @@ alias_property      ::= alias_name NOSPACE '.' NOSPACE property_name
 
 index_keys          ::= ',' 'using' 'the' index_keys_given ',' 'and' index_keys_looping
 index_keys_given    ::= 'given' index_key (',' ['and'] !'looping' index_key)* ['and' !'looping' index_key]
-index_keys_looping  ::= 'looping' 'on' index_key (',' ['and'] !'getting' index_key)* ['and' !'given' index_key]
+index_keys_looping  ::= 'looping' 'on' ( index_key_with_range | index_key ) (',' ['and'] !'getting' ( index_key_with_range | index_key))* ['and' !'given' (index_key_with_range | index_key) ]
 index_key           ::= ('%SQLUPPER(' index_key_name ')') | index_key_name
-index_key_name ::= alias_property | property_name
+index_key_with_range ::= index_key ( '(with a given set of values)' | '(with a range condition)' )
+index_key_name      ::= alias_property | property_name
+
+
 
 alias_name      ::= IDENTIFIER
 word            ::= WORD_REGEX

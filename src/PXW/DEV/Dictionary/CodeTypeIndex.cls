@@ -10,6 +10,8 @@ Property Class As %String(MAXLEN = 500) [ Required ];
 
 Index PK On (Usage, CodeType) [ IdKey ];
 
+Index CU On (CodeType, Usage);
+
 ClassMethod RegisterType(Usage As %String, CodeType As %String, Class As %String) As %Status
 {
     Set ct=##class(PXW.DEV.Dictionary.CodeType).%OpenId(CodeType,,.sc)
