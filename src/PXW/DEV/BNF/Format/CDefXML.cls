@@ -16,6 +16,7 @@ Method formatElement(element As PXW.DEV.Element)
 
 Method resetAll(element As PXW.DEV.Element)
 {
+    set akey=""
  	For  {
 		Set a=element.partsGetNext(.akey)
 		Quit:akey=""
@@ -63,6 +64,8 @@ Method setAll(element As PXW.DEV.Element)
         set ..flags=element.type
     }
 
+
+    set akey=""
    	For  {
 		Set a=element.partsGetNext(.akey)
 		Quit:akey=""

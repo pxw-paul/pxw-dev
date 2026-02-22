@@ -191,21 +191,20 @@ Method eof(lengthAdjust As %Integer = 0) As %Boolean
     Quit ((..stream.pos+lengthAdjust)>..streamlen)
 }
 
-Method isPunctuationInList(ListOfStrings As %List, longestLen As %Integer = 50, Output foundString As %String) As %Boolean
+Method isPunctuationInList(ListOfStrings As %List, Length As %Integer) As %Boolean
 {
     $$$DEBUGMethodBegin
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 
-    Set next50=..peek(longestLen)
+    Set next50=..peek(Length)
     Set UPP50=$$$UPPER(next50)
     Set found=$LISTFIND(ListOfStrings,UPP50)
-    If found Set foundString=$LIST(ListOfStrings,found)
     ;$$$DEBUG($s(found:"("_foundString_") ",1:"NOT ")_"found:"_UPP50_" in list "_$LISTTOSTRING(ListOfStrings))
     $$$DEBUGMethodEnd
     Quit found
 }
 
-Method isKeywordInList(ListOfStrings As %List, Output foundString As %String) As %Boolean
+Method isKeywordInList(ListOfUpperStrings As %List) As %Boolean
 {
   
     $$$DEBUGMethodBegin
@@ -213,22 +212,22 @@ Method isKeywordInList(ListOfStrings As %List, Output foundString As %String) As
 
     Set keyword=..peekKeyword()
     Set UPP=$$$UPPER(keyword)
-    Set found=$LISTFIND(ListOfStrings,UPP)
-    If found Set foundString=keyword
+    Set found=$LISTFIND(ListOfUpperStrings,UPP)
+    ;If found Set foundString=keyword
     ;$$$DEBUG($SELECT(found:"("_foundString_") ",1:"NOT ")_"found:"_UPP_" in list "_$LISTTOSTRING(ListOfStrings))
     $$$DEBUGMethodEnd
     Quit found
 }
 
-Method isKeyword(KeywordToCheck As %String, Output foundString As %String) As %Boolean
+Method isKeyword(KeywordToCheckUpper As %String) As %Boolean
 {
     $$$DEBUGMethodBegin
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 
     Set keyword=..peekKeyword()
     Set UPP=$$$UPPER(keyword)
-    Set found=(UPP=KeywordToCheck)
-    If found Set foundString=keyword
+    Set found=(UPP=KeywordToCheckUpper)
+    ;If found Set foundString=keyword
     ;$$$DEBUG($s(found:"("_foundString_") ",1:"NOT ")_"found:"_UPP)
     $$$DEBUGMethodEnd
     Quit found
@@ -296,23 +295,20 @@ Method isString(ParentElement As PXW.DEV.Element = "", StringToCheck As %String)
      Quit ok
 }
 
-Method isPunctuation(StringToCheck As %String, Output foundString As %String) As %Boolean
+Method isPunctuation(StringToCheck As %String, Length As %String) As %Boolean
 {
-    //#define UPPER(%x) $zconvert(%x,"U")
-    ;$$$DEBUGMethodBegin
-    ;d ..skipWhiteSpaceAndComments()
+    $$$DEBUGMethodBegin
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
  
     ;$$$DEBUG("checking punctuation '"_StringToCheck_"' found '"_$zconvert(..peek(10),"O","JS")_"'")
-    Set ok=0
-    Set len=$LENGTH(StringToCheck) 
-    Set peeked=..peek(len)
+    Set peeked=..peek(Length)
     If $$$UPPER(peeked)=$$$UPPER(StringToCheck) {
         Set ok=1
-        Set foundString=peeked
+    } Else {
+        Set ok=0
     }
     ;$$$DEBUG("checking punctuation'"_StringToCheck_"' ok="_ok)
-    ;$$$DEBUGMethodEnd
+    $$$DEBUGMethodEnd
     Quit ok
 }
 
@@ -361,6 +357,7 @@ Method addStringInList(ParentElement As PXW.DEV.Element, ListOfStrings As %List,
     Quit ok
 }
 
+/*
 Method addKeywordInList(ParentElement As PXW.DEV.Element, ListOfStrings As %List, Output foundString As %String) As %Boolean
 {
     $$$DEBUGMethodBegin
@@ -374,17 +371,32 @@ Method addKeywordInList(ParentElement As PXW.DEV.Element, ListOfStrings As %List
     $$$DEBUGMethodEnd
     Quit ok
 }
-
-Method addKeyword(ParentElement As PXW.DEV.Element, Keyword As %String, Output foundString As %String) As %Boolean
+*/
+Method addKeyword(ParentElement As PXW.DEV.Element, KeywordUpper As %String) As %Boolean
 {
     $$$DEBUGMethodBegin
     Set ok=0
+    /*
     If ..isKeyword(Keyword,.value) {
         Set foundString=..next($LENGTH(value))
         Set atom=..newAtom(..#keywordAtomType,foundString)
         Do ParentElement.AddPart(atom)
         Set ok=1
     }
+    */
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+
+    Set keyword=..peekKeyword()
+    Set UPP=$$$UPPER(keyword)
+    If (UPP=KeywordUpper) {
+        Set foundString=..next($LENGTH(keyword))
+        Set atom=..newAtom(..#keywordAtomType,foundString)
+        Do ParentElement.AddPart(atom)
+        Set ok=1
+    } Else {
+        Set ok=0
+    }
+
     $$$DEBUGMethodEnd
     Quit ok
 }
@@ -409,35 +421,45 @@ Method addRegex(ParentElement As PXW.DEV.Element = "", Regex As %String) As %Boo
 
 Method addPunctuation(ParentElement As PXW.DEV.Element, Punctuation As %String, Output foundString As %String) As %Boolean
 {
-    ;$$$DEBUGMethodBegin
-    Set ok=0
-    If ..isPunctuation(Punctuation,.value) {
+    $$$DEBUGMethodBegin
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+ 
+    Set len=$LENGTH(Punctuation) 
+    Set peeked=..peek(len)
+    If $$$UPPER(peeked)=$$$UPPER(Punctuation) {
+        Set foundString=..next(len)
+        Set atom=..newAtom("punctuation",foundString)
+        Do ParentElement.AddPart(atom)
+        Set ok=1
+    } Else {
+        Set ok=0
+    }
+    ;Set:$$$debugIsON %addpunct(ok,Punctuation)=$GET(%addpunct(ok,Punctuation))+1
+    /*If ..isPunctuation(Punctuation,.value) {
         Set foundString=..next($LENGTH(value))
         Set atom=..newAtom("punctuation",foundString)
         Do ParentElement.AddPart(atom)
         Set ok=1
-    }
-    ;$$$DEBUGMethodEnd
-    Quit ok
-}
-
-Method addPunctuationInList(ParentElement As PXW.DEV.Element, ListOfStrings As %List, longestLen As %Integer = 50, Output foundString As %String) As %Boolean
-{
-    $$$DEBUGMethodBegin
-    Set ok=0
-    If ..isPunctuationInList(ListOfStrings,longestLen,.value) {
-        Set foundString=..next(longestLen)
-        Set atom=..newAtom("punctuation",foundString)
-        Do ParentElement.AddPart(atom)
-        Set ok=1
-    }
+    }*/
     $$$DEBUGMethodEnd
     Quit ok
 }
 
-Method concatChar(ByRef string As %String, char As %String)
+Method addPunctuationInList(ParentElement As PXW.DEV.Element, ListOfStrings As %List, Length As %Integer) As %Boolean
 {
-    If ..peek(1)=char Set string=string_char
+    $$$DEBUGMethodBegin
+    Set next50=..peek(Length)
+    Set UPP50=$$$UPPER(next50)
+    If $LISTFIND(ListOfStrings,UPP50) {
+        Set foundString=..next(Length)
+        Set atom=..newAtom("punctuation",foundString)
+        Do ParentElement.AddPart(atom)
+        Set ok=1
+    } else {
+        Set ok=0
+    }
+    $$$DEBUGMethodEnd
+    Quit ok
 }
 
 /// methods in here need to do a DIRECT lookup on ..text
@@ -511,9 +533,9 @@ Method newAtom(type As %String, value As %String = "") As PXW.DEV.Atom
         Set ..comment=""
     }
     Set ..needsWScheck=1
-    Set %atoms=$GET(%atoms)+1
-    Set %atomadded=a.type_"="_a.value
-    Set %next50=..peek(50)
+    ;Set %atoms=$GET(%atoms)+1
+    ;Set %atomadded=a.type_"="_a.value
+    ;Set %next50=..peek(50)
     Quit a
 }
 

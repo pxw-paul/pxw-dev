@@ -25,6 +25,7 @@ Method formatElement(element As PXW.DEV.Element)
 
 Method resetAll(element As PXW.DEV.Element)
 {
+    set akey=""
  	For  {
 		Set a=element.partsGetNext(.akey)
 		Quit:akey=""
@@ -130,6 +131,7 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %Stri
         Do ..setWhitespaceNewLineElement(element,indent)
     }
 
+    set akey=""
    	For  {
 		Set a=element.partsGetNext(.akey)
 		Quit:akey=""

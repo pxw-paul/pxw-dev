@@ -122,7 +122,7 @@ Method compileRules(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.E
     Set Method.Description=Method.Description_$CHAR(13,10)_"summary="_summary    
     
     Set initialIndent=indent
-    Set first=1
+    Set first=1,rkey=""
     For  {
         Set ruleE=Element.findNextElement(.rkey)
         Quit:rkey=""

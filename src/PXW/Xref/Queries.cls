@@ -1,3 +1,5 @@
+Include PXW.Debuggers.Macros
+
 Class PXW.Xref.Queries [ Owner = {_PUBLIC} ]
 {
 
@@ -130,18 +132,43 @@ Query GetCount(NameSpace As %String, ItemType As %String = "", ItemKey1 As %Stri
 
 ClassMethod GetCount(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = "", ItemKey2 As %String = "", CalledByCommand As %String = "") As %Integer
 {
-	/*#dim rs as %SQL.StatementResult*/
-		Set count=""
+	$$$DEBUGMethodBegin
+	Set count=""
+	Set rs=..GetCountFunc(NameSpace,ItemType,ItemKey1,ItemKey2,CalledByCommand)
+	
+	If rs.%Next() {
+		Set count=+rs.%Get("Number")
+	}
+	$$$DEBUGMethodEnd
+	Quit count
+}
 
-		Set rs=..GetCountFunc(NameSpace,ItemType,ItemKey1,ItemKey2,CalledByCommand)
-		
-		If rs.%Next() {
-			Set count=+rs.%Get("Number")
-		}
-		
-		
-		
-		Quit count
+Query GetCountsSummary(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = "") As PXW.LIB.SQL.Query [ SqlProc ]
+{
+	SELECT ItemKey2,CalledByCommand,COUNT(*) AS Number
+	FROM PXW_Xref.Data
+	WHERE NameSpace=:NameSpace
+		AND ItemType=:ItemType
+		AND ItemKey1=:ItemKey1
+	GROUP BY ItemKey2,CalledByCommand
+}
+
+ClassMethod GetCountsSummary(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = "", Output Results) As %Integer
+{
+	$$$DEBUGMethodBegin
+	Set count=""
+	Set rs=..GetCountsSummaryFunc(NameSpace,ItemType,ItemKey1)
+	Set Results=0
+	while rs.%Next() {
+		Set ik2=rs.%Get("ItemKey2")
+		Set cbc=rs.%Get("CalledByCommand")
+		Set count=+rs.%Get("Number")
+		Set Results=$g(Results)+count
+		Set Results(ik2)=$g(Results(ik2))+count
+		Set Results(ik2,cbc)=$g(Results(ik2,cbc))+count
+	}
+	$$$DEBUGMethodEnd
+	Quit count
 }
 
 ClassMethod GetCode(%NS As %String, CodeType As %String, CodeKey1 As %String, LineNumber As %Integer, WindowSize As %Integer = 0) As %String [ SqlProc ]

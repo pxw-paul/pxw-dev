@@ -190,9 +190,8 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 
 	
 	If Debug["$TIME" {
-		
 		Set s="" For  Set s=$ORDER(%pxwstrings(s),1,n) Quit:s=""  Set %pxwstringsX(n,s)=""
-		Write "<pre>" ZWrite %pxwstrings,%pxwstringsX,%pxw1,%RBCOUNT ZWrite $$$debugObject Write "</pre>"
+		Write "<pre>" ZWrite %punct,%pxwstrings,%pxwstringsX,%pxw1,%RBCOUNT ZWrite $$$debugObject Write "</pre>"
 		Set totaltime=0,totalcalls=0
 		Set rs=##clasS(%Library.ResultSet).%New("PXW.Tools.DebugTiming:SelectResults")
 		$$$THROWONERROR(sc,rs.%Execute())
@@ -342,19 +341,6 @@ ClassMethod WriteClassDir(Class As %String)
 /// Write out extra javascript here, the SCRIPT tags are already in place
 ClassMethod WriteScripts()
 {
-	Write "function edit(clsname) {"
-	Write " 	var editor=window.frames['editor'];",!
-	Write "		debugger; ",!
-	Write "		if (!editor) {",!
-	Write "			editor=window.open('/cloudstudio/CloudStudio.PXW.cls?C='+clsname+'.cls','editor');",!
-	Write "		}",!
-	Write "",!
-	Write "",!
-	Write "",!
-	Write "",!
-	Write "",!
-	Write "}",!
-
 	Write "var hiliterun=1;"
 	Write "function HiliteSets(id) {",!
 	Write "    var objs=document.getElementsByTagName('span');",!

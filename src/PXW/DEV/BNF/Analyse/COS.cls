@@ -126,7 +126,7 @@ Method checkElement(element As PXW.DEV.Element)
 {
 	#dim a as PXW.DEV.Atom
 
-	Do ..GenericRedirect(element)
+	Do ..processSpecificElement(element)
 
 	Set akey=""
 	For  {

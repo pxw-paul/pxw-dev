@@ -130,4 +130,22 @@ ClassMethod GetTitle() As %String
 	Quit inc
 }
 
+ClassMethod WriteScripts()
+{
+	do ##class(PXW.Tools.DEV.Class).WriteScripts()
+}
+
+/// Write out extra styles here, the STYLE tags are already in place.
+/// <p>
+/// Be careful with putting colours in here. You do not know how the colours will 
+/// work with the current %STYLE selected by the user.
+/// </p><p> 
+/// You can put layout changing things here, EG if a page needs extra DIVs
+/// the layout information can go here. 
+/// </p>
+ClassMethod WriteStyles()
+{
+	do ##class(PXW.Tools.DEV.Class).WriteStyles()
+}
+
 }

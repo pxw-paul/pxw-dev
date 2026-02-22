@@ -36,6 +36,8 @@ Property PythonAnalyser As PXW.DEV.BNF.Analyse.Python;
 
 Property commentid As %Integer;
 
+Property xrefCounts As %Integer [ MultiDimensional ];
+
 Method OutputKeywordCommentAsDocumentation(Element As PXW.DEV.Element, Output commentid As %String)
 {
     Set commentid=""
@@ -92,6 +94,29 @@ Method middle(element As PXW.DEV.Element)
     Do ..writeElement(element)
 }
 
+Method GetXrefCount(ItemKey2 As %String, CallType As %String) As %Integer
+{
+    $$$DEBUGMethodBegin
+    if '$d(..xrefCounts(..This)) {
+        ; I think that in most cases its faster to call this once and
+        ; gather all the counts in one go rather than many smaller calls
+        ; to the getcount method
+        do ##class(PXW.Xref.Queries).GetCountsSummary(%NS,..ThisType,..This,.results)
+        m ..xrefCounts(..This)=results
+    } 
+    i ItemKey2="",CallType="" {
+        s count=+$g(..xrefCounts(..This))
+    } elseif CallType="" {
+        s ik2=$$$UPPER(ItemKey2)
+        s count=+$g(..xrefCounts(..This,ik2))
+    } else {
+        s ik2=$$$UPPER(ItemKey2),ct=$$$UPPER(CallType)
+        s count=+$g(..xrefCounts(..This,ik2,ct))
+    }
+    $$$DEBUGMethodEnd
+    q count
+}
+
 Method writeElement(element As PXW.DEV.Element)
 {
     $$$DEBUGMethodBegin
@@ -146,7 +171,7 @@ Method wrapElementBNF1Loop(element As PXW.DEV.Element)
         Set labname=$TRANSLATE("LAB"_..ThisMethod_lab,"$^%_","")
         Do ..wrapAtomHTML(atom,"<a onclick='HiliteElement("""_labname_""");'  class="""_$$$classLabel_""" href=""#"_labname_""">","</a>")
     }
-
+    set akey=""
     For  {
         Set a=element.partsGetNext(.akey)
         Quit:akey=""
@@ -216,10 +241,12 @@ Method writeCDEFClassDefinition(element As PXW.DEV.BNF.Elements.ClassDefinition)
     $$$DEBUGMethodBegin
     Set keywordatom=element.FirstAtom()
     ;Do ..OutputKeywordCommentAsDocumentation(element,.commentid)
-    Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This)
+    ;Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This)
+    s count=..GetXrefCount("","")
     Set menu="<div class="""_$$$classLensMenu_" nocopy"">"
     Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,)_""">Xref ("_count_") </a>"
-    Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,"_class","_Extends")
+    ;Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,"_class","_Extends")
+    Set overriddenby=..GetXrefCount("_class","_Extends")
     If overriddenby>0 {
         Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,"","_Extends")_""">Extended ("_overriddenby_") </a>"
     }
@@ -250,13 +277,14 @@ Method writeCDEFClassProperty(element As PXW.DEV.BNF.Elements.ClassDefinition) A
     Set nameelement=element.findFirstElementByType("PropertyName")
     If $ISOBJECT(nameelement) {
         Set name=nameelement.ToString(0)
-        Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
+        ;Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
+        Set count=..GetXrefCount(name,"")
         Set menu="<div class="""_$$$classLensMenu_" nocopy"">"
         Set overrides=..ClassServer.GetPropertyOverrides(..This_"||"_name)
         If overrides'="" {
             Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_..HREFToClass(overrides,name)_""">Override </a>"
         }
-        Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name,"_Override")
+        Set overriddenby=..GetXrefCount(name,"_Override")
         If overriddenby>0 {
             Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_""">Overridden ("_overriddenby_") </a>"
         }
@@ -275,13 +303,14 @@ Method writeCDEFClassParameter(element As PXW.DEV.BNF.Elements.ClassDefinition) 
     Set nameelement=element.findFirstElementByType("ClassParameterName")
     If $ISOBJECT(nameelement) {
         Set name=nameelement.ToString(0)
-        Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
+        ;Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
+        Set count=..GetXrefCount(name,"")
         Set menu="<div class="""_$$$classLensMenu_"  nocopy"">"
         Set overrides=..ClassServer.GetParameterOverrides(..This_"||"_name)
         If overrides'="" {
             Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_..HREFToClass(overrides,name)_""">Override </a>"
         }
-        Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name,"_Override")
+        Set overriddenby=..GetXrefCount(name,"_Override")
         If overriddenby>0 {
             Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_""">Overridden ("_overriddenby_") </a>"
         }
@@ -300,13 +329,14 @@ Method writeCDEFClassMethod(element As PXW.DEV.BNF.Elements.ClassDefinition) As 
     Set nameelement=element.findFirstElementByType("MethodName")
     If $ISOBJECT(nameelement) {
         Set name=nameelement.ToString(0)
-        Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
+        ;Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
+        Set count=..GetXrefCount(name,"")
         Set menu="<div class="""_$$$classLensMenu_"  nocopy"">"
         Set overrides=..ClassServer.GetMethodOverrides(..This_"||"_name)
         If overrides'="" {
             Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_..HREFToClass(overrides,name)_""">Override </a>"
         }
-        Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name,"_Override")
+        Set overriddenby=..GetXrefCount(name,"_Override")
         If overriddenby>0 {
             Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_""">Overridden ("_overriddenby_") </a>"
         }
@@ -342,14 +372,15 @@ Method writeCDEFClassQuery(element As PXW.DEV.BNF.Elements.ClassDefinition) As P
     Set nameelement=element.findFirstElementByType("QueryName")
     If $ISOBJECT(nameelement) {
         Set name=nameelement.ToString(0)
-        Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
+        ;Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
+        Set count=..GetXrefCount(name,"")
         Set menu="<div class="""_$$$classLensMenu_" nocopy"">"
         ; not sure if/how I recognise overridden QUERIES
         /*Set overrides=..ClassServer.GetPropertyOverrides(..This_"||"_name)
         If overrides'="" {
             Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_..HREFToClass(overrides,name)_""">Override </a>"
         }*/
-        Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name,"_Override")
+        Set overriddenby=..GetXrefCount(name,"_Override")
         If overriddenby>0 {
             Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_""">Overridden ("_overriddenby_") </a>"
         }
@@ -413,14 +444,15 @@ Method writeCDEFIndex(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DE
     Set nameelement=element.findFirstElementByType("IndexName")
     If $ISOBJECT(nameelement) {
         Set name=nameelement.ToString(0)
-        Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
+        ;Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
+        Set count=..GetXrefCount(name,"")
         Set menu="<div class="""_$$$classLensMenu_" nocopy"">"
         ; not sure if indices even can be overridden
         /*Set overrides=..ClassServer.GetPropertyOverrides(..This_"||"_name)
         If overrides'="" {
             Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_..HREFToClass(overrides,name)_""">Override </a>"
         }*/
-        Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name,"_Override")
+        Set overriddenby=..GetXrefCount(name,"_Override")
         If overriddenby>0 {
             Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_""">Overridden ("_overriddenby_") </a>"
         }
@@ -752,7 +784,8 @@ Method writeCOSCosDirective(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.
             Set nameE=defineE.findFirstElementByType("CosDirectiveDefineName",0)
             If $ISOBJECT(nameE) {
                 Set name=nameE.ToString(0)
-                Set count=##class(PXW.Xref.Queries).GetCount(%NS,"INC",..This,name)
+                ;Set count=##class(PXW.Xref.Queries).GetCount(%NS,"INC",..This,name)
+                Set count=..GetXrefCount(name,"")
                 Set anchor="anchor"_name_nameE.type
                 ;Set ..ThisMethod=name
                 If ..BookMark'="",$$$UPPER(name)=$$$UPPER(..BookMark) {
@@ -1375,6 +1408,7 @@ Method writePYParam(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compi
 Method writePYAtom(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="Atom")
 {
     $$$DEBUGMethodBegin
+    set akey=""
     For  {
         Set a=element.partsGetNext(.akey)
         Quit:akey=""
@@ -1422,7 +1456,7 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName
     Set path=""
     While $ISOBJECT(objectchain) {
         
-        Set propertyatom=""
+        Set propertyatom="",akey=""
         ; the objectchain has the "." and the name
         For  {
             Set a=objectchain.partsGetNext(.akey)

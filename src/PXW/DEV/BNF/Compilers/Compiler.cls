@@ -9,7 +9,7 @@ Property CurrentClass As %Dictionary.ClassDefinition;
 
 Property CurrentMethod As %Dictionary.MethodDefinition;
 
-Property UniqueMethodId As %Integer;
+Property UniqueMethodId As %Integer [ MultiDimensional ];
 
 Property parser As PXW.DEV.BNF.super;
 
@@ -193,15 +193,16 @@ Method compileDefinition(Element As PXW.DEV.Element)
     Set summary=..summariseRules(rulesE)
     If summary="R" {
         ; regex is a special kind of rule, more like a subrule
-        Set transaction=0,debug=1,copymode=1
+        Set transaction=0,debug=1,copymode=1,quickCheckDone=1
         Do ..compileQuickCheck(method,rulesE,indent)
         Do ..compileMethodStart(method,indent,0,transaction,debug)
-        Do ..compileRules(method,rulesE,indent)
+        Do ..compileRules(method,rulesE,indent,quickCheckDone)
         Do ..compileMethodEnd(method,indent,,transaction,debug,copymode)
     } Else {
+        Set quickCheckDone=1
         Do ..compileQuickCheck(method,rulesE,indent)
         Do ..compileMethodStart(method,indent,1)
-        Do ..compileRules(method,rulesE,indent)
+        Do ..compileRules(method,rulesE,indent,quickCheckDone)
         Do ..compileMethodEnd(method,indent)
     }
  	;$$$WRITE($$$Tab(indent)_"quit done")
@@ -223,9 +224,9 @@ Method compileQuickCheck(Method As %Dictionary.MethodDefinition, RulesElement As
         Set wordlist="",sep=""
         For i=1:1:$LISTLENGTH(listOfValues) Set wordlist=wordlist_sep_""""_$LISTGET(listOfValues,i)_"""",sep=","
         If $LISTLENGTH(listOfValues)=1 {
-            $$$WRITECR($$$Tab(indent)_"if '(..isKeyword("_wordlist_",.value)) { quit "_returnValue_" }")
+            $$$WRITECR($$$Tab(indent)_"if '(..isKeyword("_wordlist_")) { quit "_returnValue_" }")
         } Else {
-            $$$WRITECR($$$Tab(indent)_"if '(..isKeywordInList($lb("_wordlist_"),.value)) { quit "_returnValue_" }")
+            $$$WRITECR($$$Tab(indent)_"if '(..isKeywordInList($lb("_wordlist_"))) { quit "_returnValue_" }")
         }
     } ElseIf (summary?1"(K"0."|K"1")&"1.E) || (summary?1"K"0."|K"1"&"1.E) {
          ; similar to above but with something else after
@@ -238,9 +239,9 @@ Method compileQuickCheck(Method As %Dictionary.MethodDefinition, RulesElement As
         ; It may end up doing this twice: once on the main method and then again when the keywords are processed in the submethod (above)
         ; but I think the benefit of doing this check before the submethod is even called is worth it.
         If numberofK=1 {
-            $$$WRITECR($$$Tab(indent)_"if '(..isKeyword("_wordlist_",.value)) { quit "_returnValue_" }")
+            $$$WRITECR($$$Tab(indent)_"if '(..isKeyword("_wordlist_")) { quit "_returnValue_" }")
         } Else {
-            $$$WRITECR($$$Tab(indent)_"if '(..isKeywordInList($lb("_wordlist_"),.value)) { quit "_returnValue_" /*1*/ }")
+            $$$WRITECR($$$Tab(indent)_"if '(..isKeywordInList($lb("_wordlist_"))) { quit "_returnValue_" /*1*/ }")
         }
     }  ElseIf (summary="P") {
         ; Punctuation single (eg ,)
@@ -251,13 +252,38 @@ Method compileQuickCheck(Method As %Dictionary.MethodDefinition, RulesElement As
         $$$WRITECR($$$Tab(indent)_"if '(..isStringSingle("_wordlist_",.value)) { quit "_returnValue_" /*3 */ }")
     } ElseIf (summary="R") {
         ; no quick check for reg ex yet
-    } ElseIf (summary?1"(P"0."|P"1")") || (summary?1"P"0."|P") {
+    } ElseIf (summary?1"(P"0."|P"1")") || (summary?1"P"0."|P") || (summary?1"(P"0."|P"1")&"1.E) || (summary?1"P"0."|P"1"&"1.E) {
         ; Punctuation list (P|P|P) or P|P|P
-        Set Method.Description=Method.Description_$CHAR(13,10)_"summary values:"_$LISTTOSTRING(listOfValues)
-        Set wordlist="",sep="",longest=0
-        For i=1:1:$LISTLENGTH(listOfValues) Set word=$LISTGET(listOfValues,i),wordlist=wordlist_sep_""""_word_"""",sep="," If $LENGTH(word)>longest Set longest=$LENGTH(word)
-        $$$WRITECR($$$Tab(indent)_"if '(..isStringInList($lb("_wordlist_"),"_longest_",.value)) { quit "_returnValue_" }")
-    } ElseIf (summary?1"P&".E) || (summary?1"K&".E) || (summary?1"(K"0."|K"1")&".E) {   
+        ; or similar to above but with something else after
+        ; Punctuation list (P|P|P)&... or P|P|P&...
+        ;Set Method.Description=Method.Description_$CHAR(13,10)_"summary values:"_$LISTTOSTRING(listOfValues)
+        ;Set wordlist="",sep="",longest=0
+        ;For i=1:1:$LISTLENGTH(listOfValues) Set word=$LISTGET(listOfValues,i),wordlist=wordlist_sep_""""_word_"""",sep="," If $LENGTH(word)>longest Set longest=$LENGTH(word)
+        ;$$$WRITECR($$$Tab(indent)_"if '(..isStringInList($lb("_wordlist_"),"_longest_",.value)) { quit "_returnValue_" }")
+    ;} ElseIf (summary?1"(P"0."|P"1")&"1.E) || (summary?1"P"0."|P"1"&"1.E) {
+        Set numberofK=$LENGTH($PIECE(summary,"&",1),"|")
+        Set keywords=$LIST(listOfValues,1,numberofK)
+        Set Method.Description=Method.Description_$CHAR(13,10)_"summary values:"_$LISTTOSTRING(keywords)
+        Set wordlist="",longest=0 
+        Kill wordlengths,sep,wordcount
+        For i=1:1:$LISTLENGTH(keywords) {
+            Set word=$LISTGET(keywords,i)
+            Set len=$l(word)
+            set wordlist(len)=$g(wordlist(len))_$g(sep(len))_""""_word_"""",sep(len)=",",wordcount(len)=$g(wordcount(len))+1
+        }
+        set len="",check="",sep=""
+        for  {
+            set len=$o(wordlist(len),-1)
+            quit:len=""
+            if wordcount(len)=1 {
+                set check=check_sep_"'..isPunctuation("_wordlist(len)_","_len_")",sep=","
+            } else {
+                set check=check_sep_"'..isPunctuationInList($lb("_wordlist(len)_"),"_len_")",sep=","
+            }
+        }
+        ;$$$WRITECR($$$Tab(indent)_"if '(..isStringInList($lb("_wordlist_"),"_longest_",.value)) { quit "_returnValue_" }")
+        $$$WRITECR($$$Tab(indent)_"if "_check_" { quit "_returnValue_" }")
+     } ElseIf (summary?1"P&".E) || (summary?1"K&".E) || (summary?1"(K"0."|K"1")&".E) {   
         ; if cannot summarize the entire set of rules, then can we do the first one?
         ; IE - its a simple thing AND something else
         Set rule1E=RulesElement.partsGetAt(1)
@@ -270,7 +296,7 @@ Method compileQuickCheck(Method As %Dictionary.MethodDefinition, RulesElement As
                 Set Method.Description=Method.Description_$CHAR(13,10)_"summary values:"_$LISTTOSTRING(listOfValues)
                 Set wordlist="",sep=""
                 For i=1:1:$LISTLENGTH(listOfValues) Set wordlist=wordlist_sep_""""_$LISTGET(listOfValues,i)_"""",sep=","
-                $$$WRITECR($$$Tab(indent)_"if '(..isKeywordInList($lb("_wordlist_"),.value)) { quit "_returnValue_" }")
+                $$$WRITECR($$$Tab(indent)_"if '(..isKeywordInList($lb("_wordlist_"))) { quit "_returnValue_" }")
             } ElseIf (summary="P") {
                 ; Punctuation single (eg ,)
                 Set Method.Description=Method.Description_$CHAR(13,10)_"summary values:"_$LISTTOSTRING(listOfValues)
@@ -356,11 +382,12 @@ Method NewMethod(Name As %String, Element As PXW.DEV.Element) As %Dictionary.Met
 
 Method SubMethodName(BaseName As %String, Suffix As %String = "") As %String
 {
-    Set ..UniqueMethodId=..UniqueMethodId+1
-    Quit BaseName_..UniqueMethodId_Suffix
+    set key=BaseName_" "
+    Set ..UniqueMethodId(key)=$g(..UniqueMethodId(key))+1
+    Quit BaseName_..UniqueMethodId(key)_Suffix
 }
 
-Method compileRules(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.Element, indent As %Integer)
+Method compileRules(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.Element, indent As %Integer, QuickCheckDone As %Boolean = 0)
 {
     #dim ruleE as PXW.DEV.Element
     #define WRITE(%code) $$$WRITENOLINE(Method,%code)
@@ -369,6 +396,7 @@ Method compileRules(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.E
     Set summary=..summariseRules(Element)
     Set Method.Description=Method.Description_$CHAR(13,10)_"summary="_summary
     
+    set nkey="",rkey=""
     Set firstRuleE=Element.partsGetNext(.nkey)
     If $ISOBJECT(firstRuleE) {
         If firstRuleE.ToString(0)="|" {
@@ -385,7 +413,7 @@ Method compileRules(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.E
         ;i andor="AND" s indent=indent+1
         If first {
             $$$WRITE($$$Tab(indent)_"if ")
-            Do ..compileRule(Method,ruleE,indent)
+            Do ..compileRule(Method,ruleE,indent,,QuickCheckDone)
             $$$WRITECR(" "_$$$OpenCurly)
         } ElseIf (andor="AND") {
             $$$WRITE($$$Tab(indent)_"if ")
@@ -419,7 +447,7 @@ Method compileRules(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.E
     $$$WRITECR("")
 }
 
-Method compileRule(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.Element, indent As %Integer, subElementVar As %String = "subElement")
+Method compileRule(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.Element, indent As %Integer, subElementVar As %String = "subElement", QuickCheckDone As %Boolean = 0)
 {
     #dim atom as PXW.DEV.Atom
     #dim subelement as PXW.DEV.Element
@@ -449,7 +477,7 @@ Method compileRule(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.El
         Set rulesE=subelement.findFirstElementByType("rules",0)
         Set subMethod=..NewMethod(..SubMethodName(..CurrentMethod.Name,"Sub"))
         Set subMethod.Description=rulesE.ToString(" ")
-        Do ..compileSubRule(subMethod,rulesE,indent)
+        Do ..compileSubRule(subMethod,rulesE,indent,QuickCheckDone)
         $$$WRITE(".."_subMethod.Name_"(."_subElementVar_",.addedElement) ")
     } ElseIf subelement.type="OptionalGroup" {
         Set rulesE=subelement.findFirstElementByType("Rules",0)
@@ -544,7 +572,7 @@ Method compileRepeatSep(Method As %Dictionary.MethodDefinition, Element As PXW.D
     */
 }
 
-Method compileSubRule(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.Element, indentOfParent As %Integer)
+Method compileSubRule(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.Element, indentOfParent As %Integer, QuickCheckDone As %Boolean = 0)
 {
     #define WRITE(%code) $$$WRITENOLINE(Method,%code)
     #define WRITECR(%code) $$$WRITELINE(Method,%code)
@@ -560,7 +588,8 @@ Method compileSubRule(Method As %Dictionary.MethodDefinition, Element As PXW.DEV
         If summary?1"K"0."|K" Set transaction=0,debug=0
         If summary?1"P"0."|P" Set transaction=0,debug=0
         ;$$$WRITECR($$$Tab(indent)_"; sub summary="_summary_", transaction="_transaction)
-        Do ..compileQuickCheck(Method,Element,indent)
+        ; if the quick check has already been done, do not do it again here
+        Do:'QuickCheckDone ..compileQuickCheck(Method,Element,indent)
         Do ..compileMethodStart(Method,indent,path,transaction,debug)
         ;If 'transaction $$$WRITECR($$$Tab(indent)_"Set subElement=ParentElement")
         Do ..compileRules(Method,Element,indent)
@@ -709,8 +738,7 @@ ClassMethod load(XDATAname As %String, Output array As %String, ByRef version As
 ///    which could be done in some clever fast way.
 Method summariseRules(Element As PXW.DEV.Element, ByRef listOfValues As %List) As %String
 {
-    Set summary=""
-    Set andor=""
+    Set summary="",andor="",rkey=""
     For  {
         Set ruleE=Element.partsGetNext(.rkey)
         Quit:rkey=""

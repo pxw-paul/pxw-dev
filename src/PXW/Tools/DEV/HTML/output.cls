@@ -132,13 +132,15 @@ Method writeElement(element As PXW.DEV.Element)
     Do ..processSpecificElement(element)
 	
 	;For i=1:1:+$GET(..pre(+element)) Do ..output($GET(..pre(+element,i)))
-	i +$GET(..pre(+element)) {
+	i $data(..pre(+element)) {
 		s out=""
 		For i=1:1:..pre(+element) set out=out_$GET(..pre(+element,i))
 		do ..output(.out)
 	}
 
-	For  {
+	set akey=""
+	For {
+		; nexting through because the element count may change if the outputter wants to add/remove elements as we go
 		Set a=element.partsGetNext(.akey)
 		Quit:akey=""
 		
@@ -150,7 +152,7 @@ Method writeElement(element As PXW.DEV.Element)
 	}
 	
 	;For i=+$GET(..post(+element)):-1:1 Do ..output($GET(..post(+element,i)))
-	i +$get(..post(+element)) {
+	i $data(..post(+element)) {
 		set out=""
 		For i=..post(+element):-1:1 set out=out_$GET(..post(+element,i))
 		do ..output(.out)

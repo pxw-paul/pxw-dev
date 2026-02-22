@@ -95,7 +95,7 @@ Method Attribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 Method CallModule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&C
-	if '(..isKeyword("MODULE",.value)) { quit 0 /* normal */ }
+	if '(..isKeyword("MODULE")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -123,15 +123,15 @@ Method CallModule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 Method CallModules(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&C&(?4punctuation:4?)*&[K&C]
-	if '(..isKeyword("MODULES",.value)) { quit 0 /* normal */ }
+	if '(..isKeyword("MODULES")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"MODULES")  {
 		if ..ModuleName(.subElement,.addedElement)  {
-			if ..CallModules24RepZero(.subElement,.addedElement)  {
-				if ..CallModules26OptGrp(.subElement,.addedElement)  {
+			if ..CallModules1RepZero(.subElement,.addedElement)  {
+				if ..CallModules3OptGrp(.subElement,.addedElement)  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -150,12 +150,12 @@ Method CallModules(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 }
 
 ///  ( ',' ['and'] module_name )*
-Method CallModules24RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method CallModules1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..CallModules25Sub(.subElement,.addedElement)  {
+	while ..CallModules2Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	set ok=1
@@ -165,11 +165,10 @@ Method CallModules24RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 ///  ',' ['and'] module_name
 /// summary values:,
 /// summary=P&[K]&C
-Method CallModules25Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method CallModules2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&[K]&C
-	; first rule summary P
-	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ /*4*/ }
+	if '..isPunctuation(",",1) { quit 0 /* normal */ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,",")  {
@@ -193,10 +192,10 @@ Method CallModules25Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 /// 
 /// summary values:AND
 /// summary=K&C
-Method CallModules26OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method CallModules3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K&C
-	if '(..isKeyword("AND",.value)) { quit 1 /* not found is OK */ }
+	if '(..isKeyword("AND")) { quit 1 /* not found is OK */ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"AND")  {
@@ -221,15 +220,15 @@ Method CallModules26OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 Method CallSubqueries(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&C&(?4punctuation:4?)*&[K&C]
-	if '(..isKeyword("SUBQUERIES",.value)) { quit 0 /* normal */ }
+	if '(..isKeyword("SUBQUERIES")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"SUBQUERIES")  {
 		if ..SubqueryName(.subElement,.addedElement)  {
-			if ..CallSubqueries27RepZero(.subElement,.addedElement)  {
-				if ..CallSubqueries29OptGrp(.subElement,.addedElement)  {
+			if ..CallSubqueries1RepZero(.subElement,.addedElement)  {
+				if ..CallSubqueries3OptGrp(.subElement,.addedElement)  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -248,12 +247,12 @@ Method CallSubqueries(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 }
 
 ///  ( ',' ['and'] subquery_name )*
-Method CallSubqueries27RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method CallSubqueries1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..CallSubqueries28Sub(.subElement,.addedElement)  {
+	while ..CallSubqueries2Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	set ok=1
@@ -263,11 +262,10 @@ Method CallSubqueries27RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 ///  ',' ['and'] subquery_name
 /// summary values:,
 /// summary=P&[K]&C
-Method CallSubqueries28Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method CallSubqueries2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&[K]&C
-	; first rule summary P
-	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ /*4*/ }
+	if '..isPunctuation(",",1) { quit 0 /* normal */ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,",")  {
@@ -291,10 +289,10 @@ Method CallSubqueries28Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 /// 
 /// summary values:AND
 /// summary=K&C
-Method CallSubqueries29OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method CallSubqueries3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K&C
-	if '(..isKeyword("AND",.value)) { quit 1 /* not found is OK */ }
+	if '(..isKeyword("AND")) { quit 1 /* not found is OK */ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"AND")  {
@@ -319,7 +317,7 @@ Method CallSubqueries29OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 Method CallSubquery(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&C
-	if '(..isKeyword("SUBQUERY",.value)) { quit 0 /* normal */ }
+	if '(..isKeyword("SUBQUERY")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -415,14 +413,13 @@ Method Content(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 Method CostSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&(?4Call:4?)*&P
-	; first rule summary P
-	if '(..isStringSingle("<COST",.value)) { quit 0 /* normal */ /*4*/ }
+	if '..isPunctuation("<COST",5) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"<cost")  {
-		if ..CostSection15RepZero(.subElement,.addedElement)  {
+		if ..CostSection1RepZero(.subElement,.addedElement)  {
 			if ..addPunctuation(.subElement,"/>")  {
 				set done=1 ; end compileRules
 			}
@@ -441,7 +438,7 @@ Method CostSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 }
 
 ///  attribute*
-Method CostSection15RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method CostSection1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4Call:4?
 	set subElement=ParentElement
@@ -459,14 +456,14 @@ Method CostSection15RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 Method ForEach(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&K&(?4punctuation:4?)*&P&C
-	if '(..isKeyword("FOR",.value)) { quit 0 /* normal */ }
+	if '(..isKeyword("FOR")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"FOR")  {
 		if ..addKeyword(.subElement,"EACH")  {
-			if ..ForEach20RepZero(.subElement,.addedElement)  {
+			if ..ForEach1RepZero(.subElement,.addedElement)  {
 				if ..addPunctuation(.subElement,":")  {
 					if ..ForEachContent(.subElement,.addedElement)  {
 						set done=1 ; end compileRules
@@ -488,12 +485,12 @@ Method ForEach(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 }
 
 ///  (word)*
-Method ForEach20RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ForEach1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..ForEach21Sub(.subElement,.addedElement)  {
+	while ..ForEach2Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	set ok=1
@@ -502,7 +499,7 @@ Method ForEach20RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 /// word
 /// summary=C
-Method ForEach21Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ForEach2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C
 	set subElement=ParentElement
@@ -526,7 +523,7 @@ Method ForEachContent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	set done=0 ; method start
 	if ..Newline(.subElement,.addedElement)  {
 		if ..Indent(.subElement,.addedElement)  {
-			if ..ForEachContent22RepZero(.subElement,.addedElement)  {
+			if ..ForEachContent1RepZero(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -544,12 +541,12 @@ Method ForEachContent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 }
 
 ///  (!OUTDENT [ content ] )*
-Method ForEachContent22RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ForEachContent1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..ForEachContent23Sub(.subElement,.addedElement)  {
+	while ..ForEachContent2Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	set ok=1
@@ -558,7 +555,7 @@ Method ForEachContent22RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 /// !OUTDENT [ content ]
 /// summary=?4NotRule4?&[C]
-Method ForEachContent23Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ForEachContent2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4NotRule4?&[C]
 	$$$BNFSTART(subElement)
@@ -585,14 +582,13 @@ Method ForEachContent23Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 Method FrozenSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&(?4Call:4?)*&P
-	; first rule summary P
-	if '(..isStringSingle("<FROZENPLAN",.value)) { quit 0 /* normal */ /*4*/ }
+	if '..isPunctuation("<FROZENPLAN",11) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"<frozenPlan")  {
-		if ..FrozenSection16RepZero(.subElement,.addedElement)  {
+		if ..FrozenSection1RepZero(.subElement,.addedElement)  {
 			if ..addPunctuation(.subElement,"/>")  {
 				set done=1 ; end compileRules
 			}
@@ -611,7 +607,7 @@ Method FrozenSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 }
 
 ///  attribute*
-Method FrozenSection16RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method FrozenSection1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4Call:4?
 	set subElement=ParentElement
@@ -675,7 +671,7 @@ Method IndexKey(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..IndexKey45Sub(.subElement,.addedElement)  {
+	if ..IndexKey1Sub(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..IndexKeyName(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
@@ -693,13 +689,9 @@ Method IndexKey(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 }
 
 /// '%SQLUPPER(' index_key_name ')'
-/// summary values:%SQLUPPER(
 /// summary=P&C&P
-Method IndexKey45Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method IndexKey1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary P&C&P
-	; first rule summary P
-	if '(..isStringSingle("%SQLUPPER(",.value)) { quit 0 /* normal */ /*4*/ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"%SQLUPPER(")  {
@@ -756,7 +748,7 @@ Method IndexKeyWithRange(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..IndexKey(.subElement,.addedElement)  {
-		if ..IndexKeyWithRange46Sub(.subElement,.addedElement)  {
+		if ..IndexKeyWithRange1Sub(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -775,10 +767,10 @@ Method IndexKeyWithRange(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 ///  '(with a given set of values)' | '(with a range condition)'
 /// summary values:(WITH A GIVEN SET OF VALUES),(WITH A RANGE CONDITION)
 /// summary=P|P
-Method IndexKeyWithRange46Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method IndexKeyWithRange1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P|P
-	if '(..isStringInList($lb("(WITH A GIVEN SET OF VALUES)","(WITH A RANGE CONDITION)"),28,.value)) { quit 0 /* normal */ }
+	if '..isPunctuation("(WITH A GIVEN SET OF VALUES)",28),'..isPunctuation("(WITH A RANGE CONDITION)",24) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"(with a given set of values)")  {
@@ -797,8 +789,7 @@ Method IndexKeyWithRange46Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 Method IndexKeys(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&K&K&C&P&K&C
-	; first rule summary P
-	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ /*4*/ }
+	if '..isPunctuation(",",1) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -836,15 +827,15 @@ Method IndexKeys(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 Method IndexKeysGiven(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&C&(?4punctuation:4?)*&[K&?4NotRule4?&C]
-	if '(..isKeyword("GIVEN",.value)) { quit 0 /* normal */ }
+	if '(..isKeyword("GIVEN")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"GIVEN")  {
 		if ..IndexKey(.subElement,.addedElement)  {
-			if ..IndexKeysGiven36RepZero(.subElement,.addedElement)  {
-				if ..IndexKeysGiven38OptGrp(.subElement,.addedElement)  {
+			if ..IndexKeysGiven1RepZero(.subElement,.addedElement)  {
+				if ..IndexKeysGiven3OptGrp(.subElement,.addedElement)  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -863,12 +854,12 @@ Method IndexKeysGiven(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 }
 
 ///  (',' ['and'] !'looping' index_key)*
-Method IndexKeysGiven36RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method IndexKeysGiven1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..IndexKeysGiven37Sub(.subElement,.addedElement)  {
+	while ..IndexKeysGiven2Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	set ok=1
@@ -878,11 +869,10 @@ Method IndexKeysGiven36RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 /// ',' ['and'] !'looping' index_key
 /// summary values:,
 /// summary=P&[K]&?4NotRule4?&C
-Method IndexKeysGiven37Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method IndexKeysGiven2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&[K]&?4NotRule4?&C
-	; first rule summary P
-	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ /*4*/ }
+	if '..isPunctuation(",",1) { quit 0 /* normal */ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,",")  {
@@ -908,10 +898,10 @@ Method IndexKeysGiven37Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 /// 
 /// summary values:AND
 /// summary=K&?4NotRule4?&C
-Method IndexKeysGiven38OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method IndexKeysGiven3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K&?4NotRule4?&C
-	if '(..isKeyword("AND",.value)) { quit 1 /* not found is OK */ }
+	if '(..isKeyword("AND")) { quit 1 /* not found is OK */ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"AND")  {
@@ -938,16 +928,16 @@ Method IndexKeysGiven38OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 Method IndexKeysLooping(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&K&(C|C)&(?4punctuation:4?)*&[K&?4NotRule4?&(C|C)]
-	if '(..isKeyword("LOOPING",.value)) { quit 0 /* normal */ }
+	if '(..isKeyword("LOOPING")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"LOOPING")  {
 		if ..addKeyword(.subElement,"ON")  {
-			if ..IndexKeysLooping39Sub(.subElement,.addedElement)  {
-				if ..IndexKeysLooping40RepZero(.subElement,.addedElement)  {
-					if ..IndexKeysLooping43OptGrp(.subElement,.addedElement)  {
+			if ..IndexKeysLooping1Sub(.subElement,.addedElement)  {
+				if ..IndexKeysLooping2RepZero(.subElement,.addedElement)  {
+					if ..IndexKeysLooping5OptGrp(.subElement,.addedElement)  {
 						set done=1 ; end compileRules
 					}
 				}
@@ -968,7 +958,7 @@ Method IndexKeysLooping(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 ///  index_key_with_range | index_key
 /// summary=C|C
-Method IndexKeysLooping39Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method IndexKeysLooping1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C|C
 	set subElement=ParentElement
@@ -984,12 +974,12 @@ Method IndexKeysLooping39Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 }
 
 ///  (',' ['and'] !'getting' ( index_key_with_range | index_key))*
-Method IndexKeysLooping40RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method IndexKeysLooping2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..IndexKeysLooping41Sub(.subElement,.addedElement)  {
+	while ..IndexKeysLooping3Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	set ok=1
@@ -999,17 +989,16 @@ Method IndexKeysLooping40RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 /// ',' ['and'] !'getting' ( index_key_with_range | index_key)
 /// summary values:,
 /// summary=P&[K]&?4NotRule4?&(C|C)
-Method IndexKeysLooping41Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method IndexKeysLooping3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&[K]&?4NotRule4?&(C|C)
-	; first rule summary P
-	if '(..isStringSingle(",",.value)) { quit 0 /* normal */ /*4*/ }
+	if '..isPunctuation(",",1) { quit 0 /* normal */ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,",")  {
 		if $S(..addKeyword(.subElement,"AND") :1,1:1) {
 			if '..addKeyword(.subElement,"GETTING")  {
-				if ..IndexKeysLooping42Sub(.subElement,.addedElement)  {
+				if ..IndexKeysLooping4Sub(.subElement,.addedElement)  {
 					set done=1 ; end compileRules
 				}
 			}
@@ -1028,7 +1017,7 @@ Method IndexKeysLooping41Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 
 ///  index_key_with_range | index_key
 /// summary=C|C
-Method IndexKeysLooping42Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method IndexKeysLooping4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C|C
 	set subElement=ParentElement
@@ -1046,15 +1035,15 @@ Method IndexKeysLooping42Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 /// 
 /// summary values:AND
 /// summary=K&?4NotRule4?&(C|C)
-Method IndexKeysLooping43OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method IndexKeysLooping5OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K&?4NotRule4?&(C|C)
-	if '(..isKeyword("AND",.value)) { quit 1 /* not found is OK */ }
+	if '(..isKeyword("AND")) { quit 1 /* not found is OK */ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"AND")  {
 		if '..addKeyword(.subElement,"GIVEN")  {
-			if ..IndexKeysLooping44Sub(.subElement,.addedElement)  {
+			if ..IndexKeysLooping6Sub(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -1072,7 +1061,7 @@ Method IndexKeysLooping43OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 /// index_key_with_range | index_key
 /// summary=C|C
-Method IndexKeysLooping44Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method IndexKeysLooping6Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C|C
 	set subElement=ParentElement
@@ -1117,16 +1106,15 @@ Method IndexName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 Method InfoSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&(?4Call:4?)*&P&(?4punctuation:4?)*&P
-	; first rule summary P
-	if '(..isStringSingle("<INFO",.value)) { quit 0 /* normal */ /*4*/ }
+	if '..isPunctuation("<INFO",5) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"<info")  {
-		if ..InfoSection17RepZero(.subElement,.addedElement)  {
+		if ..InfoSection1RepZero(.subElement,.addedElement)  {
 			if ..addPunctuation(.subElement,">")  {
-				if ..InfoSection18RepZero(.subElement,.addedElement)  {
+				if ..InfoSection2RepZero(.subElement,.addedElement)  {
 					if ..addPunctuation(.subElement,"</info>")  {
 						set done=1 ; end compileRules
 					}
@@ -1147,7 +1135,7 @@ Method InfoSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 }
 
 ///  attribute*
-Method InfoSection17RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method InfoSection1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4Call:4?
 	set subElement=ParentElement
@@ -1160,12 +1148,12 @@ Method InfoSection17RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 }
 
 ///  (!'</info>' content)*
-Method InfoSection18RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method InfoSection2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..InfoSection19Sub(.subElement,.addedElement)  {
+	while ..InfoSection3Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	set ok=1
@@ -1174,7 +1162,7 @@ Method InfoSection18RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 /// !'</info>' content
 /// summary=?4NotRule4?&C
-Method InfoSection19Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method InfoSection3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4NotRule4?&C
 	$$$BNFSTART(subElement)
@@ -1242,16 +1230,15 @@ Method ModuleName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 Method ModuleSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&(?4Call:4?)*&P&(?4punctuation:4?)*&P
-	; first rule summary P
-	if '(..isStringSingle("<MODULE",.value)) { quit 0 /* normal */ /*4*/ }
+	if '..isPunctuation("<MODULE",7) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"<module")  {
-		if ..ModuleSection12RepZero(.subElement,.addedElement)  {
+		if ..ModuleSection1RepZero(.subElement,.addedElement)  {
 			if ..addPunctuation(.subElement,">")  {
-				if ..ModuleSection13RepZero(.subElement,.addedElement)  {
+				if ..ModuleSection2RepZero(.subElement,.addedElement)  {
 					if ..addPunctuation(.subElement,"</module>")  {
 						set done=1 ; end compileRules
 					}
@@ -1272,7 +1259,7 @@ Method ModuleSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 }
 
 ///  attribute*
-Method ModuleSection12RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ModuleSection1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4Call:4?
 	set subElement=ParentElement
@@ -1285,12 +1272,12 @@ Method ModuleSection12RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 }
 
 ///  (!'</module>' content)*
-Method ModuleSection13RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ModuleSection2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..ModuleSection14Sub(.subElement,.addedElement)  {
+	while ..ModuleSection3Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	set ok=1
@@ -1299,7 +1286,7 @@ Method ModuleSection13RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 /// !'</module>' content
 /// summary=?4NotRule4?&C
-Method ModuleSection14Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ModuleSection3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4NotRule4?&C
 	$$$BNFSTART(subElement)
@@ -1404,14 +1391,13 @@ Method Outdent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 Method Plan(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&(?4punctuation:4?)*&P
-	; first rule summary P
-	if '(..isStringSingle("<PLAN>",.value)) { quit 0 /* normal */ /*4*/ }
+	if '..isPunctuation("<PLAN>",6) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"<plan>")  {
-		if ..Plan3RepZero(.subElement,.addedElement)  {
+		if ..Plan1RepZero(.subElement,.addedElement)  {
 			if ..addPunctuation(.subElement,"</plan>")  {
 				set done=1 ; end compileRules
 			}
@@ -1430,12 +1416,12 @@ Method Plan(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 }
 
 ///  (!'</plan>' content)*
-Method Plan3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method Plan1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..Plan4Sub(.subElement,.addedElement)  {
+	while ..Plan2Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	set ok=1
@@ -1444,7 +1430,7 @@ Method Plan3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 
 /// !'</plan>' content
 /// summary=?4NotRule4?&C
-Method Plan4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method Plan2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4NotRule4?&C
 	$$$BNFSTART(subElement)
@@ -1471,8 +1457,7 @@ Method Plan4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 Method Plans(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&(?4punctuation:4?)*&P
-	; first rule summary P
-	if '(..isStringSingle("<PLANS>",.value)) { quit 0 /* normal */ /*4*/ }
+	if '..isPunctuation("<PLANS>",7) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1603,7 +1588,7 @@ Method PunctuationRegex(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 Method ReadBitmapIndex(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&K&C
-	if '(..isKeyword("BITMAP",.value)) { quit 0 /* normal */ }
+	if '(..isKeyword("BITMAP")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1633,7 +1618,7 @@ Method ReadBitmapIndex(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 Method ReadExtentBitmap(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&K&C
-	if '(..isKeyword("EXTENT",.value)) { quit 0 /* normal */ }
+	if '(..isKeyword("EXTENT")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1663,7 +1648,7 @@ Method ReadExtentBitmap(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 Method ReadIndex(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&K&C
-	if '(..isKeyword("INDEX",.value)) { quit 0 /* normal */ }
+	if '(..isKeyword("INDEX")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1693,7 +1678,7 @@ Method ReadIndex(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 Method ReadMaster(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&K&K&C
-	if '(..isKeyword("READ",.value)) { quit 0 /* normal */ }
+	if '(..isKeyword("READ")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1725,7 +1710,7 @@ Method ReadMaster(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 Method ReadMasterScan(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&K&K&C&P&K&K&K
-	if '(..isKeyword("READ",.value)) { quit 0 /* normal */ }
+	if '(..isKeyword("READ")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1789,14 +1774,13 @@ Method SchemaName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 Method SqlSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&(?4punctuation:4?)*&P
-	; first rule summary P
-	if '(..isStringSingle("<SQL>",.value)) { quit 0 /* normal */ /*4*/ }
+	if '..isPunctuation("<SQL>",5) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"<sql>")  {
-		if ..SqlSection5RepZero(.subElement,.addedElement)  {
+		if ..SqlSection1RepZero(.subElement,.addedElement)  {
 			if ..addPunctuation(.subElement,"</sql>")  {
 				set done=1 ; end compileRules
 			}
@@ -1815,12 +1799,12 @@ Method SqlSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 }
 
 ///  (!'</sql>' content)*
-Method SqlSection5RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlSection1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..SqlSection6Sub(.subElement,.addedElement)  {
+	while ..SqlSection2Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	set ok=1
@@ -1829,7 +1813,7 @@ Method SqlSection5RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 /// !'</sql>' content
 /// summary=?4NotRule4?&C
-Method SqlSection6Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SqlSection2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4NotRule4?&C
 	$$$BNFSTART(subElement)
@@ -1906,16 +1890,15 @@ Method SubqueryName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 Method SubquerySection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&(?4Call:4?)*&P&(?4punctuation:4?)*&P
-	; first rule summary P
-	if '(..isStringSingle("<SUBQUERY",.value)) { quit 0 /* normal */ /*4*/ }
+	if '..isPunctuation("<SUBQUERY",9) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"<subquery")  {
-		if ..SubquerySection9RepZero(.subElement,.addedElement)  {
+		if ..SubquerySection1RepZero(.subElement,.addedElement)  {
 			if ..addPunctuation(.subElement,">")  {
-				if ..SubquerySection10RepZero(.subElement,.addedElement)  {
+				if ..SubquerySection2RepZero(.subElement,.addedElement)  {
 					if ..addPunctuation(.subElement,"</subquery>")  {
 						set done=1 ; end compileRules
 					}
@@ -1935,13 +1918,26 @@ Method SubquerySection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	quit ok
 }
 
+///  attribute*
+Method SubquerySection1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary ?4Call:4?
+	set subElement=ParentElement
+	set done=0 ; method start
+	while ..Attribute(.subElement,.addedElement)  {
+		set done=1
+	}
+	set ok=1
+	quit ok
+}
+
 ///  (!'</subquery>' content)*
-Method SubquerySection10RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SubquerySection2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..SubquerySection11Sub(.subElement,.addedElement)  {
+	while ..SubquerySection3Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	set ok=1
@@ -1950,7 +1946,7 @@ Method SubquerySection10RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 /// !'</subquery>' content
 /// summary=?4NotRule4?&C
-Method SubquerySection11Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method SubquerySection3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4NotRule4?&C
 	$$$BNFSTART(subElement)
@@ -1971,26 +1967,13 @@ Method SubquerySection11Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	quit ok
 }
 
-///  attribute*
-Method SubquerySection9RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary ?4Call:4?
-	set subElement=ParentElement
-	set done=0 ; method start
-	while ..Attribute(.subElement,.addedElement)  {
-		set done=1
-	}
-	set ok=1
-	quit ok
-}
-
 ///  table ::= 'table' schema_name '.' table_name
 /// summary values:TABLE
 /// summary=K&C&P&C
 Method Table(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary K&C&P&C
-	if '(..isKeyword("TABLE",.value)) { quit 0 /* normal */ }
+	if '(..isKeyword("TABLE")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -2028,7 +2011,7 @@ Method TableIndex(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	if ..SchemaName(.subElement,.addedElement)  {
 		if ..addPunctuation(.subElement,".")  {
 			if ..TableName(.subElement,.addedElement)  {
-				if ..TableIndex30OptGrp(.subElement,.addedElement)  {
+				if ..TableIndex1OptGrp(.subElement,.addedElement)  {
 					if ..addPunctuation(.subElement,".")  {
 						if ..IndexName(.subElement,.addedElement)  {
 							if $S(..IndexKeys(.subElement,.addedElement) :1,1:1) {
@@ -2054,7 +2037,7 @@ Method TableIndex(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 /// 
 /// summary=C|C
-Method TableIndex30OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method TableIndex1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C|C
 	set subElement=ParentElement
@@ -2099,15 +2082,14 @@ Method TableName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 Method TableSubscriptAlias(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&C&[P&(?4punctuation:4?)*]&P
-	; first rule summary P
-	if '(..isStringSingle("(",.value)) { quit 0 /* normal */ /*4*/ }
+	if '..isPunctuation("(",1) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"(")  {
 		if ..AliasName(.subElement,.addedElement)  {
-			if ..TableSubscriptAlias33OptGrp(.subElement,.addedElement)  {
+			if ..TableSubscriptAlias1OptGrp(.subElement,.addedElement)  {
 				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
 				}
@@ -2129,15 +2111,14 @@ Method TableSubscriptAlias(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 /// 
 /// summary values:.
 /// summary=P&(?4punctuation:4?)*
-Method TableSubscriptAlias33OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method TableSubscriptAlias1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&(?4punctuation:4?)*
-	; first rule summary P
-	if '(..isStringSingle(".",.value)) { quit 1 /* not found is OK */ /*4*/ }
+	if '..isPunctuation(".",1) { quit 1 /* not found is OK */ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,".")  {
-		if ..TableSubscriptAlias34RepZero(.subElement,.addedElement)  {
+		if ..TableSubscriptAlias2RepZero(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -2153,12 +2134,12 @@ Method TableSubscriptAlias33OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef s
 }
 
 ///  ( property_name '->')*
-Method TableSubscriptAlias34RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method TableSubscriptAlias2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..TableSubscriptAlias35Sub(.subElement,.addedElement)  {
+	while ..TableSubscriptAlias3Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	set ok=1
@@ -2167,7 +2148,7 @@ Method TableSubscriptAlias34RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef 
 
 ///  property_name '->'
 /// summary=C&P
-Method TableSubscriptAlias35Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method TableSubscriptAlias3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C&P
 	$$$BNFSTART(subElement)
@@ -2194,8 +2175,7 @@ Method TableSubscriptAlias35Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 Method TableSubscriptImply(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&C&P&C&P&(?4punctuation:4?)*&P
-	; first rule summary P
-	if '(..isStringSingle("(",.value)) { quit 0 /* normal */ /*4*/ }
+	if '..isPunctuation("(",1) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -2205,7 +2185,7 @@ Method TableSubscriptImply(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 			if ..addPunctuation(.subElement,".")  {
 				if ..TableName(.subElement,.addedElement)  {
 					if ..addPunctuation(.subElement,".")  {
-						if ..TableSubscriptImply31RepZero(.subElement,.addedElement)  {
+						if ..TableSubscriptImply1RepZero(.subElement,.addedElement)  {
 							if ..addPunctuation(.subElement,")")  {
 								set done=1 ; end compileRules
 							}
@@ -2228,12 +2208,12 @@ Method TableSubscriptImply(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 }
 
 ///  (property_name '->')*
-Method TableSubscriptImply31RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method TableSubscriptImply1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..TableSubscriptImply32Sub(.subElement,.addedElement)  {
+	while ..TableSubscriptImply2Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	set ok=1
@@ -2242,7 +2222,7 @@ Method TableSubscriptImply31RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef 
 
 /// property_name '->'
 /// summary=C&P
-Method TableSubscriptImply32Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method TableSubscriptImply2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C&P
 	$$$BNFSTART(subElement)
@@ -2269,14 +2249,13 @@ Method TableSubscriptImply32Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 Method WarningSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&(?4punctuation:4?)*&P
-	; first rule summary P
-	if '(..isStringSingle("<WARNING>",.value)) { quit 0 /* normal */ /*4*/ }
+	if '..isPunctuation("<WARNING>",9) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"<warning>")  {
-		if ..WarningSection7RepZero(.subElement,.addedElement)  {
+		if ..WarningSection1RepZero(.subElement,.addedElement)  {
 			if ..addPunctuation(.subElement,"</warning>")  {
 				set done=1 ; end compileRules
 			}
@@ -2295,12 +2274,12 @@ Method WarningSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 }
 
 ///  (!'</warning>' content)*
-Method WarningSection7RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method WarningSection1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	set done=0 ; method start
-	while ..WarningSection8Sub(.subElement,.addedElement)  {
+	while ..WarningSection2Sub(.subElement,.addedElement)  {
 		set done=1
 	}
 	set ok=1
@@ -2309,7 +2288,7 @@ Method WarningSection7RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 
 /// !'</warning>' content
 /// summary=?4NotRule4?&C
-Method WarningSection8Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method WarningSection2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4NotRule4?&C
 	$$$BNFSTART(subElement)

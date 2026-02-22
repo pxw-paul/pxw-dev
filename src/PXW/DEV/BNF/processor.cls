@@ -15,6 +15,7 @@ Property processNotRequired As %String [ MultiDimensional ];
 Method processElement(element As PXW.DEV.Element)
 {
 	$$$DEBUGMethodBegin
+	set partkey=""
 	For  {
 		Set part=element.partsGetNext(.partkey)
 		Quit:partkey=""

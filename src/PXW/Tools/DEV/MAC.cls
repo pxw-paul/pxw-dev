@@ -115,17 +115,20 @@ ClassMethod GetTitle() As %String
 /// Write out extra javascript here, the SCRIPT tags are already in place
 ClassMethod WriteScripts()
 {
-	Write "var hiliterun=1;"
-	Write "function HiliteSets(id) {",!
-	Write "    var objs=document.getElementsByTagName('span');",!
-	Write "    var cls='hiliteSET'+hiliterun;",!
-	Write "    var clsf='hiliteGET'+hiliterun;",!
-	Write "    for (var i=0; i<objs.length; i++) {",!
-	Write "      if (objs[i].getAttribute('varid')==id) objs[i].className=cls; //",! ;objs[i].className+' '+cls;",!
-	Write "      if (objs[i].getAttribute('fetchid')==id) objs[i].className=clsf; //",! ;objs[i].className+' '+cls;",!
-	Write "    }",!
-	Write "    hiliterun=hiliterun+1; if (hiliterun>8) hiliterun=1;",!
-	Write "}",!
+	do ##class(PXW.Tools.DEV.Class).WriteScripts()
+}
+
+/// Write out extra styles here, the STYLE tags are already in place.
+/// <p>
+/// Be careful with putting colours in here. You do not know how the colours will 
+/// work with the current %STYLE selected by the user.
+/// </p><p> 
+/// You can put layout changing things here, EG if a page needs extra DIVs
+/// the layout information can go here. 
+/// </p>
+ClassMethod WriteStyles()
+{
+	do ##class(PXW.Tools.DEV.Class).WriteStyles()
 }
 
 ClassMethod WriteNav(ByRef scratch)

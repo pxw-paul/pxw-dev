@@ -1,4 +1,4 @@
-Class PXW.DEV.BNF.Analyse.analyser Extends %RegisteredObject
+Class PXW.DEV.BNF.Analyse.analyser Extends PXW.DEV.BNF.processor
 {
 
 Parameter CodeType;
@@ -44,7 +44,7 @@ ClassMethod NewForLanguage(CodeType As %String, Language As %String) As PXW.DEV.
 	Quit obj
 }
 
-Method GenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator ]
+Method ooGenericRedirect(element As PXW.DEV.Element) [ CodeMode = objectgenerator ]
 {
  
     #dim meth as %Dictionary.MethodDefinition

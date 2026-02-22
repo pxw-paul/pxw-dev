@@ -204,27 +204,16 @@ Method WriteStyles()
 	.warningdata { background-color: var(--bgWarning); }
 	.errordata { background-color: var(--bgError); }
 	
-	.hiliteSET1 { background-color: #ffcc00; color:white; } 
-	.hiliteSET2 { background-color: #ff0000; color:white; }
-	.hiliteSET3 { background-color: #0000ff; color:white; }
-	.hiliteSET4 { background-color: #00cc00; color:white; }
-	.hiliteSET5 { background-color: #800080; color:white; }
-	.hiliteSET6 { background-color: #00ccb4; color:white; }
-	.hiliteSET7 { background-color: #be00cc; color:white; }
-	.hiliteSET8 { background-color: #b30000; color:white; }
-	.hiliteSET9 { background-color: none; }
-	.hiliteGET1 { background-color: #cca300; color:white; } 
-	.hiliteGET2 { background-color: #cc0000; color:white; } 
-	.hiliteGET3 { background-color: #0000cc; color:white; }
-	.hiliteGET4 { background-color: #009900; color:white; }
-	.hiliteGET5 { background-color: #660066; color:white; }
-	.hiliteGET6 { background-color: #009987; color:white; }
-	.hiliteGET7 { background-color: #8e0099; color:white; }
-	.hiliteGET8 { background-color: #860000; color:white; }
-	.hiliteGET9 { background-color: none; }
-	
+	.hiliteSET1 { background-color: hsl(0, 100%, 40%); color:white; } 	 .hiliteGET1 { background-color: hsl(0, 100%, 25%); color:white; } 
+	.hiliteSET2 { background-color: hsl(45, 100%, 40%); color:white; }  .hiliteGET2 { background-color: hsl(45, 100%, 25%); color:white; } 
+	.hiliteSET3 { background-color: hsl(315, 100%, 40%); color:white; } .hiliteGET3 { background-color: hsl(315, 100%, 25%); color:white; }
+	.hiliteSET4 { background-color: hsl(90, 100%, 40%); color:white; }  .hiliteGET4 { background-color: hsl(90, 100%, 25%); color:white; }
+	.hiliteSET5 { background-color: hsl(270, 100%, 40%); color:white; } .hiliteGET5 { background-color: hsl(270, 100%, 25%); color:white; }
+	.hiliteSET6 { background-color: hsl(135, 100%, 40%); color:white; } .hiliteGET6 { background-color: hsl(135, 100%, 25%); color:white; }
+	.hiliteSET7 { background-color: hsl(225, 100%, 40%); color:white; } .hiliteGET7 { background-color: hsl(225, 100%, 25%); color:white; }
+	.hiliteSET8 { background-color: hsl(180, 100%, 40%); color:white; } .hiliteGET8 { background-color: hsl(180, 100%, 25%); color:white; }
+	.hiliteSET9 { background-color: none; }                               .hiliteGET9 { background-color: none; }
 	/* End of code display */
-
 
  	</style>
 	>

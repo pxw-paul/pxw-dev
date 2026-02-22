@@ -7,6 +7,7 @@ Class PXW.Xref.Build Extends %Library.RegisteredObject
 /// s %pxwdeb=##class(PXW.Debuggers.BasicToFile).%New(),%pxwdeb.AddDateTime=1 d ##class(PXW.Xref.Build).Build("LOCAL_USER","","*",1)
 ClassMethod Build(Namespace As %String, Type As %String, SearchName As %String, Force As %Boolean = 0, direction As %Integer = 1) As %Status
 {
+	$$$DEBUGMethodBegin
 	$$$DEBUG("Build:"_Namespace_":"_Type_":"_SearchName)
 	Kill ^||PXWXrefBuild
 	Set sc=$$$OK
@@ -110,6 +111,7 @@ ClassMethod Build(Namespace As %String, Type As %String, SearchName As %String, 
 		$$$ThrowOnError(status.%Save())
 	}
 	$$$DEBUG("Build:"_Namespace_":"_Type_":"_SearchName_":COMPLETE")
+	$$$DEBUGMethodEnd
 	Quit sc
 }
 
@@ -119,6 +121,7 @@ ClassMethod Build(Namespace As %String, Type As %String, SearchName As %String, 
 ClassMethod BuildIfNecessary(CodeInterface As PXW.DEV.Dictionary.CodeInterface, Namespace As %String, Type As %String, Name As %String, TimeChanged As %TimeStamp, BuilderClass As %String, Force As %Boolean, NoDelete As %Boolean = 0) As %Boolean [ Internal ]
 {
 	#dim builder as PXW.Xref.Builder
+	$$$DEBUGMethodBegin
 	$$$DEBUG("BuildIfNecessary:"_Namespace_":"_Type_":"_Name_", NoDelete="_NoDelete)
 	$$$DEBUG("Storage:"_$STORAGE_",%atoms="_$GET(%atoms)) 
 	Set savesc=""
@@ -170,6 +173,7 @@ ClassMethod BuildIfNecessary(CodeInterface As PXW.DEV.Dictionary.CodeInterface, 
 	    $$$DEBUGSC(savesc,LastUpdate.%Save())
 		Set:$$$ISERR(savesc) built=0
 	}
+	$$$DEBUGMethodEnd
 	Quit built
 }
 

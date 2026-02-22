@@ -55,6 +55,8 @@ Property CalledBySection As %String;
 
 Index PK On (NameSpace, ItemType, ItemKey1, ItemKey2, CalledByType, CalledByCommand, CalledByKey1, CalledByKey2, CalledByKey3) [ PrimaryKey, Unique ];
 
+Index iItemT12 On (NameSpace, ItemType, ItemKey1, ItemKey2, CalledByCommand);
+
 Index iItemT21 On (NameSpace, ItemType, ItemKey2, ItemKey1);
 
 Index iCallerT12 On (NameSpace, CalledByType, CalledByKey1, CalledByKey2);

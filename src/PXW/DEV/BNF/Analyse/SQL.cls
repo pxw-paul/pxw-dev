@@ -95,6 +95,7 @@ Method SqlProgramCheck(element As PXW.DEV.Element)
         Do sqlanalyse.checkElement(element)
         Set ..SelectCommandAnalysis(+element)=sqlanalyse
     }
+    set akey=""
 	For  {
 		Set part=element.partsGetNext(.akey)
 		Quit:akey=""

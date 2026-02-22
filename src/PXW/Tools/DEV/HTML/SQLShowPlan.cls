@@ -122,7 +122,7 @@ Method writePlanPlan(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.el
 
 Method writePlanSql(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="SqlSection")
 {
-    Do ..wrapElementHTML(element,"<h3>SQL</h3>","")
+    Do ..wrapElementHTML(element,"<h3>SQL</h3><pre class=PlanSQL>","</pre>")
     Do ..ClearAllButContent(element)
     Quit ""
 }
@@ -253,7 +253,8 @@ Method writeSQLPlanTableIndex(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Com
     ..type=IndexName:/Plan/ReadIndex/TableIndex/IndexName
     .. Code
     */
- 
+    $$$DEBUGMethodBegin
+    
     Set schemaE=element.findFirstElementByType("SchemaName",0)
     Set tableE=element.findFirstElementByType("TableName",0)
     Set indexE=element.findFirstElementByType("IndexName",0)
@@ -268,7 +269,9 @@ Method writeSQLPlanTableIndex(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Com
         Do ..wrapElementHTML(indexE,"<a class='"_$$$classObjectMember_"' href="""_..HREFToClass(table,index)_""">","</a>")
         Set class=..ClassServer.GetClassNameFromTableName(table)
         If ..ClassServer.GetIndexDetails(class,index,,,.properties) {
+            set list=""
             Do element.findElementsXPath("IndexKeys/IndexKeysGiven/IndexKey/IndexKeyName/PropertyName",.list)
+            Do element.findElementsXPath("IndexKeys/IndexKeysGiven/IndexKey/IndexKeyName/AliasProperty/PropertyName",.list)
             If $ISOBJECT(list) {
                 For i=1:1:list.Count() {
                     Set item=list.GetAt(i).ToString(0)
@@ -277,7 +280,9 @@ Method writeSQLPlanTableIndex(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Com
                     }
                 }
             }
+            set list=""
             Do element.findElementsXPath("IndexKeys/IndexKeysLooping/IndexKeyWithRange/IndexKey/IndexKeyName/PropertyName",.list)
+            Do element.findElementsXPath("IndexKeys/IndexKeysLooping/IndexKeyWithRange/IndexKey/IndexKeyName/AliasProperty/PropertyName",.list)
             If $ISOBJECT(list) {
                 For i=1:1:list.Count() {
                     Set item=list.GetAt(i).ToString(0)
@@ -311,7 +316,8 @@ Method writeSQLPlanTableIndex(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Com
            }
         }
     }
- 
+
+    $$$DEBUGMethodEnd
     Quit ""
 }
 

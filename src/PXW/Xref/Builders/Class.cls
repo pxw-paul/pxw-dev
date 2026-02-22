@@ -233,7 +233,6 @@ Method xrefElement(element As PXW.DEV.Element)
 {
     #dim a as PXW.DEV.Atom
 
-	;Do ..GenericRedirect(element)
 	do ..processSpecificElement(element)
 
 	If element.type="WithClause" {
@@ -244,7 +243,7 @@ Method xrefElement(element As PXW.DEV.Element)
  	; from SQL
 	Set oldInView=..InView
 
-
+	set akey=""
 	For  {
 		Set part=element.partsGetNext(.akey)
 		Quit:akey=""
@@ -828,7 +827,7 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName
     Set path="",sep=""
     While $ISOBJECT(objectchain) {
         
-        Set propertyatom=""
+        Set propertyatom="",akey=""
         ; the objectchain has the "." and the name
         For  {
             Set a=objectchain.partsGetNext(.akey)

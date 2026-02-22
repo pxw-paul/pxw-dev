@@ -283,7 +283,7 @@ super_expression                    ::= '##super' function_parameter_list
 class_expression                    ::= '##class' '('  class_reference  ')' [ class_casting ] object_chain 
 class_casting                       ::= ['(' ] ( '##this' | '$this' | variable_identifier ) [')'] 
 class_reference                     ::= class_identifier
-
+ 
 this_object                         ::= this_object_self | this_object_this
 this_object_set                     ::= this_object_self | this_object_this
 this_object_self                    ::= ('..' | 'i%' | 'r%' | 'm%' | 's%') [object_chain_no_dot] 
@@ -414,7 +414,7 @@ python_import                       ::= 'system' '.' 'python' '.' 'import' '(' s
 variable                            ::= variable_identifier [ array_parameter_list ] [ object_chain ]
 variable_set                        ::= variable_identifier [ array_parameter_list ] [ object_chain ]
 variable_identifier                 ::= 'regexp:(\%|[a-zA-Z])[a-zA-Z0-9]*' /* % or A followed by AN* */
-variable_identifier_pattern         ::= (['%'] | '?1A') '?AN'   /* EXPERIMENT % or A followed by AN* */
+/(variable_identifier_pattern         ::= (['%'] | '?1A') '?AN'  --  EXPERIMENT % or A followed by AN* */
 array_parameter_list                ::= open_bracket  expression ( ',' expression )*  close_bracket
 
 object_chain                        ::= '.' object_member_identifier [ function_parameter_list ] [ object_chain ]

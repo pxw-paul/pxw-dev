@@ -18,21 +18,17 @@ Method AddPart(Part As PXW.DEV.Particle)
 Method partsGetAt(key As %Integer) As PXW.DEV.Particle
 {
 	#dim part as PXW.DEV.Particle
-	Set part=$GET(%PXWparts(+$THIS,key))
-	Quit part
+	;Set part=$GET(%PXWparts(+$THIS,key))
+	;Quit part
+	quit $GET(%PXWparts(+$THIS,key))
 }
 
-Method partsGetNext(ByRef key As %Integer = "") As PXW.DEV.Particle
+Method partsGetNext(ByRef key As %Integer) As PXW.DEV.Particle
 {
 	#dim %PXWparts as PXW.DEV.Particle
 	;q ..parts.GetNext(.key)
 	Set key=$ORDER(%PXWparts(+$THIS,key))
-	If key'="" {
-		Set obj=%PXWparts(+$THIS,key)
-	} Else {
-		Set obj=""
-	}
-	Quit obj
+	Quit $SELECT(key'="":%PXWparts(+$THIS,key),1:"")
 }
 
 Method partsCount() As %Integer
@@ -56,7 +52,7 @@ Method partsClear()
 
 Method partsRemove(key As %Integer)
 {
-	If key'="" Kill %PXWparts(+$THIS,key)
+	Kill:key'="" %PXWparts(+$THIS,key)
 }
 
 Method partsReplace(oldElement As PXW.DEV.Element, newElement As PXW.DEV.Element) As %Boolean
@@ -88,8 +84,7 @@ Method ToString(wspace As %String = "") As %String
 	#dim a as PXW.DEV.Atom
 	#dim e as PXW.DEV.Element
 	
-	Set str=""
-	Set akey=""
+	Set str="",akey=""
 	For  {
 		Set a=..partsGetNext(.akey)
 		Quit:akey=""
@@ -131,9 +126,9 @@ Method write(indent As %String = "")
 
 Method writeFull(indent As %String = "")
 {
-	Set akey=""
 	Write ($j($l(indent),2))_indent_"Element="_..type_" "_..%ClassName(1)_" @"_+$THIS,!
 	
+	Set akey=""
 	For  {
 		Set a=..partsGetNext(.akey)
 		Quit:akey=""
@@ -144,8 +139,8 @@ Method writeFull(indent As %String = "")
 
 Method writeDebug(indent As %String = "")
 {
-	Set akey=""
 	$$$DEBUG(($j($l(indent),2))_indent_"Element="_..type_" "_..%ClassName(1)_" @"_+$THIS)
+	Set akey=""
 	For  {
 		Set a=..partsGetNext(.akey)
 		Quit:akey=""
@@ -156,8 +151,8 @@ Method writeDebug(indent As %String = "")
 
 Method writeDebugFull(indent As %String = "")
 {
-	Set akey=""
 	$$$DEBUG(($j($l(indent),2))_indent_"Element="_..type_" "_..%ClassName(1)_" @"_+$THIS)
+	Set akey=""
 	For  {
 		Set a=..partsGetNext(.akey)
 		Quit:akey=""
@@ -305,11 +300,10 @@ Method findElementsByClass(ClassName As %String, ByRef OuputArray As %String)
 Method findElementsXPath(Path As %String, ByRef OutputList As %Library.ListOfObjects(ELEMENTTYPE="PXW.DEV.Element"))
 {
 	#dim item1 as PXW.DEV.Element
-
+	$$$DEBUGMethodBegin
 	; find everything on the first step of the path
 	Set stepI=1
 	Set step1=$PIECE(Path,"/",stepI)
-	;If step1="*" Set deep=1,stepI=stepI+1,step1=$PIECE(Path,"/",stepI)
 
 	Set stepField=$PIECE(step1,"[",1),stepCondition=$PIECE($PIECE(step1,"[",2,*),"]",1)
 	Set list1=##class(%Library.ListOfObjects).%New()
@@ -332,12 +326,23 @@ Method findElementsXPath(Path As %String, ByRef OutputList As %Library.ListOfObj
 		}
 		Set list1=list2
 	}
-	Set OutputList=list1
+	; the logic above is confusing me, below feels wrong, but I want to ADD to the output list if there is already one
+	; meaning the the function is called twice with the same .outputlist on the caller all the elements are added together.
+	if $isobject($g(OutputList)) {
+		for i=1:1:list1.Count() { 
+			d OutputList.Insert(list1.GetAt(i))
+		}
+	} else {
+		Set OutputList=list1
+	}
+	$$$DEBUG("OuputList.Count()="_OutputList.Count())
+	$$$DEBUGMethodEnd
 }
 
 /// Condition only supports = at the moment
 Method findElementsXPathCondition(Type As %String, Condition As %String, ByRef OutputList As %Library.ListOfObjects)
 {
+	$$$DEBUGMethodBegin
 	Set condfield=$PIECE(Condition,"=",1)
 	Set condvalue=$PIECE(Condition,"=",2,*)
 	Set uType=$$$UPPER(Type)
@@ -358,13 +363,16 @@ Method findElementsXPathCondition(Type As %String, Condition As %String, ByRef O
 					}
 				}
 				If ok {
+					$$$DEBUG("Inserting(a):"_uType)
 					Do OutputList.Insert(ele)
 				}
 			} Else {
+				$$$DEBUG("Inserting(b):"_uType)
 				Do OutputList.Insert(ele)
 			}
 		}
 	}
+	$$$DEBUGMethodEnd
 }
 
 Method %OnNew(type As %String) As %Status

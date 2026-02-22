@@ -149,10 +149,9 @@ Method VariableIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
     $$$DEBUGMethodEnd
     Quit ok
     */
-
-   $$$DEBUGMethodBegin
    If ..codemode["SQL" Quit ..VariableIdentifierSQL(ParentElement)
 
+   $$$DEBUGMethodBegin
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
     
     Set ch50=..stream.PeekToEol()
