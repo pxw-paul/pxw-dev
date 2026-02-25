@@ -573,12 +573,16 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, Start
         Set propertyname=objectchain.ToStringAtomsOnly(0)
 		Set propertyname=$SELECT($EXTRACT(propertyname,1)=".":$PIECE(propertyname,".",2),1:propertyname)
 		
+		w "-" zw propertyname,ElementTypeClassName
 		; special case for List.Get methods where we know the element type already
 		If propertyname?1"Get".AN,ElementTypeClassName'="" {
 			Set type=ElementTypeClassName
 		} Else {
-			Set found=..ClassServer.GetPropertyDetails(classname,propertyname,.type)
-			Set:'found type=..ClassServer.GetMethodReturnType(classname,propertyname,.fspec)
+			Set found=..ClassServer.GetPropertyDetails(classname,propertyname,.type,.collection,.ElementTypeClassName)
+			if 'found {
+				set type=..ClassServer.GetMethodReturnType(classname,propertyname,.fspec)
+				set collection="",elementtype=""
+			}
 		}
 		If fspec'="" {
 			Set fparamsE=objectchain.findFirstElementByType("FunctionParameterList",0)
@@ -603,6 +607,7 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, Start
 		}
 
         Set objectchain=objectchain.findFirstElementByType("ObjectChain",0)
+		w "---" zw classname,propertyname,type,collection
         Set classname=type
     }
 	

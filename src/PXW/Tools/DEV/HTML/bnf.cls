@@ -107,10 +107,10 @@ Method GetXrefCount(ItemKey2 As %String, CallType As %String) As %Integer
     i ItemKey2="",CallType="" {
         s count=+$g(..xrefCounts(..This))
     } elseif CallType="" {
-        s ik2=$$$UPPER(ItemKey2)
+        s ik2=$$$SQLUPPER(ItemKey2)
         s count=+$g(..xrefCounts(..This,ik2))
     } else {
-        s ik2=$$$UPPER(ItemKey2),ct=$$$UPPER(CallType)
+        s ik2=$$$SQLUPPER(ItemKey2),ct=$$$SQLUPPER(CallType)
         s count=+$g(..xrefCounts(..This,ik2,ct))
     }
     $$$DEBUGMethodEnd
@@ -1071,6 +1071,20 @@ Method writeJSIdentifier(element As PXW.DEV.BNF.Elements.JS) As PXW.DEV.BNF.Comp
     q ""
 }
 */
+Method writeSQLStoredFunction(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="SQLStoredFunction")
+{
+    $$$DEBUGMethodBegin
+    Set spnameA=element.FirstAtom()
+    if $isobject(spnameA),..This'="",$ISOBJECT(..ClassServer) {
+        set schema=..ClassServer.GetClassSchemaName(..This)
+        if schema'="" {
+            Do ..wrapElementHTML(spnameA,"<a class="""_$$$classObjectMember_""" href="""_..HREFToClass(schema_"."_spnameA.ToString(0))_""">","</a>") 
+        }
+    }
+    $$$DEBUGMethodEnd
+    Quit ""
+}
+
 Method writeSQLStoredProcName(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="StoredProcName")
 {
     $$$DEBUGMethodBegin
@@ -1453,6 +1467,7 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName
     } Else {
         Set objectchain=ParentElement.findFirstElementByType("ObjectChain",1) ; var.property
     }
+    
     Set path=""
     While $ISOBJECT(objectchain) {
         

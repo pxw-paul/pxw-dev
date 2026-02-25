@@ -785,6 +785,26 @@ Method xrefSQLDeleteCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.
 	Quit ""
 }
 
+Method xrefSQLStoredFunction(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="SQLStoredFunction")
+{
+    $$$DEBUGMethodBegin
+    Set spnameA=element.FirstAtom()
+    if $isobject(spnameA),..This'="",$ISOBJECT(..ClassServer) {
+        set schema=..ClassServer.GetClassSchemaName(..This)
+        if schema'="" {
+			Set class=..ClassServer.GetClassNameFromStoredProc(schema_"."_spnameA.ToString(0),.method,..CalledByClassName)
+			Set cbk2=$GET(..SQLPaths(+element),"unk")
+			If class'="" {
+				Set atom=element.FirstAtom()
+				Set command=element.type
+				Do ..SaveSQLXref("CLS",class,method,command,atom,cbk2)
+			}
+        }
+    }
+    $$$DEBUGMethodEnd
+    Quit ""
+}
+
 Method xrefSQLStoredProcName(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="StoredProcName")
 {
 	Set spNameE=element

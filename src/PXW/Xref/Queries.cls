@@ -145,12 +145,12 @@ ClassMethod GetCount(NameSpace As %String, ItemType As %String = "", ItemKey1 As
 
 Query GetCountsSummary(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = "") As PXW.LIB.SQL.Query [ SqlProc ]
 {
-	SELECT ItemKey2,CalledByCommand,COUNT(*) AS Number
+	SELECT %SQLUPPER(ItemKey2) as ItemKey2,%SQLUPPER(CalledByCommand) as CalledByCommand,COUNT(*) AS Number
 	FROM PXW_Xref.Data
-	WHERE NameSpace=:NameSpace
-		AND ItemType=:ItemType
-		AND ItemKey1=:ItemKey1
-	GROUP BY ItemKey2,CalledByCommand
+	WHERE %SQLUPPER(NameSpace)=%SQLUPPER(:NameSpace)
+		AND %SQLUPPER(ItemType)=%SQLUPPER(:ItemType)
+		AND %SQLUPPER(ItemKey1)=%SQLUPPER(:ItemKey1)
+	GROUP BY %SQLUPPER(ItemKey2),%SQLUPPER(CalledByCommand)
 }
 
 ClassMethod GetCountsSummary(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = "", Output Results) As %Integer

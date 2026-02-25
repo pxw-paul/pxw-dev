@@ -499,7 +499,7 @@ Method GetPropertyDetails(ClassName As %String, Name As %String, Output RuntimeT
     ;                    rs.%Get("Collection"),rs.%Get("Type"))            
    
     Set data=$SELECT(ufield'="":$GET(^PXW.Cache("CDEF",%NS,$$$UPPER(fcn),"GPD","propertyname",ufield)),1:"")
-    If data="" Quit 0
+    If data="" Set (Name,RuntimeType,Collection,Type,Origin)="" Quit 0
 
 	Set RuntimeType=$LISTGET(data,2)
     Set Collection=$LISTGET(data,4)
@@ -731,6 +731,22 @@ Method GetClassDetails(ClassName As %String, Output classtype As %String, Output
 	Quit 1
 }
 
+Method GetClassSchemaName(ClassName As %String) As %String
+{
+    ; this should not need to be here but I have not sorted out subqueries properly
+    If ClassName="" Quit ""
+    Set NS=..Namespace.Name  
+    Set fcn=..FullClassName(ClassName)
+	; converts a classname to the right case by selecting it in a query
+   
+    Do ..CacheIfNecessary(fcn,"GCD")
+ 
+    Set data=$GET(^PXW.Cache("CDEF",%NS,$$$UPPER(fcn),"GCD","data"))
+    If data="" Quit ""
+	Set qualifiedName=$LISTGET(data,5)
+    Quit $p(qualifiedName,".",1)
+}
+
 Method GetClassName(ClassName As %String, Output classtype As %String) As %String
 {
   	Set name="",classtype=""
@@ -877,17 +893,31 @@ Method GetParameterOverrides(ParameterId As %String) As %String
 /// a(2)=$lb("PXW.DEV.COS.Objects.Method","ChainedProperty","PXW.DEV.COS.Objects.Property")
 /// a(3)=$lb("PXW.DEV.COS.Objects.Property","Name","PXW.DEV.Atom")
 /// if some step on the path cannot be found then the array will have blanks
+/// 
+/// For a list of object the normal array would look like this:
+/// PathArray=3
+/// PathArray(1)=$lb("PXW.DEV.UnitTests.ClassToDisplay","widgets","%Collection.ListOfObj","list","%DeepSee.Dashboard.Widget")
+/// PathArray(2)=$lb("%Collection.ListOfObj","GetAt","%Library.RegisteredObject","","")
+/// PathArray(3)=$lb("%Library.RegisteredObject","%Dump","","","")
+/// But we want it to look like this
+/// PathArray=3
+/// PathArray(1)=$lb("PXW.DEV.UnitTests.ClassToDisplay","widgets","%Collection.ListOfObj","list","%DeepSee.Dashboard.Widget")
+/// PathArray(2)=$lb("%Collection.ListOfObj","GetAt","%DeepSee.Dashboard.Widget","","")
+/// PathArray(3)=$lb("%DeepSee.Dashboard.Widget","%Dump","","","")
 Method GetClassPath(ClassName As %String, PropertyPath As %String, Output PathArray As %List)
 {
-	
+	set previousCollection="",previousElement=""
     Set classname=ClassName
     For i=1:1:$LENGTH(PropertyPath,".") {
         ; the objectchain has the "." and the name
         Set propertyname=$PIECE(PropertyPath,".",i)
-        Set found=..GetPropertyDetails(classname,propertyname,.type)
-        Set:'found type=..GetMethodReturnType(classname,propertyname)
-        Set PathArray($INCREMENT(PathArray))=$LISTBUILD(classname,propertyname,type)
-        Set classname=type
+        Set found=..GetPropertyDetails(classname,propertyname,.runtimetype,.collection,.elementtype)
+        Set:'found runtimetype=..GetMethodReturnType(classname,propertyname)
+        ; the previous thing was a collection and this item on the path returns an object so carry the previous element type over instead
+        if previousCollection'="",runtimetype="%Library.RegisteredObject" set runtimetype=previousElement
+        Set PathArray($INCREMENT(PathArray))=$LISTBUILD(classname,propertyname,runtimetype,collection,elementtype)
+        set previousCollection=collection,previousElement=elementtype
+        Set classname=runtimetype
     }
 }
 
