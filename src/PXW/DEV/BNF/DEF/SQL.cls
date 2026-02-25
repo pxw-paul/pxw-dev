@@ -235,7 +235,7 @@ sql_function						::= ('$' identifier '(' [ sql_expression ( ',' sql_expression)
 										| ('datename' '(' sql_function_datepart_part ',' sql_expression ')' )
 										| ('datepart' '(' sql_function_datepart_part ',' sql_expression ')' )
 										| sql_internal_function
-										| sql_stored_function
+										| sql_stored_function 
                                         /* | (identifier '(' [ '*' | (sql_expression ( ',' sql_expression)*) ] ')'  [ sql_window ] ) */
                                         /* need to code some of the functions to decide where * is valid? */
 

@@ -17,7 +17,10 @@ Index i2 On (Int2, String1);
 
 ClassMethod formatstring(s As %String) As %String [ SqlProc ]
 {
-
+	s x=..%New()
+	s x.String1="aa"
+	s z=x.%ConstructClone(0)
+	s z.String1="bb"
     q "formatted "_s
 }
 

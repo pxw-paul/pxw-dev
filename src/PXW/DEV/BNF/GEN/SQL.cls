@@ -3,7 +3,7 @@ Class PXW.DEV.BNF.GEN.SQL Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 
 Parameter KeywordPattern = "1.A";
 
-Parameter Keywords = "ALL,AND,AS,ASC,AVG,BETWEEN,BOTH,BY,CALL,CASE,CAST,CLOSE,COUNT,CROSS,CURRENT,CURSOR,D,DATEADD,DATEDIFF,DATENAME,DATEPART,DAY,DAYOFYEAR,DD,DECLARE,DELETE,DESC,DISTINCT,DROP,DW,DY,E,ELSE,END,ESCAPE,EXECUTE,EXISTS,FETCH,FN,FOLLOWING,FOR,FROM,FULL,GROUP,H,HAVING,HH,HOUR,IN,INNER,INSERT,INTO,IS,JOIN,LEADING,LEFT,LIKE,LIST,M,MAX,MI,MILLISECOND,MIN,MINUTE,MM,MONTH,MS,N,NATURAL,NOT,NULL,ON,ONLY,OPEN,OR,ORDER,OUTER,OVER,PARTITION,PRECEDING,Q,QQ,QUARTER,READ,REFERENCES,RIGHT,ROW,ROWS,S,SECOND,SELECT,SET,SIZE,SOME,SQLTIMESTAMP,SS,STS,SUM,TABLE,THEN,TOP,TRAILING,TRIM,UNBOUNDED,UNION,UPDATE,USING,VALUES,VIEW,W,WEEK,WEEKDAY,WHEN,WHERE,WITH,WK,WW,Y,YEAR,YY,YYYY";
+Parameter Keywords = "ABS,ACOS,ALL,AND,AS,ASC,ASCII,ASIN,ATAN,AVG,BETWEEN,BOTH,BY,CALL,CASE,CAST,CEILING,CHAR,CHARINDEX,CLOSE,COALESCE,CONCAT,CONVERT,COS,COT,COUNT,CROSS,CURDATE,CURRENT,CURSOR,CURTIME,D,DATABASE,DATALENGTH,DATE,DATEADD,DATEDIFF,DATENAME,DATEPART,DAY,DAYNAME,DAYOFMONTH,DAYOFWEEK,DAYOFYEAR,DD,DECLARE,DECODE,DEGREES,DELETE,DESC,DISTINCT,DROP,DW,DY,E,ELSE,EMBEDDING,END,ESCAPE,EXECUTE,EXISTS,EXP,FETCH,FLOOR,FN,FOLLOWING,FOR,FROM,FULL,GETDATE,GETUTCDATE,GREATEST,GROUP,H,HASHBYTES,HAVING,HH,HOUR,IFNULL,IN,INNER,INSERT,INSTR,INTO,IS,ISNULL,ISNUMERIC,JOIN,LCASE,LEADING,LEAST,LEFT,LEN,LENGTH,LIKE,LIST,LOG,LOWER,LPAD,LTRIM,M,MAX,MI,MILLISECOND,MIN,MINUTE,MM,MOD,MONTH,MONTHNAME,MS,N,NATURAL,NOT,NOW,NULL,NULLIF,NVL,ON,ONLY,OPEN,OR,ORDER,OUTER,OVER,PARTITION,PI,POSITION,POWER,PRECEDING,PREDICT,PROBABILITY,Q,QQ,QUARTER,RADIANS,READ,REFERENCES,REPEAT,REPLACE,REPLICATE,REVERSE,RIGHT,ROUND,ROW,ROWS,RPAD,RTRIM,S,SECOND,SELECT,SET,SIGN,SIN,SIZE,SOME,SPACE,SQLTIMESTAMP,SQRT,SQUARE,SS,STR,STRING,STS,STUFF,SUBSTR,SUBSTRING,SUM,SYSDATE,TABLE,TAN,THEN,TIMESTAMPADD,TIMESTAMPDIFF,TOP,TRAILING,TRIM,TRUNCATE,UCASE,UNBOUNDED,UNION,UPDATE,UPPER,USER,USING,VALUES,VIEW,W,WEEK,WEEKDAY,WHEN,WHERE,WITH,WK,WW,XMLCONCAT,XMLELEMENT,XMLFOREST,Y,YEAR,YY,YYYY";
 
 ///  alias_name ::= identifier
 /// summary=C
@@ -4222,11 +4222,11 @@ Method SqlFnFunction(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	quit ok
 }
 
-///  sql_function ::= ('$' identifier '(' [ sql_expression ( ',' sql_expression)* ] ')') | ('%exact' sql_expression ) | ('count' '(' ')' [ sql_window ] ) | ('count' '(' ['distinct' | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ] ) | ('min' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ] ) | ('max' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ] ) | ('sum' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ] ) | ('avg' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ] ) | ('cast' '(' sql_expression 'as' identifier ['(' sql_expression ( ',' sql_expression)* ')' ] ')' ) | ('exists' '(' subquery_specification ')' ) | ('list' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')') | ('%dlist' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')') | ('FOR' 'SOME' '%ELEMENT' '(' sql_expression ')' sql_expression ) | ('trim' '(' ['leading' | 'trailing' | 'both'] [(sql_expression 'from')] sql_expression ')' ) | ('dateadd' '(' sql_function_datepart_part ',' sql_expression ',' sql_expression ')' ) | ('datediff' '(' sql_function_datepart_part ',' sql_expression ',' sql_expression ')' ) | ('datename' '(' sql_function_datepart_part ',' sql_expression ')' ) | ('datepart' '(' sql_function_datepart_part ',' sql_expression ')' ) | (identifier '(' [ '*' | (sql_expression ( ',' sql_expression)*) ] ')' [ sql_window ] )
-/// summary=(P&C&P&[C&(?4punctuation:4?)*]&P)|(P&C)|(K&P&P&[C])|(K&P&[K|K]&(P|C)&[P&P&C&P]&P&[C])|(K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C])|(K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C])|(K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C])|(K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C])|(K&P&C&K&C&[P&C&(?4punctuation:4?)*&P]&P)|(K&P&C&P)|(K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P)|(P&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P)|(K&K&P&P&C&P&C)|(K&P&[K|K|K]&[(C&K)]&C&P)|(K&P&C&P&C&P&C&P)|(K&P&C&P&C&P&C&P)|(K&P&C&P&C&P)|(K&P&C&P&C&P)|(C&P&[P|(C&(?4punctuation:4?)*)]&P&[C])
+///  sql_function ::= ('$' identifier '(' [ sql_expression ( ',' sql_expression)* ] ')') | ('%exact' sql_expression ) | ('count' '(' ')' [ sql_window ] ) | ('count' '(' ['distinct' | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ] ) | ('min' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ] ) | ('max' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ] ) | ('sum' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ] ) | ('avg' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')' [ sql_window ] ) | ('cast' '(' sql_expression 'as' identifier ['(' sql_expression ( ',' sql_expression)* ')' ] ')' ) | ('exists' '(' subquery_specification ')' ) | ('list' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')') | ('%dlist' '(' [ ( 'distinct' ['by' '(' col_list ')'] ) | 'all' ] ('*' | sql_expression) [ '%FOREACH' '(' col_list ')' ] ')') | ('FOR' 'SOME' '%ELEMENT' '(' sql_expression ')' sql_expression ) | ('trim' '(' ['leading' | 'trailing' | 'both'] [(sql_expression 'from')] sql_expression ')' ) | ('dateadd' '(' sql_function_datepart_part ',' sql_expression ',' sql_expression ')' ) | ('datediff' '(' sql_function_datepart_part ',' sql_expression ',' sql_expression ')' ) | ('datename' '(' sql_function_datepart_part ',' sql_expression ')' ) | ('datepart' '(' sql_function_datepart_part ',' sql_expression ')' ) | sql_internal_function | sql_stored_function
+/// summary=(P&C&P&[C&(?4punctuation:4?)*]&P)|(P&C)|(K&P&P&[C])|(K&P&[K|K]&(P|C)&[P&P&C&P]&P&[C])|(K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C])|(K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C])|(K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C])|(K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C])|(K&P&C&K&C&[P&C&(?4punctuation:4?)*&P]&P)|(K&P&C&P)|(K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P)|(P&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P)|(K&K&P&P&C&P&C)|(K&P&[K|K|K]&[(C&K)]&C&P)|(K&P&C&P&C&P&C&P)|(K&P&C&P&C&P&C&P)|(K&P&C&P&C&P)|(K&P&C&P&C&P)|C|C
 Method SqlFunction(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary (P&C&P&[C&(?4punctuation:4?)*]&P)|(P&C)|(K&P&P&[C])|(K&P&[K|K]&(P|C)&[P&P&C&P]&P&[C])|(K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C])|(K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C])|(K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C])|(K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C])|(K&P&C&K&C&[P&C&(?4punctuation:4?)*&P]&P)|(K&P&C&P)|(K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P)|(P&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P)|(K&K&P&P&C&P&C)|(K&P&[K|K|K]&[(C&K)]&C&P)|(K&P&C&P&C&P&C&P)|(K&P&C&P&C&P&C&P)|(K&P&C&P&C&P)|(K&P&C&P&C&P)|(C&P&[P|(C&(?4punctuation:4?)*)]&P&[C])
+	; rules summary (P&C&P&[C&(?4punctuation:4?)*]&P)|(P&C)|(K&P&P&[C])|(K&P&[K|K]&(P|C)&[P&P&C&P]&P&[C])|(K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C])|(K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C])|(K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C])|(K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P&[C])|(K&P&C&K&C&[P&C&(?4punctuation:4?)*&P]&P)|(K&P&C&P)|(K&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P)|(P&P&[(K&[K&P&C&P])|K]&(P|C)&[P&P&C&P]&P)|(K&K&P&P&C&P&C)|(K&P&[K|K|K]&[(C&K)]&C&P)|(K&P&C&P&C&P&C&P)|(K&P&C&P&C&P&C&P)|(K&P&C&P&C&P)|(K&P&C&P&C&P)|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -4267,7 +4267,9 @@ Method SqlFunction(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		set done=1 ; or
 	} elseif ..SqlFunction59Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..SqlFunction60Sub(.subElement,.addedElement)  {
+	} elseif ..SqlInternalFunction(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..SqlStoredFunction(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -5788,119 +5790,6 @@ Method SqlFunction5Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	quit ok
 }
 
-/// identifier '(' [ '*' | (sql_expression ( ',' sql_expression)*) ] ')' [ sql_window ]
-/// summary=C&P&[P|(C&(?4punctuation:4?)*)]&P&[C]
-Method SqlFunction60Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C&P&[P|(C&(?4punctuation:4?)*)]&P&[C]
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..Identifier(.subElement,.addedElement)  {
-		if ..addPunctuation(.subElement,"(")  {
-			if ..SqlFunction61OptGrp(.subElement,.addedElement)  {
-				if ..addPunctuation(.subElement,")")  {
-					if $S(..SqlWindow(.subElement,.addedElement) :1,1:1) {
-						set done=1 ; end compileRules
-					}
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	quit ok
-}
-
-/// 
-/// summary=P|(C&(?4punctuation:4?)*)
-Method SqlFunction61OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P|(C&(?4punctuation:4?)*)
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"*")  {
-		set done=1 ; or
-	} elseif ..SqlFunction62Sub(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
-	}
-	quit ok
-}
-
-/// sql_expression ( ',' sql_expression)*
-/// summary=C&(?4punctuation:4?)*
-Method SqlFunction62Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C&(?4punctuation:4?)*
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..SqlExpression(.subElement,.addedElement)  {
-		if ..SqlFunction63RepZero(.subElement,.addedElement)  {
-			set done=1 ; end compileRules
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	quit ok
-}
-
-///  ( ',' sql_expression)*
-Method SqlFunction63RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary ?4punctuation:4?
-	set subElement=ParentElement
-	set done=0 ; method start
-	while ..SqlFunction64Sub(.subElement,.addedElement)  {
-		set done=1
-	}
-	set ok=1
-	quit ok
-}
-
-///  ',' sql_expression
-/// summary values:,
-/// summary=P&C
-Method SqlFunction64Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P&C
-	if '..isPunctuation(",",1) { quit 0 /* normal */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,",")  {
-		if ..SqlExpression(.subElement,.addedElement)  {
-			set done=1 ; end compileRules
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	quit ok
-}
-
 /// 'count' '(' ')' [ sql_window ]
 /// summary values:COUNT
 /// summary=K&P&P&[C]
@@ -6124,6 +6013,440 @@ Method SqlFunctionDatepartPartWord(ParentElement As PXW.DEV.BNF.Element, ByRef s
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  sql_internal_function ::= ( 'ABS' | 'ACOS' | 'ASCII' | 'ASIN' | 'ATAN' | 'ATAN2' | 'CAST' | 'CEILING' | 'CHAR' | 'CHARACTER_LENGTH' | 'CHARINDEX' | 'CHAR_LENGTH' | 'COALESCE' | 'CONCAT' | 'CONVERT' | 'COS' | 'COT' | 'CURDATE' | 'CURRENT_DATE' | 'CURRENT_TIME' | 'CURRENT_TIMESTAMP' | 'CURTIME' | 'DATABASE' | 'DATALENGTH' | 'DATE' | 'DATEADD' | 'DATEDIFF' | 'DATENAME' | 'DATEPART' | 'DATE_TRUNC' | 'DAY' | 'DAYNAME' | 'DAYOFMONTH' | 'DAYOFWEEK' | 'DAYOFYEAR' | 'DECODE' | 'DEGREES' | 'EMBEDDING' | '%EXACT' | 'EXP' | '%EXTERNAL' | '$EXTRACT' | '$FIND' | 'FLOOR' | 'GETDATE' | 'GETUTCDATE' | 'GREATEST' | 'HASHBYTES' | 'HOUR' | 'IFNULL' | 'INSTR' | '%INTERNAL' | 'ISNULL' | 'ISNUMERIC' | 'JSON_ARRAY' | 'JSON_OBJECT' | 'JSON_TABLE' | '$JUSTIFY' | 'LAST_DAY' | 'LAST_IDENTITY' | 'LCASE' | 'LEAST' | 'LEFT' | 'LEN' | 'LENGTH' | '$LENGTH' | '$LIST' | '$LISTBUILD' | '$LISTDATA' | '$LISTFIND' | '$LISTFROMSTRING' | '$LISTGET' | '$LISTLENGTH' | '$LISTSAME' | '$LISTTOSTRING' | 'LOG' | 'LOG10' | 'LOWER' | 'LPAD' | 'LTRIM' | '%MINUS' | 'MINUTE' | 'MOD' | 'MONTH' | 'MONTHNAME' | 'NOW' | 'NULLIF' | 'NVL' | '%OBJECT' | '%ODBCIN' | '%ODBCOUT' | '%OID' | 'PI' | '$PIECE' | '%PLUS' | 'POSITION' | 'POWER' | 'PREDICT' | 'PROBABILITY' | 'QUARTER' | 'RADIANS' | 'REPEAT' | 'REPLACE' | 'REPLICATE' | 'REVERSE' | 'RIGHT' | 'ROUND' | 'RPAD' | 'RTRIM' | 'SEARCH_INDEX' | 'SECOND' | 'SIGN' | 'SIN' | 'SPACE' | '%SQLSTRING' | '%SQLUPPER' | 'SQRT' | 'SQUARE' | 'STR' | 'STRING' | 'STUFF' | 'SUBSTR' | 'SUBSTRING' | 'SYSDATE' | '%SYSTEM_SQL.DefaultSchema()' | 'TAN' | 'TIMESTAMPADD' | 'TIMESTAMPDIFF' | 'TO_CHAR' | 'TO_DATE' | 'TO_NUMBER' | 'TO_POSIXTIME' | 'TO_TIMESTAMP' | 'TO_VECTOR' | '$TRANSLATE' | 'TRIM' | 'TRUNCATE' | '%TRUNCATE' | '$TSQL_NEWID' | 'UCASE' | 'UNIX_TIMESTAMP' | 'UPPER' | 'USER' | 'VECTOR_COSINE' | 'VECTOR_DOT_PRODUCT' | 'WEEK' | 'XMLCONCAT' | 'XMLELEMENT' | 'XMLFOREST' | 'YEAR' ) '(' [ '*' | (sql_expression ( ',' sql_expression)*) ] ')' [ sql_window ]
+/// summary=(K|K|K|K|K|P|K|K|K|P|K|P|K|K|K|K|K|K|P|P|P|K|K|K|K|K|K|K|K|P|K|K|K|K|K|K|K|K|P|K|P|P|P|K|K|K|K|K|K|K|K|P|K|K|P|P|P|P|P|P|K|K|K|K|K|P|P|P|P|P|P|P|P|P|P|K|P|K|K|K|P|K|K|K|K|K|K|K|P|P|P|P|K|P|P|K|K|K|K|K|K|K|K|K|K|K|K|K|K|P|K|K|K|K|P|P|K|K|K|K|K|K|K|K|P|K|K|K|P|P|P|P|P|P|P|K|K|P|P|K|P|K|K|P|P|K|K|K|K|K)&P&[P|(C&(?4punctuation:4?)*)]&P&[C]
+Method SqlInternalFunction(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary (K|K|K|K|K|P|K|K|K|P|K|P|K|K|K|K|K|K|P|P|P|K|K|K|K|K|K|K|K|P|K|K|K|K|K|K|K|K|P|K|P|P|P|K|K|K|K|K|K|K|K|P|K|K|P|P|P|P|P|P|K|K|K|K|K|P|P|P|P|P|P|P|P|P|P|K|P|K|K|K|P|K|K|K|K|K|K|K|P|P|P|P|K|P|P|K|K|K|K|K|K|K|K|K|K|K|K|K|K|P|K|K|K|K|P|P|K|K|K|K|K|K|K|K|P|K|K|K|P|P|P|P|P|P|P|K|K|P|P|K|P|K|K|P|P|K|K|K|K|K)&P&[P|(C&(?4punctuation:4?)*)]&P&[C]
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..SqlInternalFunction1Sub(.subElement,.addedElement)  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlInternalFunction2OptGrp(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
+					if $S(..SqlWindow(.subElement,.addedElement) :1,1:1) {
+						set done=1 ; end compileRules
+					}
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  'ABS' | 'ACOS' | 'ASCII' | 'ASIN' | 'ATAN' | 'ATAN2' | 'CAST' | 'CEILING' | 'CHAR' | 'CHARACTER_LENGTH' | 'CHARINDEX' | 'CHAR_LENGTH' | 'COALESCE' | 'CONCAT' | 'CONVERT' | 'COS' | 'COT' | 'CURDATE' | 'CURRENT_DATE' | 'CURRENT_TIME' | 'CURRENT_TIMESTAMP' | 'CURTIME' | 'DATABASE' | 'DATALENGTH' | 'DATE' | 'DATEADD' | 'DATEDIFF' | 'DATENAME' | 'DATEPART' | 'DATE_TRUNC' | 'DAY' | 'DAYNAME' | 'DAYOFMONTH' | 'DAYOFWEEK' | 'DAYOFYEAR' | 'DECODE' | 'DEGREES' | 'EMBEDDING' | '%EXACT' | 'EXP' | '%EXTERNAL' | '$EXTRACT' | '$FIND' | 'FLOOR' | 'GETDATE' | 'GETUTCDATE' | 'GREATEST' | 'HASHBYTES' | 'HOUR' | 'IFNULL' | 'INSTR' | '%INTERNAL' | 'ISNULL' | 'ISNUMERIC' | 'JSON_ARRAY' | 'JSON_OBJECT' | 'JSON_TABLE' | '$JUSTIFY' | 'LAST_DAY' | 'LAST_IDENTITY' | 'LCASE' | 'LEAST' | 'LEFT' | 'LEN' | 'LENGTH' | '$LENGTH' | '$LIST' | '$LISTBUILD' | '$LISTDATA' | '$LISTFIND' | '$LISTFROMSTRING' | '$LISTGET' | '$LISTLENGTH' | '$LISTSAME' | '$LISTTOSTRING' | 'LOG' | 'LOG10' | 'LOWER' | 'LPAD' | 'LTRIM' | '%MINUS' | 'MINUTE' | 'MOD' | 'MONTH' | 'MONTHNAME' | 'NOW' | 'NULLIF' | 'NVL' | '%OBJECT' | '%ODBCIN' | '%ODBCOUT' | '%OID' | 'PI' | '$PIECE' | '%PLUS' | 'POSITION' | 'POWER' | 'PREDICT' | 'PROBABILITY' | 'QUARTER' | 'RADIANS' | 'REPEAT' | 'REPLACE' | 'REPLICATE' | 'REVERSE' | 'RIGHT' | 'ROUND' | 'RPAD' | 'RTRIM' | 'SEARCH_INDEX' | 'SECOND' | 'SIGN' | 'SIN' | 'SPACE' | '%SQLSTRING' | '%SQLUPPER' | 'SQRT' | 'SQUARE' | 'STR' | 'STRING' | 'STUFF' | 'SUBSTR' | 'SUBSTRING' | 'SYSDATE' | '%SYSTEM_SQL.DefaultSchema()' | 'TAN' | 'TIMESTAMPADD' | 'TIMESTAMPDIFF' | 'TO_CHAR' | 'TO_DATE' | 'TO_NUMBER' | 'TO_POSIXTIME' | 'TO_TIMESTAMP' | 'TO_VECTOR' | '$TRANSLATE' | 'TRIM' | 'TRUNCATE' | '%TRUNCATE' | '$TSQL_NEWID' | 'UCASE' | 'UNIX_TIMESTAMP' | 'UPPER' | 'USER' | 'VECTOR_COSINE' | 'VECTOR_DOT_PRODUCT' | 'WEEK' | 'XMLCONCAT' | 'XMLELEMENT' | 'XMLFOREST' | 'YEAR'
+/// summary=K|K|K|K|K|P|K|K|K|P|K|P|K|K|K|K|K|K|P|P|P|K|K|K|K|K|K|K|K|P|K|K|K|K|K|K|K|K|P|K|P|P|P|K|K|K|K|K|K|K|K|P|K|K|P|P|P|P|P|P|K|K|K|K|K|P|P|P|P|P|P|P|P|P|P|K|P|K|K|K|P|K|K|K|K|K|K|K|P|P|P|P|K|P|P|K|K|K|K|K|K|K|K|K|K|K|K|K|K|P|K|K|K|K|P|P|K|K|K|K|K|K|K|K|P|K|K|K|P|P|P|P|P|P|P|K|K|P|P|K|P|K|K|P|P|K|K|K|K|K
+Method SqlInternalFunction1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"ABS")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"ACOS")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"ASCII")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"ASIN")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"ATAN")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"ATAN2")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"CAST")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"CEILING")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"CHAR")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"CHARACTER_LENGTH")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"CHARINDEX")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"CHAR_LENGTH")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"COALESCE")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"CONCAT")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"CONVERT")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"COS")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"COT")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"CURDATE")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"CURRENT_DATE")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"CURRENT_TIME")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"CURRENT_TIMESTAMP")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"CURTIME")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"DATABASE")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"DATALENGTH")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"DATE")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"DATEADD")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"DATEDIFF")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"DATENAME")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"DATEPART")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"DATE_TRUNC")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"DAY")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"DAYNAME")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"DAYOFMONTH")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"DAYOFWEEK")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"DAYOFYEAR")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"DECODE")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"DEGREES")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"EMBEDDING")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"%EXACT")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"EXP")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"%EXTERNAL")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"$EXTRACT")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"$FIND")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"FLOOR")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"GETDATE")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"GETUTCDATE")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"GREATEST")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"HASHBYTES")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"HOUR")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"IFNULL")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"INSTR")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"%INTERNAL")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"ISNULL")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"ISNUMERIC")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"JSON_ARRAY")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"JSON_OBJECT")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"JSON_TABLE")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"$JUSTIFY")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"LAST_DAY")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"LAST_IDENTITY")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"LCASE")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"LEAST")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"LEFT")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"LEN")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"LENGTH")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"$LENGTH")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"$LIST")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"$LISTBUILD")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"$LISTDATA")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"$LISTFIND")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"$LISTFROMSTRING")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"$LISTGET")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"$LISTLENGTH")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"$LISTSAME")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"$LISTTOSTRING")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"LOG")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"LOG10")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"LOWER")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"LPAD")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"LTRIM")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"%MINUS")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"MINUTE")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"MOD")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"MONTH")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"MONTHNAME")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"NOW")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"NULLIF")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"NVL")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"%OBJECT")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"%ODBCIN")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"%ODBCOUT")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"%OID")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"PI")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"$PIECE")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"%PLUS")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"POSITION")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"POWER")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"PREDICT")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"PROBABILITY")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"QUARTER")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"RADIANS")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"REPEAT")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"REPLACE")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"REPLICATE")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"REVERSE")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"RIGHT")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"ROUND")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"RPAD")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"RTRIM")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"SEARCH_INDEX")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"SECOND")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"SIGN")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"SIN")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"SPACE")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"%SQLSTRING")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"%SQLUPPER")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"SQRT")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"SQUARE")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"STR")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"STRING")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"STUFF")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"SUBSTR")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"SUBSTRING")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"SYSDATE")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"%SYSTEM_SQL.DefaultSchema()")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"TAN")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"TIMESTAMPADD")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"TIMESTAMPDIFF")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"TO_CHAR")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"TO_DATE")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"TO_NUMBER")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"TO_POSIXTIME")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"TO_TIMESTAMP")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"TO_VECTOR")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"$TRANSLATE")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"TRIM")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"TRUNCATE")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"%TRUNCATE")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"$TSQL_NEWID")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"UCASE")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"UNIX_TIMESTAMP")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"UPPER")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"USER")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"VECTOR_COSINE")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"VECTOR_DOT_PRODUCT")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"WEEK")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"XMLCONCAT")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"XMLELEMENT")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"XMLFOREST")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"YEAR")  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 
+/// summary=P|(C&(?4punctuation:4?)*)
+Method SqlInternalFunction2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P|(C&(?4punctuation:4?)*)
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"*")  {
+		set done=1 ; or
+	} elseif ..SqlInternalFunction3Sub(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+/// sql_expression ( ',' sql_expression)*
+/// summary=C&(?4punctuation:4?)*
+Method SqlInternalFunction3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary C&(?4punctuation:4?)*
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..SqlExpression(.subElement,.addedElement)  {
+		if ..SqlInternalFunction4RepZero(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+///  ( ',' sql_expression)*
+Method SqlInternalFunction4RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary ?4punctuation:4?
+	set subElement=ParentElement
+	set done=0 ; method start
+	while ..SqlInternalFunction5Sub(.subElement,.addedElement)  {
+		set done=1
+	}
+	set ok=1
+	quit ok
+}
+
+///  ',' sql_expression
+/// summary values:,
+/// summary=P&C
+Method SqlInternalFunction5Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&C
+	if '..isPunctuation(",",1) { quit 0 /* normal */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,",")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
 	quit ok
 }
 
@@ -6463,6 +6786,122 @@ Method SqlSpecialVariable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  sql_stored_function ::= identifier '(' [ '*' | (sql_expression ( ',' sql_expression)*) ] ')' [ sql_window ]
+/// summary=C&P&[P|(C&(?4punctuation:4?)*)]&P&[C]
+Method SqlStoredFunction(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary C&P&[P|(C&(?4punctuation:4?)*)]&P&[C]
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..Identifier(.subElement,.addedElement)  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..SqlStoredFunction1OptGrp(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,")")  {
+					if $S(..SqlWindow(.subElement,.addedElement) :1,1:1) {
+						set done=1 ; end compileRules
+					}
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+/// 
+/// summary=P|(C&(?4punctuation:4?)*)
+Method SqlStoredFunction1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P|(C&(?4punctuation:4?)*)
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"*")  {
+		set done=1 ; or
+	} elseif ..SqlStoredFunction2Sub(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+/// sql_expression ( ',' sql_expression)*
+/// summary=C&(?4punctuation:4?)*
+Method SqlStoredFunction2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary C&(?4punctuation:4?)*
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..SqlExpression(.subElement,.addedElement)  {
+		if ..SqlStoredFunction3RepZero(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+///  ( ',' sql_expression)*
+Method SqlStoredFunction3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary ?4punctuation:4?
+	set subElement=ParentElement
+	set done=0 ; method start
+	while ..SqlStoredFunction4Sub(.subElement,.addedElement)  {
+		set done=1
+	}
+	set ok=1
+	quit ok
+}
+
+///  ',' sql_expression
+/// summary values:,
+/// summary=P&C
+Method SqlStoredFunction4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&C
+	if '..isPunctuation(",",1) { quit 0 /* normal */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,",")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
 	quit ok
 }
 

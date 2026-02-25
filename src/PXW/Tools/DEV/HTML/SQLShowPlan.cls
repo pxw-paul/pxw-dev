@@ -3,6 +3,17 @@ Class PXW.Tools.DEV.HTML.SQLShowPlan Extends PXW.Tools.DEV.HTML.bnf
 
 Property modules As %String [ MultiDimensional ];
 
+Property viewSchemaIndex As %String [ MultiDimensional ];
+
+Property currentSchema As %String;
+
+Method writeElement(element As PXW.DEV.Element)
+{
+	if element.type="EmbeddedView" set oldSchema=..currentSchema,..currentSchema=$g(..viewSchemaIndex(+element))
+    do ##super(element)
+    if $d(oldSchema) set ..currentSchema=oldSchema
+}
+
 Method writeSQLDirectTableExpand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="DirectTable")
 {
     Set direct=element
@@ -26,6 +37,7 @@ Method writeSQLDirectTableExpand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV
                             Do ..wrapElementHTML(element,"<div class='EmbeddedSQLcontainer'>","</div>")
                             Do element.partsReplace(tablenameE,subElement) 
                         }
+                        s ..viewSchemaIndex(+subElement)=schemaE.ToString(0)
                     }
                 }
             }
@@ -36,7 +48,19 @@ Method writeSQLDirectTableExpand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV
 
 Method writeSQLEmbeddedView(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="EmbeddedView")
 {
-     Do ..wrapElementHTML(element,"<br><pre class='EmbeddedSQLSub'>","</pre>")
+    Do ..wrapElementHTML(element,"<br><pre class='EmbeddedSQLSub'>","</pre>")
+    Quit ""
+}
+
+/// OVERRIDING StoredFunction 
+Method writeSQLStoredFunction(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="SqlStoredFunction")
+{
+    if ..currentSchema'="" {
+        set atom=element.FirstAtom()
+        if $isobject(atom) {
+            Do ..wrapElementHTML(atom,..currentSchema_"."_"<a class="""_$$$classObjectMember_""" href="""_..HREFToClass(..currentSchema_"."_atom.ToString(0))_""">","</a>") 
+        }
+    }    
     Quit ""
 }
 

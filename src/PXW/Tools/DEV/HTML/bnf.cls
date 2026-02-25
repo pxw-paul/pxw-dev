@@ -1071,7 +1071,7 @@ Method writeJSIdentifier(element As PXW.DEV.BNF.Elements.JS) As PXW.DEV.BNF.Comp
     q ""
 }
 */
-Method writeSQLStoredFunction(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="SQLStoredFunction")
+Method writeSQLStoredFunction(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="SqlStoredFunction")
 {
     $$$DEBUGMethodBegin
     Set spnameA=element.FirstAtom()

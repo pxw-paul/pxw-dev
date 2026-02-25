@@ -573,9 +573,9 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, Start
         Set propertyname=objectchain.ToStringAtomsOnly(0)
 		Set propertyname=$SELECT($EXTRACT(propertyname,1)=".":$PIECE(propertyname,".",2),1:propertyname)
 		
-		w "-" zw propertyname,ElementTypeClassName
-		; special case for List.Get methods where we know the element type already
+		
 		If propertyname?1"Get".AN,ElementTypeClassName'="" {
+			; special case for List.Get methods where we know the element type already
 			Set type=ElementTypeClassName
 		} Else {
 			Set found=..ClassServer.GetPropertyDetails(classname,propertyname,.type,.collection,.ElementTypeClassName)
@@ -607,7 +607,6 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, Start
 		}
 
         Set objectchain=objectchain.findFirstElementByType("ObjectChain",0)
-		w "---" zw classname,propertyname,type,collection
         Set classname=type
     }
 	

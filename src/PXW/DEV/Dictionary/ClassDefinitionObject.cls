@@ -320,7 +320,7 @@ Method ListParameterDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierR
     $$$DEBUGMethodBegin
 	Set server=..AtelierSettings.ServerName
 	Set sql=""
-    Set sql=sql_"SELECT parent,Name,Type,Origin "
+    Set sql=sql_"SELECT parent,Name,Type,Origin,_Default "
     Set sql=sql_"FROM %Dictionary.CompiledParameter "
     Set sql=sql_"WHERE parent= ? "
     Set parameters($INCREMENT(parameters))=ClassName
@@ -338,7 +338,8 @@ Method CacheListParameterDetails(ClassName As %String, TimeStamp As %TimeStamp =
     While rs.%Next() {
         Set cn=rs.%Get("parent")
         Set pname=rs.%Get("Name")
-        Set data=$LISTBUILD(pname,rs.%Get("Type"),rs.%Get("Origin"))            
+        set default=rs.%Get("_Default")
+        Set data=$LISTBUILD(pname,rs.%Get("Type"),rs.%Get("Origin"),default)            
         Set ^PXW.Cache("CDEF",%NS,$$$UPPER(cn),"GAD",$$$UPPER(pname))=data
     }
 }
@@ -591,6 +592,7 @@ Method GetMethodReturnType(ClassName As %String, Name As %String, Output FormalS
     } 
     ; if the method returns an object handle its probably %Open or %New or an IndexOpen or something that returns itself
     If returntype="%Library.ObjectHandle" Set returntype=ClassName
+    if Name="%ConstructClone" set returntype=ClassName
     Quit returntype
 }
 
@@ -832,7 +834,7 @@ Method GetClassNameFromStoredProc(SQLProcName As %String, Output method As %Stri
 	Quit classname
 }
 
-Method GetParameterDetails(ClassName As %String, Name As %String, Output Type As %String, Output Origin As %String) As %Boolean
+Method GetParameterDetails(ClassName As %String, Name As %String, Output Type As %String, Output Origin As %String, Output Default As %String) As %Boolean
 {
    
     New %NS Set %NS=..Namespace.Name
@@ -853,6 +855,7 @@ Method GetParameterDetails(ClassName As %String, Name As %String, Output Type As
 
     Set Type=$LISTGET(data,2)
     Set Origin=$LISTGET(data,3)
+    Set Default=$LISTGET(data,4)
  	Quit 1
 }
 
@@ -913,8 +916,15 @@ Method GetClassPath(ClassName As %String, PropertyPath As %String, Output PathAr
         Set propertyname=$PIECE(PropertyPath,".",i)
         Set found=..GetPropertyDetails(classname,propertyname,.runtimetype,.collection,.elementtype)
         Set:'found runtimetype=..GetMethodReturnType(classname,propertyname)
+        
         ; the previous thing was a collection and this item on the path returns an object so carry the previous element type over instead
         if previousCollection'="",runtimetype="%Library.RegisteredObject" set runtimetype=previousElement
+        
+        ; is the class a List (if it extends %ListOfObjects it should have an ELEMENTTYPE)?
+        if collection="",..GetParameterDetails(runtimetype,"ELEMENTTYPE",,,.elementtype) {
+            set collection="list"
+        }
+
         Set PathArray($INCREMENT(PathArray))=$LISTBUILD(classname,propertyname,runtimetype,collection,elementtype)
         set previousCollection=collection,previousElement=elementtype
         Set classname=runtimetype
