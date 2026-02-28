@@ -111,7 +111,7 @@ ClassMethod query(ServerName As %String, SQL As %String, Output object As %Dynam
     Do q.%ToJSON(request.EntityBody)
     Set request.ContentType="application/json"
     ;s sc=request.Post("/api/atelier/v2/USER/action/query")
-    Set url="/api/atelier/v2/"_ns_"/action/query"
+    Set url="/api/atelier/v8/"_ns_"/action/query"
     ; s sep="?"
     Set sc=handler.postAsObject(url,.object)
 

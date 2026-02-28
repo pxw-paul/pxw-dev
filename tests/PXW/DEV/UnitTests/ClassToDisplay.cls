@@ -15,6 +15,17 @@ Index i1 On (String1, Int1, Date1);
 
 Index i2 On (Int2, String1);
 
+ClassMethod WalkActivityList(pActivities As Ens.BPL.ActivityList)
+{
+	// walk over the given Activities
+	Set tActivities = pActivities
+	For a = 1:1:tActivities.Count() {
+		Set tActivity = tActivities.GetAt(a)
+		w tActivity.Name
+	}
+}
+
+/*
 ClassMethod formatstring(s As %String) As %String [ SqlProc ]
 {
 	s x=..%New()
@@ -48,7 +59,7 @@ Method %Dump() As %Status
 	}
 	Quit tSC
 }
-
+*/
 Storage Default
 {
 <Data name="ClassToDisplayDefaultData">

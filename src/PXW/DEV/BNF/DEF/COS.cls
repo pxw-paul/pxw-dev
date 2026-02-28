@@ -593,7 +593,7 @@ offset                              ::= 'regexp:[0-9]+'
 quit_command                        ::= ('quit' | 'q') [ post_conditional ] ( naked | [ quit_expression ])
 quit_expression                     ::= expression
 
-return_command                      ::= 'return' [ post_conditional ] [ naked | return_expression ] 
+return_command                      ::= ('return' | 'ret') [ post_conditional ] [ naked | return_expression ] 
 return_expression                     ::= expression
 
 set_command                         ::= ('set' | 's') [ post_conditional ] set_item_list

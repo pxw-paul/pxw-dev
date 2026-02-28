@@ -561,7 +561,6 @@ Method checkCDEFMethodAttribute(element As PXW.DEV.BNF.Elements.ClassDefinition)
 Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, StartClassName As %String, ElementTypeClassName As %String = "") As %String
 {
 	#dim fpE,fparamsE as PXW.DEV.BNF.Elements.COS
-
     Set type=StartClassName
     Set classname=StartClassName
     Set objectchain=ParentElement.findFirstElementByType("ObjectChain",0)
@@ -572,11 +571,17 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, Start
         ; the objectchain has the "." and the name
         Set propertyname=objectchain.ToStringAtomsOnly(0)
 		Set propertyname=$SELECT($EXTRACT(propertyname,1)=".":$PIECE(propertyname,".",2),1:propertyname)
-		
-		
-		If propertyname?1"Get".AN,ElementTypeClassName'="" {
-			; special case for List.Get methods where we know the element type already
-			Set type=ElementTypeClassName
+				
+		If propertyname?1"Get".AN {
+			if ElementTypeClassName'="" {
+				; special case for List.Get methods where we know the element type already
+				Set type=ElementTypeClassName
+			} else {
+				; or we might be able to derive it
+				if ..ClassServer.GetParameterDetails(classname,"ELEMENTTYPE",,,.elementtype) {
+					set collection="",type=elementtype
+				}
+			}
 		} Else {
 			Set found=..ClassServer.GetPropertyDetails(classname,propertyname,.type,.collection,.ElementTypeClassName)
 			if 'found {

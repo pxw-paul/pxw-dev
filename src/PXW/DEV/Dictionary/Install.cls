@@ -69,6 +69,7 @@ ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, Ate
             Set cls.Namespace=namespace
             Set cls.AtelierSettings=atelier
             Do cls.KnownVariables.SetAt("%CSP.Request","%request")
+            Do cls.KnownVariables.SetAt("%CSP.Response","%response")
             Do cls.KnownVariables.SetAt("%CSP.Session","%session")
         }
         Set sc=cls.%Save()
