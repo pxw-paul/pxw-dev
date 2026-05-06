@@ -198,7 +198,7 @@ dyadicop                            ::= "+"
                                           | "**" 
                                           | "*" 
                                           | "&&" 
-                                          | "']]" | "]]" | "']" | "]"
+                                          | "']]" | "]]" | "']" | close_sq_op
                                           | "'["  | "["
                                           | "!" 
                                           | "||" 
@@ -208,6 +208,7 @@ dyadicop                            ::= "+"
 
 hash_op                             ::= '#' /* HASH is a special case and needs coding */
 amp_op                              ::= '&' /* & is a special case and needs coding */
+close_sq_op                         ::= ']'
 
 term                                ::= primary 
 
@@ -512,11 +513,13 @@ else_command                        ::= ('else' | 'e') naked /* this happen in s
 
 job_command                         ::= ('job' | 'j') [ post_conditional ] job_arguments
 job_arguments                       ::= job_argument ( ',' job_argument )*
-job_argument                        ::= job_call [ job_process_parameters ] [ job_timeout_spec ]
+job_argument                        ::= job_call [ job_location ] [ job_process_parameters ] [ job_timeout_spec ]
 job_call                            ::= ( label_reference [ function_parameter_list ] ) 
                                         | class_expression
                                         | this_object
                                         | ( '$' classmethod_function_call )
+job_location                        ::= ('[' expression ']') 
+                                        | ('|' expression '|') 
 job_process_parameters              ::= ':' ( job_process_parameters_inbrackets | job_process_parameters_nobrackets )
 
 job_process_parameters_inbrackets   ::= '('  ( job_nspace_param 

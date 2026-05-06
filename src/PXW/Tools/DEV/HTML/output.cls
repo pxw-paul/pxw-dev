@@ -129,7 +129,7 @@ Method resetWrappers()
 Method writeElement(element As PXW.DEV.Element)
 {
 	$$$DEBUGMethodBegin
-    Do ..processSpecificElement(element)
+    Do ..processSpecificElement(.element)
 	
 	;For i=1:1:+$GET(..pre(+element)) Do ..output($GET(..pre(+element,i)))
 	i $data(..pre(+element)) {

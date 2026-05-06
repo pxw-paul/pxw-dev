@@ -276,7 +276,7 @@ Method compileQuickCheck(Method As %Dictionary.MethodDefinition, RulesElement As
             set len=$o(wordlist(len),-1)
             quit:len=""
             if wordcount(len)=1 {
-                set check=check_sep_"'..isPunctuation("_wordlist(len)_","_len_")",sep=","
+                set check=check_sep_"'..isPunctuation("_$$$UPPER(wordlist(len))_","_len_")",sep=","
             } else {
                 set check=check_sep_"'..isPunctuationInList($lb("_wordlist(len)_"),"_len_")",sep=","
             }

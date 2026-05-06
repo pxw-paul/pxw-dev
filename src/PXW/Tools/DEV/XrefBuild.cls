@@ -7,7 +7,8 @@ Parameter ToolName = "Xref Build";
 ClassMethod xrefPackage(Namespace As %String, Package As %String, Force As %Boolean = 0) As %Status
 {
 	Set pack=$PIECE(Package,"*",1)_"*"
-	Job ##class(PXW.Xref.Build).Build(Namespace,"",pack,Force)
+	set type=$p(Package,".",2)
+	Job ##class(PXW.Xref.Build).Build(Namespace,type,pack,Force)
 	Hang 1
 	Write !,"Submitted to background."
 	Set sc=$$$OK

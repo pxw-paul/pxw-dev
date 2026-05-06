@@ -117,6 +117,7 @@ Method GetXrefCount(ItemKey2 As %String, CallType As %String) As %Integer
     q count
 }
 
+/*
 Method writeElement(element As PXW.DEV.Element)
 {
     $$$DEBUGMethodBegin
@@ -125,7 +126,7 @@ Method writeElement(element As PXW.DEV.Element)
     Set ..XMLPath=oldXMLPath 
     $$$DEBUGMethodEnd
 }
-
+*/
 Method writeElementBNF1(element As PXW.DEV.Element)
 {
     #dim parser as PXW.DEV.BNF.super

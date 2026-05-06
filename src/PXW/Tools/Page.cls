@@ -284,7 +284,7 @@ ClassMethod PageHead() As %String
 								<input type='button' onclick='submitOnNewTab("toolsFormHome");' value='+'>
 							</fieldset>
 						</form>
-					#(..WriteHeadForms())#
+					#(..PageHeadForms())#
 				</div>
 			</header>
 		</div>
@@ -404,7 +404,7 @@ ClassMethod PageStyle() As %String
 
 		#toolsMainFoot {
 			grid-area: toolsMainFoot;
-			overflow:scroll;
+			overflow:auto;
 		}
 
 		.nocopy	{
@@ -516,7 +516,7 @@ ClassMethod WriteStatus(sc As %Status)
 }
 
 /// Find any page that inserts a form into the header.
-ClassMethod WriteHeadForms() As %String
+ClassMethod PageHeadForms() As %String
 {
 	Set rs=##class(PXW.Tools.Queries).SelectToolsForNamespaceFunc(%NS)
 	While rs.%Next() {

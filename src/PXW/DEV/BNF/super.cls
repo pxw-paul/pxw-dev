@@ -300,14 +300,8 @@ Method isPunctuation(StringToCheck As %String, Length As %String) As %Boolean
     $$$DEBUGMethodBegin
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
  
-    ;$$$DEBUG("checking punctuation '"_StringToCheck_"' found '"_$zconvert(..peek(10),"O","JS")_"'")
-    Set peeked=..peek(Length)
-    If $$$UPPER(peeked)=$$$UPPER(StringToCheck) {
-        Set ok=1
-    } Else {
-        Set ok=0
-    }
-    ;$$$DEBUG("checking punctuation'"_StringToCheck_"' ok="_ok)
+    ;s ok=($$$UPPER(..peek(Length))=StringToCheck)
+    s ok=($$$UPPER($EXTRACT(..streaminput,..stream.pos,..stream.pos+Length-1))=StringToCheck)
     $$$DEBUGMethodEnd
     Quit ok
 }

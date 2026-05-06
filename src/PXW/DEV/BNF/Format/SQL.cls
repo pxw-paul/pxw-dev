@@ -62,6 +62,10 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %Stri
         Set indent=indent+1 
     }
 
+   If element.type="SelectInto" {
+        Do ..setWhitespaceNewLineElement(element,indent)
+    }
+
     If element.type="SqlCaseExpression" {
         Set indent=indent+1
     }
@@ -87,7 +91,6 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %Stri
         Do ..setWhitespaceNewLineElement(element,indent)
         Set indent=indent+1
     }
-
     If element.type="JoinOn" {
         Do ..setWhitespaceNewLineElement(element,indent)
         Set flags="CONDITION"

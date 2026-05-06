@@ -156,14 +156,24 @@ ClassMethod WriteScripts()
 ClassMethod HREFTo(SQL As %String) As %String
 {
     Set href=##super()
-    Set:$GET(SQL)'="" href=href_"&SQL="_..EscapeURL(SQL)
+    If $GET(SQL)'="" {
+        s id=$i(^IRIS.Temp.PXWSQLShowPlan)
+        s ^IRIS.Temp.PXWSQLShowPlan(id)=SQL
+        s href=href_"&SQLID="_..EscapeURL(id)
+    }
     Quit href
 }
 
 /// This shoud output some variables, getting the data from %request
 ClassMethod HREFFrom(Output SQL As %String)
 {
+    ; SQL is in the request from the form
 	Set SQL=%request.Get("SQL")
+    ; SQLID is set by HREFTo
+    Set id=%request.Get("SQLID")
+    If id'="" {
+        Set SQL=$get(^IRIS.Temp.PXWSQLShowPlan(id))
+    }
 }
 
 }

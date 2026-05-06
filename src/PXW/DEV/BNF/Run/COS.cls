@@ -10,6 +10,9 @@ Property bracketDepth As %Integer;
 /// In stop at eol mode, if we meet a ##continue then continue onto the next line
 Property stopAtEOLContinue As %Boolean [ InitialExpression = 0 ];
 
+Property CloseSqOpDisable as %Boolean [ InitialExpression = 0];
+
+
 /* Overrides of the main super class that normally does the interaction with the input stream */
 /// Skip over the next set of comments, return 1 if something was done or 0
 Method skipComments(ch10 As %String) As %Boolean
@@ -534,7 +537,8 @@ Method Dyadicop(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	Set done=0
 	If ..addPunctuationInList(subElement,$LISTBUILD("'<=","']]","'>="),3)
     || ..addPunctuationInList(subElement,$LISTBUILD("\\",">=","'>","<=","'<","'=","**","&&","]]","']","'[","||"),2)
-    || ..addPunctuationInList(subElement,$LISTBUILD("+","-","/","\",">","<","=","*","]","[","!","_"),1)
+    || ..addPunctuationInList(subElement,$LISTBUILD("+","-","/","\",">","<","=","*","[","!","_"),1)
+    || ..CloseSqOp(subElement,.addedElement)
     || ..HashOp(subElement,.addedElement)
     || ..AmpOp(subElement,.addedElement) {
         Set done=1
@@ -989,6 +993,23 @@ Method AmpOp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
     Set atom=..newAtom("punctuation",amp)
     Do ParentElement.AddPart(atom)
     Quit 1
+}
+
+Method CloseSqOp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+{
+    if ..CloseSqOpDisable Quit 0
+    Quit ##super(.ParentElement,.supElement)
+}
+
+///  job_location ::= ('[' expression ']') | ('|' expression '|')
+/// summary=(P&C&P)|(P&C&P)
+Method JobLocation(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; because this uses [ ] we need to disable ] so that its not counted as part of the expression
+    Set ..CloseSqOpDisable=1
+    Set ok=##super(.ParentElement,.subElement)
+    Set ..CloseSqOpDisable=0
+    Quit ok
 }
 
 /// one_cos_statement ::= [ label_definition ] cos_command
