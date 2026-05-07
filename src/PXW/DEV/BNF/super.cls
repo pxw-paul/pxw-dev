@@ -11,7 +11,7 @@ Property whitespace As PXW.DEV.Atom;
 /// object containing any comment leading up to whatever object we are going to return
 Property comment As PXW.DEV.Atom;
 
-Property element As PXW.DEV.Element;
+Property element As PXW.DEV.Element; 
 
 /// This gets set when the comment or whitespace check needs to be done
 Property needsWScheck As %Boolean [ InitialExpression = 1 ];
@@ -109,7 +109,7 @@ Method gotoBookmark(ByRef bookmark As %String)
     ;quit
     $$$DEBUGMethodBegin
     Set forward=(..stream.pos<$LISTGET(bookmark,1))
-    $$$DEBUG("Going "_$SELECT(forward:"forward",1:"back")_" from:"_$ZCONVERT(..peek(20),"O","JSON"))
+    $$$DEBUG("Going "_$SELECT(forward:"forward",1:"back")_" from:"_$ZCONVERT($$$peek(..stream,20),"O","JSON"))
     
     Set $LISTBUILD(pos,col,line,needsWScheck,stopeol,stopws)=bookmark
     Set ..stream.pos=pos,..stream.col=col,..stream.line=line
@@ -121,7 +121,7 @@ Method gotoBookmark(ByRef bookmark As %String)
 
     Set ..keyword="",..peekedlen=0 
 
-    $$$DEBUG("Going "_$SELECT(forward:"forward",1:"back")_"   to:"_$ZCONVERT(..peek(20),"O","JSON"))
+    $$$DEBUG("Going "_$SELECT(forward:"forward",1:"back")_"   to:"_$ZCONVERT($$$peek(..stream,20),"O","JSON"))
     $$$DEBUGMethodEnd
 }
 
@@ -196,7 +196,7 @@ Method isPunctuationInList(ListOfStrings As %List, Length As %Integer) As %Boole
     $$$DEBUGMethodBegin
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 
-    Set next50=..peek(Length)
+    Set next50=$$$peek(..stream,Length)
     Set UPP50=$$$UPPER(next50)
     Set found=$LISTFIND(ListOfStrings,UPP50)
     ;$$$DEBUG($s(found:"("_foundString_") ",1:"NOT ")_"found:"_UPP50_" in list "_$LISTTOSTRING(ListOfStrings))
@@ -238,7 +238,7 @@ Method isStringInList(ListOfStrings As %List, longestLen As %Integer = 50, Outpu
     $$$DEBUGMethodBegin
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 
-    Set next50=..peek(longestLen)
+    Set next50=$$$peek(..stream,longestLen)
     Set UPP50=$$$UPPER(next50)
     Set ptr=0,notfound=1
     While notfound, $LISTNEXT(ListOfStrings,ptr,value) {
@@ -259,7 +259,7 @@ Method isStringSingle(String As %String, Output foundString As %String) As %Bool
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
     
     Set len=$LENGTH(String)
-    Set foundString=..peek(len)
+    Set foundString=$$$peek(..stream,len)
     If $$$UPPER(foundString)=String {
         Set found=1
     } Else {
@@ -278,7 +278,7 @@ Method isString(ParentElement As PXW.DEV.Element = "", StringToCheck As %String)
  
     Set ok=0
     Set len=$LENGTH(StringToCheck)
-    Set peeked=..peek(len)
+    Set peeked=$$$peek(..stream,len)
     If $$$UPPER(peeked)=$$$UPPER(StringToCheck) {
         If $ISOBJECT(ParentElement) {
             Set value=..next(len)
@@ -297,13 +297,14 @@ Method isString(ParentElement As PXW.DEV.Element = "", StringToCheck As %String)
 
 Method isPunctuation(StringToCheck As %String, Length As %String) As %Boolean
 {
-    $$$DEBUGMethodBegin
+    ;$$$DEBUGMethodBegin
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
  
-    ;s ok=($$$UPPER(..peek(Length))=StringToCheck)
-    s ok=($$$UPPER($EXTRACT(..streaminput,..stream.pos,..stream.pos+Length-1))=StringToCheck)
-    $$$DEBUGMethodEnd
-    Quit ok
+    ;s ok=($$$UPPER($$$peek(..stream,Length))=StringToCheck)
+    ;s ok=($$$UPPER($EXTRACT(..streaminput,..stream.pos,..stream.pos+Length-1))=StringToCheck)
+    ;$$$DEBUGMethodEnd
+    ;Quit ok
+    quit ($$$UPPER($$$peek(..stream,Length))=StringToCheck)
 }
 
 Method addString(ParentElement As PXW.DEV.Element = "", StringToCheck As %String) As %Boolean
@@ -313,10 +314,10 @@ Method addString(ParentElement As PXW.DEV.Element = "", StringToCheck As %String
     ;d ..skipWhiteSpaceAndComments()
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
  
-    $$$DEBUG("checking string '"_StringToCheck_"' found '"_$ZCONVERT(..peek(10),"O","JS")_"'")
+    $$$DEBUG("checking string '"_StringToCheck_"' found '"_$ZCONVERT($$$peek(..stream,10),"O","JS")_"'")
     Set ok=0
     Set len=$LENGTH(StringToCheck)
-    Set peeked=..peek(len)
+    Set peeked=$$$peek(..stream,len)
     If $$$UPPER(peeked)=$$$UPPER(StringToCheck) {
         Set value=..next(len)
         If value?1.P {
@@ -419,7 +420,7 @@ Method addPunctuation(ParentElement As PXW.DEV.Element, Punctuation As %String, 
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
  
     Set len=$LENGTH(Punctuation) 
-    Set peeked=..peek(len)
+    Set peeked=$$$peek(..stream,len)
     If $$$UPPER(peeked)=$$$UPPER(Punctuation) {
         Set foundString=..next(len)
         Set atom=..newAtom("punctuation",foundString)
@@ -442,7 +443,7 @@ Method addPunctuation(ParentElement As PXW.DEV.Element, Punctuation As %String, 
 Method addPunctuationInList(ParentElement As PXW.DEV.Element, ListOfStrings As %List, Length As %Integer) As %Boolean
 {
     $$$DEBUGMethodBegin
-    Set next50=..peek(Length)
+    Set next50=$$$peek(..stream,Length)
     Set UPP50=$$$UPPER(next50)
     If $LISTFIND(ListOfStrings,UPP50) {
         Set foundString=..next(Length)
@@ -484,7 +485,7 @@ Method skipWhiteSpaceAndComments()
         ;
         ;        
 readNextLoop		
-        ;Set ch10=..peek(10),ch=$EXTRACT(ch10,1)
+        ;Set ch10=$$$peek(..stream,10),ch=$EXTRACT(ch10,1)
         Set ch10=$EXTRACT(..streaminput,..stream.pos,..stream.pos+9),ch=$EXTRACT(ch10,1)
         ;If '..eof(),ws[ch Set ..whitespace=..newAtom("whitespace",..nextChars(.ws)) Goto readNextLoop
         If ws[ch,ch'="" Set ..whitespace=..newAtom("whitespace",..nextChars(.ws)) Goto readNextLoop
@@ -529,7 +530,7 @@ Method newAtom(type As %String, value As %String = "") As PXW.DEV.Atom
     Set ..needsWScheck=1
     ;Set %atoms=$GET(%atoms)+1
     ;Set %atomadded=a.type_"="_a.value
-    ;Set %next50=..peek(50)
+    ;Set %next50=$$$peek(..stream,50)
     Quit a
 }
 
@@ -545,7 +546,7 @@ Method readLineComment(start As %String) As PXW.DEV.Atom
 
         ; now look to see if the NEXT line has the same type of comment
         ; if it does then add all that to this comment
-        Set next50=..peek(50)
+        Set next50=$$$peek(..stream,50)
 
         If $EXTRACT($ZSTRIP(next50,"<WC"),1,$LENGTH(start))=start {
             Set ws=$CHAR(32,9,13,10,160)
@@ -562,7 +563,7 @@ Method readLineComment(start As %String) As PXW.DEV.Atom
 Method readBlockComment(StartMarker As %String = "/*", EndMarker As %String = "*/") As PXW.DEV.Atom
 {
     $$$DEBUGMethodBegin
-    If ..peek($LENGTH(StartMarker))'=StartMarker Quit ""
+    If $$$peek(..stream,$LENGTH(StartMarker))'=StartMarker Quit ""
 
 	Set o=..newAtom("blockcomment")
 	Set o.start=..stream.NextNOTEol($LENGTH(StartMarker))
@@ -588,12 +589,12 @@ Method recover(ParentElement As PXW.DEV.Element, ByRef subElement As PXW.DEV.Ele
     Set matchcount=0 
 	Set ok=0
 	Set r=""
-    $$$DEBUG("RECOVER START AT:"_..peek(20))
+    $$$DEBUG("RECOVER START AT:"_$$$peek(..stream,20))
     ; find where we are now (pos) up to the point of failure (lastPos)
     While '..eof(),..stream.pos<..stream.lastPos,matchcount>=0 {
         If Match'="" {
-            If ..peek(1)=$EXTRACT(Match,1) Set matchcount=matchcount+1
-            If ..peek(1)=$EXTRACT(Match,2) Set matchcount=matchcount-1
+            If $$$peek(..stream,1)=$EXTRACT(Match,1) Set matchcount=matchcount+1
+            If $$$peek(..stream,1)=$EXTRACT(Match,2) Set matchcount=matchcount-1
             If matchcount>=0 {
                 Set r=r_..next()
                 Set ok=1
@@ -607,14 +608,14 @@ Method recover(ParentElement As PXW.DEV.Element, ByRef subElement As PXW.DEV.Ele
 		Set atom=..newAtom("ERROR",r)
 		Do subElement.AddPart(atom)
 	}
-    $$$DEBUG("RECOVER MID AT:"_..peek(20))
+    $$$DEBUG("RECOVER MID AT:"_$$$peek(..stream,20))
     	
     
     ; now find from the point of failure up to the next recovery point (a mismatch of {}  or a specific char)
     Set ok=0,r=""
 	While '..eof(),'..recoverStopAt(StopAtList),matchcount>=0 {
-        If ..peek(1)=$EXTRACT(Match,1) Set matchcount=matchcount+1
-        If ..peek(1)=$EXTRACT(Match,2) Set matchcount=matchcount-1
+        If $$$peek(..stream,1)=$EXTRACT(Match,1) Set matchcount=matchcount+1
+        If $$$peek(..stream,1)=$EXTRACT(Match,2) Set matchcount=matchcount-1
         If matchcount>=0 {
             Set r=r_..next()
             Set ok=1
@@ -625,7 +626,7 @@ Method recover(ParentElement As PXW.DEV.Element, ByRef subElement As PXW.DEV.Ele
 		Do subElement.AddPart(atom)
 		Do ParentElement.AddPart(subElement)
 	}	
-    $$$DEBUG("RECOVER END AT:"_..peek(20))
+    $$$DEBUG("RECOVER END AT:"_$$$peek(..stream,20))
 	$$$DEBUGMethodEnd
     ; recover always is true?
 	Quit ok
@@ -636,7 +637,7 @@ Method recoverStopAt(StopAtList As %List) As %Boolean
     Set stop=0
     For i=1:1:$LISTLENGTH(StopAtList) {
         Set stopitem=$LISTGET(StopAtList,i)
-        Set peek=..peek($LENGTH(stopitem))
+        Set peek=$$$peek(..stream,$LENGTH(stopitem))
         If $$$UPPER(peek)=$$$UPPER(stopitem) {
             Set stop=1
         }

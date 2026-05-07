@@ -86,8 +86,9 @@ Method wrapInnerAtomHTML(atom As PXW.DEV.Atom, pre As %String, post As %String)
 
 Method wrapAtomHTML(atom As PXW.DEV.Atom, pre As %String, post As %String)
 {
-    Set n=$GET(..pre(+atom)),n=n+1,..pre(+atom,n)=pre,..pre(+atom)=n
-    Set n=$GET(..post(+atom)),n=n+1,..post(+atom,n)=post,..post(+atom)=n
+	Set a=+atom
+    Set n=$GET(..pre(a)),n=n+1,..pre(a,n)=pre,..pre(a)=n
+    Set n=$GET(..post(a)),n=n+1,..post(a,n)=post,..post(a)=n
 }
 
 /// eg an atom=2@PXW.DEV.Atom
@@ -101,9 +102,10 @@ Method wrapObjectRefHTML(orefNumber As %Integer, pre As %String, post As %String
 Method wrapElementHTML(element As PXW.DEV.Element, pre As %String, post As %String)
 {
 	; on elements don't wrap the whitespace
-	Set n=$GET(..pre(+element)),n=n+1,..pre(+element,n)=pre,..pre(+element)=n
+	set e=+element
+	Set n=$GET(..pre(e)),n=n+1,..pre(e,n)=pre,..pre(e)=n
     ;set atom=element.FirstAtom()
-	Set n=$GET(..post(+element)),n=n+1,..post(+element,n)=post,..post(+element)=n
+	Set n=$GET(..post(e)),n=n+1,..post(e,n)=post,..post(e)=n
 }
 
 /// Output the html directly to destination. No escaping or other formatting is done.
@@ -132,9 +134,10 @@ Method writeElement(element As PXW.DEV.Element)
     Do ..processSpecificElement(.element)
 	
 	;For i=1:1:+$GET(..pre(+element)) Do ..output($GET(..pre(+element,i)))
-	i $data(..pre(+element)) {
+	s e=+element
+	i $data(..pre(e)) {
 		s out=""
-		For i=1:1:..pre(+element) set out=out_$GET(..pre(+element,i))
+		For i=1:1:..pre(e) set out=out_$GET(..pre(e,i))
 		do ..output(.out)
 	}
 
@@ -152,9 +155,9 @@ Method writeElement(element As PXW.DEV.Element)
 	}
 	
 	;For i=+$GET(..post(+element)):-1:1 Do ..output($GET(..post(+element,i)))
-	i $data(..post(+element)) {
+	i $data(..post(e)) {
 		set out=""
-		For i=..post(+element):-1:1 set out=out_$GET(..post(+element,i))
+		For i=..post(e):-1:1 set out=out_$GET(..post(e,i))
 		do ..output(.out)
 	}
 	
@@ -170,6 +173,7 @@ Method writeAtom(atom As PXW.DEV.Atom, preValue As %String = "", postValue As %S
 	If $ISOBJECT(atom.comment) {
 		Do ..writeAtom(atom.comment,"<span class='"_$$$classComment_"'>","</span>")
 	}
+	$$$DEBUGMethodBegin
 
 	; add hilite on whitespace (OR ANYTHING) that is NOT going over more than 1 line
 	If ..HiLiteLine'="",atom.line=..HiLiteLine,atom.value'[$CHAR(13) {
@@ -208,15 +212,16 @@ Method writeAtom(atom As PXW.DEV.Atom, preValue As %String = "", postValue As %S
 	Set out=out_..html(atom.end)_postValue
     For i=+$GET(..post(+atom)):-1:1 Set out=out_$GET(..post(+atom,i))
 	Do ..output(.out)*/
-	Set out=""
-    For i=1:1:+$GET(..pre(+atom)) Set out=out_$GET(..pre(+atom,i))
+	Set out="",a=+atom
+    For i=1:1:+$GET(..pre(a)) Set out=out_$GET(..pre(a,i))
     Set out=out_preValue_$ZCONVERT(atom.start,"O","HTML")
-	    For i=1:1:+$GET(..preI(+atom)) Set out=out_$GET(..preI(+atom,i))
+	    For i=1:1:+$GET(..preI(a)) Set out=out_$GET(..preI(a,i))
 	    Set out=out_$ZCONVERT(atom.value,"O","HTML")
-	    For i=+$GET(..postI(+atom)):-1:1 Set out=out_$GET(..postI(+atom,i))
+	    For i=+$GET(..postI(a)):-1:1 Set out=out_$GET(..postI(a,i))
 	Set out=out_$ZCONVERT(atom.end,"O","HTML")_postValue
-    For i=+$GET(..post(+atom)):-1:1 Set out=out_$GET(..post(+atom,i))
+    For i=+$GET(..post(a)):-1:1 Set out=out_$GET(..post(a,i))
 	Write out
+	$$$DEBUGMethodEnd
 }
 
 }

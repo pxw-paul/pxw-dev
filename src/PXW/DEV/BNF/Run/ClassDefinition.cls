@@ -103,7 +103,7 @@ Method peekKeyword() As %String
     $$$DEBUGMethodBegin
     If ..keyword="" {
         Set word=""
-        ;Set ch50=..peek(50)
+        ;Set ch50=$$$peek(..stream,50)
         Set ch50=$EXTRACT(..streaminput,..stream.pos,..stream.pos+50)
         ; starts with a letter
         If $EXTRACT(ch50,1)?1A {
@@ -133,7 +133,7 @@ Method OneClassmember(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	Set ok=##super(ParentElement,.subElement)
 
     If ok=0 {
-        Set peek=..peek(1)
+        Set peek=$$$peek(..stream,1)
         ; not eol or end of block
         If peek'=$CHAR(13),peek'="}" {
             Set ok=..recover(ParentElement,.recSub,"{}",$LISTBUILD($CHAR(13)))
@@ -183,7 +183,7 @@ Method ClassQueryBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		Do subElement.AddPart(atom)
 		$$$BNFCOMMIT(subElement,ParentElement)
         Set ..whitespace=parser.whitespace
-		If ..peek(1)'="}" {
+		If $$$peek(..stream,1)'="}" {
             Do ..recover(ParentElement,.recsub,"{}","")
         }
  
@@ -261,7 +261,7 @@ Method CosCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
             $$$BNFCOMMIT(subElement,ParentElement)
             Set ..whitespace=parser.whitespace
            ; next thing must be a "}" so check
-            If ..peek(1)'="}" {
+            If $$$peek(..stream,1)'="}" {
                 Do ..recover(ParentElement,.recElement,"{}","")
             }
 		    Quit 1
@@ -278,7 +278,7 @@ Method CosCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
             $$$BNFCOMMIT(subElement,ParentElement)
             Set ..whitespace=parser.whitespace
            ; next thing must be a "}" so check
-            If ..peek(1)'="}" {
+            If $$$peek(..stream,1)'="}" {
                 Do ..recover(ParentElement,.recElement,"{}","")
             }
             Quit 1
@@ -561,18 +561,18 @@ Method XdataText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
     ; is this really XML or JSON?
     ; the recovery in json means that we need to do the check twice and since this is overridden anyway its simple to plug in here
     If ..isPunctuationInList($LISTBUILD("<","{","["),1)'=0 Quit 0
-    If ..peek(1)="}" Quit 1 ; lets count empty block as text
+    If $$$peek(..stream,1)="}" Quit 1 ; lets count empty block as text
 
     $$$DEBUGMethodBegin
     $$$BNFSTART(subElement)
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 
     Set ok=0,n="",curly=0
-    While ('..eof()) && ((curly>0)||(..peek(1)'="}")) {
-        If ..peek(1)="{" {
+    While ('..eof()) && ((curly>0)||($$$peek(..stream,1)'="}")) {
+        If $$$peek(..stream,1)="{" {
             Set curly=curly+1
         }
-        If ..peek(1)="}" {
+        If $$$peek(..stream,1)="}" {
             Set curly=curly-1
         }
         Set n=n_..next()
@@ -939,7 +939,7 @@ Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 	#dim o as PXW.DEV.Atom
     Set ok=0
-    Set ch=..peek(1)
+    Set ch=$$$peek(..stream,1)
     If (ch="""") || (ch="'") {
         Set ok=0
         $$$BNFSTART(subElement)
@@ -977,7 +977,7 @@ Method JsonString(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 {
     $$$DEBUGMethodBegin
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
-    If ..peek(1)="""" {
+    If $$$peek(..stream,1)="""" {
         $$$BNFSTART(subElement)
 
         Set q1=..nextNotEOL(1)
@@ -1037,7 +1037,7 @@ Method TextInCurly(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
     
     Set ok=1,n=""
-    While ('..eof()) && (..peek(1)'="}") {
+    While ('..eof()) && ($$$peek(..stream,1)'="}") {
         Set n=n_..next()
     }
     Set o=..newAtom(subElement.type,n)

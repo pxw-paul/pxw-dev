@@ -40,7 +40,7 @@ Method readLineComment(start As %String) As PXW.DEV.Atom
             Set n=n_..stream.NextToEol()
             ; now look to see if the NEXT line has the same type of comment
             ; if it does then add all that to this comment
-            Set next50=..peek(50)
+            Set next50=$$$peek(..stream,50)
             ; 
             If $EXTRACT($ZSTRIP(next50,"<WC"),1,$LENGTH(start))=start {
                 Set ws=$CHAR(32,9,13,10,160)
@@ -82,7 +82,7 @@ readNextLoop2
             Set ..whitespace=..newAtom("whitespace",..next(10))
             Set ch10=$EXTRACT(..streaminput,..stream.pos,..stream.pos+9),ch=$EXTRACT(ch10,1)
             If ws[ch,ch'="" Set ..whitespace=..newAtom("whitespace",..nextChars(.ws)) $$$DEBUG("Stripping trailing spaces")
-            If ..peek(1)=$CHAR(13) Set ..whitespace=..newAtom("whitespace",..next(1)) $$$DEBUG("Going to start of next line")
+            If $$$peek(..stream,1)=$CHAR(13) Set ..whitespace=..newAtom("whitespace",..next(1)) $$$DEBUG("Going to start of next line")
             Goto readNextLoop2
         }
         ;$$$DEBUG("End of stopAtEOLContinue")
@@ -111,7 +111,7 @@ Method peekKeyword() As %String
     $$$DEBUGMethodBegin
     If ..keyword="" {
         Set word=""
-        ;Set ch50=..peek(50)
+        ;Set ch50=$$$peek(..stream,50)
         Set ch50=$EXTRACT(..streaminput,..stream.pos,..stream.pos+50)
         ; starts with a letter
         If $EXTRACT(ch50,1)?1A {
@@ -268,7 +268,7 @@ Method ClassIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
         ; "name in quote"
         Set quote1=..nextNotEOL(1)
         Set value=""
-        While ..peek(1)'="""" {
+        While $$$peek(..stream,1)'="""" {
             Set value=value_..nextNotEOL(1)
         }
         Set quote2=..nextNotEOL(1)
@@ -482,11 +482,11 @@ Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
     Set value=""
     Set ok=0
-    If ..peek(2)="i%" {
+    If $$$peek(..stream,2)="i%" {
         Set value=value_..next(2)
-        If ..peek(1)="""" {
+        If $$$peek(..stream,1)="""" {
             Set value=value_..nextNotEOL(1)
-            While ..peek(1)'="""" {
+            While $$$peek(..stream,1)'="""" {
                 Set value=value_..nextNotEOL(1)
             }
             Set value=value_..nextNotEOL(1)
@@ -495,10 +495,10 @@ Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
             Set ok=1
         }
     } Else {
-        If ..peek(1)="%" Set value=..nextNotEOL(1)
-        If ..peek(1)="%" Set value=..nextNotEOL(1)
+        If $$$peek(..stream,1)="%" Set value=..nextNotEOL(1)
+        If $$$peek(..stream,1)="%" Set value=..nextNotEOL(1)
         ; not a letter (or number)
-        Set ch=..peek(1)
+        Set ch=$$$peek(..stream,1)
         ; no % so must start with a letter
         If value="",ch?1A Set value=..nextNotEOL(1)
 
@@ -510,10 +510,10 @@ Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
     }
     If ok {
 
-        Set ch=..peek(1)
+        Set ch=$$$peek(..stream,1)
         While (ch?1A) || (ch?1N) || (ch=".")  {
             Set value=value_..nextNotEOL(1)
-            Set ch=..peek(1)
+            Set ch=$$$peek(..stream,1)
         }
     
         Set atom=..newAtom("identifier",value)
@@ -620,7 +620,7 @@ Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 	#dim o as PXW.DEV.Atom
     Set ok=0
-    If ..peek(1)="""" {
+    If $$$peek(..stream,1)="""" {
         Set ok=0
         $$$BNFSTART(subElement)
 
@@ -658,7 +658,7 @@ Method JsonString(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 {
     $$$DEBUGMethodBegin
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
-    If ..peek(1)="""" {
+    If $$$peek(..stream,1)="""" {
         $$$BNFSTART(subElement)
 
         Set q1=..nextNotEOL(1)
@@ -696,7 +696,7 @@ Method PatternMatch(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
     #dim c as %CSP.Documatic
 
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
-    Set peek=..peek(2)
+    Set peek=$$$peek(..stream,2)
     If $EXTRACT(peek,1)'="?",peek'="'?" Quit 0
 
 	$$$DEBUGMethodBegin
@@ -716,7 +716,7 @@ Method PatternMatch(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	Set ok=1,bracket=0,instring=0,indirection=0,retok=1
 
     ; ?@indirect is special case
-    If ..peek(1)="@" Set ok=0,indirection=1
+    If $$$peek(..stream,1)="@" Set ok=0,indirection=1
     
     Set ch50=..stream.PeekToEol()
     Set pos=1
@@ -808,7 +808,7 @@ Method HtmlBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 {
     ; make sure there is something on the page
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
-    If ..peek(1)=">" Quit 1
+    If $$$peek(..stream,1)=">" Quit 1
 
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -830,12 +830,12 @@ Method HtmlBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
         $$$BNFCOMMIT(subElement,ParentElement)
         Set ..whitespace=parser.whitespace
         ; if we get here the next thing must be a > so check
-        If ..peek(1)'=">" {
+        If $$$peek(..stream,1)'=">" {
             Set recretok=..recover(ParentElement,.recsub,"<>","")
         }
         Set retok=1
 	} Else {
-        ;$$$DEBUG("HTMLBody RECOVER:"_..peek(20))
+        ;$$$DEBUG("HTMLBody RECOVER:"_$$$peek(..stream,20))
         Set recretok=..recover(ParentElement,.recsub,"<>","")
         ;$$$DEBUG("RECOVERED htmlbody:"_recretok)
         Set retok=1
@@ -853,7 +853,7 @@ Method JsBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 
    ; make sure there is something on the page
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
-    If ..peek(1)=">" Quit 1
+    If $$$peek(..stream,1)=">" Quit 1
     
     $$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -873,7 +873,7 @@ Method JsBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
         $$$BNFCOMMIT(subElement,ParentElement)
         Set ..whitespace=parser.whitespace
         ; if we get here the next thing must be a > so check
-        If ..peek(1)'=">" {
+        If $$$peek(..stream,1)'=">" {
             Set recretok=..recover(ParentElement,.recsub,"<>","")
         }
         Set retok=1
@@ -934,10 +934,10 @@ Method LabelDefinition(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	If ..stream.col'=0 Quit 0
 
     ; there may be a macro on the first column
-    If ..peek(3)="$$$" Quit ..Macrocall(ParentElement,.subElement)
+    If $$$peek(..stream,3)="$$$" Quit ..Macrocall(ParentElement,.subElement)
 
     ; if the first thing is a # then do not consume it but leave it to be consumed by #dim etc
-    If ..peek(1)="#" Quit 0
+    If $$$peek(..stream,1)="#" Quit 0
 
     Set res=##super(ParentElement,.subElement)
     ;$$$DEBUGMethodEnd
@@ -960,7 +960,7 @@ Method HashOp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
     ;d ..skipWhiteSpaceAndComments()
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
     
-    Set hash=..peek(1)
+    Set hash=$$$peek(..stream,1)
     If hash'="#" Quit 0
 
     ; if it is at the start of line then its NOT an operation but IS start of #dim #define etc
@@ -981,7 +981,7 @@ Method AmpOp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
     ;d ..skipWhiteSpaceAndComments()
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
     
-    Set peek=$$$UPPER(..peek(20))
+    Set peek=$$$UPPER($$$peek(..stream,20))
     If $EXTRACT(peek,1)'="&" Quit 0
 
     If $EXTRACT(peek,1,6)="&HTML<" Quit 0
@@ -1021,7 +1021,7 @@ Method OneCosStatement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
     ; for recovery we need a way of stopping, so end of file or end of code block means no statement
     If ..eof()  Quit 0 
-    If ..peek(1)="}" Quit 0
+    If $$$peek(..stream,1)="}" Quit 0
 
     Set label=..LabelDefinition(subElement)
     ; check to see if the label is on a line on its own
@@ -1036,12 +1036,12 @@ Method OneCosStatement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
         If label || newline {
    	        While (..isString(subElement,".")) { Set dots=1 }
         } Else {
-            If ..peek(1)="." {
+            If $$$peek(..stream,1)="." {
                 Set invaliddot=1
             }
         } 
     } Else {
-        If ..peek(1)="." {
+        If $$$peek(..stream,1)="." {
                Set invaliddot=1
         }
     }
@@ -1084,7 +1084,7 @@ Method Naked(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 {
     $$$DEBUGMethodBegin
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
-    $$$DEBUG("Naked peek:"_..peek(20))
+    $$$DEBUG("Naked peek:"_$$$peek(..stream,20))
     $$$DEBUG("Naked whitespace:"_..whitespace)
     If ..whitespace $$$DEBUG("Naked whitespace:"_$TRANSLATE(..whitespace.value,$CHAR(32,9,13),"stc"))
     ; in single line mode and no white space found then we must be at the end of line
@@ -1093,14 +1093,14 @@ Method Naked(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
     If ..stopAtEOL,'$ISOBJECT(..whitespace) {
         $$$DEBUG("Naked 1")
         Set retok=1
-    } ElseIf  ..stopAtEOL,$ISOBJECT(..whitespace),..peek(1)=$CHAR(13) {
+    } ElseIf  ..stopAtEOL,$ISOBJECT(..whitespace),$$$peek(..stream,1)=$CHAR(13) {
         $$$DEBUG("Naked 2")
         Set retok=1
-    } ElseIf ..peek(1)="{" {
+    } ElseIf $$$peek(..stream,1)="{" {
         $$$DEBUG("Naked 3")
         ; code block does not count as naked
         Set retok=0
-    } ElseIf ..peek(1)="}" {
+    } ElseIf $$$peek(..stream,1)="}" {
         $$$DEBUG("Naked 4")
         ; immediate end to code block does count as naked
         Set retok=1
@@ -1174,9 +1174,9 @@ Method CosDirective(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 {
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
     ; looing for #
-    If ..peek(1)'="#" Quit 0
+    If $$$peek(..stream,1)'="#" Quit 0
     ; but NOT ##
-    If ..peek(2)="##" Quit 0
+    If $$$peek(..stream,2)="##" Quit 0
     
     Set oldmode=..stopAtEOL
     Set ..stopAtEOL=1
@@ -1235,7 +1235,7 @@ Method SubExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 Method CloseBracket(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
     ;If ..isStringSingle(")",.value)=0 Quit 0
-    If ..peek(1)'=")" Quit 0
+    If $$$peek(..stream,1)'=")" Quit 0
     $$$DEBUGMethodBegin
     Set atom=..newAtom("punctuation",..nextNotEOL(1))
     Do ParentElement.AddPart(atom)
@@ -1255,7 +1255,7 @@ Method CloseBracket(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 Method OpenBracket(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
     ; THIS MUST NOT REMOVE WHITESPACE, it is used for things like ARRAY() and $PIECE() where the ( ) must come DIRECTLY after the function name
-	If ..peek(1)'="(" Quit 0
+	If $$$peek(..stream,1)'="(" Quit 0
     $$$DEBUGMethodBegin
     Set atom=..newAtom("punctuation",..nextNotEOL(1))
     Do ParentElement.AddPart(atom)
@@ -1376,9 +1376,9 @@ Method TextToEolContinue(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
     
     ; note that the continue is valid only until the next line, so don't skip all white space
     Set n=""
-    While '..eof(),..peek(1)'=$CHAR(13) {
+    While '..eof(),$$$peek(..stream,1)'=$CHAR(13) {
         ; at continue directive read the word and then the eol char
-        If $$$UPPER(..peek(10))="##CONTINUE" {
+        If $$$UPPER($$$peek(..stream,10))="##CONTINUE" {
             ; add what we have so far
             Set atom=..newAtom("text",n)
             Do ParentElement.AddPart(atom)
@@ -1388,7 +1388,7 @@ Method TextToEolContinue(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
             Do ParentElement.AddPart(atom)
 
             Set n=""
-            While ..peek(1)'=$CHAR(13) { Set n=n_..nextNotEOL(1) } ; add trailing whitespace (after the ##continue)
+            While $$$peek(..stream,1)'=$CHAR(13) { Set n=n_..nextNotEOL(1) } ; add trailing whitespace (after the ##continue)
             Set n=n_..next(1)   ; the next line
             Set ..whitespace=..newAtom("whitespace",n)
             Set n=""
@@ -1458,7 +1458,7 @@ Method EmptyParameter(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 {
     $$$DEBUGMethodBegin
 	Do:..needsWScheck ..skipWhiteSpaceAndComments()
-    If ..peek(1)="," {
+    If $$$peek(..stream,1)="," {
         Set ok=1 
     } Else {
         Set ok=0
