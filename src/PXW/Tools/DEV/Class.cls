@@ -178,7 +178,13 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 
 		Set zh(5,"render end")=$ZHOROLOG-zh,zh=$ZHOROLOG
 
-		Do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName,forceXref)
+		if forceXref {
+			$$$DEBUGNew("")
+			Do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName,1,,1)
+			$$$DEBUGStop
+		} else {
+			Do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName,forceXref)
+		}
 
 		Set zh(6,"xref")=$ZHOROLOG-zh,zh=$ZHOROLOG
 		Kill element,x,output

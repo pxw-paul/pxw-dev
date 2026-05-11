@@ -77,6 +77,9 @@ Method checkElement(element As PXW.DEV.Element)
     If element.type="InsertCommand" {
         Do ..InsertCommand(element)
     }
+    If element.type="UpdateCommand" {
+        Do ..UpdateCommand(element)
+    }
     If element.type="DeleteCommand" {
         Do ..DeleteCommand(element)
     }
@@ -100,9 +103,9 @@ Method SqlProgramCheck(element As PXW.DEV.Element)
 		Set part=element.partsGetNext(.akey)
 		Quit:akey=""
 		
-	    If part.%IsA("PXW.DEV.Element") {
+	    If part.IsElement {
 			Do ..SqlProgramCheck(part)
-		} ElseIf part.%IsA("PXW.DEV.Atom") {
+		} ElseIf part.IsAtom {
             ;
 		}
 	}
@@ -238,20 +241,40 @@ Method InsertCommand(element As PXW.DEV.Element)
     #dim from as PXW.DEV.Element
     Set tableE=element.findFirstElementByType("DirectTable",0)
     If $ISOBJECT(tableE) {
-        Set table=tableE.ToString(0)
+        set tablenameE=tableE.findFirstElementByType("TableName",0)
+        Set table=tablenameE.ToString(0)
+        do element.findElementsXPath("InsertMethod/InsertValuesList/UpdateColumns/ColumnName",.columnelements)
+        do element.findElementsXPath("InsertMethod/InsertMultirow/UpdateColumns/ColumnName",.columnelements)
+        If $ISOBJECT($GET(columnelements)) {
+            For ci=1:1:columnelements.Count() {
+                Set columnnameE=columnelements.GetAt(ci)
+                Set columnname=columnnameE.ToString(0)
+                Set fulltable=$s($isobject(..ClassServer):..ClassServer.GetFullTableName(table,..This),1:table)
+                Do ..SetColumnReference(columnnameE,fulltable,columnname)
+                
+            }
+        }
+    }
+}
 
-        Set methodE=element.findFirstElementByType("InsertMethod")
-        Set methodFirstE=methodE.partsGetAt(1)
-        If methodFirstE.type="InsertValuesList" {
-            Do ..findElementsByTypeNoSubQueries(methodE,"ColumnName",.columnelements)
-            If $ISOBJECT($GET(columnelements)) {
-                For ci=1:1:columnelements.Count() {
-                    Set columnnameE=columnelements.GetAt(ci)
-                    Set columnname=columnnameE.ToString(0)
-                    Set fulltable=..ClassServer.GetFullTableName(table,..This)
-                    Do ..SetColumnReference(columnnameE,fulltable,columnname)
-                    
-                }
+Method UpdateCommand(element As PXW.DEV.Element)
+{
+    #dim from as PXW.DEV.Element
+    Set tableE=element.findFirstElementByType("DirectTable",0)
+    If $ISOBJECT(tableE) {
+        set tablenameE=tableE.findFirstElementByType("TableName",0)
+        Set table=tablenameE.ToString(0)
+        do element.findElementsXPath("UpdateSet/ColumnReference/ColumnName",.columnelements)
+        set whereE=element.findFirstElementByType("WhereClause")
+        if $isobject(whereE) {
+            do ..findElementsByTypeNoSubQueries(whereE,"ColumnName",.columnelements)
+        }
+        If $ISOBJECT($GET(columnelements)) {
+            For ci=1:1:columnelements.Count() {
+                Set columnnameE=columnelements.GetAt(ci)
+                Set columnname=columnnameE.ToString(0)
+                Set fulltable=$s($isobject(..ClassServer):..ClassServer.GetFullTableName(table,..This),1:table)
+                Do ..SetColumnReference(columnnameE,fulltable,columnname)              
             }
         }
     }
@@ -263,7 +286,6 @@ Method DeleteCommand(element As PXW.DEV.Element)
     Set tableE=element.findFirstElementByType("DirectTable",0)
     If $ISOBJECT(tableE) {
         Set table=tableE.ToString(0)
-
         Do ..findElementsByTypeNoSubQueries(element,"ColumnName",.columnelements)
         If $ISOBJECT($GET(columnelements)) {
             For ci=1:1:columnelements.Count() {
@@ -287,7 +309,7 @@ ClassMethod findElementsByTypeNoSubQueries(Object As PXW.DEV.Element, Type As %S
     }
 	For i=1:1:Object.partsCount() {
 		Set ele=Object.partsGetAt(i)
-		If ele.%IsA("PXW.DEV.Element") {
+		If ele.IsElement {
             Set derived=ele.findFirstElementByType("DerivedTable",0)
             Set subquery=ele.findFirstElementByType("SubquerySpecification",0)
 			If $ISOBJECT(derived) || $ISOBJECT(subquery) {

@@ -24,6 +24,9 @@ Property start As %String;
 /// How this atom ends (optional) eg: strings may end with quotes(")
 Property end As %String;
 
+
+property IsAtom as %Boolean [ InitialExpression = 1];
+
 /// wspace="" ; return original whitespace 
 /// wpsace=string ; return the string in place of the white space
 /// wspace=0 ; no whitespace

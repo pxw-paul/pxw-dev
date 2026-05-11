@@ -45,7 +45,7 @@ Method checkElement(element As PXW.DEV.BNF.Elements.Python)
 			Set a=element.partsGetNext(.akey)
 			Quit:akey=""
 			
-			If a.%IsA("PXW.DEV.Element") {
+			If a.IsElement {
 				Do ..checkElement(a)
 			} 
 		}

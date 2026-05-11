@@ -5,7 +5,7 @@ Class PXW.Xref.Build Extends %Library.RegisteredObject
 
 /// do ##class(PXW.Xref.Build).Build("LOCAL_USER","","PXW*")
 /// s %pxwdeb=##class(PXW.Debuggers.BasicToFile).%New(),%pxwdeb.AddDateTime=1 d ##class(PXW.Xref.Build).Build("LOCAL_USER","","*",1)
-ClassMethod Build(Namespace As %String, Type As %String, SearchName As %String, Force As %Boolean = 0, direction As %Integer = 1) As %Status
+ClassMethod Build(Namespace As %String, Type As %String, SearchName As %String, Force As %Boolean = 0, direction As %Integer = 1,DebugBuild as %Boolean=0) As %Status
 {
 	$$$DEBUGMethodBegin
 	$$$DEBUG("Build:"_Namespace_":"_Type_":"_SearchName)
@@ -86,7 +86,7 @@ ClassMethod Build(Namespace As %String, Type As %String, SearchName As %String, 
 							Set status.CurrentlyBuilding=Namespace_" : "_typ_" : "_name
 							$$$ThrowOnError(status.%Save())
 						}
-						Set bs=..BuildIfNecessary(interface,Namespace,typ,name,timechanged,builderClass,useTheForce,noDelete)
+						Set bs=..BuildIfNecessary(interface,Namespace,typ,name,timechanged,builderClass,useTheForce,noDelete,DebugBuild)
 						If bs=1 {
 							Set:$DATA(status) status.TotalBuilt=status.TotalBuilt+1
 						} ElseIf bs="" {
@@ -118,7 +118,7 @@ ClassMethod Build(Namespace As %String, Type As %String, SearchName As %String, 
 /// Return 1 if build ok
 ///        0 if build error
 ///     null if nothing done
-ClassMethod BuildIfNecessary(CodeInterface As PXW.DEV.Dictionary.CodeInterface, Namespace As %String, Type As %String, Name As %String, TimeChanged As %TimeStamp, BuilderClass As %String, Force As %Boolean, NoDelete As %Boolean = 0) As %Boolean [ Internal ]
+ClassMethod BuildIfNecessary(CodeInterface As PXW.DEV.Dictionary.CodeInterface, Namespace As %String, Type As %String, Name As %String, TimeChanged As %TimeStamp, BuilderClass As %String, Force As %Boolean, NoDelete As %Boolean = 0,DebugBuild as %Boolean=0) As %Boolean [ Internal ]
 {
 	#dim builder as PXW.Xref.Builder
 	$$$DEBUGMethodBegin
@@ -142,9 +142,9 @@ ClassMethod BuildIfNecessary(CodeInterface As PXW.DEV.Dictionary.CodeInterface, 
 				Do ..DeleteAnalysisCalledByTypeKey1(Namespace,Type,Name)
 				Do ..DeleteCalledByTypeKey1(Namespace,Type,Name)
 			}
-			$$$DEBUGPause
+			i 'DebugBuild $$$DEBUGPause
 			Set sc=builder.Build(Namespace,Name,text)
-			$$$DEBUGResume
+			i 'DebugBuild $$$DEBUGResume
 		}
 		If $$$ISOK(sc) {
 			Do LastUpdate.%SetModified(1) ; because the lastupdate table is cleared via SQL as part of the build so ensure it saves again

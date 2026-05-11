@@ -468,7 +468,7 @@ Method RoutineIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
     $$$DEBUGMethodEnd
     Quit ok
 }
-
+/*
 /// This is left over from the initial build, the general purpose Identifier needs to be replaced by more specific
 /// types for each case.
 Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -524,7 +524,7 @@ Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
     $$$DEBUGMethodEnd
     Quit ok
 }
-
+*/
 /***********************************************************
  OVERRIDES FOR PERFORMANCE 
 ***********************************************************/

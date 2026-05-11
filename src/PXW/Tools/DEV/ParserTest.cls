@@ -145,7 +145,7 @@ ClassMethod flatten(Element As PXW.DEV.Element) As %String
 		Set a=Element.partsGetNext(.akey)
 		Quit:akey=""
 
-        If a.%IsA("PXW.DEV.Element") {
+        If a.IsElement {
             Set str=str_sep_..flatten(a)
         } ElseIf $PIECE(a.type,":",1)="punctuation" {
             Set str=str_sep_a.value

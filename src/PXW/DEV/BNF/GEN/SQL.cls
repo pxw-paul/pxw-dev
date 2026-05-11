@@ -8268,11 +8268,11 @@ Method WhereClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	quit ok
 }
 
-///  with_clause ::= alias_name 'AS' '(' select_command ')'
-/// summary=C&K&P&C&P
+///  with_clause ::= alias_name 'AS' '(' select_command ( union select_command )* ')'
+/// summary=C&K&P&C&(?4punctuation:4?)*&P
 Method WithClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C&K&P&C&P
+	; rules summary C&K&P&C&(?4punctuation:4?)*&P
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -8281,8 +8281,10 @@ Method WithClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		if ..addKeyword(.subElement,"AS")  {
 			if ..addPunctuation(.subElement,"(")  {
 				if ..SelectCommand(.subElement,.addedElement)  {
-					if ..addPunctuation(.subElement,")")  {
-						set done=1 ; end compileRules
+					if ..WithClause1RepZero(.subElement,.addedElement)  {
+						if ..addPunctuation(.subElement,")")  {
+							set done=1 ; end compileRules
+						}
 					}
 				}
 			}
@@ -8297,6 +8299,42 @@ Method WithClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  ( union select_command )*
+Method WithClause1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary ?4punctuation:4?
+	set subElement=ParentElement
+	set done=0 ; method start
+	while ..WithClause2Sub(.subElement,.addedElement)  {
+		set done=1
+	}
+	set ok=1
+	quit ok
+}
+
+///  union select_command
+/// summary=C&C
+Method WithClause2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary C&C
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..Union(.subElement,.addedElement)  {
+		if ..SelectCommand(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
 	quit ok
 }
 

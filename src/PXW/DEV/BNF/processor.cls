@@ -20,7 +20,7 @@ Method processElement(element As PXW.DEV.Element)
 		Set part=element.partsGetNext(.partkey)
 		Quit:partkey=""
 		
-		If part.%IsA("PXW.DEV.Element") {
+		If part.IsElement {
 			Do ..processElement(part)
 		} Else {
 			Do ..processAtom(part)

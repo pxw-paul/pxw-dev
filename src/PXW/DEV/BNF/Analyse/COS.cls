@@ -133,7 +133,7 @@ Method checkElement(element As PXW.DEV.Element)
 		Set part=element.partsGetNext(.akey)
 		Quit:akey=""
 		
-		If part.%IsA("PXW.DEV.Element") {
+		If part.IsElement {
 			Do ..checkElement(part)
 		} 
 	}
@@ -626,7 +626,7 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 	; some kind of set with indirection so type cannot be derived
 	; S @x
 	if '$isobject(ValueElement) quit ""
-	if 'ValueElement.%IsA("PXW.DEV.Element") quit ""
+	if 'ValueElement.IsElement quit ""
 
 	If ValueElement.type="Expression" {
 		Set expression=ValueElement

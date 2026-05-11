@@ -177,7 +177,7 @@ Method wrapElementBNF1Loop(element As PXW.DEV.Element)
         Set a=element.partsGetNext(.akey)
         Quit:akey=""
 
-        If a.%IsA("PXW.DEV.Element") {
+        If a.IsElement {
             Do ..wrapElementBNF1Loop(a)
         }
     }
@@ -1256,6 +1256,28 @@ Method writeSQLInsertCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
     Quit ""
 }
 
+Method writeSQLUpdateCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="UpdateCommand")
+{
+    ;Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
+    #dim sqlanalyse as PXW.DEV.BNF.Analyse.SQL
+    $$$DEBUGMethodBegin
+    Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..ThisType,"SQL")
+    Set sqlanalyse.ClassServer=..ClassServer
+    Set sqlanalyse.This=..This
+    Do sqlanalyse.checkElement(element)
+    Set columnNameE=""
+    While sqlanalyse.NextColumnReference(.columnNameE,.fulltable,.fieldname) {
+        If fulltable'="" {
+            Do ..wrapElementHTML(columnNameE,"<a class="""_$$$classObjectMember_""" href="""_..HREFToSQLTable(fulltable,columnNameE.ToString(0))_""">","</a>")            
+        } Else {
+            ; should always be a name
+        }
+    }    
+    $$$DEBUGMethodEnd
+    Quit ""
+}
+
+
 Method writeSQL(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="")
 {
     ;Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.SQL).%New(..ClassServer)
@@ -1428,7 +1450,7 @@ Method writePYAtom(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compil
         Set a=element.partsGetNext(.akey)
         Quit:akey=""
 
-        If a.%IsA("PXW.DEV.Atom") {
+        If a.IsAtom {
             Set type=$PIECE(a.type,":",1)
             If type="Identifier" {
                 Set varname=a.value
@@ -1478,7 +1500,7 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName
             Set a=objectchain.partsGetNext(.akey)
             Quit:akey=""
 
-            If a.%IsA("PXW.DEV.Atom"),a.value'="." {
+            If a.IsAtom,a.value'="." {
                 Set propertyatom=a
             }
         }
@@ -1636,7 +1658,7 @@ ClassMethod flattenlist(Element As PXW.DEV.Element, AtomList As %Library.ListOfO
 		Set a=Element.partsGetNext(.akey)
 		Quit:akey=""
 
-        If a.%IsA("PXW.DEV.Element") {
+        If a.IsElement {
             Set list=list_..flattenlist(a,.AtomList)
         } ElseIf $PIECE(a.type,":",1)="punctuation" {
             ; forget punctuation for the timebeing

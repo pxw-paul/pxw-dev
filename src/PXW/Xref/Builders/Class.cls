@@ -248,9 +248,9 @@ Method xrefElement(element As PXW.DEV.Element)
 		Set part=element.partsGetNext(.akey)
 		Quit:akey=""
 		
-	    If part.%IsA("PXW.DEV.Element") {
+	    If part.IsElement {
 			Do ..xrefElement(part)
-		} ElseIf part.%IsA("PXW.DEV.Atom") {
+		} ElseIf part.IsAtom {
             Set type=$$$UPPER($PIECE(part.type,":",1))
             ; this is the word "method" or "property" etc
             If type="KEYWORD" {
@@ -755,6 +755,30 @@ Method xrefSQLInsertCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.
 	Quit ""
 }
 
+Method xrefSQLUpdateCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="UpdateCommand")
+{
+	#dim sqlanalyse as PXW.DEV.BNF.Analyse.analyser
+    Set sqlanalyse=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..#CodeType,"SQL")
+    Set sqlanalyse.ClassServer=..ClassServer
+	Set sqlanalyse.This=..CalledByClassName
+	Do sqlanalyse.checkElement(element)
+	Set columnNameE=""
+	While sqlanalyse.NextColumnReference(.columnNameE,.fulltable,.fieldname) {
+		Kill patharray
+		Do ..ClassServer.GetClassPathFromTable(fulltable,fieldname,.patharray)
+		Set atom=columnNameE.FirstAtom()
+		Set command=element.type
+		For i=1:1:$GET(patharray) {
+			Set data=patharray(i)
+			Set class=$LISTGET(data,1),item=$LISTGET(data,2)
+			If class'="",item'="" {
+				Do ..SaveSQLXref("CLS",class,item,command,atom)
+			}
+		}
+	}
+	Quit ""
+}
+
 Method xrefSQLDeleteCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="DeleteCommand")
 {
 	#dim sqlanalyse as PXW.DEV.BNF.Analyse.analyser
@@ -853,7 +877,7 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName
             Set a=objectchain.partsGetNext(.akey)
             Quit:akey=""
 
-            If a.%IsA("PXW.DEV.Atom"),a.value'="." {
+            If a.IsAtom,a.value'="." {
                 Set propertyatom=a
             }
         }
@@ -908,7 +932,7 @@ Method SQLInternalXREF(Element As PXW.DEV.Element, table As %String = "", column
 			Set atom=Element.partsGetNext(.akey)
 			Quit:akey=""
 			
-			If atom.%IsA("PXW.DEV.Element") {
+			If atom.IsElement {
 				Do ..SQLInternalXREF(atom,table,column)
 			}
 		}
@@ -1066,7 +1090,7 @@ ClassMethod flattenlist(Element As PXW.DEV.Element, AtomList As %Library.ListOfO
 		Set a=Element.partsGetNext(.akey)
 		Quit:akey=""
 
-        If a.%IsA("PXW.DEV.Element") {
+        If a.IsElement {
             Set list=list_..flattenlist(a,.AtomList)
         } ElseIf $PIECE(a.type,":",1)="punctuation" {
             ; forget punctuation for the timebeing

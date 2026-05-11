@@ -30,9 +30,9 @@ Method resetAll(element As PXW.DEV.Element)
 		Set a=element.partsGetNext(.akey)
 		Quit:akey=""
 		
-	    If a.%IsA("PXW.DEV.Element") {
+	    If a.IsElement {
 			Do ..resetAll(a)
-		} ElseIf a.%IsA("PXW.DEV.Atom") {
+		} ElseIf a.IsAtom {
             Set type=$$$UPPER($PIECE(a.type,":",1))
             ; this is the word "method" or "property" etc
             If type="KEYWORD" {
@@ -139,7 +139,7 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %Stri
 		Set a=element.partsGetNext(.akey)
 		Quit:akey=""
 		
-	    If a.%IsA("PXW.DEV.Element") {
+	    If a.IsElement {
 			Do ..setAll(a,indent,flags)
 		} Else {
            ; set a.line=..currentLine

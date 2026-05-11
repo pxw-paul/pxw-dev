@@ -27,7 +27,7 @@ query_specification         ::= [with_command ] select_command ( union select_co
 subquery_specification 		::= select_command ( union select_command )*
 
 with_command 				::= 'WITH' with_clause (',' with_clause)*
-with_clause					::= alias_name 'AS' '(' select_command ')' 
+with_clause					::= alias_name 'AS' '(' select_command ( union select_command )* ')' 
  
 select_command				::= 'SELECT' [ set_quantifier ] select_list [select_into] [ table_expression ]
 

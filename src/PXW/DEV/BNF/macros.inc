@@ -31,5 +31,6 @@ ROUTINE PXW.DEV.BNF.macros [Type=INC]
 /// Kill a memo from storage
 #DEFINE BNFMEMOKILL(%pos,%obj) k ..memo(##safeexpression(""""_%classname_":"_%methodname_""""),%pos)
 
+#DEFINE UPPER(%s) $zconvert(%s,"U")
 
 #define peek(%stream,%number) $e(%stream.input,%stream.pos,%stream.pos+%number-1)

@@ -2,7 +2,7 @@ Include (PXW.Debuggers.Macros, PXW.DEV.BNF.macros)
 
 Class PXW.DEV.BNF.super Extends %RegisteredObject
 {
-
+ 
 Property stream As PXW.DEV.InputStream;
 
 /// object containing any whitespace leading up to whatever object we are going to return

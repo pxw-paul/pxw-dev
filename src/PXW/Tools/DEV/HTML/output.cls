@@ -147,7 +147,8 @@ Method writeElement(element As PXW.DEV.Element)
 		Set a=element.partsGetNext(.akey)
 		Quit:akey=""
 		
-		If a.%IsA("PXW.DEV.Element") {
+		;If a.%IsA("PXW.DEV.Element") {
+		if a.IsElement {
 			Do ..writeElement(.a)
 		} Else {
 			Do ..writeAtom(.a)

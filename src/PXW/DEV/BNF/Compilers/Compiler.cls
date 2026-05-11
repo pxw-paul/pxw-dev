@@ -762,7 +762,7 @@ Method summariseRule(Element As PXW.DEV.Element, listOfValues As %List = "") As 
     #dim subelement as PXW.DEV.Element
     #dim rulesE as PXW.DEV.Element
 
-    If Element.%IsA("PXW.DEV.Element") {
+    If Element.IsElement {
         Set summary="?1"_Element.type_"1?"
         Set subelement=Element.partsGetNext("") ; get the first thing
 

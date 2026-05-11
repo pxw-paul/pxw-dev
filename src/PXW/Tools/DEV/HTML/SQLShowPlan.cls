@@ -220,7 +220,7 @@ Method GetAttributeValue(element As PXW.DEV.BNF.Element, name As %String) As %St
         Set attE=element.findNextElement(.key)
         Quit:key=""
 
-        If attE.%IsA("PXW.DEV.BNF.Element"),$PIECE(attE.type,":",1)="Attribute" {
+        If attE.IsElement,$PIECE(attE.type,":",1)="Attribute" {
             Set nameE=attE.partsGetAt(1)
             Set valueE=attE.partsGetAt(3)
             If nameE.ToString(0)=name {
@@ -242,7 +242,7 @@ Method ClearAllButContent(element As PXW.DEV.BNF.Element)
         Set part=element.partsGetNext(.akey)
         Quit:akey=""
         
-        If part.%IsA("DEV.PXW.Atom") {
+        If part.IsAtom {
             Do element.partsRemove(akey)
         } Else {
             Set ele=part

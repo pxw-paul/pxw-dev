@@ -5,11 +5,13 @@ Class PXW.DEV.Element Extends PXW.DEV.Particle
 
 Property type As %String;
 
+property IsElement as %Boolean [ InitialExpression = 1];
+
 /// property parts as temp.mylist;
 /// Property parts As list Of PXW.DEV.Particle [ Private ];
 Method AddPart(Part As PXW.DEV.Particle)
 {
-	;$$$DEBUG("Adding "_Part.%ClassName(1)_":"_Part.type_":"_$zconvert(Part.ToString(),"O","JSON")_":"_$s(Part.%IsA("PXW.DEV.Atom"):Part.line_","_Part.col,1:""))
+	;$$$DEBUG("Adding "_Part.%ClassName(1)_":"_Part.type_":"_$zconvert(Part.ToString(),"O","JSON")_":"_$s(Part.IsAtom:Part.line_","_Part.col,1:""))
 	;d ..parts.Insert(Part)
 	; this is faster than the list of objects - not much, 20%, but on dealing with millions of things its something
 	Set %PXWparts(+$THIS,$INCREMENT(%PXWparts(+$THIS)))=Part
@@ -27,8 +29,8 @@ Method partsGetNext(ByRef key As %Integer) As PXW.DEV.Particle
 {
 	#dim %PXWparts as PXW.DEV.Particle
 	;q ..parts.GetNext(.key)
-	Set key=$ORDER(%PXWparts(+$THIS,key))
-	Quit $SELECT(key'="":%PXWparts(+$THIS,key),1:"")
+	Set key=$ORDER(%PXWparts(+$THIS,key),1,part)
+	Quit $SELECT(key'="":part,1:"")
 }
 
 Method partsCount() As %Integer
@@ -107,7 +109,7 @@ Method ToStringAtomsOnly(wspace As %String = "") As %String
 		Set a=..partsGetNext(.akey)
 		Quit:akey=""
 
-		If a.%IsA("PXW.DEV.Atom") Set str=str_a.ToString(wspace)
+		If a.IsAtom Set str=str_a.ToString(wspace)
 	}
 	Quit str
 }
@@ -166,7 +168,7 @@ Method LastAtom() As PXW.DEV.Atom
 	#dim element as PXW.DEV.Element
 	#dim atom as PXW.DEV.Atom
 	Set part=..partsGetAt(..partsCount())
-	If part.%IsA("PXW.DEV.Element") Set element=part Quit element.LastAtom()
+	If $isobject(part),part.IsElement Set element=part Quit element.LastAtom()
 	Set atom=part
 	Quit atom
 }
@@ -176,7 +178,7 @@ Method FirstAtom() As PXW.DEV.Atom
 	#dim element as PXW.DEV.Element
 	#dim atom as PXW.DEV.Atom
 	Set part=..partsGetAt(1)
-	If part.%IsA("PXW.DEV.Element") Set element=part Quit element.FirstAtom()
+	If $isobject(part),part.IsElement Set element=part Quit element.FirstAtom()
 	Set atom=part
 	Quit atom
 }
@@ -193,7 +195,7 @@ Method findFirstElementByType(Type As %String, deep As %Boolean = 1) As PXW.DEV.
 		} Else {
 			For i=1:1:..partsCount() {
 				Set ele=..partsGetAt(i)
-				If ele.%IsA("PXW.DEV.Element") {
+				If ele.IsElement {
 					Set found=ele.findFirstElementByType(Type,deep)
 					If $ISOBJECT(found) Quit ; quit loop
 				}
@@ -202,7 +204,7 @@ Method findFirstElementByType(Type As %String, deep As %Boolean = 1) As PXW.DEV.
 	} Else {
 		For i=1:1:..partsCount() {
 			Set ele=..partsGetAt(i)
-			If ele.%IsA("PXW.DEV.Element"),$$$UPPER(ele.type)=uType {
+			If ele.IsElement,$$$UPPER(ele.type)=uType {
 				Set found=ele
 				Quit ; loop
 			}
@@ -217,7 +219,7 @@ Method findNextElement(ByRef key As %Integer) As PXW.DEV.Element
 	Do {
 		Set ele=..partsGetNext(.key)
 	 	If ele="" Quit
-	} While 'ele.%IsA("PXW.DEV.Element") 
+	} While 'ele.IsElement 
 	Quit ele
 }
 
@@ -245,7 +247,7 @@ Method findElementsByType(Type As %String, ByRef OutputList As %Library.ListOfOb
 		}
 		For i=1:1:..partsCount() {
 			Set ele=..partsGetAt(i)
-			If ele.%IsA("PXW.DEV.Element") {
+			If ele.IsElement {
 				Do ele.findElementsByType(Type,.OutputList,2)
 			}
 		}
@@ -261,7 +263,7 @@ Method findElementsByType(Type As %String, ByRef OutputList As %Library.ListOfOb
 		If godeeper {
 			For i=1:1:..partsCount() {
 				Set ele=..partsGetAt(i)
-				If ele.%IsA("PXW.DEV.Element") {
+				If ele.IsElement {
 					Do ele.findElementsByType(Type,.OutputList,1)
 				}
 			}
@@ -269,7 +271,7 @@ Method findElementsByType(Type As %String, ByRef OutputList As %Library.ListOfOb
 	} Else {
 		For i=1:1:..partsCount() {
 			Set ele=..partsGetAt(i)
-			If ele.%IsA("PXW.DEV.Element"),$$$UPPER(ele.type)=uType {
+			If ele.IsElement,$$$UPPER(ele.type)=uType {
 				If '$ISOBJECT($GET(OutputList)) { 
 					Set OutputList=##class(%Library.ListOfObjects).%New()
 				}
@@ -285,7 +287,7 @@ Method findElementsByClass(ClassName As %String, ByRef OuputArray As %String)
 	If ..%IsA(ClassName) Set OuputArray(+$THIS)=$THIS
 	For i=1:1:..partsCount() {
 		Set ele=..partsGetAt(i)
-		If ele.%IsA("PXW.DEV.Element") {
+		If ele.IsElement {
 			Do ele.findElementTypes(ClassName,.OuputArray)
 		}
 	}
@@ -348,7 +350,7 @@ Method findElementsXPathCondition(Type As %String, Condition As %String, ByRef O
 	Set uType=$$$UPPER(Type)
 	For i=1:1:..partsCount() {
 		Set ele=..partsGetAt(i)
-		If ele.%IsA("PXW.DEV.Element"),$$$UPPER(ele.type)=uType {
+		If ele.IsElement,$$$UPPER(ele.type)=uType {
 			If '$ISOBJECT($GET(OutputList)) { 
 				Set OutputList=##class(%Library.ListOfObjects).%New()
 			}
