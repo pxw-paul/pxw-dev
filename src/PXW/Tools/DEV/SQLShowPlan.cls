@@ -7,7 +7,7 @@ Parameter ToolRelatesToCodeType = "CLS";
 
 ClassMethod WriteMainTop(ByRef scratch)
 {
-    do ..HREFFrom(.SQL)
+    Do ..HREFFrom(.SQL,.routine)
     &html<<form action='PXW.Tools.DEV.SQLShowPlan.cls' method='POST'> 
         <fieldset>
         <input name='%NS' value='#(%NS)#' type=hidden>
@@ -22,24 +22,34 @@ ClassMethod WriteMainTop(ByRef scratch)
 
 ClassMethod WriteMainLeft(ByRef scratch)
 {
-    do ..HREFFrom(.SQL)
-    Write "<pre id='SQLFormattedText'>" 
-    Try {
-        Do:SQL'="" ..WriteSQL(SQL,0)
-    } Catch e {
-        Do ..WriteStatus(e.AsStatus())
+    Do ..HREFFrom(.SQL,.routine)
+    If routine="" {
+        Write "<pre id='SQLFormattedText'>"
+        Try {
+            Do:SQL'="" ..WriteSQL(SQL,0)
+        } Catch e {
+            Do ..WriteStatus(e.AsStatus())
+        }
+        Write "</pre>"
+    } Else {
+        Try {
+            Do:SQL'="" ..WriteSQL(routine)
+        } Catch e {
+            Do ..WriteStatus(e.AsStatus())
+        }
     }
-    Write "</pre>"
 }
 
 ClassMethod GetMainLeftTitle() As %String
 {
-    quit "SQL"
+    Do ..HREFFrom(.SQL,.Routine)
+    If Routine'="" Quit "Routine"
+    Quit "SQL"
 }
 
 ClassMethod WriteMainRight(ByRef scratch)
 {
-    do ..HREFFrom(.SQL)
+    Do ..HREFFrom(.SQL)
     Try {
         Do:SQL'="" ..WriteSQLPlan(SQL,.scratch)
     } Catch e {
@@ -49,7 +59,7 @@ ClassMethod WriteMainRight(ByRef scratch)
 
 ClassMethod GetMainRightTitle() As %String
 {
-    quit "Plan"
+    Quit "Plan"
 }
 
 ClassMethod WriteSQLPlan(sql As %String, Output modules)
@@ -97,7 +107,7 @@ ClassMethod WriteSQLPlan(sql As %String, Output modules)
 
 ClassMethod WriteSQL(sql As %String, hiliteLine As %Integer)
 {
-    n %path s %path=""
+    New %path Set %path=""
 	Set parser=##class(PXW.DEV.BNF.Run.SQL).%New()
 	Set parser.stream=##class(PXW.DEV.InputStream).NewString(sql)
 	Set Element=##class(PXW.DEV.Element).%New()
@@ -113,16 +123,20 @@ ClassMethod WriteSQL(sql As %String, hiliteLine As %Integer)
 	Set output.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)	
 	Set output.HiLiteLine=hiliteLine
 	Set output.ThisType="CLS" ; behave like a class until we want to analyse in a different way
-    set:$d(%path) output.showPaths=1
+    Set:$DATA(%path) output.showPaths=1
 	Do output.begin()
     Do output.writeElement(Element)
     Do output.end()
     Write "</pre>"
 }
 
+classmethod WriteRoutine(Routine as %String) {
+    Do ##class(PXW.Tools.DEV.Routine).WriteRoutine(Routine)
+}
 /// Output 1 Anchor tag for each option in the navigation. Use the scratch variable for anything you want to get from BODY
 ClassMethod WriteNav(ByRef scratch)
 {
+    Do ..HREFFrom(.SQL,.routine)
     Set aname=""
     For {
 	    Set aname=$ORDER(scratch(aname))
@@ -130,18 +144,21 @@ ClassMethod WriteNav(ByRef scratch)
 
         Write "<a href=""#"_aname_""">"_aname_"</a>"
     }
-    w "<hr>"
-    w "<a href=# onclick='document.getElementById(""SQLTextArea"").value=document.getElementById(""SQLFormattedText"").innerText;'>Tinker</a>"
+    If routine="" {
+        Write "<hr>"
+        Write "<a href=# onclick='document.getElementById(""SQLTextArea"").value=document.getElementById(""SQLFormattedText"").innerText;'>Tinker</a>"
+    }
 }
 
 /// Write out extra styles here, the STYLE tags are already in place
 ClassMethod WriteStyles()
 {
-    do ##super()
+    Do ##super()
 	Do ##class(PXW.Tools.DEV.Class).WriteStyles()
     Write "div.EmbeddedSQLcontainer { display:inline-block; vertical-align:top;}",!
     Write "pre.EmbeddedSQLSub { border:1px solid var(--borderNormal); }",!
     Write "p.newline { padding-left:20px; text-indent: -20px; }",!
+    Write "pre.PlanSQL { overflow-wrap: break-word; border: 1px solid blue",!
     Write "pre.PlanSQL p.newline { margin:0; }",!
 
     ; not working
@@ -153,27 +170,31 @@ ClassMethod WriteScripts()
 	Do ##class(PXW.Tools.DEV.Class).WriteScripts()
 }
 
-ClassMethod HREFTo(SQL As %String) As %String
+ClassMethod HREFTo(SQL As %String,Routine as %String) As %String
 {
     Set href=##super()
     If $GET(SQL)'="" {
-        s id=$i(^IRIS.Temp.PXWSQLShowPlan)
-        s ^IRIS.Temp.PXWSQLShowPlan(id)=SQL
-        s href=href_"&SQLID="_..EscapeURL(id)
+        Set id=$INCREMENT(^IRIS.Temp.PXWSQLShowPlan)
+        Set ^IRIS.Temp.PXWSQLShowPlan(id)=SQL
+        Set href=href_"&SQLID="_..EscapeURL(id)
+    }
+    If $GET(Routine)'="" {
+        Set href=href_"&R="_..EscapeURL(Routine)
     }
     Quit href
 }
 
 /// This shoud output some variables, getting the data from %request
-ClassMethod HREFFrom(Output SQL As %String)
+ClassMethod HREFFrom(Output SQL As %String,output Routine as %String)
 {
     ; SQL is in the request from the form
 	Set SQL=%request.Get("SQL")
     ; SQLID is set by HREFTo
     Set id=%request.Get("SQLID")
     If id'="" {
-        Set SQL=$get(^IRIS.Temp.PXWSQLShowPlan(id))
+        Set SQL=$GET(^IRIS.Temp.PXWSQLShowPlan(id))
     }
+    Set Routine=%request.Get("R")
 }
 
 }
