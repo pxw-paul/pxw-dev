@@ -4,6 +4,9 @@ docker network connect my-network pxw-dev_iris_1
 docker network connect my-network pxw-lib-sql_iris_1
 
 
+docker network create my-network
+docker network connect my-network pxw-debug-iris-1
+docker network connect my-network other-container
 
 
 zpm 

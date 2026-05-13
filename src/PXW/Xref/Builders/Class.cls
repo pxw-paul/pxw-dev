@@ -44,6 +44,9 @@ Property SqlProgramAnalyser As PXW.DEV.BNF.Analyse.SQL;
 /// Fixed line number - used when the real line number cannot be resolved
 Property FixedLineNumber As %Integer;
 
+/// maintained by xml elements
+Property XMLPath As %String;
+
 /// d ##class(PXW.Xref.Builders.Class).test()
 ClassMethod test()
 {
@@ -233,6 +236,8 @@ Method xrefElement(element As PXW.DEV.Element)
 {
     #dim a as PXW.DEV.Atom
 
+    Set oldXMLPath=..XMLPath
+
 	do ..processSpecificElement(element)
 
 	If element.type="WithClause" {
@@ -277,6 +282,7 @@ Method xrefElement(element As PXW.DEV.Element)
 
 	Set ..InView=oldInView
 	If $DATA(oldwith) Set ..WithName=oldwith
+    Set ..XMLPath=oldXMLPath 
 }
 
 Method xrefCDEFAttributeViewquery(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="AttributeViewquery")
@@ -417,12 +423,57 @@ Method xrefCDEFTypeClassReference(element As PXW.DEV.BNF.Elements.ClassDefinitio
 	Quit ""
 }
 
+Method xrefCDEFClassXdata(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassXdata")
+{
+    Set nameE=element.findFirstElementByType("XdataName")
+    If $ISOBJECT(nameE) {
+        Set name=nameE.ToString(0)
+        Set ..XMLPath=..XMLPath_"/"_name
+    }
+    Quit ""
+}
+
 Method xrefCDEFXdataSql(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="XdataSql")
 {
     Set ..SqlProgramAnalyser=""
     Quit ""
 }
+Method xrefCDEFXmlData(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="XmlData")
+{
+    ;$$$DEBUGMethodBegin
+    Set tagnameE=element.findFirstElementByType("XmlTagName",1)
+    If $ISOBJECT(tagnameE) {
+        Set ..XMLPath=..XMLPath_"/"_tagnameE.ToString(0)
+    }
+    ;$$$DEBUGMethodEnd
+    Quit ""
+}
 
+Method xrefCDEFXmlAttribute(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="XmlAttribute")
+{
+    $$$DEBUGMethodBegin
+    Set attnameE=element.findFirstElementByType("XmlAttributeName")
+    If $ISOBJECT(attnameE) {
+        Set ..XMLPath=..XMLPath_"/"_attnameE.ToString(0)
+    }
+    $$$DEBUGMethodEnd
+    Quit ""
+}
+Method xrefCDEFXmlAttributeValue(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="XmlAttributeValue")
+{
+    $$$DEBUGMethodBegin
+	$$$DEBUG("XMLPath="_..XMLPath)
+    If ..XMLPath="/UrlMap/Routes/Route/Call" {
+        Set callname=element.ToString(0)
+        Set callname=$TRANSLATE(callname,"'""","") ; get rid of quotes
+        ;Do ..wrapElementHTML(element,"<a class="""_$$$classObjectMember_""" href="""_..HREFToClass(..This,callname)_""">","</a>")
+		Do ..SaveCOSXref("CLS",..This,callname,"_Call",element.FirstAtom())
+    } Else {
+        ;Do ..wrapElementHTML(element,"<span class='XMLTag' title="""_..XMLPath_""">","</span>")
+    }
+    $$$DEBUGMethodEnd
+    Quit ""
+}
 /*
 Method xrefCDEF(element as PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="")
 {
