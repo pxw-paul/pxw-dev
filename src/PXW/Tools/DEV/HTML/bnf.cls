@@ -97,24 +97,24 @@ Method middle(element As PXW.DEV.Element)
 Method GetXrefCount(ItemKey2 As %String, CallType As %String) As %Integer
 {
     $$$DEBUGMethodBegin
-    if '$d(..xrefCounts(..This)) {
+    If '$DATA(..xrefCounts(..This)) {
         ; I think that in most cases its faster to call this once and
         ; gather all the counts in one go rather than many smaller calls
         ; to the getcount method
-        do ##class(PXW.Xref.Queries).GetCountsSummary(%NS,..ThisType,..This,.results)
-        m ..xrefCounts(..This)=results
+        Do ##class(PXW.Xref.Queries).GetCountsSummary(%NS,..ThisType,..This,.results)
+        Merge ..xrefCounts(..This)=results
     } 
-    i ItemKey2="",CallType="" {
-        s count=+$g(..xrefCounts(..This))
-    } elseif CallType="" {
-        s ik2=$$$SQLUPPER(ItemKey2)
-        s count=+$g(..xrefCounts(..This,ik2))
-    } else {
-        s ik2=$$$SQLUPPER(ItemKey2),ct=$$$SQLUPPER(CallType)
-        s count=+$g(..xrefCounts(..This,ik2,ct))
+    If ItemKey2="",CallType="" {
+        Set count=+$GET(..xrefCounts(..This))
+    } ElseIf CallType="" {
+        Set ik2=$$$SQLUPPER(ItemKey2)
+        Set count=+$GET(..xrefCounts(..This,ik2))
+    } Else {
+        Set ik2=$$$SQLUPPER(ItemKey2),ct=$$$SQLUPPER(CallType)
+        Set count=+$GET(..xrefCounts(..This,ik2,ct))
     }
     $$$DEBUGMethodEnd
-    q count
+    Quit count
 }
 
 
@@ -172,7 +172,7 @@ Method wrapElementBNF1Loop(element As PXW.DEV.Element)
         Set labname=$TRANSLATE("LAB"_..ThisMethod_lab,"$^%_","")
         Do ..wrapAtomHTML(atom,"<a onclick='HiliteElement("""_labname_""");'  class="""_$$$classLabel_""" href=""#"_labname_""">","</a>")
     }
-    set akey=""
+    Set akey=""
     For  {
         Set a=element.partsGetNext(.akey)
         Quit:akey=""
@@ -243,7 +243,7 @@ Method writeCDEFClassDefinition(element As PXW.DEV.BNF.Elements.ClassDefinition)
     Set keywordatom=element.FirstAtom()
     ;Do ..OutputKeywordCommentAsDocumentation(element,.commentid)
     ;Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This)
-    s count=..GetXrefCount("","")
+    Set count=..GetXrefCount("","")
     Set menu="<div class="""_$$$classLensMenu_" nocopy"">"
     Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,)_""">Xref ("_count_") </a>"
     ;Set overriddenby=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,"_class","_Extends")
@@ -485,9 +485,9 @@ Method writeCDEFStorageXml(element As PXW.DEV.BNF.Elements.ClassDefinition) As P
 {
     $$$DEBUGMethodBegin
     ;do element.write()
-    set formatter=##class(PXW.DEV.BNF.Format.CDefXML).%New()
-    set formatter.indent=1
-    do formatter.formatElement(element)
+    Set formatter=##class(PXW.DEV.BNF.Format.CDefXML).%New()
+    Set formatter.indent=1
+    Do formatter.formatElement(element)
     $$$DEBUGMethodEnd
     Quit ""
 }
@@ -793,7 +793,7 @@ Method writeCOSCosDirective(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.
                     ;d ..wrapElementHTML(element,"<a name='bookmark'>","</a>")
                     Set anchor="bookmark" ;
                     Do ..wrapElementHTML(nameE,"<span class="""_$$$classHilite_""">","</span>")
-                } else {
+                } Else {
                     Do ..wrapElementHTML(nameE,"<span class="""_$$$classProgramLabel_""">","</span>")
                 }
                 Do ..AddToIndex(name,"MAC",anchor)
@@ -804,7 +804,7 @@ Method writeCOSCosDirective(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.
                 Set menu=menu_"</div>"
                 Do ..wrapAtomHTML(keywordatom,menu,"")
             }
-        } else {
+        } Else {
             Set nameE=defineE.findFirstElementByType("CosDirectiveDefineName",0)
             If $ISOBJECT(nameE) {
                 Do ..wrapElementHTML(nameE,"<span class="""_$$$classProgramLabel_""">","</span>")
@@ -840,23 +840,23 @@ Method writeCOSSpecialSystem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF
     #dim chainE as PXW.DEV.Element
     $$$DEBUGMethodBegin  
     Set classname="%SYSTEM"
-    set key="",firstAtomOfClass="",lastAtomOfClass="",chainE=""
-    for  {
-        set part=element.partsGetNext(.key)
-        quit:key=""
-        if $PIECE(part.type,":",1)="ObjectMemberIdentifier" {
-            set:firstAtomOfClass="" firstAtomOfClass=part
-            set lastAtomOfClass=part
-            set classname=classname_"."_part.value
-        } elseif part.type="ObjectChain" {
-            set chainE=part
+    Set key="",firstAtomOfClass="",lastAtomOfClass="",chainE=""
+    For  {
+        Set part=element.partsGetNext(.key)
+        Quit:key=""
+        If $PIECE(part.type,":",1)="ObjectMemberIdentifier" {
+            Set:firstAtomOfClass="" firstAtomOfClass=part
+            Set lastAtomOfClass=part
+            Set classname=classname_"."_part.value
+        } ElseIf part.type="ObjectChain" {
+            Set chainE=part
         }
     }
-    if $ISOBJECT(firstAtomOfClass),$ISOBJECT(lastAtomOfClass) {
-        do ..wrapAtomHTML(firstAtomOfClass,"<a class="""_$$$classProgramName_""" href="""_..HREFToClass(classname)_""">","")
-        do ..wrapAtomHTML(lastAtomOfClass,"","</a>")
+    If $ISOBJECT(firstAtomOfClass),$ISOBJECT(lastAtomOfClass) {
+        Do ..wrapAtomHTML(firstAtomOfClass,"<a class="""_$$$classProgramName_""" href="""_..HREFToClass(classname)_""">","")
+        Do ..wrapAtomHTML(lastAtomOfClass,"","</a>")
     }
-    do:$ISOBJECT(chainE) ..FollowObjectChainForType(chainE,classname)
+    Do:$ISOBJECT(chainE) ..FollowObjectChainForType(chainE,classname)
     $$$DEBUGMethodEnd
     Quit ""
 }
@@ -1017,9 +1017,9 @@ Method writeCOSJsBody(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compil
 Method writeCOSSqlBody(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="SqlBody")
 {
     $$$DEBUGMethodBegin
-    if ..FormatEmbeddedSQl {
-        set formatter=##class(PXW.DEV.BNF.Format.SQL).%New()
-        do formatter.formatElement(element)
+    If ..FormatEmbeddedSQl {
+        Set formatter=##class(PXW.DEV.BNF.Format.SQL).%New()
+        Do formatter.formatElement(element)
     }
     Set ..SqlProgramAnalyser=""
     Do ..wrapElementHTML(element,"<span class='EmbeddedSQL'>","</span>")
@@ -1076,9 +1076,9 @@ Method writeSQLStoredFunction(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BN
 {
     $$$DEBUGMethodBegin
     Set spnameA=element.FirstAtom()
-    if $isobject(spnameA),..This'="",$ISOBJECT(..ClassServer) {
-        set schema=..ClassServer.GetClassSchemaName(..This)
-        if schema'="" {
+    If $ISOBJECT(spnameA),..This'="",$ISOBJECT(..ClassServer) {
+        Set schema=..ClassServer.GetClassSchemaName(..This)
+        If schema'="" {
             Do ..wrapElementHTML(spnameA,"<a class="""_$$$classObjectMember_""" href="""_..HREFToClass(schema_"."_spnameA.ToString(0))_""">","</a>") 
         }
     }
@@ -1105,7 +1105,7 @@ Method writeSQLWithCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.C
         Set aliasE=withE.findFirstElementByType("AliasName")	    
         If $ISOBJECT(aliasE) {
             Set aliasname="alias"_aliasE.ToString(0)
-            set atom=aliasE.FirstAtom()
+            Set atom=aliasE.FirstAtom()
             Do ..wrapAtomHTML(atom,"<span class='SQLTableAliasSet' title='show alias usage' varid="""_$$$UPPER(aliasname)_""" onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
         }	    
     }    
@@ -1445,7 +1445,7 @@ Method writePYParam(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compi
 Method writePYAtom(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="Atom")
 {
     $$$DEBUGMethodBegin
-    set akey=""
+    Set akey=""
     For  {
         Set a=element.partsGetNext(.akey)
         Quit:akey=""
@@ -1522,15 +1522,16 @@ Method writeCOSParameterChecks(ClassName As %String, MethodPath As %String, Elem
         Set paramsE=Element.findFirstElementByType("FunctionParameterList")
         Do paramsE.findElementsByType("FunctionParameter",.plist,0)
         If $ISOBJECT($GET(plist)) {
-            set class="",query=""
+            Set class="",query=""
             Set p1=plist.GetAt(1),p2=plist.GetAt(2)
             ; ----- P1 (classname)
             Kill atoms
-            Set flat1=..flattenlist(p1,.atoms)
+            ;Set flat1=..flattenlist(p1,.atoms)
+            Do ..flattenlist(p1,.atoms)
             ;zw flat1,atoms
             ; "classname"
             ; flat1=$lb($lb("String","PXW.DEV.UnitTests.ClassToDisplay"))
-            if atoms.Count()=1,$Piece(atoms.GetAt(1).type,":",1)="String" {
+            If atoms.Count()=1,$PIECE(atoms.GetAt(1).type,":",1)="String" {
                 Set class=atoms.GetAt(1).value
             }
             ; ..%ClassName(1)
@@ -1545,12 +1546,13 @@ Method writeCOSParameterChecks(ClassName As %String, MethodPath As %String, Elem
             }
  
             ; ----- P2 (query)
-            if class'="" {
+            If class'="" {
                 Kill atoms
-                Set flat2=..flattenlist(p2,.atoms)
+                ;Set flat2=..flattenlist(p2,.atoms)
+                Do ..flattenlist(p2,.atoms)
                 ; "classname"
                 ; flat=$lb($lb("String","PXW.DEV.UnitTests.ClassToDisplay"))
-                if atoms.Count()=1,$Piece(atoms.GetAt(1).type,":",1)="String" {
+                If atoms.Count()=1,$PIECE(atoms.GetAt(1).type,":",1)="String" {
                     Set query=atoms.GetAt(1).value
                     Set a=atoms.GetAt(1)
                     Do ..wrapAtomHTML(a,"<a class="_$$$classProgramName_" href="""_..HREFToClass(class,query)_""">","</a>")
@@ -1564,7 +1566,8 @@ Method writeCOSParameterChecks(ClassName As %String, MethodPath As %String, Elem
         If $ISOBJECT($GET(plist)) {
             Kill atoms
             Set p1=plist.GetAt(1)
-            Set flat=..flattenlist(p1,.atoms)
+            ;Set flat=..flattenlist(p1,.atoms)
+            Do ..flattenlist(p1,.atoms)
 
             ; "%Studio.Project:ProjectList
             ; flat=$lb($lb("String","%Studio.Project:ProjectList"))
@@ -1724,6 +1727,7 @@ Method FollowImplicitJoins(ColumnReference As PXW.DEV.Element, fulltable As %Str
     $$$DEBUGMethodEnd
 }
 
+/*
 /// Here is line 1 of the description
 /// Here is line 2 
 /// below is a comment block that is not related 
@@ -1749,22 +1753,12 @@ Method wrapCommentBlock(Element As PXW.DEV.Element, preValue As %String = "", po
         Set subAtom.comment=""
 	}
 	
-	/*If 'isFirstCall {
-        If ..Style.CDEFDescriptionsAsText {
-            Do ..wrapAtomHTML(Element,..html(subAtom.start_subAtom.value_subAtom.end),"")
-        } Else {
-            ; output the comment as HTML (ie do not turn it into html)
-            ; also remove any /// (which simply means do not output the start and end of the atom)
-            If 'isFirstCall Do ..wrapAtomHTML(Element,subAtom.value,"")
-        }
-    }
-    */
 
     ; don't forget ALL of this is PRE the atom, including the post value!
     Do ..wrapAtomHTML(Element,postValue,"")
     $$$DEBUGMethodEnd
 }
-
+*/
 Method HREFToClass(Class As %String, Method As %String = "", PropertyParameter As %String = "") As %String
 {
     Quit ##class(PXW.Tools.DEV.Class).HREFTo(Class,Method,,%NS,..This,PropertyParameter)

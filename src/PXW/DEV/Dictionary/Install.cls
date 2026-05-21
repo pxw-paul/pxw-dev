@@ -142,7 +142,7 @@ ClassMethod ExportAll()
     Set dt=$TRANSLATE($ZDATETIME($HOROLOG,3),":- ","")
     Set file="/home/irisowner/dev/debug/PXWALLINC_"_dt_".xml"
     Do $SYSTEM.OBJ.Export("PXW.*.CLS,PXW.*.INC",file)
-    w !,"File="_file,!
+    Write !,"File="_file,!
 }
 
 ClassMethod ExportGEN()

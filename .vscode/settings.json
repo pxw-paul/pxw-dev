@@ -11,7 +11,7 @@
       "password": "SYS",
       "docker-compose": {
         "service": "iris",
-        "internalPort": 52773
+        "internalPort": 52775
       },
       "links": {
         "UnitTest Portal": "${serverUrl}/csp/sys/%25UnitTest.Portal.Home.cls?$NAMESPACE=IRISAPP"
@@ -33,6 +33,16 @@
         "username": "_SYSTEM",
         "password": "SYS"
       }
-    ]
+    ],
+    "intersystems.servers": {
+      "pxw-dev": {
+        "webServer": {
+          "scheme": "http",
+          "host": "127.0.0.1",
+          "port": 52775
+        },
+        "username": "_SYSTEM"
+      }
+    }
 
 }

@@ -102,7 +102,7 @@ Method wrapObjectRefHTML(orefNumber As %Integer, pre As %String, post As %String
 Method wrapElementHTML(element As PXW.DEV.Element, pre As %String, post As %String)
 {
 	; on elements don't wrap the whitespace
-	set e=+element
+	Set e=+element
 	Set n=$GET(..pre(e)),n=n+1,..pre(e,n)=pre,..pre(e)=n
     ;set atom=element.FirstAtom()
 	Set n=$GET(..post(e)),n=n+1,..post(e,n)=post,..post(e)=n
@@ -134,21 +134,20 @@ Method writeElement(element As PXW.DEV.Element)
     Do ..processSpecificElement(.element)
 	
 	;For i=1:1:+$GET(..pre(+element)) Do ..output($GET(..pre(+element,i)))
-	s e=+element
-	i $data(..pre(e)) {
-		s out=""
-		For i=1:1:..pre(e) set out=out_$GET(..pre(e,i))
-		do ..output(.out)
+	Set e=+element
+	If $DATA(..pre(e)) {
+		Set out=""
+		For i=1:1:..pre(e) Set out=out_$GET(..pre(e,i))
+		Do ..output(.out)
 	}
 
-	set akey=""
+	Set akey=""
 	For {
 		; nexting through because the element count may change if the outputter wants to add/remove elements as we go
 		Set a=element.partsGetNext(.akey)
 		Quit:akey=""
 		
-		;If a.%IsA("PXW.DEV.Element") {
-		if a.IsElement {
+		If a.IsElement {
 			Do ..writeElement(.a)
 		} Else {
 			Do ..writeAtom(.a)
@@ -156,10 +155,10 @@ Method writeElement(element As PXW.DEV.Element)
 	}
 	
 	;For i=+$GET(..post(+element)):-1:1 Do ..output($GET(..post(+element,i)))
-	i $data(..post(e)) {
-		set out=""
-		For i=..post(e):-1:1 set out=out_$GET(..post(e,i))
-		do ..output(.out)
+	If $DATA(..post(e)) {
+		Set out=""
+		For i=..post(e):-1:1 Set out=out_$GET(..post(e,i))
+		Do ..output(.out)
 	}
 	
 	$$$DEBUGMethodEnd

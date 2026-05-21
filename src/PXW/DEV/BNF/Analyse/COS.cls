@@ -565,6 +565,7 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, Start
     Set classname=StartClassName
     Set objectchain=ParentElement.findFirstElementByType("ObjectChain",0)
 	If '$ISOBJECT(objectchain) Set objectchain=ParentElement.findFirstElementByType("ObjectChainNoDot",0)
+	Set collection="",elementtype=""
     While $ISOBJECT(objectchain) {
 		;d objectchain.write()
 		Set fspec=""
@@ -572,14 +573,15 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, Start
         Set propertyname=objectchain.ToStringAtomsOnly(0)
 		Set propertyname=$SELECT($EXTRACT(propertyname,1)=".":$PIECE(propertyname,".",2),1:propertyname)
 				
-		If propertyname?1"Get".AN {
+		If collection'="",propertyname?1"Get".AN {
+			set collection=""
 			if ElementTypeClassName'="" {
 				; special case for List.Get methods where we know the element type already
 				Set type=ElementTypeClassName
 			} else {
 				; or we might be able to derive it
 				if ..ClassServer.GetParameterDetails(classname,"ELEMENTTYPE",,,.elementtype) {
-					set collection="",type=elementtype
+					set type=elementtype
 				}
 			}
 		} Else {

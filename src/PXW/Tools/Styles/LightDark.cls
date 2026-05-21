@@ -15,7 +15,7 @@ Method WriteStyles()
 
 
 		/* background colours: ;*/
-		--bgNormal: light-dark( #ffffff, #1E1E1E);;
+		--bgNormal: light-dark( #ffffff, #0E0E0E);;
 		--bgAlternate1: light-dark( #EEEEEE, #2E2E2E);
 		--bgAlternate2: light-dark( #DDDDDD, #3E3E3E);
 		--bgAlternate3: light-dark( #FFFFFF,black);

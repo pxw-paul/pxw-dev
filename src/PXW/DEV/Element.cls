@@ -22,7 +22,7 @@ Method partsGetAt(key As %Integer) As PXW.DEV.Particle
 	#dim part as PXW.DEV.Particle
 	;Set part=$GET(%PXWparts(+$THIS,key))
 	;Quit part
-	quit $GET(%PXWparts(+$THIS,key))
+	Quit $GET(%PXWparts(+$THIS,key))
 }
 
 Method partsGetNext(ByRef key As %Integer) As PXW.DEV.Particle
@@ -59,14 +59,14 @@ Method partsRemove(key As %Integer)
 
 Method partsReplace(oldElement As PXW.DEV.Element, newElement As PXW.DEV.Element) As %Boolean
 {
-	set this=+$THIS,replaced=0
-	for i=1:1:$get(%PXWparts(this)) {
-		set part=%PXWparts(this,i)
-		if part=oldElement {
-			set %PXWparts(this,i)=newElement,replaced=1
+	Set this=+$THIS,replaced=0
+	For i=1:1:$GET(%PXWparts(this)) {
+		Set part=%PXWparts(this,i)
+		If part=oldElement {
+			Set %PXWparts(this,i)=newElement,replaced=1
 		}
 	}
-	quit replaced
+	Quit replaced
 }
 
 Method %OnClose() As %Status
@@ -117,7 +117,7 @@ Method ToStringAtomsOnly(wspace As %String = "") As %String
 Method write(indent As %String = "")
 {
 	Set akey=""
-	Write ($j($l(indent),2))_indent_"Element="_..type_" "_..%ClassName(1)_" @"_+$THIS,!
+	Write ($JUSTIFY($LENGTH(indent),2))_indent_"Element="_..type_" "_..%ClassName(1)_" @"_+$THIS,!
 	For  {
 		Set a=..partsGetNext(.akey)
 		Quit:akey=""
@@ -128,7 +128,7 @@ Method write(indent As %String = "")
 
 Method writeFull(indent As %String = "")
 {
-	Write ($j($l(indent),2))_indent_"Element="_..type_" "_..%ClassName(1)_" @"_+$THIS,!
+	Write ($JUSTIFY($LENGTH(indent),2))_indent_"Element="_..type_" "_..%ClassName(1)_" @"_+$THIS,!
 	
 	Set akey=""
 	For  {
@@ -141,7 +141,7 @@ Method writeFull(indent As %String = "")
 
 Method writeDebug(indent As %String = "")
 {
-	$$$DEBUG(($j($l(indent),2))_indent_"Element="_..type_" "_..%ClassName(1)_" @"_+$THIS)
+	$$$DEBUG(($JUSTIFY($LENGTH(indent),2))_indent_"Element="_..type_" "_..%ClassName(1)_" @"_+$THIS)
 	Set akey=""
 	For  {
 		Set a=..partsGetNext(.akey)
@@ -153,7 +153,7 @@ Method writeDebug(indent As %String = "")
 
 Method writeDebugFull(indent As %String = "")
 {
-	$$$DEBUG(($j($l(indent),2))_indent_"Element="_..type_" "_..%ClassName(1)_" @"_+$THIS)
+	$$$DEBUG(($JUSTIFY($LENGTH(indent),2))_indent_"Element="_..type_" "_..%ClassName(1)_" @"_+$THIS)
 	Set akey=""
 	For  {
 		Set a=..partsGetNext(.akey)
@@ -168,7 +168,7 @@ Method LastAtom() As PXW.DEV.Atom
 	#dim element as PXW.DEV.Element
 	#dim atom as PXW.DEV.Atom
 	Set part=..partsGetAt(..partsCount())
-	If $isobject(part),part.IsElement Set element=part Quit element.LastAtom()
+	If $ISOBJECT(part),part.IsElement Set element=part Quit element.LastAtom()
 	Set atom=part
 	Quit atom
 }
@@ -178,7 +178,7 @@ Method FirstAtom() As PXW.DEV.Atom
 	#dim element as PXW.DEV.Element
 	#dim atom as PXW.DEV.Atom
 	Set part=..partsGetAt(1)
-	If $isobject(part),part.IsElement Set element=part Quit element.FirstAtom()
+	If $ISOBJECT(part),part.IsElement Set element=part Quit element.FirstAtom()
 	Set atom=part
 	Quit atom
 }
@@ -330,11 +330,11 @@ Method findElementsXPath(Path As %String, ByRef OutputList As %Library.ListOfObj
 	}
 	; the logic above is confusing me, below feels wrong, but I want to ADD to the output list if there is already one
 	; meaning the the function is called twice with the same .outputlist on the caller all the elements are added together.
-	if $isobject($g(OutputList)) {
-		for i=1:1:list1.Count() { 
-			d OutputList.Insert(list1.GetAt(i))
+	If $ISOBJECT($GET(OutputList)) {
+		For i=1:1:list1.Count() { 
+			Do OutputList.Insert(list1.GetAt(i))
 		}
-	} else {
+	} Else {
 		Set OutputList=list1
 	}
 	$$$DEBUG("OuputList.Count()="_OutputList.Count())

@@ -162,9 +162,9 @@ Method BracketTable3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 {
 	; rules summary ?4Call:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Join(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -198,9 +198,9 @@ Method BracketTable5RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 {
 	; rules summary ?4Call:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Join(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -302,9 +302,9 @@ Method CheckprivCommand2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..CheckprivCommand3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -430,9 +430,9 @@ Method ColList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ColList2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -546,9 +546,9 @@ Method ColumnNameList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ColumnNameList2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -659,9 +659,9 @@ Method ColumnReferenceImplicit1RepZero(ParentElement As PXW.DEV.BNF.Element, ByR
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ColumnReferenceImplicit2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -894,9 +894,9 @@ Method DeleteCommand1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..DeleteCommand2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1220,9 +1220,9 @@ Method FromClause4RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..FromClause5Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1258,9 +1258,9 @@ Method FromClause6RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..FromClause7Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1482,9 +1482,9 @@ Method FromOptimiseList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..FromOptimiseList2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1590,9 +1590,9 @@ Method GroupingColumnReferenceList1RepZero(ParentElement As PXW.DEV.BNF.Element,
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..GroupingColumnReferenceList2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1748,9 +1748,9 @@ Method IndexReferenceList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef su
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..IndexReferenceList2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1820,9 +1820,9 @@ Method InsertCommand1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..InsertCommand2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1960,9 +1960,9 @@ Method InsertSetList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..InsertSetList2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -2056,9 +2056,9 @@ Method Join1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Join2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -2409,9 +2409,9 @@ Method MacroParameterList2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef su
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..MacroParameterList3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -2508,11 +2508,11 @@ Method Macrocall1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 {
 	; rules summary C|C
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	if ..MacroParameterList(.subElement,.addedElement)  {
-		set done=1 ; or
+		; or
 	} elseif ..MacroParameterText(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
+		; end compileRules
 	}
 
 	set ok=1
@@ -2934,11 +2934,11 @@ Method OrderingColumnReference1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRe
 	; rules summary K|K
 	if '(..isKeywordInList($lb("ASC","DESC"))) { quit 1 /* not found is OK */ }
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	if ..addKeyword(.subElement,"ASC")  {
-		set done=1 ; or
+		; or
 	} elseif ..addKeyword(.subElement,"DESC")  {
-		set done=1 ; end compileRules
+		; end compileRules
 	}
 
 	set ok=1
@@ -2976,9 +2976,9 @@ Method OrderingColumnReferenceList1RepZero(ParentElement As PXW.DEV.BNF.Element,
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..OrderingColumnReferenceList2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -3180,9 +3180,9 @@ Method QuerySpecification1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef su
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..QuerySpecification2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -3304,9 +3304,9 @@ Method SelectInto1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..SelectInto2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -3394,9 +3394,9 @@ Method SelectList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..SelectList2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -3507,9 +3507,9 @@ Method SetQuantifier1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..SetQuantifier2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -3609,9 +3609,9 @@ Method SetQuantifier5RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..SetQuantifier6Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -3833,9 +3833,9 @@ Method SqlCaseExpression11RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef su
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..SqlCaseExpression12Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -3904,9 +3904,9 @@ Method SqlCaseExpression21RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef su
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..SqlCaseExpression22Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -4133,9 +4133,9 @@ Method SqlExpression1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..SqlExpression2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -5089,9 +5089,9 @@ Method SqlFunction37RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..SqlFunction38Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -5156,9 +5156,9 @@ Method SqlFunction3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..SqlFunction4Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -5589,13 +5589,13 @@ Method SqlFunction54OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	; rules summary K|K|K
 	if '(..isKeywordInList($lb("LEADING","TRAILING","BOTH"))) { quit 1 /* not found is OK */ }
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	if ..addKeyword(.subElement,"LEADING")  {
-		set done=1 ; or
+		; or
 	} elseif ..addKeyword(.subElement,"TRAILING")  {
-		set done=1 ; or
+		; or
 	} elseif ..addKeyword(.subElement,"BOTH")  {
-		set done=1 ; end compileRules
+		; end compileRules
 	}
 
 	set ok=1
@@ -5862,11 +5862,11 @@ Method SqlFunction8OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	; rules summary K|K
 	if '(..isKeywordInList($lb("DISTINCT","ALL"))) { quit 1 /* not found is OK */ }
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	if ..addKeyword(.subElement,"DISTINCT")  {
-		set done=1 ; or
+		; or
 	} elseif ..addKeyword(.subElement,"ALL")  {
-		set done=1 ; end compileRules
+		; end compileRules
 	}
 
 	set ok=1
@@ -6417,9 +6417,9 @@ Method SqlInternalFunction4RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef s
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..SqlInternalFunction5Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -6651,9 +6651,9 @@ Method SqlPrimary3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..SqlPrimary4Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -6872,9 +6872,9 @@ Method SqlStoredFunction3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..SqlStoredFunction4Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -7407,9 +7407,9 @@ Method StoredProcParameterList2RepZero(ParentElement As PXW.DEV.BNF.Element, ByR
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..StoredProcParameterList3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -7529,9 +7529,9 @@ Method SubquerySpecification1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..SubquerySpecification2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -7778,9 +7778,9 @@ Method Union1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Union2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -7846,9 +7846,9 @@ Method UpdateColumns1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..UpdateColumns2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -7920,9 +7920,9 @@ Method UpdateCommand1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..UpdateCommand2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -7998,9 +7998,9 @@ Method UpdateCommand5RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..UpdateCommand6Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -8207,9 +8207,9 @@ Method UpdateValues1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..UpdateValues2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -8307,9 +8307,9 @@ Method WithClause1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..WithClause2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -8373,9 +8373,9 @@ Method WithCommand1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..WithCommand2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok

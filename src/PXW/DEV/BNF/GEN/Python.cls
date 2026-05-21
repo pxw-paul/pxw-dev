@@ -3647,9 +3647,9 @@ Method Eval(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 Method Eval1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Newline(subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	if done {
 		set ok=1
@@ -4294,9 +4294,9 @@ Method ForIfClause1Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 Method ForIfClause2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ForIfClause3Sub(subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	if done {
 		set ok=1
@@ -4350,9 +4350,9 @@ Method ForIfClause4Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 Method ForIfClause5RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ForIfClause6Sub(subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	if done {
 		set ok=1
@@ -4566,9 +4566,9 @@ Method Fstring1Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 Method Fstring2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..FstringMiddle(subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	if done {
 		set ok=1
@@ -4758,9 +4758,9 @@ Method FstringFullFormatSpec1Or(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 Method FstringFullFormatSpec2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..FstringFormatSpec(subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	if done {
 		set ok=1
@@ -4951,9 +4951,9 @@ Method FuncType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 Method FuncType1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Newline(subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	if done {
 		set ok=1
@@ -5804,9 +5804,9 @@ Method ImportFrom1Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 Method ImportFrom2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ImportFrom3Sub(subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	if done {
 		set ok=1
@@ -7585,9 +7585,9 @@ Method LambdaParameters1Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 Method LambdaParameters2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..LambdaParamNoDefault(subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	if done {
 		set ok=1
@@ -7601,9 +7601,9 @@ Method LambdaParameters2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 Method LambdaParameters3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..LambdaParamWithDefault(subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	if done {
 		set ok=1
@@ -7638,9 +7638,9 @@ Method LambdaParameters4Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 Method LambdaParameters5RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..LambdaParamWithDefault(subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	if done {
 		set ok=1
@@ -7692,9 +7692,9 @@ Method LambdaParameters7RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 Method LambdaParameters8RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..LambdaParamWithDefault(subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	if done {
 		set ok=1
@@ -7951,9 +7951,9 @@ Method LambdaSlashWithDefault1Or(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 Method LambdaSlashWithDefault2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..LambdaParamNoDefault(subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	if done {
 		set ok=1
@@ -8005,9 +8005,9 @@ Method LambdaSlashWithDefault4Or(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 Method LambdaSlashWithDefault5RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..LambdaParamNoDefault(subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	if done {
 		set ok=1
@@ -8118,9 +8118,9 @@ Method LambdaStarEtc1Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 Method LambdaStarEtc2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..LambdaParamMaybeDefault(subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	if done {
 		set ok=1
@@ -9946,9 +9946,9 @@ Method Parameters1Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 Method Parameters2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ParamNoDefault(subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	if done {
 		set ok=1
@@ -9962,9 +9962,9 @@ Method Parameters2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 Method Parameters3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ParamWithDefault(subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	if done {
 		set ok=1
@@ -9999,9 +9999,9 @@ Method Parameters4Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 Method Parameters5RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ParamWithDefault(subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	if done {
 		set ok=1
@@ -10053,9 +10053,9 @@ Method Parameters7RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 Method Parameters8RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ParamWithDefault(subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	if done {
 		set ok=1
@@ -11670,9 +11670,9 @@ Method SlashWithDefault1Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 Method SlashWithDefault2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ParamNoDefault(subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	if done {
 		set ok=1
@@ -11724,9 +11724,9 @@ Method SlashWithDefault4Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 Method SlashWithDefault5RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ParamNoDefault(subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	if done {
 		set ok=1
@@ -12214,9 +12214,9 @@ Method StarEtc1Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 Method StarEtc2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ParamMaybeDefault(subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	if done {
 		set ok=1
@@ -12251,9 +12251,9 @@ Method StarEtc3Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 Method StarEtc4RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ParamMaybeDefault(subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	if done {
 		set ok=1
@@ -12857,9 +12857,9 @@ Method StarTargets3Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 Method StarTargets4RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..StarTargets5Sub(subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	if done {
 		set ok=1

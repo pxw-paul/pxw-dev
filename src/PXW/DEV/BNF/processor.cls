@@ -53,7 +53,7 @@ Method processSpecificElement(element As PXW.DEV.Element) [ CodeMode = objectgen
 			Set class=$PIECE(meth.FormalSpec,":",2)
 			If class'="" {
 				Set param=meth.ReturnTypeParams
-				Set seq=meth.SequenceNumber
+				;Set seq=meth.SequenceNumber
 				If param'="" {
 					Set etypes=$TRANSLATE($PIECE(param,"=",2),"""","")
 					If etypes'="" {

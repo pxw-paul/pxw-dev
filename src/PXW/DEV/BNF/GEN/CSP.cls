@@ -492,9 +492,9 @@ Method CspElement2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..CspElement3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -552,9 +552,9 @@ Method CspEmptyTag1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..CspEmptyTag2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -998,9 +998,9 @@ Method CspPage1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..CspPage2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1187,9 +1187,9 @@ Method CspStartTag1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..CspStartTag2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1479,9 +1479,9 @@ Method CspXml2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..CspXml3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1568,9 +1568,9 @@ Method CspXmlQuestion2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..CspXmlQuestion3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok

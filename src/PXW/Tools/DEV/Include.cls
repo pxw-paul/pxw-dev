@@ -54,15 +54,20 @@ ClassMethod WriteInclude(Include As %String, MacroToHilite As %Integer = "", Deb
 		Set element=##class(PXW.DEV.Element).%New()
         Set x=##class(PXW.DEV.BNF.Run.COS).%New()
         Set x.stream=##class(PXW.DEV.InputStream).NewString(text)
-		Try {
-			Set ok=x.CosCodeBlock(element)
-			If 'ok $$$ThrowStatus($$$ERROR(5001,"Could not parse"))
-			Set x.element=element
-
-			Do output.Analyser.checkElement(element)
-
-			Do output.middle(element)
 	
+		Try {
+			;Set ok=x.CosCodeBlock(element)
+			set ok=x.OneCosStatement(element)
+			while ok {
+				;If 'ok $$$ThrowStatus($$$ERROR(5001,"Could not parse"))
+				Set x.element=element
+
+				Do output.Analyser.checkElement(element)
+				;W !,"------------",! D element.write()
+				Do output.middle(element)
+				Set element=##class(PXW.DEV.Element).%New()
+				set ok=x.OneCosStatement(element)
+			}
 		} Catch e {
 			Do ..WriteStatus(e.AsStatus())
 		}

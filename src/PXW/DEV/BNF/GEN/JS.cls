@@ -270,9 +270,9 @@ Method Arguments2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Arguments3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -619,9 +619,9 @@ Method BigBinaryIntegerLiteral2RepZero(ParentElement As PXW.DEV.BNF.Element, ByR
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..BigBinaryIntegerLiteral3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -723,9 +723,9 @@ Method BigHexIntegerLiteral2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef 
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..BigHexIntegerLiteral3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -833,9 +833,9 @@ Method BigOctalIntegerLiteral2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRe
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..BigOctalIntegerLiteral3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -951,9 +951,9 @@ Method BinaryIntegerLiteral2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef 
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..BinaryIntegerLiteral3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1363,9 +1363,9 @@ Method CaseClause1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..CaseClause2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1423,9 +1423,9 @@ Method CaseClauses1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 {
 	; rules summary ?4Call:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..CaseClause(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1771,9 +1771,9 @@ Method ClassTail2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 {
 	; rules summary ?4Call:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ClassElement(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -2356,9 +2356,9 @@ Method DefaultClause1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..DefaultClause2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -2629,9 +2629,9 @@ Method ElementList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ElementList2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -2955,9 +2955,9 @@ Method ExportModuleItems1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ExportModuleItems2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -3117,9 +3117,9 @@ Method ExpressionSequence1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef su
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ExpressionSequence2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -3209,9 +3209,9 @@ Method Factor1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Factor2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -3240,11 +3240,11 @@ Method Factor3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	; rules summary P|P
 	if '..isPunctuationInList($lb("++","--"),2) { quit 1 /* not found is OK */ }
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	if ..addPunctuation(.subElement,"++")  {
-		set done=1 ; or
+		; or
 	} elseif ..addPunctuation(.subElement,"--")  {
-		set done=1 ; end compileRules
+		; end compileRules
 	}
 
 	set ok=1
@@ -3411,9 +3411,9 @@ Method FormalParameterList2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef s
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..FormalParameterList3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -3727,9 +3727,9 @@ Method HexIntegerLiteral2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..HexIntegerLiteral3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -4171,9 +4171,9 @@ Method ImportModuleItems1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ImportModuleItems2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -4570,11 +4570,11 @@ Method IterationStatement5OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 {
 	; rules summary C|C
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	if ..VariableDeclarationList(.subElement,.addedElement)  {
-		set done=1 ; or
+		; or
 	} elseif ..ExpressionSequence(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
+		; end compileRules
 	}
 
 	set ok=1
@@ -5051,9 +5051,9 @@ Method Literal2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Literal3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -5102,9 +5102,9 @@ Method Literal5RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Literal6Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -5896,9 +5896,9 @@ Method ObjectLiteral2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ObjectLiteral3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -6078,9 +6078,9 @@ Method OctalIntegerLiteral2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef s
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..OctalIntegerLiteral3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -7880,9 +7880,9 @@ Method Primary18RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Primary19Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -7960,9 +7960,9 @@ Method Primary21RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Primary22Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -8011,9 +8011,9 @@ Method Primary24RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Primary25Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -8062,9 +8062,9 @@ Method Primary27RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Primary28Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -8119,9 +8119,9 @@ Method Primary2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Primary3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -8132,9 +8132,9 @@ Method Primary30RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Primary31Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -8231,9 +8231,9 @@ Method Primary6RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Primary7Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -8941,9 +8941,9 @@ Method SingleExpression2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..SingleExpression3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -8980,11 +8980,11 @@ Method SingleExpression4OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	; rules summary P|P
 	if '..isPunctuationInList($lb("--","++"),2) { quit 1 /* not found is OK */ }
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	if ..addPunctuation(.subElement,"--")  {
-		set done=1 ; or
+		; or
 	} elseif ..addPunctuation(.subElement,"++")  {
-		set done=1 ; end compileRules
+		; end compileRules
 	}
 
 	set ok=1
@@ -9044,9 +9044,9 @@ Method SourceElements1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 {
 	; rules summary ?4Call:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..SourceElement(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -9143,9 +9143,9 @@ Method StatementList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 {
 	; rules summary ?4Call:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Statement(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -9469,9 +9469,9 @@ Method VariableDeclarationList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByR
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..VariableDeclarationList2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok

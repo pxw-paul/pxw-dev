@@ -154,9 +154,9 @@ Method CallModules1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..CallModules2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -251,9 +251,9 @@ Method CallSubqueries1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..CallSubqueries2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -442,9 +442,9 @@ Method CostSection1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 {
 	; rules summary ?4Call:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Attribute(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -489,9 +489,9 @@ Method ForEach1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ForEach2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -545,9 +545,9 @@ Method ForEachContent1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ForEachContent2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -611,9 +611,9 @@ Method FrozenSection1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 {
 	; rules summary ?4Call:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Attribute(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -858,9 +858,9 @@ Method IndexKeysGiven1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..IndexKeysGiven2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -978,9 +978,9 @@ Method IndexKeysLooping2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..IndexKeysLooping3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1139,9 +1139,9 @@ Method InfoSection1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 {
 	; rules summary ?4Call:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Attribute(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1152,9 +1152,9 @@ Method InfoSection2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..InfoSection3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1263,9 +1263,9 @@ Method ModuleSection1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 {
 	; rules summary ?4Call:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Attribute(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1276,9 +1276,9 @@ Method ModuleSection2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ModuleSection3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1420,9 +1420,9 @@ Method Plan1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Plan2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1486,9 +1486,9 @@ Method Plans1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Plans2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1803,9 +1803,9 @@ Method SqlSection1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..SqlSection2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1923,9 +1923,9 @@ Method SubquerySection1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 {
 	; rules summary ?4Call:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..Attribute(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1936,9 +1936,9 @@ Method SubquerySection2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..SubquerySection3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -2041,11 +2041,11 @@ Method TableIndex1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 {
 	; rules summary C|C
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	if ..TableSubscriptImply(.subElement,.addedElement)  {
-		set done=1 ; or
+		; or
 	} elseif ..TableSubscriptAlias(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
+		; end compileRules
 	}
 
 	set ok=1
@@ -2138,9 +2138,9 @@ Method TableSubscriptAlias2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef s
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..TableSubscriptAlias3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -2212,9 +2212,9 @@ Method TableSubscriptImply1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef s
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..TableSubscriptImply2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -2278,9 +2278,9 @@ Method WarningSection1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..WarningSection2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok

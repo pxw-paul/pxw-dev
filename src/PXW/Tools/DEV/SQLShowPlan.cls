@@ -112,6 +112,10 @@ ClassMethod WriteSQL(sql As %String, hiliteLine As %Integer)
 	Set parser.stream=##class(PXW.DEV.InputStream).NewString(sql)
 	Set Element=##class(PXW.DEV.Element).%New()
 	Set parsed=parser.SqlProgram(Element)
+    if parsed {
+        set endatom=parser.newAtom("SQL END")
+        do Element.AddPart(endatom)
+    }
 	; if its all on a single line then format it
 	;i sql'[parser.stream.eolChar {
     If parsed {
@@ -155,10 +159,10 @@ ClassMethod WriteStyles()
 {
     Do ##super()
 	Do ##class(PXW.Tools.DEV.Class).WriteStyles()
-    Write "div.EmbeddedSQLcontainer { display:inline-block; vertical-align:top;}",!
+    Write "div.EmbeddedSQLcontainer { display:inline-block; vertical-align:top; }",!
     Write "pre.EmbeddedSQLSub { border:1px solid var(--borderNormal); }",!
     Write "p.newline { padding-left:20px; text-indent: -20px; }",!
-    Write "pre.PlanSQL { overflow-wrap: break-word; border: 1px solid blue",!
+    Write "pre.PlanSQL { background-color:var(--bgAlternate1); overflow-wrap: break-word;  white-space: normal; }",!
     Write "pre.PlanSQL p.newline { margin:0; }",!
 
     ; not working

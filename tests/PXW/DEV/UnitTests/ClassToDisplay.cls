@@ -15,6 +15,27 @@ Index i1 On (String1, Int1, Date1);
 
 Index i2 On (Int2, String1);
 
+classmethod t2() {
+	s m=100000
+	s zh=$zh
+	f i=1:1:m { s x=..recover()}
+	w !,1_"   "_($zh-zh)
+
+	s zh=$zh
+	f i=1:1:m { d ..recover()}
+	w !,2_"   "_($zh-zh)
+
+	s zh=$zh
+	f i=1:1:m { i ..recover() {} }
+	w !,3_"   "_($zh-zh)
+
+}
+
+classmethod recover() as %Boolean {
+
+	q 1
+}
+
 ClassMethod WalkActivityList(pActivities As Ens.BPL.ActivityList)
 {
 	// walk over the given Activities

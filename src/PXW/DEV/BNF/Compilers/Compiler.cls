@@ -316,7 +316,7 @@ Method compileQuickCheck(Method As %Dictionary.MethodDefinition, RulesElement As
     }
 }
 
-Method compileMethodStart(Method As %Dictionary.MethodDefinition, indent As %Integer, needsPath As %Boolean = 0, needsTransation As %Boolean = 1, needsDebug As %Boolean = 1)
+Method compileMethodStart(Method As %Dictionary.MethodDefinition, indent As %Integer, needsPath As %Boolean = 0, needsTransation As %Boolean = 1, needsDebug As %Boolean = 1,needsDone as %Boolean = 1)
 {
     #define WRITE(%code) $$$WRITENOLINE(Method,%code)
     #define WRITECR(%code) $$$WRITELINE(Method,%code)
@@ -329,7 +329,11 @@ Method compileMethodStart(Method As %Dictionary.MethodDefinition, indent As %Int
         $$$WRITECR($$$Tab(indent)_"set subElement=ParentElement")
     }
 
-    $$$WRITECR($$$Tab(indent)_"set done=0 ; method start")
+    if needsDone {
+        $$$WRITECR($$$Tab(indent)_"set done=0 ; method start")
+    } else {
+        $$$WRITECR($$$Tab(indent)_"; method start")
+    }
 }
 
 Method compileMethodEnd(Method As %Dictionary.MethodDefinition, indent As %Integer, rollbackReturns As %String = "0", needsTransation As %Boolean = 1, needsDebug As %Boolean = 1, copyMode As %Boolean = 0)
@@ -387,7 +391,7 @@ Method SubMethodName(BaseName As %String, Suffix As %String = "") As %String
     Quit BaseName_..UniqueMethodId(key)_Suffix
 }
 
-Method compileRules(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.Element, indent As %Integer, QuickCheckDone As %Boolean = 0)
+Method compileRules(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.Element, indent As %Integer, QuickCheckDone As %Boolean = 0, NeedsDone as %Boolean = 1)
 {
     #dim ruleE as PXW.DEV.Element
     #define WRITE(%code) $$$WRITENOLINE(Method,%code)
@@ -432,15 +436,22 @@ Method compileRules(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.E
         If $ISOBJECT(nextRuleE) {
             If nextRuleE.ToString(0)="|" {
                 Set andor="OR",rkey=nkey
-                $$$WRITECR($$$Tab(indent+1)_"set done=1 ; or")
+                if NeedsDone {
+                    $$$WRITECR($$$Tab(indent+1)_"set done=1 ; or")
+                } else {
+                    $$$WRITECR($$$Tab(indent+1)_"; or")
+                }
             } Else {
                 Set andor="AND"
                 Set indent=indent+1
             }
         }
     }
-
-    $$$WRITECR($$$Tab(indent+1)_"set done=1 ; end compileRules")
+    IF NeedsDone {
+        $$$WRITECR($$$Tab(indent+1)_"set done=1 ; end compileRules")
+    } else {
+        $$$WRITECR($$$Tab(indent+1)_"; end compileRules")
+    }
     For indent=indent:-1:1 {
         $$$WRITECR($$$Tab(indent)_$$$CloseCurly) 
     }
@@ -604,17 +615,17 @@ Method compileOptionalGroup(Method As %Dictionary.MethodDefinition, Element As P
 
     Set indent=1
     If Element.type="Rules" {
-        Set transaction=1,debug=0,copy=1
+        Set transaction=1,debug=0,copy=1,needsdone=1
         Set summary=..summariseRules(Element)
         ; this is just one or more calls to other things, those things will be in transactions so no need here
-        If summary?1"C"0."|C" Set transaction=0,debug=0
+        If summary?1"C"0."|C" Set transaction=0,debug=0,needsdone=0
         ; this is just one or more checks of keywords, no need to be in a transaction
-        If summary?1"K"0."|K" Set transaction=0,debug=0
-        If summary?1"P"0."|P" Set transaction=0,debug=0
+        If summary?1"K"0."|K" Set transaction=0,debug=0,needsdone=0
+        If summary?1"P"0."|P" Set transaction=0,debug=0,needsdone=0
         Do ..compileQuickCheck(Method,Element,indent,"1 /* not found is OK */")
-        Do ..compileMethodStart(Method,indent,,transaction,debug)
+        Do ..compileMethodStart(Method,indent,,transaction,debug,needsdone)
         ;If 'transaction $$$WRITECR($$$Tab(indent)_"Set subElement=ParentElement")
-        Do ..compileRules(Method,Element,indent)
+        Do ..compileRules(Method,Element,indent,0,needsdone)
         Do ..compileMethodEnd(Method,indent,"1 /* failure rollsback but returns OK */",transaction,debug,copy)
     }
 }
@@ -645,17 +656,21 @@ Method compileRepeatZero(Method As %Dictionary.MethodDefinition, Element As PXW.
     #define WRITECR(%code) $$$WRITELINE(Method,%code)
     Set indent=1
     Set path=0
-    Set transaction=0,debug=0
+    Set transaction=0,debug=0,needsdone=0
     Set Method.Description=Element.ToString(" ")
     Set ruleE=Element.findFirstElementByType("RepeatableRule")
     Do ..compileQuickCheck(Method,ruleE,indent,"1 /* not found is OK in RZ */")
-    Do ..compileMethodStart(Method,indent,path,transaction,debug)
+    Do ..compileMethodStart(Method,indent,path,transaction,debug,needsdone)
 
     $$$WRITE($$$Tab(indent)_"while ") 
     Do ..compileRule(Method,ruleE,indent)
     $$$WRITECR(" "_$$$OpenCurly)
     
-    $$$WRITECR($$$Tab(indent+1)_"set done=1")
+    if needsdone {
+        $$$WRITECR($$$Tab(indent+1)_"set done=1 ;;")
+    } else {
+        $$$WRITECR($$$Tab(indent+1)_";")
+    }
     $$$WRITECR($$$Tab(indent)_$$$CloseCurly)
     Do ..compileMethodEnd(Method,indent,"1 /* nothing found is ok in RZ */",transaction,debug)
 }

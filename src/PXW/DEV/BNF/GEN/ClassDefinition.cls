@@ -150,9 +150,9 @@ Method AttributeAliaslist1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef su
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..AttributeAliaslist2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -485,11 +485,11 @@ Method AttributeCompileafter1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef 
 {
 	; rules summary C|C
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	if ..ClassReferenceList(.subElement,.addedElement)  {
-		set done=1 ; or
+		; or
 	} elseif ..ClassReference(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
+		; end compileRules
 	}
 
 	set ok=1
@@ -666,9 +666,9 @@ Method AttributeData3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..AttributeData4Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1160,9 +1160,9 @@ Method AttributeGenerateafter3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRe
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..AttributeGenerateafter4Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1579,9 +1579,9 @@ Method AttributeMembersuper3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef 
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..AttributeMembersuper4Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -1649,9 +1649,9 @@ Method AttributeMimetype1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..AttributeMimetype2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -2270,9 +2270,9 @@ Method AttributePlaceafter1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef s
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..AttributePlaceafter2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -2468,9 +2468,9 @@ Method AttributePropertyclass1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRe
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..AttributePropertyclass2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -2592,9 +2592,9 @@ Method AttributePubliclist3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef s
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..AttributePubliclist4Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -3342,9 +3342,9 @@ Method AttributeSqlcomputeonchange2RepZero(ParentElement As PXW.DEV.BNF.Element,
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..AttributeSqlcomputeonchange3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -4098,9 +4098,9 @@ Method AttributeUpdatecolumnlist3RepZero(ParentElement As PXW.DEV.BNF.Element, B
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..AttributeUpdatecolumnlist4Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -4383,9 +4383,9 @@ Method ClassAttributeList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef su
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ClassAttributeList2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -4956,9 +4956,9 @@ Method ClassMemberList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ClassMemberList2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -5261,9 +5261,9 @@ Method ClassParameterAttributeList1RepZero(ParentElement As PXW.DEV.BNF.Element,
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ClassParameterAttributeList2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -5606,9 +5606,9 @@ Method ClassPropertyAttributeList1RepZero(ParentElement As PXW.DEV.BNF.Element, 
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ClassPropertyAttributeList2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -5917,9 +5917,9 @@ Method ClassQueryAttributes1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef 
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ClassQueryAttributes2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -6035,9 +6035,9 @@ Method ClassReferenceList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef su
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ClassReferenceList2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -6865,9 +6865,9 @@ Method ForeignkeyAttributeList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByR
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..ForeignkeyAttributeList2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -6985,9 +6985,9 @@ Method FormalSpecList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..FormalSpecList2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -7294,9 +7294,9 @@ Method IncludeList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..IncludeList2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -7428,9 +7428,9 @@ Method IndexAttributes1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..IndexAttributes2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -7521,11 +7521,11 @@ Method IndexProperty1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	; rules summary P|P
 	if '..isPunctuation("(ELEMENTS)",10),'..isPunctuation("(KEYS)",6) { quit 1 /* not found is OK */ }
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	if ..addPunctuation(.subElement,"(ELEMENTS)")  {
-		set done=1 ; or
+		; or
 	} elseif ..addPunctuation(.subElement,"(KEYS)")  {
-		set done=1 ; end compileRules
+		; end compileRules
 	}
 
 	set ok=1
@@ -7620,9 +7620,9 @@ Method IndexPropertyList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..IndexPropertyList2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -7956,9 +7956,9 @@ Method MethodAttributeList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef s
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..MethodAttributeList2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -8118,9 +8118,9 @@ Method NameValuePairList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..NameValuePairList2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -8452,11 +8452,11 @@ Method OneDataAttributeValue1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef 
 	; rules summary P|P
 	if '..isPunctuation("(ELEMENTS)",10),'..isPunctuation("(KEYS)",6) { quit 1 /* not found is OK */ }
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	if ..addPunctuation(.subElement,"(ELEMENTS)")  {
-		set done=1 ; or
+		; or
 	} elseif ..addPunctuation(.subElement,"(KEYS)")  {
-		set done=1 ; end compileRules
+		; end compileRules
 	}
 
 	set ok=1
@@ -8577,9 +8577,9 @@ Method PackageList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..PackageList2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -9020,9 +9020,9 @@ Method StorageXml1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..StorageXml2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -9304,9 +9304,9 @@ Method TriggerAttributeList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef 
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..TriggerAttributeList2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -9517,9 +9517,9 @@ Method TypeParametersList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef su
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..TypeParametersList2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -9605,9 +9605,9 @@ Method UdlStatement1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..UdlStatement2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -9740,9 +9740,9 @@ Method XdataAttributes1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..XdataAttributes2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -9862,9 +9862,9 @@ Method XdataJsonArrayItems1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef s
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..XdataJsonArrayItems2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -9953,9 +9953,9 @@ Method XdataJsonObject2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..XdataJsonObject3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -10367,9 +10367,9 @@ Method XmlData2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..XmlData3Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -10427,9 +10427,9 @@ Method XmlEmptyTag1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..XmlEmptyTag2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -10554,9 +10554,9 @@ Method XmlStartTag1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..XmlStartTag2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok
@@ -10817,9 +10817,9 @@ Method XmlXml1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
-	set done=0 ; method start
+	; method start
 	while ..XmlXml2Sub(.subElement,.addedElement)  {
-		set done=1
+		;
 	}
 	set ok=1
 	quit ok

@@ -9,9 +9,9 @@ Property currentSchema As %String;
 
 Method writeElement(element As PXW.DEV.Element)
 {
-	if element.type="EmbeddedView" set oldSchema=..currentSchema,..currentSchema=$g(..viewSchemaIndex(+element))
-    do ##super(element)
-    if $d(oldSchema) set ..currentSchema=oldSchema
+	If element.type="EmbeddedView" Set oldSchema=..currentSchema,..currentSchema=$GET(..viewSchemaIndex(+element))
+    Do ##super(element)
+    If $DATA(oldSchema) Set ..currentSchema=oldSchema
 }
 
 Method writeSQLDirectTableExpand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="DirectTable")
@@ -29,7 +29,7 @@ Method writeSQLDirectTableExpand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV
                 Set schemaE=tablenameE.findFirstElementByType("SchemaName",0)
                 Set tableE=tablenameE.findFirstElementByType("QualifiedIdentifier",0)
                 If $ISOBJECT(schemaE),$ISOBJECT(tableE) {
-                    set fullname=schemaE.ToString(0)_"."_tableE.ToString(0)
+                    ;Set fullname=schemaE.ToString(0)_"."_tableE.ToString(0)
                     Set sql=..GetViewSQL(schemaE.ToString(0),tableE.ToString(0))
                     If sql'="" {
                         Set subElement=..SubSQLToEmbeddedViewElement(sql,tablenameE)
@@ -37,7 +37,7 @@ Method writeSQLDirectTableExpand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV
                             Do ..wrapElementHTML(element,"<div class='EmbeddedSQLcontainer'>","</div>")
                             Do element.partsReplace(tablenameE,subElement) 
                         }
-                        s ..viewSchemaIndex(+subElement)=schemaE.ToString(0)
+                        Set ..viewSchemaIndex(+subElement)=schemaE.ToString(0)
                     }
                 }
             }
@@ -55,9 +55,9 @@ Method writeSQLEmbeddedView(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.
 /// OVERRIDING StoredFunction 
 Method writeSQLStoredFunction(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="SqlStoredFunction")
 {
-    if ..currentSchema'="" {
-        set atom=element.FirstAtom()
-        if $isobject(atom) {
+    If ..currentSchema'="" {
+        Set atom=element.FirstAtom()
+        If $ISOBJECT(atom) {
             Do ..wrapElementHTML(atom,..currentSchema_"."_"<a class="""_$$$classObjectMember_""" href="""_..HREFToClass(..currentSchema_"."_atom.ToString(0))_""">","</a>") 
         }
     }    
@@ -74,36 +74,36 @@ Method SubSQLToEmbeddedViewElement(sql As %String, tablenameElement As PXW.DEV.E
    
     ; insert some code that is
     ; ( /* tablename */
-    set openbracket=parser.newAtom("punctuation","( ")
-    do Element.AddPart(openbracket)
-    set opencomment=parser.newAtom("blockcomment","/*")
-    do Element.AddPart(opencomment)
-    do Element.AddPart(tablenameElement)
-    set closecomment=parser.newAtom("blockcomment"," */")
-    do Element.AddPart(closecomment)
+    Set openbracket=parser.newAtom("punctuation","( ")
+    Do Element.AddPart(openbracket)
+    Set opencomment=parser.newAtom("blockcomment","/*")
+    Do Element.AddPart(opencomment)
+    Do Element.AddPart(tablenameElement)
+    Set closecomment=parser.newAtom("blockcomment"," */")
+    Do Element.AddPart(closecomment)
 
   
-    set selectE=##class(PXW.DEV.BNF.Elements.SQL).%New("dummy")
+    Set selectE=##class(PXW.DEV.BNF.Elements.SQL).%New("dummy")
     Set parsed=parser.SqlProgram(selectE)
     If parsed {
 		Set formatter=##class(PXW.DEV.BNF.Format.SQL).%New()
 		Do formatter.formatElement(selectE)
-        do Element.AddPart(selectE)
+        Do Element.AddPart(selectE)
 
         ; now add
         ; /* tablename */ )
-        set parser.whitespace="" ; clear current whitespace (the newAtom function uses it)
-        set parser.whitespace=parser.newAtom("whitespace",parser.stream.eolChar)
-        set opencomment=parser.newAtom("blockcomment","/*")
-        do Element.AddPart(opencomment)
-        do Element.AddPart(tablenameElement)
-        set closecomment=parser.newAtom("blockcomment"," */")
-        do Element.AddPart(closecomment)
-        set closebracket=parser.newAtom("punctuation"," )")
-        do Element.AddPart(closebracket)
+        Set parser.whitespace="" ; clear current whitespace (the newAtom function uses it)
+        Set parser.whitespace=parser.newAtom("whitespace",parser.stream.eolChar)
+        Set opencomment=parser.newAtom("blockcomment","/*")
+        Do Element.AddPart(opencomment)
+        Do Element.AddPart(tablenameElement)
+        Set closecomment=parser.newAtom("blockcomment"," */")
+        Do Element.AddPart(closecomment)
+        Set closebracket=parser.newAtom("punctuation"," )")
+        Do Element.AddPart(closebracket)
 
-    } else {
-        set Element=""
+    } Else {
+        Set Element=""
     }
     Quit Element
 }
@@ -293,7 +293,7 @@ Method writeSQLPlanTableIndex(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Com
         Do ..wrapElementHTML(indexE,"<a class='"_$$$classObjectMember_"' href="""_..HREFToClass(table,index)_""">","</a>")
         Set class=..ClassServer.GetClassNameFromTableName(table)
         If ..ClassServer.GetIndexDetails(class,index,,,.properties) {
-            set list=""
+            Set list=""
             Do element.findElementsXPath("IndexKeys/IndexKeysGiven/IndexKey/IndexKeyName/PropertyName",.list)
             Do element.findElementsXPath("IndexKeys/IndexKeysGiven/IndexKey/IndexKeyName/AliasProperty/PropertyName",.list)
             If $ISOBJECT(list) {
@@ -304,7 +304,7 @@ Method writeSQLPlanTableIndex(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Com
                     }
                 }
             }
-            set list=""
+            Set list=""
             Do element.findElementsXPath("IndexKeys/IndexKeysLooping/IndexKeyWithRange/IndexKey/IndexKeyName/PropertyName",.list)
             Do element.findElementsXPath("IndexKeys/IndexKeysLooping/IndexKeyWithRange/IndexKey/IndexKeyName/AliasProperty/PropertyName",.list)
             If $ISOBJECT(list) {
@@ -316,25 +316,25 @@ Method writeSQLPlanTableIndex(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Com
                 }
             }
 
-            if $d(givenidents) {
+            If $DATA(givenidents) {
                ; for all the keys on the index work out which ones are given and highlight them
                Set html="",sep=""
                For i=1:1:$LENGTH(properties,",") {
                    Set item=$PIECE(properties,",",i)
-                   If item'="",$G(givenidents($$$UPPER(item)))=2 {
+                   If item'="",$GET(givenidents($$$UPPER(item)))=2 {
                        Set html=html_sep_"<b>"_$$$HTMLENCODE(item)_"</b>"
-                   } elseIf item'="",$G(givenidents($$$UPPER(item)))=1 {
+                   } ElseIf item'="",$GET(givenidents($$$UPPER(item)))=1 {
                        Set html=html_sep_"<u>"_$$$HTMLENCODE(item)_"</u>"
                    } Else {
                        Set html=html_sep_$$$HTMLENCODE(item)
                    }
                    Set sep=","
                }
-               if html'="" {
+               If html'="" {
                    Do ..wrapElementHTML(indexE,"","<span class="_$$$classNarrative_"> /* "_html_" */ </span>")
                }
            } Else {
-               if properties'="" {
+               If properties'="" {
                    Do ..wrapElementHTML(indexE,"","<span class="_$$$classNarrative_"> /* "_$$$HTMLENCODE(properties)_" */ </span>")
                }
            }
