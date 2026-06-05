@@ -1,4 +1,4 @@
-Class PXW.DEV.UnitTests.ClassToDisplay Extends (%Library.Persistent, %Populate)
+Class PXW.DEV.UnitTests.ClassToDisplay Extends (%Library.Persistent)
 {
 
 Property String1 As %String;
@@ -15,72 +15,14 @@ Index i1 On (String1, Int1, Date1);
 
 Index i2 On (Int2, String1);
 
-classmethod t2() {
-	s m=100000
-	s zh=$zh
-	f i=1:1:m { s x=..recover()}
-	w !,1_"   "_($zh-zh)
 
-	s zh=$zh
-	f i=1:1:m { d ..recover()}
-	w !,2_"   "_($zh-zh)
-
-	s zh=$zh
-	f i=1:1:m { i ..recover() {} }
-	w !,3_"   "_($zh-zh)
-
-}
-
-classmethod recover() as %Boolean {
-
-	q 1
-}
-
-ClassMethod WalkActivityList(pActivities As Ens.BPL.ActivityList)
+Method %OnNew() As %Status [ ServerOnly = 1 ]
 {
-	// walk over the given Activities
-	Set tActivities = pActivities
-	For a = 1:1:tActivities.Count() {
-		Set tActivity = tActivities.GetAt(a)
-		w tActivity.Name
-	}
+	s sc=##super()
+	q sc
 }
 
-/*
-ClassMethod formatstring(s As %String) As %String [ SqlProc ]
-{
-	s x=..%New()
-	s x.String1="aa"
-	s z=x.%ConstructClone(0)
-	s z.String1="bb"
-    q "formatted "_s
-}
 
-Query q1() As %Library.SQLQuery [ SqlProc ]
-{
-    select id,
-        string1,
-        classtodisplay_formatstring(string1) as formatted,
-        coalesce(date1,cast('2025-01-01' as date)) as deriveddate
-    from pxw_dev_unittests.classtodisplay
-}
-
-Method %Dump() As %Status
-{
-	;Set tSC = ##super()
-	If $$$ISOK(tSC) {
-		Write "Widgets:",?25,..widgets.Count(),!
-		For n=1:1:..widgets.Count() {
-			Set tSC = ..widgets.GetAt(n).%Dump()
-			If $$$ISERR(tSC) Quit
-
-            set o=..widgets.GetAt(n)
-            d o.%DumpyDump()
-		}
-	}
-	Quit tSC
-}
-*/
 Storage Default
 {
 <Data name="ClassToDisplayDefaultData">

@@ -561,7 +561,7 @@ Method checkCDEFMethodAttribute(element As PXW.DEV.BNF.Elements.ClassDefinition)
 Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, StartClassName As %String, ElementTypeClassName As %String = "") As %String
 {
 	#dim fpE,fparamsE as PXW.DEV.BNF.Elements.COS
-    Set type=StartClassName
+	Set type=StartClassName
     Set classname=StartClassName
     Set objectchain=ParentElement.findFirstElementByType("ObjectChain",0)
 	If '$ISOBJECT(objectchain) Set objectchain=ParentElement.findFirstElementByType("ObjectChainNoDot",0)
@@ -650,11 +650,22 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
     ; looking for ##class
 	If variableElement.type="Classexpr" {
 		Set hhclass=variableElement.findFirstElementByType("ClassExpression",0)
+		Set super=variableElement.findFirstElementByType("SuperExpression",0)
 		If $ISOBJECT(hhclass) {
 			Set classnameele=hhclass.findFirstElementByType("ClassReference",0)
 			Set classname=classnameele.ToString(0)
 			Set finaltype=..FollowObjectChainForType(hhclass,classname)
-		} 
+		} else {
+			; ##super()
+			If $ISOBJECT(super) {
+				set superclass=..ClassServer.GetMethodOverrides(..This_"||"_..ThisMethod)
+				if superclass'="" {
+					s type=..ClassServer.GetMethodReturnType(superclass,..ThisMethod)
+					Set finaltype=..FollowObjectChainForType(super,type)
+					;zw type,finaltype
+				}
+			}
+		}
 	}
     If finaltype'="" Quit finaltype
 
@@ -689,7 +700,7 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 		}
 	}
 	If finaltype'="" Quit finaltype
-
+	
 	Quit finaltype
 }
 

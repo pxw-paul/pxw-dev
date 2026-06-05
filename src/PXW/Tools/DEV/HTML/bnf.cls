@@ -40,6 +40,7 @@ Property xrefCounts As %Integer [ MultiDimensional ];
 
 Method OutputKeywordCommentAsDocumentation(Element As PXW.DEV.Element, Output commentid As %String)
 {
+    #dim x as %Api.InteropEditors.v3.spec
     Set commentid=""
     /* This does not work how I want yet, it needs to do all the stuff that documatic does, can I just call that or do I need to write my own? */
     Set keywordatom=Element.FirstAtom()
@@ -543,6 +544,7 @@ Method writeCDEFOneClassMember2(element As PXW.DEV.BNF.Elements.ClassDefinition)
     $$$DEBUGMethodBegin
     Set ..Analyser=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..ThisType,"COS")
     Set ..Analyser.This=..This
+    Set ..Analyser.ThisMethod=..ThisMethod
     Set ..Analyser.ClassServer=..ClassServer
     Do ..Analyser.checkElement(element)
 
