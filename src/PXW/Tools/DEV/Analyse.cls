@@ -38,7 +38,7 @@ ClassMethod WriteAnalysis(itemtype As %String, itemk1 As %String, itemk2 As %Str
 	Write "		</thead>",!
 	Write "		<tbody>",!
 	Write "		",!  
-	While rs.%Next() {
+	While rs.%Next() { 
 		Write "<tr>"
 		; WHAT ABOUT XREF ON ROUTINES????
 		If rs.ItemType="CLS" {

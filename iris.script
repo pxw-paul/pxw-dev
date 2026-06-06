@@ -29,6 +29,7 @@
     set ^UnitTestRoot="/usr/irissys/.vscode/IRISAPP/UnitTestRoot"
 
     zpm "load /home/irisowner/dev/ -v"
+    ;zpm "load /home/irisowner/dev/ -dev -v":1:1
     do ##class(PXW.DEV.Dictionary.Install).Setup()
 
     halt
