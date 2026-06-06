@@ -824,11 +824,7 @@ Method Assignment7RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	while ..Assignment8Sub(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -1327,11 +1323,7 @@ Method BitwiseAnd1Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	} elseif ..ShiftExpr(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	$$$DEBUGMethodEnd
 	quit ok
 }
@@ -1405,11 +1397,7 @@ Method BitwiseOr1Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	} elseif ..BitwiseXor(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	$$$DEBUGMethodEnd
 	quit ok
 }
@@ -1483,11 +1471,7 @@ Method BitwiseXor1Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	} elseif ..BitwiseAnd(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	$$$DEBUGMethodEnd
 	quit ok
 }
@@ -2071,11 +2055,7 @@ Method Comparison2RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	while ..CompareOpBitwiseOrPair(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -2268,11 +2248,7 @@ Method Conjunction2RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	while ..Conjunction3Sub(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -2337,11 +2313,7 @@ Method Decorators1RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	while ..Decorators2Sub(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -2979,11 +2951,7 @@ Method Disjunction2RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	while ..Disjunction3Sub(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -3189,11 +3157,7 @@ Method DottedName1Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	} elseif ..Name(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	$$$DEBUGMethodEnd
 	quit ok
 }
@@ -3439,11 +3403,7 @@ Method ElifStmt1Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	} elseif ..ElifStmt3Or(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	$$$DEBUGMethodEnd
 	quit ok
 }
@@ -3651,11 +3611,7 @@ Method Eval1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	while ..Newline(subElement,.addedElement)  {
 		;
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -3878,11 +3834,7 @@ Method Expression1Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	} elseif ..Lambdef(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	$$$DEBUGMethodEnd
 	quit ok
 }
@@ -3975,11 +3927,7 @@ Method Expressions2RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	while ..Expressions3Sub(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -4075,11 +4023,7 @@ Method Factor1Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	} elseif ..Power(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	$$$DEBUGMethodEnd
 	quit ok
 }
@@ -4298,11 +4242,7 @@ Method ForIfClause2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	while ..ForIfClause3Sub(subElement,.addedElement)  {
 		;
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -4354,11 +4294,7 @@ Method ForIfClause5RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	while ..ForIfClause6Sub(subElement,.addedElement)  {
 		;
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -4423,11 +4359,7 @@ Method ForIfClauses1RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	while ..ForIfClause(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -4570,11 +4502,7 @@ Method Fstring2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	while ..FstringMiddle(subElement,.addedElement)  {
 		;
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -4762,11 +4690,7 @@ Method FstringFullFormatSpec2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef
 	while ..FstringFormatSpec(subElement,.addedElement)  {
 		;
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -4818,11 +4742,7 @@ Method FstringMiddle1Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	} elseif ..FstringMiddle(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	$$$DEBUGMethodEnd
 	quit ok
 }
@@ -4955,11 +4875,7 @@ Method FuncType1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	while ..Newline(subElement,.addedElement)  {
 		;
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -5808,11 +5724,7 @@ Method ImportFrom2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	while ..ImportFrom3Sub(subElement,.addedElement)  {
 		;
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -5867,11 +5779,7 @@ Method ImportFrom5RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	while ..ImportFrom6Sub(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -6375,11 +6283,7 @@ Method Inversion1Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	} elseif ..Comparison(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	$$$DEBUGMethodEnd
 	quit ok
 }
@@ -7552,11 +7456,7 @@ Method LambdaParameters10RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	while ..LambdaParamWithDefault(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -7589,11 +7489,7 @@ Method LambdaParameters2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	while ..LambdaParamNoDefault(subElement,.addedElement)  {
 		;
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -7605,11 +7501,7 @@ Method LambdaParameters3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	while ..LambdaParamWithDefault(subElement,.addedElement)  {
 		;
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -7642,11 +7534,7 @@ Method LambdaParameters5RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	while ..LambdaParamWithDefault(subElement,.addedElement)  {
 		;
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -7680,11 +7568,7 @@ Method LambdaParameters7RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	while ..LambdaParamNoDefault(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -7696,11 +7580,7 @@ Method LambdaParameters8RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	while ..LambdaParamWithDefault(subElement,.addedElement)  {
 		;
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -7823,11 +7703,7 @@ Method LambdaSlashNoDefault2RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef s
 	while ..LambdaParamNoDefault(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -7861,11 +7737,7 @@ Method LambdaSlashNoDefault4RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef s
 	while ..LambdaParamNoDefault(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -7955,11 +7827,7 @@ Method LambdaSlashWithDefault2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRe
 	while ..LambdaParamNoDefault(subElement,.addedElement)  {
 		;
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -7972,11 +7840,7 @@ Method LambdaSlashWithDefault3RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef
 	while ..LambdaParamWithDefault(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -8009,11 +7873,7 @@ Method LambdaSlashWithDefault5RepZero(ParentElement As PXW.DEV.BNF.Element, ByRe
 	while ..LambdaParamNoDefault(subElement,.addedElement)  {
 		;
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -8026,11 +7886,7 @@ Method LambdaSlashWithDefault6RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef
 	while ..LambdaParamWithDefault(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -8122,11 +7978,7 @@ Method LambdaStarEtc2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	while ..LambdaParamMaybeDefault(subElement,.addedElement)  {
 		;
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -8160,11 +8012,7 @@ Method LambdaStarEtc4RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	while ..LambdaParamMaybeDefault(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -8786,11 +8634,7 @@ Method MatchStmt2RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	while ..CaseBlock(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -9211,11 +9055,7 @@ Method NoteqBitwiseOr2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	if ..addPunctuation(subElement,"!=")  {
 		set done=1 ; end compileRules
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -9913,11 +9753,7 @@ Method Parameters10RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	while ..ParamWithDefault(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -9950,11 +9786,7 @@ Method Parameters2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	while ..ParamNoDefault(subElement,.addedElement)  {
 		;
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -9966,11 +9798,7 @@ Method Parameters3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	while ..ParamWithDefault(subElement,.addedElement)  {
 		;
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -10003,11 +9831,7 @@ Method Parameters5RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	while ..ParamWithDefault(subElement,.addedElement)  {
 		;
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -10041,11 +9865,7 @@ Method Parameters7RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	while ..ParamNoDefault(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -10057,11 +9877,7 @@ Method Parameters8RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	while ..ParamWithDefault(subElement,.addedElement)  {
 		;
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -10472,11 +10288,7 @@ Method Primary1Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	} elseif ..Atom(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	$$$DEBUGMethodEnd
 	quit ok
 }
@@ -10941,11 +10753,7 @@ Method ShiftExpr1Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	} elseif ..Sum(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	$$$DEBUGMethodEnd
 	quit ok
 }
@@ -11447,11 +11255,7 @@ Method SingleTarget1Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	} elseif ..SingleTarget2Or(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	$$$DEBUGMethodEnd
 	quit ok
 }
@@ -11542,11 +11346,7 @@ Method SlashNoDefault2RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	while ..ParamNoDefault(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -11580,11 +11380,7 @@ Method SlashNoDefault4RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	while ..ParamNoDefault(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -11674,11 +11470,7 @@ Method SlashWithDefault2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	while ..ParamNoDefault(subElement,.addedElement)  {
 		;
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -11691,11 +11483,7 @@ Method SlashWithDefault3RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	while ..ParamWithDefault(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -11728,11 +11516,7 @@ Method SlashWithDefault5RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	while ..ParamNoDefault(subElement,.addedElement)  {
 		;
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -11745,11 +11529,7 @@ Method SlashWithDefault6RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	while ..ParamWithDefault(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -12218,11 +11998,7 @@ Method StarEtc2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	while ..ParamMaybeDefault(subElement,.addedElement)  {
 		;
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -12255,11 +12031,7 @@ Method StarEtc4RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	while ..ParamMaybeDefault(subElement,.addedElement)  {
 		;
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -12293,11 +12065,7 @@ Method StarEtc6RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	while ..ParamMaybeDefault(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -12424,11 +12192,7 @@ Method StarExpressions2RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	while ..StarExpressions3Sub(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -12861,11 +12625,7 @@ Method StarTargets4RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	while ..StarTargets5Sub(subElement,.addedElement)  {
 		;
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=1 /* nothing found is ok in RZ */
-	}
+	set ok=1
 	quit ok
 }
 
@@ -13015,11 +12775,7 @@ Method StarTargetsTupleSeq2RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	while ..StarTargetsTupleSeq3Sub(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -13254,11 +13010,7 @@ Method Statements1RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	while ..Statement(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -13308,11 +13060,7 @@ Method String1Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	if ..String(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	$$$DEBUGMethodEnd
 	quit ok
 }
@@ -13359,11 +13107,7 @@ Method Strings1RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	while ..Strings2Sub(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -13494,11 +13238,7 @@ Method Sum1Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	} elseif ..Term(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	$$$DEBUGMethodEnd
 	quit ok
 }
@@ -13679,11 +13419,7 @@ Method TPrimary1Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	} elseif ..TPrimary10Or(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	$$$DEBUGMethodEnd
 	quit ok
 }
@@ -14029,11 +13765,7 @@ Method Term1Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	} elseif ..Factor(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	$$$DEBUGMethodEnd
 	quit ok
 }
@@ -14231,11 +13963,7 @@ Method TryStmt3RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	while ..ExceptBlock(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -14269,11 +13997,7 @@ Method TryStmt5RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	while ..ExceptStarBlock(subElement,.addedElement)  {
 		set done=1
 	}
-	if done {
-		set ok=1
-	} else {
-		set ok=0 ; normal rollback
-	}
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 

@@ -316,14 +316,14 @@ Method compileQuickCheck(Method As %Dictionary.MethodDefinition, RulesElement As
     }
 }
 
-Method compileMethodStart(Method As %Dictionary.MethodDefinition, indent As %Integer, needsPath As %Boolean = 0, needsTransation As %Boolean = 1, needsDebug As %Boolean = 1,needsDone as %Boolean = 1)
+Method compileMethodStart(Method As %Dictionary.MethodDefinition, indent As %Integer, needsPath As %Boolean = 0, needsTransaction As %Boolean = 1, needsDebug As %Boolean = 1,needsDone as %Boolean = 1)
 {
     #define WRITE(%code) $$$WRITENOLINE(Method,%code)
     #define WRITECR(%code) $$$WRITELINE(Method,%code)
     
     If needsDebug $$$WRITECR($$$Tab(indent)_"$$$DEBUGMethodBegin")
     If needsPath $$$WRITECR($$$Tab(indent)_"$$$BNFPATH")
-	If needsTransation {
+	If needsTransaction {
         $$$WRITECR($$$Tab(indent)_"$$$BNFSTART(subElement)")
     } Else {
         $$$WRITECR($$$Tab(indent)_"set subElement=ParentElement")
@@ -336,12 +336,12 @@ Method compileMethodStart(Method As %Dictionary.MethodDefinition, indent As %Int
     }
 }
 
-Method compileMethodEnd(Method As %Dictionary.MethodDefinition, indent As %Integer, rollbackReturns As %String = "0", needsTransation As %Boolean = 1, needsDebug As %Boolean = 1, copyMode As %Boolean = 0)
+Method compileMethodEnd(Method As %Dictionary.MethodDefinition, indent As %Integer, rollbackReturns As %String = "0", needsTransaction As %Boolean = 1, needsDebug As %Boolean = 1, copyMode As %Boolean = 0)
 {
     #define WRITE(%code) $$$WRITENOLINE(Method,%code)
     #define WRITECR(%code) $$$WRITELINE(Method,%code)
-
-	If needsTransation {
+    ;zw Method,indent,rollbackReturns,needsTransaction,needsDebug,copyMode
+	If needsTransaction {
         $$$WRITECR($$$Tab(indent)_"if done {")
         If copyMode=0 $$$WRITECR($$$Tab(indent+1)_"$$$BNFCOMMIT(subElement,ParentElement)")
         If copyMode=1 $$$WRITECR($$$Tab(indent+1)_"$$$BNFCOMMITCOPY(subElement,ParentElement)")

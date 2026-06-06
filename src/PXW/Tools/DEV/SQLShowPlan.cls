@@ -60,6 +60,7 @@ ClassMethod WriteMainRight(ByRef scratch)
 ClassMethod GetMainRightTitle() As %String
 {
     Quit "Plan"
+    &sql(select * from pxw_xref.lastupdateddetails)
 }
 
 ClassMethod WriteSQLPlan(sql As %String, Output modules)
@@ -68,9 +69,12 @@ ClassMethod WriteSQLPlan(sql As %String, Output modules)
 	; enquote quotes
 	Set sqlencode=sql
 	; MOVE THIS ALL TO THE INTERFACE
-    Set plansql="SELECT %SYSTEM.QUERY_PLAN(?) as XML "
+    Set plansql="SELECT %SYSTEM.QUERY_PLAN(?,,,,,case when $piece($piece($zversion,') ',2),' ',1)>'2026' then ? else null end) as XML "
+    set qual="{""format"":""LINEAR-XML""}"
+    ;set qual="{""format"":""INLINE-XML""}"
     ;s plansql="EXPLAIN "_sql
 	Set params($INCREMENT(params))=sqlencode
+	Set params($INCREMENT(params))=qual
     Set interface=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)
 	Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(interface.AtelierSettings.ServerName,plansql,.obj,params...)
     If $$$ISERR(qsc) {
