@@ -4,6 +4,8 @@ Class PXW.DEV.BNF.Run.ClassDefinition Extends PXW.DEV.BNF.GEN.ClassDefinition
 /// Set to CDEF, COS
 Property commentMode As %String [ InitialExpression = "CDEF" ];
 
+property classLanguage as %String [ InitialExpression = "objectscript" ];
+
 /* properties that are reset on every member */
 Property language As %String;
 
@@ -24,7 +26,6 @@ Parameter keywordAtomType = "CDEFKeyword";
 **********************************************************************/
 Method cheese(element As PXW.DEV.Element) As %Boolean
 {
-
     If ..nextStage=0 {
          Set ok=..UdlStatement(element)
          Set ..nextStage=1
@@ -127,7 +128,7 @@ Method peekKeyword() As %String
 ***************************************************************************************/
 Method OneClassmember(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
-    Set ..language="objectscript"
+    Set ..language=..classLanguage
     Set ..codemode=""
 
 	Set ok=##super(ParentElement,.subElement)
@@ -1094,6 +1095,14 @@ Method XmlCdataText(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
  Things that alter the state of the parser as we go
 ***************************************************************************************/
 Method ClassLanguageName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+{
+	Set ok=##super(ParentElement,.subElement)
+    If ok=1 {
+        Set ..classLanguage=subElement.ToString(0)
+    }
+    Quit ok
+}
+Method MethodLanguageName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
 	Set ok=##super(ParentElement,.subElement)
     If ok=1 {

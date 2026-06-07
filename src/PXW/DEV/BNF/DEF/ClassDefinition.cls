@@ -127,7 +127,7 @@ class_attribute                     ::= attribute_Abstract
                                         | attribute_GeneratedBy
                                         | attribute_Hidden
                                         | attribute_Inheritance
-                                        | attribute_Language
+                                        | attribute_Class_Language
                                         | attribute_LegacyInstanceContext
                                         | attribute_MemberSuper 
                                         | attribute_NoContext
@@ -189,7 +189,7 @@ method_attribute                    ::= attribute_Abstract
                                         | attribute_ForceGenerate
                                         | attribute_GenerateAfter
                                         | attribute_Internal
-                                        | attribute_Language
+                                        | attribute_Method_Language
                                         | attribute_NoContext
                                         | attribute_NotInheritable
                                         | attribute_PlaceAfter
@@ -209,6 +209,7 @@ method_attribute                    ::= attribute_Abstract
                                         | attribute_SQLProc
                                         | attribute_WebMethod
                                         | attribute_ZenMethod
+                                        | attribute_requires
 
 class_client_method                  ::= 'clientmethod' method_name '(' [ formal_spec_list ] ')' [ 'as' type_class_reference ] [ method_attribute_list ] '{' javascript_code_block '}'
 
@@ -424,7 +425,7 @@ trigger_attribute                   ::= attribute_CodeMode
                                         | attribute_Final
                                         | attribute_ForEach
                                         | attribute_Internal
-                                        | attribute_Language
+                                        | attribute_Method_Language
                                         | attribute_NewTable
                                         | attribute_OldTable
                                         | attribute_Order
@@ -467,7 +468,7 @@ attribute_Cardinality               ::= 'cardinality' '=' attribute_Cardinality_
 attribute_Cardinality_type          ::= 'one' | 'many' | 'parent' | 'children'
 
 attribute_ClassType                 ::= 'classtype' '=' class_type_name
-class_type_name                     ::= 'datatype' | 'persistent' | 'serial' | 'stream' | 'view' | 'index' | 'donotuse' | 'dynamic' | '""'
+class_type_name                     ::= 'datatype' | 'persistent' | 'serial' | 'stream' | 'view' | 'index' | 'donotuse' | 'dynamic' | 'literal' | '""'
 
 attribute_ClientDataType            ::= 'clientdatatype' '=' client_data_type_name
 client_data_type_name               ::= 'bigint' | 'binary' | 'binarystream' | 'boolean' | 'characterstream' | 'currency' | 'date' | 'decimal' | 'double' | 'fdate' | 'ftimestamp'
@@ -536,8 +537,10 @@ inheritance_direction               ::= 'left' | 'right'
 
 attribute_Inverse                   ::= 'inverse' '=' identifier
 
-attribute_Language                  ::= 'language' '=' class_language_name
+attribute_Class_Language           ::= 'language' '=' class_language_name
+attribute_Method_Language           ::= 'language' '=' method_language_name
 class_language_name                 ::= 'cache' | 'basic' |  'javascript' | 'java' | 'mvbasic' | 'tsql' | 'cpp' | 'objectscript' | 'python' 
+method_language_name                ::= 'cache' | 'basic' |  'javascript' | 'java' | 'mvbasic' | 'tsql' | 'cpp' | 'objectscript' | 'python' 
 
 attribute_LegacyInstanceContext     ::= 'legacyinstancecontext'
 
@@ -591,6 +594,9 @@ attribute_PublicList                ::= 'publiclist' '=' ( ('(' identifier (',' 
 attribute_ReadOnly                  ::= 'readonly'
 
 attribute_Required                  ::= 'required'
+
+attribute_Requires                  ::= 'requires' '=' privilegelist
+privilegelist                       ::= string
 
 attribute_ReturnResultSets          ::= 'returnresultsets'
 

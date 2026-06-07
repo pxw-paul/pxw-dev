@@ -1189,6 +1189,17 @@ Method CosDirective(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
     Quit retok
 }
 
+///  dim_expression ::= expression
+/// summary=C
+Method DimExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+    set oldmode=..stopAtEOL
+    set ..stopAtEOL=0
+    set ok=##super(ParentElement,.subElement)
+    set ..stopAtEOL=oldmode
+    quit ok
+}
+
 /// command_list_eol ::= cos_command ( cos_command )* /* needs to stop at end of line */
 ///  summary=F&(F)
 ///  type=group
@@ -1281,14 +1292,10 @@ Method PostConditional(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
     Quit retok
 }
 
-/// write_format_expression ::= write_bang_expression
-/// | write_hash_expression
-/// | write_pos_expression
-/// | write_mnemonic_expression
-///  summary=F|F|F|F
-///  type=group
-///  not=0
-Method WriteFormatExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+
+///  write_control_expression_list ::= write_control_expression (write_control_expression)*
+/// summary=C&(?4punctuation:4?)*
+Method WriteControlExpressionList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
     Set oldmode=..stopAtWhitespace
     Set ..stopAtWhitespace=1
@@ -1299,6 +1306,18 @@ Method WriteFormatExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
     Quit retok
 }
 
+/*
+Method WriteFormatExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+{
+    Set oldmode=..stopAtWhitespace
+    Set ..stopAtWhitespace=1
+    Set ..needsWScheck=0
+    Set retok=##super(ParentElement,.subElement)
+    Set ..stopAtWhitespace=oldmode
+    Set ..needsWScheck=1
+    Quit retok
+}
+*/
 /// This is used by SQL compute, it does NOT allow line labels, it does allow {*} variables
 Method CosCodeBlockSql(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {

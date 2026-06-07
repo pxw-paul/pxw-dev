@@ -23,7 +23,7 @@ Method WriteStyles()
 		--bgHilite: light-dark( #fff793, #6b6b1d);
 		--bgWarning: light-dark( #ffd893, #f3a488);
 		--bgError: light-dark( #ffb3b3, #9f3d3d);
-		--bgGood: light-dark( #b3ffb3,225922);
+		--bgGood: light-dark( #b3ffb3, #225922);
 
 		/* foreground colours: ;*/
 		--fgNormal:  light-dark(black,white);
@@ -40,6 +40,9 @@ Method WriteStyles()
 		--fgCodeNumber: light-dark( #B4955C, #D4B57C); 
 		--fgComment: light-dark( #2e8122, #378D2A);
 		--fgInlineOption: light-dark(silver,silver);
+		--fgWarning: light-dark( #000000, #000000);
+		--fgError: light-dark( #000000, #ffffff);
+		--fgGood: light-dark( #000000, #ffffff);
 
         --borderNormal:  light-dark(silver,silver);
         --borderAlternate1:  light-dark(silver,silver);
@@ -196,13 +199,13 @@ Method WriteStyles()
 	}
 	
 	.hiliterow td { background-color: var(--bgHilite); }
-	.goodrow td { background-color: var(--bgGood); }
-	.warningrow td { background-color: var(--bgWarning); }
-	.errorrow td { background-color: var(--bgError); }
+	.goodrow td { background-color: var(--bgGood); color: var(--fgGood); }
+	.warningrow td { background-color: var(--bgWarning);  color: var(--fgWarning); }
+	.errorrow td { background-color: var(--bgError);  color: var(--fgError);  }
 	.hilitedata { background-color: var(--bgHilite); }
-	.gooddata  { background-color: var(--bgGood); }
-	.warningdata { background-color: var(--bgWarning); }
-	.errordata { background-color: var(--bgError); }
+	.gooddata  { background-color: var(--bgGood);  color: var(--fgGood); }
+	.warningdata { background-color: var(--bgWarning);  color: var(--fgWarning); }
+	.errordata { background-color: var(--bgError);  color: var(--fgError); }
 	
 	.hiliteSET1 { background-color: hsl(0, 100%, 40%); color:white; } 	 .hiliteGET1 { background-color: hsl(0, 100%, 25%); color:white; } 
 	.hiliteSET2 { background-color: hsl(45, 100%, 40%); color:white; }  .hiliteGET2 { background-color: hsl(45, 100%, 25%); color:white; } 

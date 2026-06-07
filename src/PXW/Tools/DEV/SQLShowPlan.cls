@@ -60,7 +60,6 @@ ClassMethod WriteMainRight(ByRef scratch)
 ClassMethod GetMainRightTitle() As %String
 {
     Quit "Plan"
-    &sql(select * from pxw_xref.lastupdateddetails)
 }
 
 ClassMethod WriteSQLPlan(sql As %String, Output modules)

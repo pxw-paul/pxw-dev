@@ -349,7 +349,7 @@ primary ::= anonymous_Function
     | ( "Import" '(' single_Expression ')' )                                      /* ImportExpression */
     | ( yield_Statement )                                                       /* YieldExpression          // ECMAScript 6 */
     | ("This" (member_expression_part)* )                                                               /* ThisExpression */
-    | macro
+    | (macro (member_expression_part)* )
     | (function (member_expression_part)* )                                                         /* IdentifierExpression */
     | (identifier (member_expression_part)* )                                                         /* IdentifierExpression */
     | "Super"                                                                /* SuperExpression */
