@@ -214,7 +214,7 @@ Method SaveSQLXref(ItemType As %String, ItemKey1 As %String, ItemKey2 As %String
 	Set xref.CalledByCommand=CalledByCommand
 	Set xref.ItemType=ItemType
 	Set xref.ItemKey1=ItemKey1
-	Set xref.ItemKey2=ItemKey2
+	Set xref.ItemKey2=$tr(ItemKey2,$c(34),"") ; remove "" from sql names
 	If 'xref.AlreadyExists() {
 		Set sc=xref.%Save()
 		If $$$ISERR(sc) {

@@ -1133,6 +1133,7 @@ Method writeSQLWhereClause(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.C
 
 Method writeSQLDerivedColumn(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="DerivedColumn")
 {
+    #define colname(%cn) $TR($$$UPPER(%cn),$c(34),"")
     ; work out what this column is called
     ; either from the AS clause or if its just referencing 
     ; a single column, that column is the name
@@ -1148,6 +1149,7 @@ Method writeSQLDerivedColumn(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
         Set colnameE=asclause.findFirstElementByType("ColumnName",0)
         If $ISOBJECT(colnameE) {
             Set colname="col"_$$$UPPER(colnameE.ToString(0))
+            Do ..wrapElementHTML(colnameE,"<span onclick=""HiliteSets('"_$$$colname(colname)_"');"">","</span>")
         }
     } Else {
         Kill colrefs
@@ -1160,10 +1162,10 @@ Method writeSQLDerivedColumn(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
             }
         }
     }
-    If ..BookMark'="",$$$UPPER(colname)=$$$UPPER("col"_..BookMark) {
+    If ..BookMark'="",$$$colname(colname)=$$$colname("col"_..BookMark) {
         Set classtxt="class="""_$$$classHilite_""""
     }
-    Do ..wrapElementHTML(col,"<span "_classtxt_" fetchid="""_$$$UPPER(colname)_""">","</span>")        
+    Do ..wrapElementHTML(col,"<span "_classtxt_" fetchid="""_$$$colname(colname)_""">","</span>")        
     $$$DEBUGMethodEnd
     Quit ""
 }
@@ -1195,6 +1197,8 @@ Method writeSQLProgram(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compi
 Method writeSQLSelectCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="SelectCommand")
 {
     #dim subAnalyser as PXW.DEV.BNF.Analyse.SQL
+    #define colname(%cn) $TR($$$UPPER(%cn),$c(34),"")
+
     $$$DEBUGMethodBegin
     If $ISOBJECT(..SqlProgramAnalyser) {
         Set sqlanalyse=$GET(..SqlProgramAnalyser.SelectCommandAnalysis(+element))
@@ -1224,7 +1228,7 @@ Method writeSQLSelectCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
             If fulltable'="" {
                 Do ..FollowImplicitJoins(cref,fulltable)
             } Else {
-                Do ..wrapElementHTML(columnNameE,"<span class="""_$$$classObjectMember_""" title='still unable to determine class, possibly because of subquery' fetchid="""_$$$UPPER(colname)_""" onclick=""HiliteSets('"_$$$UPPER(colname)_"');"">","</span>")
+                Do ..wrapElementHTML(columnNameE,"<span class="""_$$$classObjectMember_""" title='still unable to determine class, possibly because of subquery' fetchid="""_$$$colname(colname)_""" onclick=""HiliteSets('"_$$$colname(colname)_"');"">","</span>")
             }
         }
         If $ISOBJECT(aliasNameE) {
