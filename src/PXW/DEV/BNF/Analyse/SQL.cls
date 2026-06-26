@@ -364,13 +364,18 @@ Method FindTableSub(cref As PXW.DEV.Element, ByRef tables) As %String [ private,
         Set a2=$ORDER(tables(""),1,table) 
         ; confirme that this is a valid alias
         ; eg on a column that has a subquery it might be refering to something in the parent
-        If $ISOBJECT(..ClassServer) {
-            Set class=..ClassServer.GetClassNameFromTableName(table,..This)   
-            Set pname=..ClassServer.GetPropertyNameSQL(class,columnname)
-            If pname'="" {
-                Set tablealias=a2
-            }            
-        }
+        ; note that when there is just 1 table in the query * means all columns in that table so its a valid fieldname
+        If a2'="",$ISOBJECT(..ClassServer){
+            if columnname="*" {
+                set tablealias=a2
+            } else {
+                Set class=..ClassServer.GetClassNameFromTableName(table,..This)   
+                Set pname=..ClassServer.GetPropertyNameSQL(class,columnname)
+                If pname'="" {
+                    Set tablealias=a2
+                }     
+            }       
+        } 
     }
 
     ; if still not found then try all the tables looking for one that has this field
