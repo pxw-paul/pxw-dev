@@ -24,6 +24,12 @@ Property WithClauseAnalysis As PXW.DEV.BNF.Analyse.SQL [ MultiDimensional ];
 /// Keyed by alias
 Property tableReferences As PXW.DEV.Element [ MultiDimensional ];
 
+/// Keyed by alias
+Property tableNames As PXW.DEV.Element [ MultiDimensional ];
+
+/// Keyed by alias
+Property parentTableNames As PXW.DEV.Element [ MultiDimensional ];
+
 /// keyed by alias
 Property withReferences As PXW.DEV.Element [ MultiDimensional ];
 
@@ -85,26 +91,28 @@ Method checkElement(element As PXW.DEV.Element)
     }
 }
 
-Method SqlProgramCheck(element As PXW.DEV.Element)
+Method SqlProgramCheck(element As PXW.DEV.Element,parentAnalyse As PXW.DEV.BNF.Analyse.SQL="")
 {
     #dim a as PXW.DEV.Atom
     If element.type="WithCommand" {
         Do ..WithCommand(element)
     }
     If element.type="SelectCommand" {
-        set sqlanalyse=..%New(..ClassServer)
+        Set sqlanalyse=..%New(..ClassServer)
         Set sqlanalyse.This=..This
         Merge sqlanalyse.withReferences=..withReferences
+        if $isobject(parentAnalyse) merge sqlanalyse.parentTableNames=parentAnalyse.tableNames
         Do sqlanalyse.checkElement(element)
         Set ..SelectCommandAnalysis(+element)=sqlanalyse
+        set parentAnalyse=sqlanalyse
     }
-    set akey=""
+    Set akey=""
 	For  {
 		Set part=element.partsGetNext(.akey)
 		Quit:akey=""
 		
 	    If part.IsElement {
-			Do ..SqlProgramCheck(part)
+			Do ..SqlProgramCheck(part,parentAnalyse)
 		} ElseIf part.IsAtom {
             ;
 		}
@@ -160,6 +168,7 @@ Method SelectCommand(element As PXW.DEV.Element)
                 If $ISOBJECT(tablealiasE) Set tablealias=tablealiasE.ToString(0)
                 Set tables(tablealias)=tablename
                 Set ..tableReferences(tablealias)=tref
+                Set ..tableNames(tablealias)=tablename
             }
         }
 
@@ -241,15 +250,15 @@ Method InsertCommand(element As PXW.DEV.Element)
     #dim from as PXW.DEV.Element
     Set tableE=element.findFirstElementByType("DirectTable",0)
     If $ISOBJECT(tableE) {
-        set tablenameE=tableE.findFirstElementByType("TableName",0)
+        Set tablenameE=tableE.findFirstElementByType("TableName",0)
         Set table=tablenameE.ToString(0)
-        do element.findElementsXPath("InsertMethod/InsertValuesList/UpdateColumns/ColumnName",.columnelements)
-        do element.findElementsXPath("InsertMethod/InsertMultirow/UpdateColumns/ColumnName",.columnelements)
+        Do element.findElementsXPath("InsertMethod/InsertValuesList/UpdateColumns/ColumnName",.columnelements)
+        Do element.findElementsXPath("InsertMethod/InsertMultirow/UpdateColumns/ColumnName",.columnelements)
         If $ISOBJECT($GET(columnelements)) {
             For ci=1:1:columnelements.Count() {
                 Set columnnameE=columnelements.GetAt(ci)
                 Set columnname=columnnameE.ToString(0)
-                Set fulltable=$s($isobject(..ClassServer):..ClassServer.GetFullTableName(table,..This),1:table)
+                Set fulltable=$SELECT($ISOBJECT(..ClassServer):..ClassServer.GetFullTableName(table,..This),1:table)
                 Do ..SetColumnReference(columnnameE,fulltable,columnname)
                 
             }
@@ -262,18 +271,18 @@ Method UpdateCommand(element As PXW.DEV.Element)
     #dim from as PXW.DEV.Element
     Set tableE=element.findFirstElementByType("DirectTable",0)
     If $ISOBJECT(tableE) {
-        set tablenameE=tableE.findFirstElementByType("TableName",0)
+        Set tablenameE=tableE.findFirstElementByType("TableName",0)
         Set table=tablenameE.ToString(0)
-        do element.findElementsXPath("UpdateSet/ColumnReference/ColumnName",.columnelements)
-        set whereE=element.findFirstElementByType("WhereClause")
-        if $isobject(whereE) {
-            do ..findElementsByTypeNoSubQueries(whereE,"ColumnName",.columnelements)
+        Do element.findElementsXPath("UpdateSet/ColumnReference/ColumnName",.columnelements)
+        Set whereE=element.findFirstElementByType("WhereClause")
+        If $ISOBJECT(whereE) {
+            Do ..findElementsByTypeNoSubQueries(whereE,"ColumnName",.columnelements)
         }
         If $ISOBJECT($GET(columnelements)) {
             For ci=1:1:columnelements.Count() {
                 Set columnnameE=columnelements.GetAt(ci)
                 Set columnname=columnnameE.ToString(0)
-                Set fulltable=$s($isobject(..ClassServer):..ClassServer.GetFullTableName(table,..This),1:table)
+                Set fulltable=$SELECT($ISOBJECT(..ClassServer):..ClassServer.GetFullTableName(table,..This),1:table)
                 Do ..SetColumnReference(columnnameE,fulltable,columnname)              
             }
         }
@@ -323,9 +332,25 @@ ClassMethod findElementsByTypeNoSubQueries(Object As PXW.DEV.Element, Type As %S
 
 /// Pass in an element of type ColumnReference, and the known tables keyed by alias
 /// returns the full table name of the column
-Method FindTable(cref As PXW.DEV.Element, ByRef tables) As %String
-{
+Method FindTable(cref As PXW.DEV.Element, ByRef tables) As %String {
     If '$ISOBJECT(cref) Quit ""
+    Set table=..FindTableSub(cref,.tables)
+    If table="" {
+        ; Here we are dealing with a query like this:
+        ; SELECT res.Code ,
+        ;        (select Code from f1_data.race where id=res.Race)
+        ; FROM f1_data.result as res
+        ; 
+        ; this makes sure res.Race is identified correctly       
+        Merge parenttables=..parentTableNames
+        If $DATA(parenttables)=10 {
+            Set table=..FindTableSub(cref,.parenttables)
+        }
+    }
+    Quit table
+}
+Method FindTableSub(cref As PXW.DEV.Element, ByRef tables) As %String [ private, internal]
+{
 
     Set columnname="",tablealias=""
     Set tablealiasE=cref.findFirstElementByType("AliasName")
@@ -335,7 +360,19 @@ Method FindTable(cref As PXW.DEV.Element, ByRef tables) As %String
 
     ; if there is no alias and there is 1 table only then we can use that as the alias
     ; note than on SUB SELECTS the parent tables are available.
-    If tablealias="",$ORDER(tables(""))=$ORDER(tables(""),-1) Set tablealias=$ORDER(tables("")) 
+    If tablealias="",$ORDER(tables(""))=$ORDER(tables(""),-1) {
+        Set a2=$ORDER(tables(""),1,table) 
+        ; confirme that this is a valid alias
+        ; eg on a column that has a subquery it might be refering to something in the parent
+        If $ISOBJECT(..ClassServer) {
+            Set class=..ClassServer.GetClassNameFromTableName(table,..This)   
+            Set pname=..ClassServer.GetPropertyNameSQL(class,columnname)
+            If pname'="" {
+                Set tablealias=a2
+            }            
+        }
+    }
+
     ; if still not found then try all the tables looking for one that has this field
     ; note the array will have " " as the first key, which means if this is a sub select then likely the first one will be the current table
     ; this solves solves the issue of sql like this:

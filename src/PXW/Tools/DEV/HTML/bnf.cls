@@ -1115,6 +1115,7 @@ Method writeSQLWithCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.C
     Quit ""
 }
 
+/*
 Method writeSQLWithClause(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="WithClause")
 {
     $$$DEBUGMethodBegin
@@ -1122,6 +1123,7 @@ Method writeSQLWithClause(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Co
     $$$DEBUGMethodEnd
     Quit ""
 }
+*/
 
 Method writeSQLWhereClause(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="WhereClause")
 {

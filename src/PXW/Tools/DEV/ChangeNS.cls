@@ -40,6 +40,13 @@ ClassMethod WriteMainBody()
     Write "</tbody></table>"
 }
 
+/// Output 1 Anchor tag for each option in the navigation. 
+/// Use the scratch variable for anything you want to get from BODY.
+ClassMethod WriteNav(ByRef scratch)
+{
+	d ##class(PXW.Tools.Index).WriteNav()
+}
+
 ClassMethod HREFTo(NewServer As %String) As %String
 {
     Set:$DATA(%NS) ons=%NS

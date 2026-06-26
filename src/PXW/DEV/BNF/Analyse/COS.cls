@@ -287,8 +287,10 @@ Method checkCosSetItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compi
 			; its an array or some sort of object.property, so its a var being used
 			Set varname=varE.FirstAtom().ToString(0)
 			Set ..VariablesUsed(varname)=varE
-			Set currentStringVars(varname)=varE
-			Set currentStringVarsArray(varname)=varE
+			; if its very complicated (eg object.property) then we will not deal with string tracking for the moment (its doing my head in)
+			;Set currentStringVars(varname)=varE
+			;Set currentStringVarsArray(varname)=varE
+			
 		}
 	}
 
