@@ -43,27 +43,29 @@ Method %OnNew(ClassServer As PXW.DEV.Dictionary.ClassDefinitionObject = "") As %
 }
 
 /// Full table should be full_table.name 
-Method SetColumnReference(element As PXW.DEV.Element, fulltable As %String, fullfieldname As %String)
+/// columnNumber is only used where the order is important (and known) such as INSERT (col1,col2) ...
+Method SetColumnReference(element As PXW.DEV.Element, fulltable As %String, fullfieldname As %String, columnNumber as %Integer=0)
 {
-    Set ..columnReferences(+element)=$LISTBUILD(fulltable,fullfieldname)
+    Set ..columnReferences(+element)=$LISTBUILD(fulltable,fullfieldname,columnNumber)
     Set ..columnReferencesElement(+element)=element
 }
 
-Method GetColumnReference(element As PXW.DEV.Element, Output fulltable As %String, Output fullfieldname As %String)
+Method GetColumnReference(element As PXW.DEV.Element, Output fulltable As %String, Output fullfieldname As %String, Output columnNumber as %Integer)
 {
     Set list=$GET(..columnReferences(+element))
     Set fulltable=$LISTGET(list,1)
     Set fullfieldname=$LISTGET(list,2)
+    Set columnNumber=$LISTGET(list,3)
 }
 
-Method NextColumnReference(ByRef element As PXW.DEV.Element, Output fulltable As %String, Output fullfieldname As %String) As %Boolean
+Method NextColumnReference(ByRef element As PXW.DEV.Element, Output fulltable As %String, Output fullfieldname As %String, Output columnNumber as %Integer) As %Boolean
 {
     Set found=0
     Set key=+element
     Set key=$ORDER(..columnReferencesElement(key))
     If key'="" {
         Set element=$GET(..columnReferencesElement(key))
-        Do ..GetColumnReference(element,.fulltable,.fullfieldname)
+        Do ..GetColumnReference(element,.fulltable,.fullfieldname,.columnNumber)
         Set found=1
     }
     Quit found
@@ -259,7 +261,7 @@ Method InsertCommand(element As PXW.DEV.Element)
                 Set columnnameE=columnelements.GetAt(ci)
                 Set columnname=columnnameE.ToString(0)
                 Set fulltable=$SELECT($ISOBJECT(..ClassServer):..ClassServer.GetFullTableName(table,..This),1:table)
-                Do ..SetColumnReference(columnnameE,fulltable,columnname)
+                Do ..SetColumnReference(columnnameE,fulltable,columnname,ci)
                 
             }
         }

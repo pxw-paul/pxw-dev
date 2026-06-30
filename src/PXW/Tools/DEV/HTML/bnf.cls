@@ -837,6 +837,20 @@ Method writeCOSClassExpression(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.B
     Quit ""
 }
 
+Method writeCOSSuperExpression(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="SuperExpression")
+{
+    $$$DEBUGMethodBegin
+    ; ##super()
+    set superA=element.FirstAtom()
+    if $isobject(superA) {
+        set cls=..ClassServer.GetMethodOverrides(..This_"||"_..ThisMethod)
+        do ..wrapAtomHTML(superA,"<a class="""_$$$classObjectMember_""" href="""_..HREFToClass(cls,..ThisMethod)_""">","</a>")
+    }
+    $$$DEBUGMethodEnd
+    Quit ""
+}
+
+
 Method writeCOSSpecialSystem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="SpecialSystem")
 {
     #dim chainE as PXW.DEV.Element
@@ -1253,13 +1267,26 @@ Method writeSQLInsertCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
     Set sqlanalyse.This=..This
     Do sqlanalyse.checkElement(element)
     Set columnNameE=""
-    While sqlanalyse.NextColumnReference(.columnNameE,.fulltable,.fieldname) {
+    While sqlanalyse.NextColumnReference(.columnNameE,.fulltable,.fieldname,.colnum) {
         If fulltable'="" {
-            Do ..wrapElementHTML(columnNameE,"<a class="""_$$$classObjectMember_""" href="""_..HREFToSQLTable(fulltable,columnNameE.ToString(0))_""">","</a>")            
+            Do ..wrapElementHTML(columnNameE,"<a title=""Col "_colnum_""" class="""_$$$classObjectMember_""" href="""_..HREFToSQLTable(fulltable,columnNameE.ToString(0))_""">","</a>")
+            set colidx(colnum)=columnNameE.ToString(0)
         } Else {
             ; should always be a name
         }
-    }    
+    }  
+    ; only one of these xpath searches will find anything
+    ; if they do find something it attempts to map to the columns above
+    k values
+    do element.findElementsXPath("InsertMethod/InsertValuesList/UpdateValues/SqlExpression",.values)
+    do element.findElementsXPath("InsertMethod/InsertMultirow/SelectCommand/SelectList/SelectSublist/DerivedColumn/SqlExpression",.values)
+    if $isobject(values) {
+        for i=1:1:values.Count() {
+            set valueE=values.GetAt(i)
+            do ..wrapElementHTML(valueE,"<span class=""SQLSection"" title=""Col "_i_" ("_$g(colidx(i))_")"">","</span>")
+            ;do ..wrapElementHTML(valueE,"<span class="""_$$$classLensOption_""">"_$g(colidx(i))_"=</span><span class=""SQLSection"" title=""Col "_i_" ("_$g(colidx(i))_")"">","</span>")
+        }
+    }
     $$$DEBUGMethodEnd
     Quit ""
 }
