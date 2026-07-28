@@ -3,7 +3,7 @@ Class PXW.DEV.BNF.GEN.ClassDefinition Extends PXW.DEV.BNF.super [ ProcedureBlock
 
 Parameter KeywordPattern = "1.A.(1""/"".A)";
 
-Parameter Keywords = "ABSTRACT,AFTER,ALIASES,ALPHAUP,ARRAY,AS,BASIC,BEFORE,BIGINT,BINARY,BINARYSTREAM,BIT,BITMAP,BITSLICE,BOOLEAN,BYREF,BYVAL,CACHE,CALCULATED,CALL,CARDINALITY,CASCADE,CHARACTERSTREAM,CHILDREN,CLASS,CLASSMETHOD,CLASSTYPE,CLIENTDATATYPE,CLIENTMETHOD,CLIENTNAME,CODE,CODEMODE,COLLATEDKEY,COMPILEAFTER,CONDITION,CONFIGVALUE,CONSTRAINT,COSEXPRESSION,CPP,CURRENCY,DATA,DATATYPE,DATE,DDLALLOWED,DECIMAL,DELETE,DELIMITED,DEPENDSON,DEPRECATED,DOCUMENT,DONOTUSE,DOUBLE,DYNAMIC,E,EMBEDDEDCLASS,ENCODED,ENUM,ENUMEDIT,EVENT,EXACT,EXPRESSION,EXTENDS,EXTENT,EXTERNALPROCNAME,FALSE,FDATE,FINAL,FLAGS,FMDATE,FMTIMESTAMP,FORCEGENERATE,FOREACH,FOREIGNKEY,FTIMESTAMP,GENERATEAFTER,GENERATEDBY,GENERATOR,GUID,HANDLE,HIDDEN,IDENTITY,IDKEY,IMPORT,INCLUDE,INCLUDEGENERATOR,INDEX,INHERITANCE,INITIALEXPRESSION,INSERT,INSERT/DELETE,INSERT/UPDATE,INSERT/UPDATE/DELETE,INTEGER,INTERNAL,INVERSE,JAVA,JAVASCRIPT,KEY,LANGUAGE,LEFT,LEGACYINSTANCECONTEXT,LIST,LITERAL,LONGVARBINARY,LONGVARCHAR,MANY,MEMBERSUPER,METHOD,MIMETYPE,MINUS,MULTIDIMENSIONAL,MVBASIC,MVDATE,MVR,NAME,NEWTABLE,NOACTION,NOCHECK,NOCONTEXT,NOEXTENT,NOT,NOTINHERITABLE,NULL,NUMERIC,OBJECTGENERATOR,OBJECTSCRIPT,ODBCTYPE,OF,OLDTABLE,ON,ONDELETE,ONE,ONUPDATE,ORDER,OUTPUT,OWNER,PARAMETER,PARENT,PERSISTENT,PLACEAFTER,PLUS,POSIXTIME,POSIXTS,PRIMARYKEY,PRIVATE,PROCEDUREBLOCK,PROJECTION,PROPERTY,PROPERTYCLASS,PUBLICLIST,PYTHON,QUERY,RCP,READONLY,REFERENCES,RELATIONSHIP,REQUIRED,RESULTSET,RETURNRESULTSETS,RIGHT,ROW,ROW/OBJECT,SCHEMASPEC,SERIAL,SERVERONLY,SETDEFAULT,SETNULL,SMALLINT,SOAPACTION,SOAPBINDINGSTYLE,SOAPBODYUSE,SOAPMESSAGENAME,SOAPNAMESPACE,SOAPREQUESTMESSAGE,SOAPTYPENAMESPACE,SPACE,SQLCATEGORY,SQLCOLUMNNUMBER,SQLCOMPUTECODE,SQLCOMPUTED,SQLCOMPUTEONCHANGE,SQLFIELDNAME,SQLLISTDELIMITER,SQLLISTTYPE,SQLNAME,SQLPROC,SQLROWIDNAME,SQLROWIDPRIVATE,SQLSTRING,SQLTABLENAME,SQLUPPER,SQLVIEW,SQLVIEWNAME,STATEMENT,STATUS,STORAGE,STORAGESTRATEGY,STREAM,STRING,STRUCT,SUBNODE,SYSTEM,TIME,TIMESTAMP,TINYINT,TRANSIENT,TRIGGER,TRUE,TRUNCATE,TSQL,TYPE,UNIQUE,UPDATE,UPDATE/DELETE,UPDATECOLUMNLIST,UPPER,VARBINARY,VARCHAR,VECTOR,VIEW,VIEWQUERY,WEBMETHOD,XDATA,XMLNAMESPACE,ZENMETHOD";
+Parameter Keywords = "ABSTRACT,AFTER,ALIASES,ALPHAUP,ARRAY,AS,BASIC,BEFORE,BIGINT,BINARY,BINARYSTREAM,BIT,BITMAP,BITSLICE,BOOLEAN,BYREF,BYVAL,CACHE,CALCULATED,CALL,CARDINALITY,CASCADE,CHARACTERSTREAM,CHILDREN,CLASS,CLASSMETHOD,CLASSTYPE,CLIENTDATATYPE,CLIENTMETHOD,CLIENTNAME,CODE,CODEMODE,COLLATEDKEY,COMPILEAFTER,CONDITION,CONFIGVALUE,CONSTRAINT,COSEXPRESSION,CPP,CURRENCY,DATA,DATATYPE,DATE,DDLALLOWED,DECIMAL,DELETE,DELIMITED,DEPENDSON,DEPRECATED,DOCUMENT,DONOTUSE,DOUBLE,DYNAMIC,E,EMBEDDEDCLASS,ENCODED,ENUM,ENUMEDIT,EVENT,EXACT,EXPRESSION,EXTENDS,EXTENT,EXTERNALPROCNAME,FALSE,FDATE,FINAL,FLAGS,FMDATE,FMTIMESTAMP,FORCEGENERATE,FOREACH,FOREIGNKEY,FTIMESTAMP,GENERATEAFTER,GENERATEDBY,GENERATOR,GUID,HANDLE,HIDDEN,IDENTITY,IDKEY,IMPORT,INCLUDE,INCLUDEGENERATOR,INDEX,INHERITANCE,INITIALEXPRESSION,INSERT,INSERT/DELETE,INSERT/UPDATE,INSERT/UPDATE/DELETE,INTEGER,INTERNAL,INVERSE,JAVA,JAVASCRIPT,KEY,LANGUAGE,LEFT,LEGACYINSTANCECONTEXT,LIST,LITERAL,LONGVARBINARY,LONGVARCHAR,MANY,MEMBERSUPER,METHOD,MIMETYPE,MINUS,MULTIDIMENSIONAL,MVBASIC,MVDATE,MVR,NAME,NEWTABLE,NOACTION,NOCHECK,NOCONTEXT,NOEXTENT,NOT,NOTINHERITABLE,NULL,NUMERIC,OBJECTGENERATOR,OBJECTSCRIPT,ODBCTYPE,OF,OLDTABLE,ON,ONDELETE,ONE,ONUPDATE,ORDER,OUTPUT,OWNER,PARAMETER,PARENT,PERSISTENT,PLACEAFTER,PLUS,POSIXTIME,POSIXTS,PRIMARYKEY,PRIVATE,PROCEDUREBLOCK,PROJECTION,PROPERTY,PROPERTYCLASS,PUBLICLIST,PYTHON,QUERY,RCP,READONLY,REFERENCES,RELATIONSHIP,REQUIRED,REQUIRES,RESULTSET,RETURNRESULTSETS,RIGHT,ROW,ROW/OBJECT,SCHEMASPEC,SERIAL,SERVERONLY,SETDEFAULT,SETNULL,SMALLINT,SOAPACTION,SOAPBINDINGSTYLE,SOAPBODYUSE,SOAPMESSAGENAME,SOAPNAMESPACE,SOAPREQUESTMESSAGE,SOAPTYPENAMESPACE,SPACE,SQLCATEGORY,SQLCOLUMNNUMBER,SQLCOMPUTECODE,SQLCOMPUTED,SQLCOMPUTEONCHANGE,SQLFIELDNAME,SQLLISTDELIMITER,SQLLISTTYPE,SQLNAME,SQLPROC,SQLROWIDNAME,SQLROWIDPRIVATE,SQLSTRING,SQLTABLENAME,SQLUPPER,SQLVIEW,SQLVIEWNAME,STATEMENT,STATUS,STORAGE,STORAGESTRATEGY,STREAM,STRING,STRUCT,SUBNODE,SYSTEM,TIME,TIMESTAMP,TINYINT,TRANSIENT,TRIGGER,TRUE,TRUNCATE,TSQL,TYPE,UNIQUE,UPDATE,UPDATE/DELETE,UPDATECOLUMNLIST,UPPER,VARBINARY,VARCHAR,VECTOR,VIEW,VIEWQUERY,WEBMETHOD,XDATA,XMLNAMESPACE,ZENMETHOD";
 
 ///  alias_identifier ::= 'NEED ALIAS IDENT'
 /// summary values:NEED ALIAS IDENT
@@ -258,6 +258,36 @@ Method AttributeCardinalityType(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 		set done=1 ; or
 	} elseif ..addKeyword(.subElement,"CHILDREN")  {
 		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  attribute_Class_Language ::= 'language' '=' class_language_name
+/// summary values:LANGUAGE
+/// summary=K&P&C
+Method AttributeClassLanguage(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary K&P&C
+	if '(..isKeyword("LANGUAGE")) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"LANGUAGE")  {
+		if ..addPunctuation(.subElement,"=")  {
+			if ..ClassLanguageName(.subElement,.addedElement)  {
+				set done=1 ; end compileRules
+			}
+		}
 	}
 
 	if done {
@@ -1436,36 +1466,6 @@ Method AttributeInverse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	quit ok
 }
 
-///  attribute_Language ::= 'language' '=' class_language_name
-/// summary values:LANGUAGE
-/// summary=K&P&C
-Method AttributeLanguage(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
-{
-	; rules summary K&P&C
-	if '(..isKeyword("LANGUAGE")) { quit 0 /* normal */ }
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"LANGUAGE")  {
-		if ..addPunctuation(.subElement,"=")  {
-			if ..ClassLanguageName(.subElement,.addedElement)  {
-				set done=1 ; end compileRules
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-}
-
 ///  attribute_LegacyInstanceContext ::= 'legacyinstancecontext'
 /// summary values:LEGACYINSTANCECONTEXT
 /// summary=K
@@ -1609,6 +1609,36 @@ Method AttributeMembersuper4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 		$$$BNFROLLBACK(subElement)
 		set ok=0
 	}
+	quit ok
+}
+
+///  attribute_Method_Language ::= 'language' '=' method_language_name
+/// summary values:LANGUAGE
+/// summary=K&P&C
+Method AttributeMethodLanguage(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary K&P&C
+	if '(..isKeyword("LANGUAGE")) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"LANGUAGE")  {
+		if ..addPunctuation(.subElement,"=")  {
+			if ..MethodLanguageName(.subElement,.addedElement)  {
+				set done=1 ; end compileRules
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
 	quit ok
 }
 
@@ -2664,6 +2694,36 @@ Method AttributeRequired(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"REQUIRED")  {
 		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  attribute_Requires ::= 'requires' '=' privilegelist
+/// summary values:REQUIRES
+/// summary=K&P&C
+Method AttributeRequires(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary K&P&C
+	if '(..isKeyword("REQUIRES")) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"REQUIRES")  {
+		if ..addPunctuation(.subElement,"=")  {
+			if ..Privilegelist(.subElement,.addedElement)  {
+				set done=1 ; end compileRules
+			}
+		}
 	}
 
 	if done {
@@ -4264,7 +4324,7 @@ Method AttributeZenmethod(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	quit ok
 }
 
-///  class_attribute ::= attribute_Abstract | attribute_ClassType | attribute_ClientDataType | attribute_ClientName | attribute_CompileAfter | attribute_DDLAllowed | attribute_DependsOn | attribute_Deprecated | attribute_Embeddedclass | attribute_Final | attribute_GeneratedBy | attribute_Hidden | attribute_Inheritance | attribute_Language | attribute_LegacyInstanceContext | attribute_MemberSuper | attribute_NoContext | attribute_NoExtent | attribute_Not | attribute_ODBCType | attribute_Owner | attribute_ProcedureBlock | attribute_PropertyClass | attribute_ServerOnly | attribute_SOAPBindingStyle | attribute_SOAPBodyuse | attribute_SQLCategory | attribute_SQLRowidName | attribute_SQLRowidPrivate | attribute_SQLTableName | attribute_StorageStrategy | attribute_System | attribute_ViewQuery
+///  class_attribute ::= attribute_Abstract | attribute_ClassType | attribute_ClientDataType | attribute_ClientName | attribute_CompileAfter | attribute_DDLAllowed | attribute_DependsOn | attribute_Deprecated | attribute_Embeddedclass | attribute_Final | attribute_GeneratedBy | attribute_Hidden | attribute_Inheritance | attribute_Class_Language | attribute_LegacyInstanceContext | attribute_MemberSuper | attribute_NoContext | attribute_NoExtent | attribute_Not | attribute_ODBCType | attribute_Owner | attribute_ProcedureBlock | attribute_PropertyClass | attribute_ServerOnly | attribute_SOAPBindingStyle | attribute_SOAPBodyuse | attribute_SQLCategory | attribute_SQLRowidName | attribute_SQLRowidPrivate | attribute_SQLTableName | attribute_StorageStrategy | attribute_System | attribute_ViewQuery
 /// summary=C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
 Method ClassAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
@@ -4299,7 +4359,7 @@ Method ClassAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		set done=1 ; or
 	} elseif ..AttributeInheritance(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..AttributeLanguage(.subElement,.addedElement)  {
+	} elseif ..AttributeClassLanguage(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..AttributeLegacyinstancecontext(.subElement,.addedElement)  {
 		set done=1 ; or
@@ -6172,11 +6232,11 @@ Method ClassTrigger(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	quit ok
 }
 
-///  class_type_name ::= 'datatype' | 'persistent' | 'serial' | 'stream' | 'view' | 'index' | 'donotuse' | 'dynamic' | '""'
-/// summary=K|K|K|K|K|K|K|K|P
+///  class_type_name ::= 'datatype' | 'persistent' | 'serial' | 'stream' | 'view' | 'index' | 'donotuse' | 'dynamic' | 'literal' | '""'
+/// summary=K|K|K|K|K|K|K|K|K|P
 Method ClassTypeName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K|K|K|K|K|K|K|K|P
+	; rules summary K|K|K|K|K|K|K|K|K|P
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -6196,6 +6256,8 @@ Method ClassTypeName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	} elseif ..addKeyword(.subElement,"DONOTUSE")  {
 		set done=1 ; or
 	} elseif ..addKeyword(.subElement,"DYNAMIC")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"LITERAL")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(.subElement,"""""")  {
 		set done=1 ; end compileRules
@@ -7839,11 +7901,11 @@ Method KeyProps(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	quit ok
 }
 
-///  method_attribute ::= attribute_Abstract | attribute_ClientName | attribute_CodeMode | attribute_Deprecated | attribute_ExternalProcName | attribute_Final | attribute_ForceGenerate | attribute_GenerateAfter | attribute_Internal | attribute_Language | attribute_NoContext | attribute_NotInheritable | attribute_PlaceAfter | attribute_Private | attribute_ProcedureBlock | attribute_PublicList | attribute_ReturnResultSets | attribute_ServerOnly | attribute_SOAPAction | attribute_SOAPBindingStyle | attribute_SOAPBodyuse | attribute_SOAPMessageName | attribute_SOAPNameSpace | attribute_SOAPRequestMessage | attribute_SOAPTypeNamespace | attribute_SQLName | attribute_SQLProc | attribute_WebMethod | attribute_ZenMethod
-/// summary=C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
+///  method_attribute ::= attribute_Abstract | attribute_ClientName | attribute_CodeMode | attribute_Deprecated | attribute_ExternalProcName | attribute_Final | attribute_ForceGenerate | attribute_GenerateAfter | attribute_Internal | attribute_Method_Language | attribute_NoContext | attribute_NotInheritable | attribute_PlaceAfter | attribute_Private | attribute_ProcedureBlock | attribute_PublicList | attribute_ReturnResultSets | attribute_ServerOnly | attribute_SOAPAction | attribute_SOAPBindingStyle | attribute_SOAPBodyuse | attribute_SOAPMessageName | attribute_SOAPNameSpace | attribute_SOAPRequestMessage | attribute_SOAPTypeNamespace | attribute_SQLName | attribute_SQLProc | attribute_WebMethod | attribute_ZenMethod | attribute_requires
+/// summary=C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
 Method MethodAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
+	; rules summary C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -7866,7 +7928,7 @@ Method MethodAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 		set done=1 ; or
 	} elseif ..AttributeInternal(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..AttributeLanguage(.subElement,.addedElement)  {
+	} elseif ..AttributeMethodLanguage(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..AttributeNocontext(.subElement,.addedElement)  {
 		set done=1 ; or
@@ -7905,6 +7967,8 @@ Method MethodAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	} elseif ..AttributeWebmethod(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..AttributeZenmethod(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..AttributeRequires(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -7999,6 +8063,48 @@ Method MethodBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..CosCodeBlock(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  method_language_name ::= 'cache' | 'basic' | 'javascript' | 'java' | 'mvbasic' | 'tsql' | 'cpp' | 'objectscript' | 'python'
+/// summary values:CACHE,BASIC,JAVASCRIPT,JAVA,MVBASIC,TSQL,CPP,OBJECTSCRIPT,PYTHON
+/// summary=K|K|K|K|K|K|K|K|K
+Method MethodLanguageName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary K|K|K|K|K|K|K|K|K
+	if '(..isKeywordInList($lb("CACHE","BASIC","JAVASCRIPT","JAVA","MVBASIC","TSQL","CPP","OBJECTSCRIPT","PYTHON"))) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"CACHE")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"BASIC")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"JAVASCRIPT")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"JAVA")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"MVBASIC")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"TSQL")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"CPP")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"OBJECTSCRIPT")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"PYTHON")  {
 		set done=1 ; end compileRules
 	}
 
@@ -8745,6 +8851,30 @@ Method ParameterDefaultValue1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 	quit ok
 }
 
+///  privilegelist ::= string
+/// summary=C
+Method Privilegelist(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary C
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..String(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
 ///  projection_name ::= string | identifier
 /// summary=C|C
 Method ProjectionName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -9221,7 +9351,7 @@ Method TimeValue(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	quit ok
 }
 
-///  trigger_attribute ::= attribute_CodeMode | attribute_Event | attribute_Final | attribute_ForEach | attribute_Internal | attribute_Language | attribute_NewTable | attribute_OldTable | attribute_Order | attribute_SQLName | attribute_Time | attribute_UpdateColumnList
+///  trigger_attribute ::= attribute_CodeMode | attribute_Event | attribute_Final | attribute_ForEach | attribute_Internal | attribute_Method_Language | attribute_NewTable | attribute_OldTable | attribute_Order | attribute_SQLName | attribute_Time | attribute_UpdateColumnList
 /// summary=C|C|C|C|C|C|C|C|C|C|C|C
 Method TriggerAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
@@ -9240,7 +9370,7 @@ Method TriggerAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 		set done=1 ; or
 	} elseif ..AttributeInternal(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..AttributeLanguage(.subElement,.addedElement)  {
+	} elseif ..AttributeMethodLanguage(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..AttributeNewtable(.subElement,.addedElement)  {
 		set done=1 ; or

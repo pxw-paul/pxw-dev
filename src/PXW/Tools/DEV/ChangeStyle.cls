@@ -84,10 +84,18 @@ ClassMethod WriteHilite() As %String
 {
 
 	Write "<table>"
+	write "<tr>"
+	write "    <th>No.</th>"
+	write "    <th>hilightSET / varid</th>"
+	write "    <th>hilightGET / fetchid</th>"
+	write "    <th>hilightDEF / defid</th>"
+	write "</tr>"
 	For i=1:1:9 {
 		Write "<tr>"
-		Write "<td><span class=hiliteGET"_i_">variable</span></td>"
+		write "<td>"_i_"</td>"
 		Write "<td><span class=hiliteSET"_i_">variable</span></td>"
+		Write "<td><span class=hiliteGET"_i_">variable</span></td>"
+		Write "<td><span class=hiliteDEF"_i_">&nbsp;&nbsp;&nbsp;&nbsp; block of code &nbsp;&nbsp;&nbsp;&nbsp;</span></td>"
 		Write "</tr>"
 	}
 	Write "</table>"
@@ -415,24 +423,6 @@ XData xmlstuff
         <!-- xml comment -->
         <row type='str'><cell>d1</cell></row>
     </data>
-}
-
-Storage Default
-{
-<Data name="ExampleClassDefaultData">
-<Value name="1">
-<Value>%%CLASSNAME</Value>
-</Value>
-<Value name="2">
-<Value>ThingType</Value>
-</Value>
-</Data>
-<DataLocation>^PXW.Tools.DEV.ExampleClassD</DataLocation>
-<DefaultData>ExampleClassDefaultData</DefaultData>
-<IdLocation>^PXW.Tools.DEV.ExampleClassD</IdLocation>
-<IndexLocation>^PXW.Tools.DEV.ExampleClassI</IndexLocation>
-<StreamLocation>^PXW.Tools.DEV.ExampleClassS</StreamLocation>
-<Type>%Storage.Persistent</Type>
 }
 	]]></data>
 }

@@ -517,24 +517,18 @@ Method WriteStyles()
 	.errordata { background-color: var(--bgError); }
 
 
-	.hiliteSET1 { background-color:#ffcc00; } 
-	.hiliteSET2 { background-color:#ff0000; }
-	.hiliteSET3 { background-color:#0000ff; }
-	.hiliteSET4 { background-color:#00cc00; }
-	.hiliteSET5 { background-color:#800080; }
-	.hiliteSET6 { background-color:#00ccb4; }
-	.hiliteSET7 { background-color:#be00cc; }
-	.hiliteSET8 { background-color:#b30000; }
-	.hiliteSET9 { background-color:none; }
-	.hiliteGET1 { background-color:#cca300; } 
-	.hiliteGET2 { background-color:#cc0000; } 
-	.hiliteGET3 { background-color:#0000cc; }
-	.hiliteGET4 { background-color:#009900; }
-	.hiliteGET5 { background-color:#660066; }
-	.hiliteGET6 { background-color:#009987; }
-	.hiliteGET7 { background-color:#8e0099; }
-	.hiliteGET8 { background-color:#860000; }
-	.hiliteGET9 { background-color:none; }
+	/* These are used when a variable is SET (varid=)                      These are used when a variable is used (fetchid=)                      These are used for large sections highligts (defid=)*/
+	.hiliteSET1 { background-color: hsl(0,   100%, 40%); color:white; } .hiliteGET1 { background-color: light-dark(hsl(0  ,100%,75%),hsl(0  , 100%, 25%)); color:white; } 					.hiliteDEF1 { background-color: light-dark(hsl(0  ,100%,90%),hsl(0  , 100%, 10%));} 
+	.hiliteSET2 { background-color: hsl(45,  100%, 40%); color:black; } .hiliteGET2 { background-color: light-dark(hsl(40 ,100%,75%),hsl(40 , 100%, 25%)); color:light-dark(black,white); } 	.hiliteDEF2 { background-color: light-dark(hsl(40 ,100%,90%),hsl(40 , 100%, 10%));}
+	.hiliteSET3 { background-color: hsl(315, 100%, 40%); color:white; } .hiliteGET3 { background-color: light-dark(hsl(315,100%,75%),hsl(315, 100%, 25%)); color:white; }					.hiliteDEF3 { background-color: light-dark(hsl(315,100%,90%),hsl(315, 100%, 10%));}
+	.hiliteSET4 { background-color: hsl(90,  100%, 40%); color:black; } .hiliteGET4 { background-color: light-dark(hsl(90 ,100%,75%),hsl(90 , 100%, 25%)); color:light-dark(black,white); }	.hiliteDEF4 { background-color: light-dark(hsl(90, 100%,90%),hsl(90 , 100%, 10%));}
+	.hiliteSET5 { background-color: hsl(270, 100%, 40%); color:white; } .hiliteGET5 { background-color: light-dark(hsl(270,100%,75%),hsl(270, 100%, 25%)); color:white; }					.hiliteDEF5 { background-color: light-dark(hsl(270,100%,90%),hsl(270, 100%, 10%));}
+	.hiliteSET6 { background-color: hsl(135, 100%, 40%); color:black; } .hiliteGET6 { background-color: light-dark(hsl(135,100%,75%),hsl(135, 100%, 25%)); color:light-dark(black,white); }	.hiliteDEF6 { background-color: light-dark(hsl(135,100%,90%),hsl(135, 100%, 10%));}
+	.hiliteSET7 { background-color: hsl(225, 100%, 40%); color:white; } .hiliteGET7 { background-color: light-dark(hsl(225,100%,75%),hsl(225, 100%, 25%)); color:white; }					.hiliteDEF7 { background-color: light-dark(hsl(225,100%,90%),hsl(225, 100%, 10%));}
+	.hiliteSET8 { background-color: hsl(180, 100%, 40%); color:black; } .hiliteGET8 { background-color: light-dark(hsl(180,100%,75%),hsl(180, 100%, 25%)); color:light-dark(black,white); }	.hiliteDEF8 { background-color: light-dark(hsl(180,100%,90%),hsl(180, 100%, 10%));}
+	.hiliteSET9 { background-color: none; }                               .hiliteGET9 { background-color: none; }								  .hiliteDEF9 { background-color: none; }
+
+
 	
 
 	</style>

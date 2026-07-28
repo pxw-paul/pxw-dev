@@ -347,14 +347,16 @@ ClassMethod WriteClassDir(Class As %String)
 /// Write out extra javascript here, the SCRIPT tags are already in place
 ClassMethod WriteScripts()
 {
-	Write "var hiliterun=1;"
+	Write "var hiliterun=1;",!
 	Write "function HiliteSets(id) {",!
 	Write "    var objs=document.getElementsByTagName('span');",!
 	Write "    var cls='hiliteSET'+hiliterun;",!
 	Write "    var clsf='hiliteGET'+hiliterun;",!
+	Write "    var clsd='hiliteDEF'+hiliterun;",!
 	Write "    for (var i=0; i<objs.length; i++) {",!
 	Write "      if (objs[i].getAttribute('varid')==id) objs[i].className=cls; //",! ;objs[i].className+' '+cls;",!
 	Write "      if (objs[i].getAttribute('fetchid')==id) objs[i].className=clsf; //",! ;objs[i].className+' '+cls;",!
+	Write "      if (objs[i].getAttribute('defid')==id) objs[i].className=clsd; //",! ;objs[i].className+' '+cls;",!
 	Write "    }",!
 	Write "    hiliterun=hiliterun+1; if (hiliterun>9) hiliterun=1;",!
 	Write "}",!

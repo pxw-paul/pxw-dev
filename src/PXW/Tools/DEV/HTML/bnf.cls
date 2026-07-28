@@ -272,7 +272,7 @@ Method writeCDEFAttributeViewQuery(element As PXW.DEV.BNF.Elements.ClassDefiniti
     Quit ""
 }
 
-Method writeCDEFClassProperty(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassProperty")
+Method writeCDEFClassProperty(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassProperty,ClassRelationship")
 {
     $$$DEBUGMethodBegin
     Set keywordatom=element.FirstAtom()
@@ -1123,6 +1123,7 @@ Method writeSQLWithCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.C
             Set aliasname="alias"_aliasE.ToString(0)
             Set atom=aliasE.FirstAtom()
             Do ..wrapAtomHTML(atom,"<span class='SQLTableAliasSet' title='show alias usage' varid="""_$$$UPPER(aliasname)_""" onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
+            Do ..wrapAtomHTML(withE,"<span defid="""_$$$UPPER(aliasname)_""">","</span>")
         }	    
     }    
     $$$DEBUGMethodEnd
@@ -1165,7 +1166,7 @@ Method writeSQLDerivedColumn(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
         Set colnameE=asclause.findFirstElementByType("ColumnName",0)
         If $ISOBJECT(colnameE) {
             Set colname="col"_$$$UPPER(colnameE.ToString(0))
-            Do ..wrapElementHTML(colnameE,"<span onclick=""HiliteSets('"_$$$colname(colname)_"');"">","</span>")
+            Do ..wrapElementHTML(colnameE,"<span varid="""_$$$colname(colname)_""" onclick=""HiliteSets('"_$$$colname(colname)_"');"">","</span>")
         }
     } Else {
         Kill colrefs
@@ -1181,7 +1182,7 @@ Method writeSQLDerivedColumn(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
     If ..BookMark'="",$$$colname(colname)=$$$colname("col"_..BookMark) {
         Set classtxt="class="""_$$$classHilite_""""
     }
-    Do ..wrapElementHTML(col,"<span "_classtxt_" fetchid="""_$$$colname(colname)_""">","</span>")        
+    Do ..wrapElementHTML(col,"<span "_classtxt_" defid="""_$$$colname(colname)_""">","</span>")        
     $$$DEBUGMethodEnd
     Quit ""
 }
@@ -1189,10 +1190,39 @@ Method writeSQLDerivedColumn(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
 Method writeSQLJoin(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="Join")
 {
     $$$DEBUGMethodBegin
-    Do ..wrapElementHTML(element,"<span class='SQLSection'>","</span>")
+    ; find the alias name of the entire join
+    do ..findElementsSkipSub(element,"AliasName",.list)
+    if $isobject(list) {
+        s aliasname="alias"_list.GetAt(1).ToString(0)
+        Do ..wrapElementHTML(element,"<span  defid="""_$$$UPPER(aliasname)_""" class='SQLSection'>","</span>")    
+    } else {
+        Do ..wrapElementHTML(element,"<span class='SQLSection'>","</span>")
+    }
     $$$DEBUGMethodEnd
     Quit ""
 }
+
+ClassMethod findElementsSkipSub(Object As PXW.DEV.Element, Type As %String, ByRef OutputList As %ListOfObjects)
+{
+    #dim ele as PXW.DEV.Element
+    If Object.type=Type {
+        If '$ISOBJECT($GET(OutputList)) { 
+            Set OutputList=##class(%Library.ListOfObjects).%New()
+        }
+        Do OutputList.Insert(Object)				
+    }
+	For i=1:1:Object.partsCount() {
+		Set ele=Object.partsGetAt(i)
+		If ele.IsElement {
+            if ele.type="SelectCommand" || ele.type="WithCommand" {
+				; do nothing for select
+			} Else {
+				Do ..findElementsSkipSub(ele,Type,.OutputList)
+			}
+		}
+	}
+}
+
 
 Method writeSQLProgram(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="QuerySpecification")
 {
@@ -1345,7 +1375,7 @@ Method writeSQLDirectTable(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.C
             ; is it a reference to a WITH?
             If tablename'="", tablename'[".", $ISOBJECT(..SqlProgramAnalyser), $GET(..SqlProgramAnalyser.withReferences(tablename))'="" {
                 Set aliasname="alias"_tablename
-                Do ..wrapElementHTML(tablenameE,"<span class='SQLTableAlias' title='show alias usage' varid="""_$$$UPPER(aliasname)_""" onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
+                Do ..wrapElementHTML(tablenameE,"<span class='SQLTableAlias' title='show alias usage' fetchid="""_$$$UPPER(aliasname)_""" onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
             } Else {
                 Do ..wrapAtomHTML(tablenameE,"<a class="_$$$classProgramName_" href="""_..HREFToSQLTable(tablename)_""">","</a>")
             }
