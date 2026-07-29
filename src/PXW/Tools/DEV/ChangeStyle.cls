@@ -237,33 +237,19 @@ ClassMethod WriteExampleTable() As %String
 						</table>
 					</td>
 				</tr>
-				<tr class='#($$$classHiliteRowWarning)#'>
+				<tr class='#($$$classHiliteRowError)#'>
 					<td>4</td>
-					<td>This row is highlighted by putting tr class=#($$$classHiliteRowWarning)# (#("$$$")#classHiliteRowWarning)</td>
-					<td><a href="#">Link data</a></td>
-					<td><div class='#($$$classNarrative)#'>Comment about why the row has a warning</span></td>
-					<td>
-					<!--	<table>
-							<thead>
-								<tr>
-									<th>Sub head</th>
-									<th>Sub column2</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td>Sub data</td>
-									<td>sub data2</td>
-								</tr>
-							</tbody>
-						</table>
-						-->
-					</td>
-				<tr class=errorrow>
-					<td>5</td>
 					<td>This row is highlighted by putting tr class=errorrow</td>
 					<td><a href="#">Link data</a></td>
 					<td><div class='#($$$classNarrative)#'>Comment about why the row is in error</span></td>
+					<td>
+					</td>
+				</tr>
+				<tr class='#($$$classHiliteRowWarning)#'>
+					<td>5</td>
+					<td>This row is highlighted by putting tr class=#($$$classHiliteRowWarning)# (#("$$$")#classHiliteRowWarning)</td>
+					<td><a href="#">Link data</a></td>
+					<td><div class='#($$$classNarrative)#'>Comment about why the row has a warning</span></td>
 					<td>
 					</td>
 				</tr>
@@ -309,22 +295,14 @@ ClassMethod WriteExampleTable() As %String
 				</tr>
 				<tr>
 					<td>11</td>
-					<td class=#($$$classHiliteDataGood)#>good data</td>
-					<td class=#($$$classHiliteDataGood)#><a href="#">LinkMethodName</a></td>
-					<td><div class='#($$$classNarrative)#'>These cells have class=#($$$classHiliteDataGood)# (#("$$$")#classHiliteDataGood)</span></td>
+					<td class=hilitedata>hilite data</td>
+					<td class=hilitedata><a href="#">LinkMethodName</a></td>
+					<td><div class='#($$$classNarrative)#'>These cells have class=hilitedata</span></td>
 					<td>
 					</td>
 				</tr>
 				<tr>
 					<td>12</td>
-					<td class=#($$$classHiliteDataWarning)#>warning data</td>
-					<td class=#($$$classHiliteDataWarning)#><a href="#">LinkMethodName</a></td>
-					<td><div class='#($$$classNarrative)#'>These cells have class=#($$$classHiliteData)# (#("$$$")#classHiliteData)</span></td>
-					<td>
-					</td>
-				</tr>
-				<tr>
-					<td>13</td>
 					<td class=#($$$classHiliteDataError)#>error data</td>
 					<td class=#($$$classHiliteDataError)#><a href="#">LinkMethodName</a></td>
 					<td><div class='#($$$classNarrative)#'>These cells have class=#($$$classHiliteData)# (#("$$$")#classHiliteData)</span></td>
@@ -332,10 +310,18 @@ ClassMethod WriteExampleTable() As %String
 					</td>
 				</tr>
 				<tr>
+					<td>13</td>
+					<td class=#($$$classHiliteDataWarning)#>warning data</td>
+					<td class=#($$$classHiliteDataWarning)#><a href="#">LinkMethodName</a></td>
+					<td><div class='#($$$classNarrative)#'>These cells have class=#($$$classHiliteData)# (#("$$$")#classHiliteData)</span></td>
+					<td>
+					</td>
+				</tr>
+				<tr>
 					<td>14</td>
-					<td class=hilitedata>hilite data</td>
-					<td class=hilitedata><a href="#">LinkMethodName</a></td>
-					<td><div class='#($$$classNarrative)#'>These cells have class=hilitedata</span></td>
+					<td class=#($$$classHiliteDataGood)#>good data</td>
+					<td class=#($$$classHiliteDataGood)#><a href="#">LinkMethodName</a></td>
+					<td><div class='#($$$classNarrative)#'>These cells have class=#($$$classHiliteDataGood)# (#("$$$")#classHiliteDataGood)</span></td>
 					<td>
 					</td>
 				</tr>

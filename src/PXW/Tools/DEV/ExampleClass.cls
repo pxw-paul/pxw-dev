@@ -16,9 +16,12 @@ Method WriteStuff(a1 As %String) As %Status
      &SQL(SELECT 
             -- sql comment
             exalias.ThingType,
+            nextthing.thingType as nextThingType,
             COUNT(*) as CountOfReferences
             INTO :type,:count
         FROM PXW_Tools_DEV.ExampleClass as exalias
+        LEFT OUTER JOIN PXW_Tools_DEV.ExampleClass as nextthing 
+            ON nextthing.id=exalias.id
         WHERE ThingType=:sqla1)
     
     Set ^PXW("ExampleClass",..%ClassName(1))=$LISTBUILD($$$OK,99,type,count)
