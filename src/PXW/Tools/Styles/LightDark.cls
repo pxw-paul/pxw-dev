@@ -21,7 +21,7 @@ Method WriteStyles()
 		--bgAlternate3: light-dark( #FFFFFF,black);
 		--bgHover:  light-dark( #CCCCCC, #3E3E3E);
 		--bgHilite: light-dark( #fff793, #6b6b1d);
-		--bgWarning: light-dark( #ffd893, #f3a488);
+		--bgWarning: light-dark( #ffd893, #f1a55e);
 		--bgError: light-dark( #ffb3b3, #9f3d3d);
 		--bgGood: light-dark( #b3ffb3, #225922);
 
@@ -200,11 +200,11 @@ Method WriteStyles()
 	
 	.hiliterow td { background-color: var(--bgHilite); }
 	.goodrow td { background-color: var(--bgGood); color: var(--fgGood); }
-	.warningrow td { background-color: var(--bgWarning);  color: var(--fgWarning); }
+	.warningrow td { background-color: var(--bgWarning);  color: var(--fgWarning); } .warningrow .narrative { color: var(--fgWarning); }
 	.errorrow td { background-color: var(--bgError);  color: var(--fgError);  }
 	.hilitedata { background-color: var(--bgHilite); }
 	.gooddata  { background-color: var(--bgGood);  color: var(--fgGood); }
-	.warningdata { background-color: var(--bgWarning);  color: var(--fgWarning); }
+	.warningdata { background-color: var(--bgWarning);  color: var(--fgWarning); } .warningdata .narrative { color: var(--fgWarning); }
 	.errordata { background-color: var(--bgError);  color: var(--fgError); }
 	
 	/* These are used when a variable is SET (varid=)                      These are used when a variable is used (fetchid=)                      These are used for large sections highligts (defid=)*/

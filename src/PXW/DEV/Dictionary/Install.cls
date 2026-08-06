@@ -49,16 +49,16 @@ ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, Ate
         Set atelier=##class(PXW.DEV.Dictionary.AtelierSettings).%OpenId(AtelierServerName)
         If '$ISOBJECT(atelier) {
             Set atelier=##class(PXW.DEV.Dictionary.AtelierSettings).%New()
-            Set atelier.ServerName=AtelierServerName
-            Set atelier.ServerAddress=AtelierServer
-            Set atelier.Port=AtelierPort
-            Set atelier.Namespace=AtelierNamespace
-            Set atelier.InitiateAuthentication="Basic"
-            Set atelier.Username=Ausername
-            Set atelier.Password=Apassword
-            Set atelier.ContentType="application/json"
-            Set sc=atelier.%Save()
         }
+        Set atelier.ServerName=AtelierServerName
+        Set atelier.ServerAddress=AtelierServer
+        Set atelier.Port=AtelierPort
+        Set atelier.Namespace=AtelierNamespace
+        Set atelier.InitiateAuthentication="Basic"
+        Set atelier.Username=Ausername
+        Set atelier.Password=Apassword
+        Set atelier.ContentType="application/json"
+        Set sc=atelier.%Save()
     }
 
     If $$$ISOK(sc) {

@@ -18,7 +18,7 @@ Method WriteStuff(a1 As %String) As %Status
             exalias.ThingType,
             nextthing.thingType as nextThingType,
             COUNT(*) as CountOfReferences
-            INTO :type,:count
+            INTO :type,:ntype,:count
         FROM PXW_Tools_DEV.ExampleClass as exalias
         LEFT OUTER JOIN PXW_Tools_DEV.ExampleClass as nextthing 
             ON nextthing.id=exalias.id

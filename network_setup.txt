@@ -1,12 +1,15 @@
-docker network create my-network
-docker network connect my-network pxw-debug_iris_1
-docker network connect my-network pxw-dev_iris_1
-docker network connect my-network pxw-lib-sql_iris_1
-
+docker ps  --format {{.Names}}
 
 docker network create my-network
 docker network connect my-network pxw-debug-iris-1
-docker network connect my-network other-container
+docker network connect my-network other-container-iris-1
+
+docker network inspect my-network
+
+
+then you can use the name to connect to it
+Set sc=##class(PXW.DEV.Dictionary.Install).SetupCLS("GUEST_USER","GUEST_USER","other-container-iris-1",52773,"USER","_SYSTEM","SYS")
+
 
 
 zpm 
