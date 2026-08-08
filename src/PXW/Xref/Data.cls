@@ -73,7 +73,7 @@ Method AlreadyExists() As %Boolean
 
 Storage Default
 {
-<Data name="DataDefaultData">
+	<Data name="DataDefaultData">
 <Value name="1">
 <Value>%%CLASSNAME</Value>
 </Value>
@@ -116,7 +116,7 @@ Storage Default
 </Data>
 <DataLocation>^PXW.Xref.DataD</DataLocation>
 <DefaultData>DataDefaultData</DefaultData>
-<ExtentSize>0</ExtentSize>
+<ExtentSize>100000</ExtentSize>
 <IdLocation>^PXW.Xref.DataD</IdLocation>
 <IndexLocation>^PXW.Xref.DataI</IndexLocation>
 <StreamLocation>^PXW.Xref.DataS</StreamLocation>
