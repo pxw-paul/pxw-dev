@@ -10,8 +10,6 @@ docker network inspect my-network
 then you can use the name to connect to it
 Set sc=##class(PXW.DEV.Dictionary.Install).SetupCLS("GUEST_USER","GUEST_USER","other-container-iris-1",52773,"USER","_SYSTEM","SYS")
 
-
-
 zpm 
 repo -n registry -r -url http://zpm-registry_iris_1:52773/registry/ -user _SYSTEM -pass SYS
 
@@ -23,3 +21,6 @@ C:\Users\water\OneDrive\Documents\GitHub\pxw-dev>docker compose rm
 C:\Users\water\OneDrive\Documents\GitHub\pxw-dev>docker compose build
 C:\Users\water\OneDrive\Documents\GitHub\pxw-dev>docker compose up -d
 C:\Users\water\OneDrive\Documents\GitHub\pxw-dev>docker network connect my-network pxw-dev-iris-1
+
+
+docker system prune -a --volumes

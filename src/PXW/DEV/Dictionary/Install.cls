@@ -28,7 +28,7 @@ ClassMethod Setup() As %Status
     Set:$$$ISOK(sc) sc=##class(PXW.DEV.BNF.Analyse.Python).RegisterType()
     
     ; This is the default namespace, if anything goes wrong this is where we count as safe
-    Set sc=..SetupCLS("LOCAL_USER","LOCAL_USER","localhost",52773,"IRISAPP","_SYSTEM","SYS")
+    Set sc=..SetupCLS("LOCAL_USER","LOCAL_USER","localhost",52773,"USER","_SYSTEM","SYS")
     If $$$ISERR(sc) Do $SYSTEM.Status.DisplayError(sc)
     Quit sc
 }

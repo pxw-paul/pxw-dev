@@ -12,11 +12,11 @@
     do ##class(Security.Services).Modify("%Service_CallIn",.prop)
 
     // create IRISAPP namespace
-    do $SYSTEM.OBJ.Load("/home/irisowner/dev/App.Installer.cls", "ck")
-    set sc = ##class(App.Installer).setup()
+    //do $SYSTEM.OBJ.Load("/home/irisowner/dev/App.Installer.cls", "ck")
+    //set sc = ##class(App.Installer).setup()
+    //zn "IRISAPP"
 
-    zn "IRISAPP"
-
+    zn "USER"
     // Create /_vscode web app to support intersystems-community.testingmanager VS Code extension
     zpm "install vscode-per-namespace-settings"
     zpm "install pxw-debug"
@@ -26,7 +26,8 @@
     set ^PXW.Debuggers("BasicToFile")="/home/irisowner/dev/debug/"
 
     // Configure %UnitTest in IRISAPP to suit the VS Code extension
-    set ^UnitTestRoot="/usr/irissys/.vscode/IRISAPP/UnitTestRoot"
+    //set ^UnitTestRoot="/usr/irissys/.vscode/IRISAPP/UnitTestRoot"
+    set ^UnitTestRoot="/usr/irissys/.vscode/USER/UnitTestRoot"
 
     zpm "load /home/irisowner/dev/ -v"
     ;zpm "load /home/irisowner/dev/ -dev -v":1:1

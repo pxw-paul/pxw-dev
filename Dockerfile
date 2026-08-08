@@ -6,7 +6,7 @@ WORKDIR /home/irisowner/dev
 
 ARG TESTS=0
 ARG MODULE="pxw-dev"
-ARG NAMESPACE="IRISAPP"
+ARG NAMESPACE="USER"
 
 ## Embedded Python environment
 ENV IRISUSERNAME "_SYSTEM"
