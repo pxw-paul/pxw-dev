@@ -71,6 +71,7 @@ ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, Ate
             Do cls.KnownVariables.SetAt("%CSP.Request","%request")
             Do cls.KnownVariables.SetAt("%CSP.Response","%response")
             Do cls.KnownVariables.SetAt("%CSP.Session","%session")
+            Do cls.KnownVariables.SetAt("PXW.Debuggers.Basic","%pxwdebug")
         }
         Set sc=cls.%Save()
     }

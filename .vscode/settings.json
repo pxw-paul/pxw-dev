@@ -14,7 +14,7 @@
         "internalPort": 52775
       },
       "links": {
-        "UnitTest Portal": "${serverUrl}/csp/sys/%25UnitTest.Portal.Home.cls?$NAMESPACE=IRISAPP"
+        "UnitTest Portal": "${serverUrl}/csp/sys/%25UnitTest.Portal.Home.cls?$NAMESPACE=USER"
       }
     },
     "intersystems.testingManager.client.relativeTestRoot": "tests",
@@ -43,6 +43,13 @@
         },
         "username": "_SYSTEM"
       }
+    },
+        "pxw.xref.connection": {
+        "namespace": "USER",
+        "host": "localhost",
+        "port": "52775",
+        "username": "_SYSTEM",
+        "scheme":"http"
     }
 
 }

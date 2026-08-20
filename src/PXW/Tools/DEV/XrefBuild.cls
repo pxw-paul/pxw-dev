@@ -140,7 +140,7 @@ ClassMethod WriteHeadForm(Page As %String)
 	Do ##class(PXW.Xref.Build).DailyBuild(%NS) 
 
 	&SQL(SELECT %DLIST(DISTINCT RequestNamespace) INTO :runningNS FROM PXW_Xref.BuildStatus WHERE EndDateTime is null and Running=1)
-	If runningNS'="" {
+	If (SQLCODE=0) && (runningNS'="") {
 		&html<
 			<form id=toolsXrefBuild action='PXW.Tools.DEV.XrefBuild.cls'>
 				<fieldset id=toolsXrefBuild>

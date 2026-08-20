@@ -102,15 +102,10 @@ ClassMethod WriteNav()
 	
 	While rs.%Next() {
 		set name=rs.%Get("ClassName")
-		Set type=rs.%Get("ToolType")
+		;Set type=rs.%Get("ToolType")
 		Set toolname=rs.%Get("ToolName")
 		
-		Set css="toolTypeInternal"
-		If $$$UPPER(type)="CODE" Set css="toolTypeCode"
-		
 		if toolname'="" {
-			Set aname=$TRANSLATE(name,".","")_"anchor"
-			Set legname=$TRANSLATE(name,".","")_"legend"
 			Write "<a href="""_$CLASSMETHOD(name,"HREFTo")_""">"_..EscapeHTML(toolname)_"</a>"
 		}
 	}

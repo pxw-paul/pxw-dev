@@ -44,7 +44,7 @@ ClassMethod WriteMainBody()
 /// Use the scratch variable for anything you want to get from BODY.
 ClassMethod WriteNav(ByRef scratch)
 {
-	d ##class(PXW.Tools.Index).WriteNav()
+	Do ##class(PXW.Tools.Index).WriteNav()
 }
 
 ClassMethod HREFTo(NewServer As %String) As %String

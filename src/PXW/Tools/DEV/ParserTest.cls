@@ -13,7 +13,7 @@ ClassMethod WriteMainTop(ByRef scratch)
             <tr><td>Text</td><td><textarea spellcheck=false style='width:100%' name='T' rows=20>#(text)#</textarea></td></tr>
             <tr><td>Class</td><td><input id=formClassName name='C' value='#(class)#' size=80></td></tr>
             <tr><td>Method</td><td><input id=formMethodName name='M' value='#(method)#' size=80></td></tr>
-            <tr><td>WriteFull</td><td><input type=checkbox name='WF' value=1 #($s(writefull:" checked ",1:""))# ></td></tr>
+            <tr><td>WriteFull</td><td><input type=checkbox name='WF' value=1 #($SELECT(writefull:" checked ",1:""))# ></td></tr>
             <tr><td>&nbsp;</td><td><input type=submit></td></tr>
         </table>
         </fieldset>
@@ -24,14 +24,14 @@ ClassMethod WriteMainTop(ByRef scratch)
 ClassMethod WriteMainLeft(ByRef scratch)
 {
 	Do ..HREFFrom(.text,.class,.method)
-    if text'="",class'="",method'="" {
+    If text'="",class'="",method'="" {
         Write "<pre>" 
         ;$$$DEBUGNew(##class(PXW.Tools.Debugger).%ClassName(1))
         $$$DEBUGSetup(##class(PXW.Tools.Debugger).%ClassName(1))
         $$$DEBUG("Running "_class_":"_method)
-        try {
+        Try {
             Do $CLASSMETHOD(class,"test1",text,method,.scratch,0,$GET($$$debugObject))
-        } catch e {
+        } Catch e {
             Do ..WriteStatus(e.AsStatus())
         }
         Write "</pre>"
@@ -42,19 +42,19 @@ ClassMethod WriteMainRight(ByRef scratch)
 {
     #dim element as PXW.DEV.Element
     Do ..HREFFrom(.text,.class,.method,.writefull)
-    if $isobject($g(scratch)) {
-        set element=scratch
+    If $ISOBJECT($GET(scratch)) {
+        Set element=scratch
         Write "<pre>" 
         If $ISOBJECT($GET($$$debugObject)) {
             If writefull {
                 Do element.writeDebugFull() 
-            } else {
+            } Else {
                 Do element.writeDebug() 
             }
         } Else {
             If writefull {
                 Do element.writeFull()
-            } else {
+            } Else {
                 Do element.write()
             }
         }
@@ -67,25 +67,25 @@ ClassMethod WriteMainFoot(ByRef scratch)
     $$$DEBUGStop
     #dim element as PXW.DEV.Element
     Do ..HREFFrom(.text,.class,.method,.writefull)
-    if writefull {
-        s element=scratch
-        s flat=..flatten(element)
-        w "<pre>"_$$$HTMLENCODE(flat)_"</pre>"
+    If writefull {
+        Set element=scratch
+        Set flat=..flatten(element)
+        Write "<pre>"_$$$HTMLENCODE(flat)_"</pre>"
     }
 }
 
 ClassMethod WriteNav()
 {
-    d ..getMethods()
+    Do ..getMethods()
 }
 
 ClassMethod HREFTo(Text As %String, Class As %String, Method As %String, WriteFull As %String) As %String
 {
     Set href=##super()
-    Set:$G(Text)'="" href=href_"&T="_..EscapeURL(Text)
-    Set:$G(Class)'="" href=href_"&C="_..EscapeURL(Class)
-    Set:$G(Method)'="" href=href_"&M="_..EscapeURL(Method)
-    Set:$G(WriteFull)'="" href=href_"&WF="_..EscapeURL(WriteFull)
+    Set:$GET(Text)'="" href=href_"&T="_..EscapeURL(Text)
+    Set:$GET(Class)'="" href=href_"&C="_..EscapeURL(Class)
+    Set:$GET(Method)'="" href=href_"&M="_..EscapeURL(Method)
+    Set:$GET(WriteFull)'="" href=href_"&WF="_..EscapeURL(WriteFull)
     Quit href
 }
 
@@ -103,24 +103,24 @@ ClassMethod getMethods()
     #dim rs as %SQL.StatementResult
     #dim meth as %Dictionary.CompiledMethod
 
-    s rs=##class(%Dictionary.ClassDefinition).SubclassOfFunc(##class(PXW.DEV.BNF.super).%ClassName(1))
-    while rs.%Next() {
-        s classname=rs.Get("Name")
-        s class=##class(%Dictionary.CompiledClass).%OpenId(classname)
+    Set rs=##class(%Dictionary.ClassDefinition).SubclassOfFunc(##class(PXW.DEV.BNF.super).%ClassName(1))
+    While rs.%Next() {
+        Set classname=rs.Get("Name")
+        Set class=##class(%Dictionary.CompiledClass).%OpenId(classname)
         ; if the super class is the base class then we are not interested, we want the runtime version
-        i $isobject(class),class.Super'="PXW.DEV.BNF.super" {
-            w "<details>"
-            w "<summary>"_$$$HTMLENCODE(classname)_"</summary>"
-            f i=1:1:class.Methods.Count() {
-                set meth=class.Methods.GetAt(i)
-                if meth.FormalSpec["ParentElement" {
-                    set mdef=##class(%Dictionary.MethodDefinition).%OpenId(meth.Origin_"||"_meth.Name)
-                    if $isobject(mdef),'mdef.Private {
-                        w !,"<a href=# onclick='document.getElementById(""formClassName"").value="""_classname_"""; document.getElementById(""formMethodName"").value="""_meth.Name_"""; '>"_meth.Name_"</a>"
+        If $ISOBJECT(class),class.Super'="PXW.DEV.BNF.super" {
+            Write "<details>"
+            Write "<summary>"_$$$HTMLENCODE(classname)_"</summary>"
+            For i=1:1:class.Methods.Count() {
+                Set meth=class.Methods.GetAt(i)
+                If meth.FormalSpec["ParentElement" {
+                    Set mdef=##class(%Dictionary.MethodDefinition).%OpenId(meth.Origin_"||"_meth.Name)
+                    If $ISOBJECT(mdef),'mdef.Private {
+                        Write !,"<a href=# onclick='document.getElementById(""formClassName"").value="""_classname_"""; document.getElementById(""formMethodName"").value="""_meth.Name_"""; '>"_meth.Name_"</a>"
                     }
                 }
             }
-            w "</details>"
+            Write "</details>"
         }
     }
 }

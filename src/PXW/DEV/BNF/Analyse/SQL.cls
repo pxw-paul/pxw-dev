@@ -150,7 +150,6 @@ Method SelectCommand(element As PXW.DEV.Element)
     If $ISOBJECT(tableexpE) {
         Set from=tableexpE.findFirstElementByType("FromClause",0)
     }
-    Kill tableelements,tables,columnelements,columns
     If $ISOBJECT(from) {
         Do ..findElementsByTypeNoSubQueries(from,"TableReference",.tableelements)
         Do ..findElementsByTypeNoSubQueries(from,"Join",.joins)

@@ -290,10 +290,20 @@ Method ListProperyDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierRS
     $$$DEBUGMethodBegin
 	Set server=..AtelierSettings.ServerName
 	Set sql=""
-    Set sql=sql_"SELECT parent,Name,RuntimeType,SQLFieldName,Collection,Type,Origin "
-    Set sql=sql_"FROM %Dictionary.CompiledProperty "
-    Set sql=sql_"WHERE parent=?"
-    Set parameters($INCREMENT(parameters))=ClassName
+    ;Set sql=sql_"SELECT parent,Name,RuntimeType,SQLFieldName,Collection,Type,Origin "
+    ;Set sql=sql_"FROM %Dictionary.CompiledProperty "
+    ;Set sql=sql_"WHERE parent=?"
+    Set sql=sql_"SELECT * FROM("
+    Set sql=sql_"    SELECT parent,Name,RuntimeType,SQLFieldName,Collection,Type,Origin "
+    Set sql=sql_"    FROM %Dictionary.CompiledProperty "
+    Set sql=sql_"    WHERE COALESCE(Parent->ClassType,'')!='view'"
+    Set sql=sql_"    UNION"
+    Set sql=sql_"    SELECT c.Name as parent, p.column_name as name, null as runtimetype, column_name as sqlfieldname, null as collection,null as type, null as Origin"
+    Set sql=sql_"    FROM %Dictionary.CompiledClass as c"
+    Set sql=sql_"    INNER JOIN INFORMATION_SCHEMA.columns as p on p.schemaexact=c.sqlschemaname and p.tableexact=c.sqltablename"
+    Set sql=sql_"    WHERE c.ClassType='view'"
+    Set sql=sql_")"
+    Set sql=sql_"WHERE parent=?",parameters($INCREMENT(parameters))=ClassName
 	Set qsc=##class(PXW.DEV.Dictionary.AtelierClient).query(server,sql,.obj,parameters...)
 	If $$$ISERR(qsc) $$$ThrowStatus(qsc)
  	Set rs=##class(PXW.DEV.Dictionary.AtelierRS).%New(obj)

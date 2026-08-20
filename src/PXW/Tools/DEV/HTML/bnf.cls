@@ -61,7 +61,7 @@ Method OutputKeywordCommentAsDocumentation(Element As PXW.DEV.Element, Output co
         ;do ..output("<span style='position:absolute; top:0px; left:0px;' onmouseout='flipComments("""_commentid_""");'>X</span>")
         Do ..output("<div style='position:relative;' class='CDEFdocText'  id="""_commentid_"Text'>")
         If $ISOBJECT(keywordatom.whitespace) {
-            Do ..writeAtom(keywordatom.whitespace,"<span class=whitespace>","</span>",1)
+            Do ..writeAtom(keywordatom.whitespace,"<span class=whitespace>","</span>")
         }
         If $ISOBJECT(keywordatom.comment) {
             Do ..writeAtom(keywordatom.comment,"<span class="""_$$$classComment_""">","</span>")
@@ -693,7 +693,7 @@ Method writeCOSVariableTypes(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF
     Quit ""
 }
 
-Method writeCOSVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="Variable")
+Method writeCOSVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="Variable,VariableNodef")
 {
     $$$DEBUGMethodBegin
     Set variablename=element.ToStringAtomsOnly(0)
@@ -841,10 +841,10 @@ Method writeCOSSuperExpression(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.B
 {
     $$$DEBUGMethodBegin
     ; ##super()
-    set superA=element.FirstAtom()
-    if $isobject(superA) {
-        set cls=..ClassServer.GetMethodOverrides(..This_"||"_..ThisMethod)
-        do ..wrapAtomHTML(superA,"<a class="""_$$$classObjectMember_""" href="""_..HREFToClass(cls,..ThisMethod)_""">","</a>")
+    Set superA=element.FirstAtom()
+    If $ISOBJECT(superA) {
+        Set cls=..ClassServer.GetMethodOverrides(..This_"||"_..ThisMethod)
+        Do ..wrapAtomHTML(superA,"<a class="""_$$$classObjectMember_""" href="""_..HREFToClass(cls,..ThisMethod)_""">","</a>")
     }
     $$$DEBUGMethodEnd
     Quit ""
@@ -1191,11 +1191,11 @@ Method writeSQLJoin(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compiler
 {
     $$$DEBUGMethodBegin
     ; find the alias name of the entire join
-    do ..findElementsSkipSub(element,"AliasName",.list)
-    if $isobject(list) {
-        s aliasname="alias"_list.GetAt(1).ToString(0)
+    Do ..findElementsSkipSub(element,"AliasName",.list)
+    If $ISOBJECT(list) {
+        Set aliasname="alias"_list.GetAt(1).ToString(0)
         Do ..wrapElementHTML(element,"<span  defid="""_$$$UPPER(aliasname)_""" class='SQLSection'>","</span>")    
-    } else {
+    } Else {
         Do ..wrapElementHTML(element,"<span class='SQLSection'>","</span>")
     }
     $$$DEBUGMethodEnd
@@ -1214,7 +1214,7 @@ ClassMethod findElementsSkipSub(Object As PXW.DEV.Element, Type As %String, ByRe
 	For i=1:1:Object.partsCount() {
 		Set ele=Object.partsGetAt(i)
 		If ele.IsElement {
-            if ele.type="SelectCommand" || ele.type="WithCommand" {
+            If ele.type="SelectCommand" || ele.type="WithCommand" {
 				; do nothing for select
 			} Else {
 				Do ..findElementsSkipSub(ele,Type,.OutputList)
@@ -1300,20 +1300,20 @@ Method writeSQLInsertCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
     While sqlanalyse.NextColumnReference(.columnNameE,.fulltable,.fieldname,.colnum) {
         If fulltable'="" {
             Do ..wrapElementHTML(columnNameE,"<a title=""Col "_colnum_""" class="""_$$$classObjectMember_""" href="""_..HREFToSQLTable(fulltable,columnNameE.ToString(0))_""">","</a>")
-            set colidx(colnum)=columnNameE.ToString(0)
+            Set colidx(colnum)=columnNameE.ToString(0)
         } Else {
             ; should always be a name
         }
     }  
     ; only one of these xpath searches will find anything
     ; if they do find something it attempts to map to the columns above
-    k values
-    do element.findElementsXPath("InsertMethod/InsertValuesList/UpdateValues/SqlExpression",.values)
-    do element.findElementsXPath("InsertMethod/InsertMultirow/SelectCommand/SelectList/SelectSublist/DerivedColumn/SqlExpression",.values)
-    if $isobject(values) {
-        for i=1:1:values.Count() {
-            set valueE=values.GetAt(i)
-            do ..wrapElementHTML(valueE,"<span class=""SQLSection"" title=""Col "_i_" ("_$g(colidx(i))_")"">","</span>")
+    Kill values
+    Do element.findElementsXPath("InsertMethod/InsertValuesList/UpdateValues/SqlExpression",.values)
+    Do element.findElementsXPath("InsertMethod/InsertMultirow/SelectCommand/SelectList/SelectSublist/DerivedColumn/SqlExpression",.values)
+    If $ISOBJECT(values) {
+        For i=1:1:values.Count() {
+            Set valueE=values.GetAt(i)
+            Do ..wrapElementHTML(valueE,"<span class=""SQLSection"" title=""Col "_i_" ("_$GET(colidx(i))_")"">","</span>")
             ;do ..wrapElementHTML(valueE,"<span class="""_$$$classLensOption_""">"_$g(colidx(i))_"=</span><span class=""SQLSection"" title=""Col "_i_" ("_$g(colidx(i))_")"">","</span>")
         }
     }
@@ -1377,7 +1377,13 @@ Method writeSQLDirectTable(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.C
                 Set aliasname="alias"_tablename
                 Do ..wrapElementHTML(tablenameE,"<span class='SQLTableAlias' title='show alias usage' fetchid="""_$$$UPPER(aliasname)_""" onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
             } Else {
-                Do ..wrapAtomHTML(tablenameE,"<a class="_$$$classProgramName_" href="""_..HREFToSQLTable(tablename)_""">","</a>")
+                ; Carry through bookmark. 
+                ; This is so that if there is something like 
+                ;  SELECT X FROM VIEW 
+                ; and the view says 
+                ;  SELECT * FROM OTHERVIEW 
+                ; we carry through that X is going to be the interesting thing in the OTHERVIEW
+                Do ..wrapAtomHTML(tablenameE,"<a class="_$$$classProgramName_" href="""_..HREFToSQLTable(tablename,..BookMark)_""">","</a>")
             }
         }
     }    

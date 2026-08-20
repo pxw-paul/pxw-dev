@@ -265,7 +265,7 @@ Method compileQuickCheck(Method As %Dictionary.MethodDefinition, RulesElement As
         Set keywords=$LIST(listOfValues,1,numberofK)
         Set Method.Description=Method.Description_$CHAR(13,10)_"summary values:"_$LISTTOSTRING(keywords)
         Set wordlist="",longest=0 
-        Kill wordlengths,sep,wordcount
+        Kill sep,wordcount
         For i=1:1:$LISTLENGTH(keywords) {
             Set word=$LISTGET(keywords,i)
             Set len=$l(word)

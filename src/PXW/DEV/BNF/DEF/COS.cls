@@ -73,7 +73,9 @@ cos_directive_define                ::= 'define' cos_directive_define_name [ arr
 cos_directive_define_name           ::= macro_identifier
 cos_directive_define_subst          ::= [ command_list_eol_continue | expression_list ] text_to_eol_continue 
 cos_directive_dim                   ::= 'dim' cos_directive_dim_item (',' cos_directive_dim_item )* /*Studio and VSCode do not allow multiple dims on one line, but the compiler does not complain (unless there is an =) and some intersystems code has it! %Installer.Invoke  */
-cos_directive_dim_item              ::= variable_set [(',' variable_set )*] [ 'as' [('array' | 'list') 'of'] class_reference ] [ '=' dim_expression ] 
+cos_directive_dim_item              ::= cos_directive_dim_item_set | cos_directive_dim_item_noset 
+cos_directive_dim_item_set          ::= variable_set [(',' variable_set )*] [ 'as' [('array' | 'list') 'of'] class_reference ] '=' dim_expression 
+cos_directive_dim_item_noset        ::= variable_nodef [(',' variable_nodef )*] [ 'as' [('array' | 'list') 'of'] class_reference ] 
 cos_directive_else                  ::= 'else'
 cos_directive_elseif                ::= 'elseif' expression
 cos_directive_endif                 ::= 'endif'
@@ -237,8 +239,11 @@ special_intrinsic                   ::= case_function_call
                                         | select_function_call
                                         | extract_function_call
                                         | piece_function_call
+                                        | get_function_call
+                                        | data_function_call
                                         | order_function_call
                                         | listitem_function_call
+                                        | listnext_function_call
                                         | listupdate_function_call
                                         | increment_function_call
                                         | method_function_call
@@ -249,6 +254,7 @@ special_intrinsic                   ::= case_function_call
                                         | query_function_call
                                         | bitlogic_function_call  
                                         | vector_function_call
+                                        | locate_function_call
 general_intrinsic                   ::= any_keyword function_parameter_list  [ object_chain ]
 
 /*
@@ -414,6 +420,7 @@ python_import                       ::= 'system' '.' 'python' '.' 'import' '(' s
 
 variable                            ::= variable_identifier [ array_parameter_list ] [ object_chain ]
 variable_set                        ::= variable_identifier [ array_parameter_list ] [ object_chain ]
+variable_nodef                      ::= variable_identifier [ array_parameter_list ] [ object_chain ] /* Used for just mentioning a variable but not using or setting (eg #dim, $get() */
 variable_identifier                 ::= 'regexp:(\%|[a-zA-Z])[a-zA-Z0-9]*' /* % or A followed by AN* */
 /(variable_identifier_pattern         ::= (['%'] | '?1A') '?AN'  --  EXPERIMENT % or A followed by AN* */
 array_parameter_list                ::= open_bracket  expression ( ',' expression )*  close_bracket
@@ -785,12 +792,14 @@ piece_function_call                 ::= ('piece' | 'p') open_bracket expression 
 piece_function_call_set             ::= ('piece' | 'p') open_bracket set_value_expression ',' expression [ ',' star_parameter [ ',' star_parameter ] ] close_bracket
 
 /*listbuild_function_call             ::= ('listbuild' | 'lb') open_bracket  expression (',' expression)* close_bracket*/
-listbuild_function_call_set         ::= ('listbuild' | 'lb') open_bracket  set_value_expression (',' variable_set)* close_bracket
+listbuild_function_call_set         ::= ('listbuild' | 'listget' | 'lb' | 'lg') open_bracket  [set_value_expression] (',' [set_value_expression])* close_bracket
 
 listupdate_function_call            ::= ('listupdate' | 'lu') open_bracket  expression ',' expression (',' [ expression ':' expression] )* close_bracket
 
 listitem_function_call              ::= ('listget' | 'list' | 'li' |'lg' ) open_bracket expression  [ ',' star_parameter [ ',' star_parameter ] ] close_bracket
 listitem_function_call_set          ::= ('list' | 'li') open_bracket set_value_expression  [ ',' star_parameter [ ',' star_parameter ] ] close_bracket
+
+
 
 bitlogic_function_call              ::= 'bitlogic' open_bracket bitlogic_expression [ ',' expression ] close_bracket
 bitlogic_expression                  ::= (expression ('|' | '&' | '^' |'~')* )*
@@ -798,7 +807,19 @@ bitlogic_expression                  ::= (expression ('|' | '&' | '^' |'~')* )*
 vector_function_call               ::= 'vector' open_bracket expression [ ',' star_parameter [ ',' star_parameter ] ] close_bracket
 vector_function_call_set           ::= 'vector' open_bracket set_value_expression  ',' expression ',' expression close_bracket
 
-order_function_call                 ::= ('order' | 'o') open_bracket expression [',' expression [ ',' variable_set ] ] close_bracket
+order_function_call                ::= ('order' | 'o') open_bracket expression [',' expression [ ',' variable_set ] ] close_bracket
+
+get_function_call                 ::= ('get' | 'g') open_bracket data_expression [ ',' expression ] close_bracket
+data_function_call                ::= ('data' | 'd') open_bracket data_expression [ ',' variable_set ] close_bracket
+data_expression                   ::= this_object
+                                        | variable_nodef
+                                        | macrocall
+                                        | Indirection
+                                        | global_ref
+                                        | special_variable
+                                        | ( '(' expression ')'  [ object_chain ] )
+
+listnext_function_call             ::= 'listnext' open_bracket expression [',' expression [ ',' variable_set ] ] close_bracket
 
 text_function_call                  ::= ('text' | 't') open_bracket text_label_reference close_bracket
 text_label_reference                ::= (( (label_identifier [ '+' expression ]) | ('+' expression) | simple_indirection ) [ '^' [routine_env] ( routine_identifier  | simple_indirection) ])  /* lab^rouine */
@@ -816,6 +837,9 @@ classmethod_class                   ::= expression
 classmethod_method                  ::= expression
 zobjmethod_function_call            ::= 'zobjmethod' open_bracket classmethod_class ',' classmethod_method [ ',' function_parameter_list_items ] close_bracket [ object_chain ]
 zobjclassmethod_function_call       ::= 'zobjclassmethod' open_bracket classmethod_class ',' classmethod_method [ ',' function_parameter_list_items ] close_bracket [ object_chain ]
+
+/* $LOCATE(string,regexp,start,end,val) */
+locate_function_call                ::= 'locate' open_bracket expression ',' expression [ ',' expression [ ',' variable_set [',' variable_set ]]] close_bracket
 
 select_function_call                ::= ('select' | 's') '(' select_clauses ')' [ object_chain ] /* who returns an object from a $s? */
 select_clauses                      ::= select_clause ( ',' select_clause )*

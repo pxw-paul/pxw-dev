@@ -43,6 +43,14 @@ ClassMethod OnPreHTTP() As %Boolean [ ServerOnly = 1 ]
 	#dim %session as %CSP.Session
 	#dim %response as %CSP.Response
 	
+	; A login page may set up a original_user session variable that we can use to sign in here 
+	If $GET(%session.Data("original user"))]"" {
+		Set sc=$SYSTEM.Security.Login(%session.Data("original user"))
+		If $$$ISERR(sc) {
+			Quit 0 ; what else to do if we don't log in?
+		}
+	}
+	
 	Set defaultDefault="Dark"
 
 	Set %NS=%request.Get("%NS","LOCAL_USER") ; there should always be an NS

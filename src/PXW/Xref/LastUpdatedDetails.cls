@@ -42,7 +42,7 @@ Class PXW.Xref.LastUpdatedDetails [ ClassType = view, Owner = {_PUBLIC}, ViewQue
 
 ClassMethod MyFormat(NamespaceName As %String) As %String [ SqlProc ]
 {
-	q "formatted "_NamespaceName
+	Quit "formatted "_NamespaceName
 }
 
 }

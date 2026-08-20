@@ -153,6 +153,64 @@ Method IsExtension(Classname As %String, SuperClass As %String) As %Boolean
 	Quit 0
 }
 
+/*
+set a=##class(PXW.DEV.BNF.Analyse.COS).%New(),a.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace("LOCAL_USER")
+; Atom and Element are quite compatible based on the Particle being at depth 2
+USER>w a.IsCompatible("PXW.DEV.Atom","PXW.DEV.Element",.c,.d),! zw c,d
+1
+c="PXW.DEV.Particle"
+d=2
+
+USER>w a.IsCompatible("PXW.DEV.Element","PXW.DEV.Atom",.c,.d),! zw c,d
+1
+c="PXW.DEV.Particle"
+d=2
+
+
+; Particle and Element are very compatible based on the Particle being at depth 1 (ie Element extends Particle)
+USER>w a.IsCompatible("PXW.DEV.Particle","PXW.DEV.Element",.c,.d),! zw c,d
+1
+c="PXW.DEV.Particle"
+d=1
+
+
+USER>w a.IsCompatible("PXW.DEV.Element","PXW.DEV.Particle",.c,.d),! zw c,d
+1
+c="PXW.DEV.Particle"
+d=1
+
+; Element and This class share the compatible %RegisteredObject at a depth of 3, is that really compatible depends on usage of the objects
+USER>w a.IsCompatible("PXW.DEV.Element","PXW.DEV.BNF.Analyse.COS",.c,.d),! zw c,d
+1
+c="%Library.RegisteredObject"
+d=3
+*/
+method IsCompatible(Classname1 as %String, Classname2 as %String, output commonClass as %String, output depth as %String) as %Boolean {
+
+	$$$DEBUGMethodBegin
+	Set commonClass="",depth=0,result=0
+	If ..ClassServer.GetClassDetails(Classname1,,,.super1),..ClassServer.GetClassDetails(Classname2,,,.super2) {
+		Set common1="",d1=0
+		For i=2:1:$LENGTH(super1,"~")-1 {
+			Set cls=$PIECE(super1,"~",i)
+			If common1="",super2[("~"_cls_"~") Set common1=cls,d1=i-1
+		}
+		Set common2="",d2=0
+		For i=2:1:$LENGTH(super2,"~")-1 {
+			Set cls=$PIECE(super2,"~",i)
+			If common2="",super1[("~"_cls_"~") Set common2=cls,d2=i-1
+		}
+		If d1>0,d1<d2 {
+			Set commonClass=common1,depth=d1,result=1
+		} ElseIf d2>0 {
+			Set commonClass=common2,depth=d2,result=1
+		}
+		$$$DEBUG($$$debugFormat("super1={super1}, super2={super2}"))
+	}
+	$$$DEBUGMethodEnd
+	Quit result
+}
+
 Method checkCDEFOneClassMember(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="OneClassmember")
 {
 	Do ..Reset()
@@ -368,7 +426,12 @@ Method checkAndRecordVariableType(VariableElement As PXW.DEV.BNF.Elements.COS, V
 	Set dimmedtype=..FullClassName($GET(..DimmedTypes(var)))
 	Set currenttype=..FullClassName($GET(..VariablesTypes(var)))
 	If dimmedtype'="",derivedtype'="",dimmedtype'=derivedtype {
-		If (..IsExtension(derivedtype,dimmedtype)=0) && (..IsExtension(dimmedtype,derivedtype)=0) {
+		;If (..IsExtension(derivedtype,dimmedtype)=0) && (..IsExtension(dimmedtype,derivedtype)=0) {
+		;	Do ..AddElementWarning(velement,"Derived type of "_var_" ("_derivedtype_") differs to dimmed type ("_dimmedtype_")")
+		;}
+		If ..IsCompatible(derivedtype,dimmedtype,.cls,.depth) {
+			Do:depth>1 ..AddElementWarning(velement,"Derived type of "_var_" ("_derivedtype_") differs to dimmed type ("_dimmedtype_") but they are compatible via "_cls_" at depth "_depth)
+		} Else {
 			Do ..AddElementWarning(velement,"Derived type of "_var_" ("_derivedtype_") differs to dimmed type ("_dimmedtype_")")
 		}
 	}
@@ -377,8 +440,13 @@ Method checkAndRecordVariableType(VariableElement As PXW.DEV.BNF.Elements.COS, V
 
 	If currenttype'="",finaltype'="",currenttype'=finaltype {
 		; if the current type is a superclass of the new type then this is allowed
-		If ..IsExtension(finaltype,currenttype) || ..IsExtension(currenttype,finaltype){
-			; not an error
+		;If ..IsExtension(finaltype,currenttype) || ..IsExtension(currenttype,finaltype){
+		;	; not an error
+		;} Else {
+		;	Do ..AddElementWarning(velement,"Change of type on "_var_" from "_currenttype_" to "_finaltype)
+		;}
+		If ..IsCompatible(finaltype,currenttype,.cls,.depth) {
+			Do:depth>2 ..AddElementWarning(velement,"Change of type on "_var_" from "_currenttype_" to "_finaltype_" but they are compatible via "_cls_" at depth "_depth)
 		} Else {
 			Do ..AddElementWarning(velement,"Change of type on "_var_" from "_currenttype_" to "_finaltype)
 		}
@@ -403,6 +471,23 @@ Method checkCosVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Comp
 			Set ..BadVarsUsed(uvar)=element
 		}
 	}
+	; ByRef variables are BEING set so dont check for undef, {var} are actually property names so skip those too
+	If element.type'="ByrefVariable",$EXTRACT(varname,1)'="%",$EXTRACT(varname,1)'="{",'$DATA(..VariablesSet(varname)),'$DATA(..ParameterVariables(varname)) {
+		Do ..AddElementWarning(element,varname_" Possible UNDEF")
+	}
+	$$$DEBUGMethodEnd
+	Quit ""
+}
+
+Method checkCosVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="VariableSet")
+{
+	$$$DEBUGMethodBegin
+	;  variable name part is the only bit we are interested in
+	Set varname=""
+	Set varname=element.FirstAtom().ToString(0)
+	If varname'="" {
+		Set ..VariablesSet(varname)=element
+	}
 	$$$DEBUGMethodEnd
 	Quit ""
 }
@@ -417,6 +502,24 @@ Method checkCosObjectVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BN
 	Quit ""
 }
 
+Method checkCosMacroCall(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="MacroCall")
+{
+	$$$DEBUGMethodBegin
+	; Find direct variables, these 'could' be being set by the macro.
+	; We should look at the macro and work out what its doing to be really clever, for now just count them as being set so we avoid undef
+	Do element.findElementsXPath("MacroParameterList/MacroParameter/Expression/Factor/Primary/Variable",.variablelist)
+	If $ISOBJECT($GET(variablelist)) {
+		For i=1:1:variablelist.Count() {
+			Set varE=variablelist.GetAt(i)
+			Set varname=varE.FirstAtom().ToString(0)
+			Set ..VariablesSet(varname)=varE
+		}
+	}
+	$$$DEBUGMethodEnd
+	Quit ""
+}
+
+
 Method checkCosDirectiveDefine(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosDirectiveDefine")
 {
 	$$$DEBUGMethodBegin
@@ -429,22 +532,25 @@ Method checkCosDirectiveDefine(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.B
 	Quit ""
 }
 
-Method checkCosDirectiveDimItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosDirectiveDimItem")
+Method checkCosDirectiveDimItemSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosDirectiveDimItemSet")
 {
 	$$$DEBUGMethodBegin
 	Set classele=element.findFirstElementByType("ClassReference")
 	If $ISOBJECT(classele) {
 		Set classname=classele.ToString(0)
-		Do element.findElementsByType("VariableSet",.variablelist,2)
+		Do element.findElementsByType("VariableSet",.variablelist,0)
 		For i=1:1:variablelist.Count() {
 			Set var=variablelist.GetAt(i).ToString(0)
 			Set ..DimmedTypes(var)=classname
 		}
-		set dimexprE=element.findFirstElementByType("DimExpression")
-		if $ISOBJECT(dimexprE) {
+		Set dimexprE=element.findFirstElementByType("DimExpression")
+		If $ISOBJECT(dimexprE) {
 			Set derivedtype=..DeriveTypeReturned(dimexprE)
-			if ..FullClassName(classname)'=..FullClassName(derivedtype) {
-				do ..AddElementWarning(dimexprE,"Dimmed as "_classname_" does not match derived:"_derivedtype)
+			Set fullret=..FullClassName(classname),fullder=..FullClassName(derivedtype)
+			If ..IsCompatible(fullret,fullder,.cls,.depth) {
+				Do:depth>1 ..AddElementWarning(element,"dimmed as "_fullret_" does not match derived "_fullder_" but they are compatible via "_cls_" at depth "_depth)
+			} Else {
+				Do ..AddElementWarning(element,"dimmed as "_fullret_" does not match derived "_fullder)
 			}
 		}
 	}
@@ -452,6 +558,28 @@ Method checkCosDirectiveDimItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.
 	Quit ""
 }
 
+Method checkCosDirectiveDimItemNoSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosDirectiveDimItemNoset")
+{
+	$$$DEBUGMethodBegin
+	Set classele=element.findFirstElementByType("ClassReference")
+	If $ISOBJECT(classele) {
+		Set classname=classele.ToString(0)
+		Do element.findElementsByType("VariableNodef",.variablelist,0)
+		For i=1:1:variablelist.Count() {
+			Set var=variablelist.GetAt(i).ToString(0)
+			Set ..DimmedTypes(var)=classname
+		}
+		/*set dimexprE=element.findFirstElementByType("DimExpression")
+		if $ISOBJECT(dimexprE) {
+			Set derivedtype=..DeriveTypeReturned(dimexprE)
+			if ..FullClassName(classname)'=..FullClassName(derivedtype) {
+				do ..AddElementWarning(dimexprE,"Dimmed as "_classname_" does not match derived:"_derivedtype)
+			}
+		}*/
+	}
+	$$$DEBUGMethodEnd
+	Quit ""
+}
 Method checkCosDoItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="DoItem")
 {
 	$$$DEBUGMethodBegin
@@ -460,8 +588,42 @@ Method checkCosDoItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compil
 		; eg Do ..method(.var1,.var2)
 		Set variableElement=element.partsGetAt(1)
 		; not really interested in the return type, we just want the method checked for byref 
-		do ..DeriveTypeReturned(variableElement)
+		Do ..DeriveTypeReturned(variableElement)
 	}	
+	$$$DEBUGMethodEnd
+	Quit ""
+}
+
+Method checkCosForCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ForCommand")
+{
+	$$$DEBUGMethodBegin
+	; the variables on a for loop do not "need" to be used so we will not check for undef on them, but we will keep track of them being used
+	Do element.findElementsXPath("ForParameters/ForParameter/LvalueExpression/VariableSet",.variablelist)
+	If $ISOBJECT($GET(variablelist)) {
+		For i=1:1:variablelist.Count() {
+			Set varE=variablelist.GetAt(i)
+			Set varname=varE.FirstAtom().ToString(0)
+			Set ..VariablesUsed(varname)=varE
+		}
+	}
+	$$$DEBUGMethodEnd
+	Quit ""
+}
+Method checkCosIncrementFunctionCall(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="IncrementFunctionCall")
+{
+	$$$DEBUGMethodBegin
+    Set varE=element.findFirstElementByType("VariableSet",0)
+    If $ISOBJECT(varE) {
+		Set var=varE.ToString(0)
+		; if its JUST a variable then we are interested in keeping track of it
+		If varE.partsCount()=1 {
+			Set ..VariablesUsed(var,+element)=varE
+		} Else {
+			; its an array or some sort of object.property, so its a var being used
+			Set varname=varE.FirstAtom().ToString(0)
+			Set ..VariablesUsed(varname,+element)=varE
+		}        
+    }
 	$$$DEBUGMethodEnd
 	Quit ""
 }
@@ -469,12 +631,12 @@ Method checkCosDoItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compil
 Method checkCosQuitCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="QuitCommand,ReturnCommand")
 {
 	$$$DEBUGMethodBegin
-	if element.type="QuitCommand" {
+	If element.type="QuitCommand" {
 		Set quitexpE=element.findFirstElementByType("QuitExpression",1)	
-	} elseif element.type="ReturnCommand" {
+	} ElseIf element.type="ReturnCommand" {
 		Set quitexpE=element.findFirstElementByType("ReturnExpression",1)
-	} else {
-		set quitexpE=""
+	} Else {
+		Set quitexpE=""
 	}
 	If $ISOBJECT(quitexpE) {
 		Set derivedtype=..DeriveTypeReturned(quitexpE)
@@ -493,10 +655,16 @@ Method checkCosQuitCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.C
 		If ..ReturnType="" {
 			Do ..AddElementWarning(element,"return type is not set, derived type="_derivedtype)
 		} ElseIf  ..FullClassName(..ReturnType)'=..FullClassName(derivedtype) {
-			If (..IsExtension(..FullClassName(..ReturnType),..FullClassName(derivedtype))) || (..IsExtension(..FullClassName(derivedtype),..FullClassName(..ReturnType))) {
-				; the derived type subclass of the expected type, which is fine
+			;If (..IsExtension(..FullClassName(..ReturnType),..FullClassName(derivedtype))) || (..IsExtension(..FullClassName(derivedtype),..FullClassName(..ReturnType))) {
+			;	; the derived type subclass of the expected type, which is fine
+			;} Else {
+			;	Do ..AddElementWarning(element,"return type="_..ReturnType_", derived type="_derivedtype)
+			;}
+			Set fullret=..FullClassName(..ReturnType),fullder=..FullClassName(derivedtype)
+			If ..IsCompatible(fullret,fullder,.cls,.depth) {
+				Do:depth>1 ..AddElementWarning(element,"return type="_fullret_", derived type="_fullder_" but they are compatible via "_cls_" at depth "_depth)
 			} Else {
-				Do ..AddElementWarning(element,"return type="_..ReturnType_", derived type="_derivedtype)
+				Do ..AddElementWarning(element,"return type="_fullret_", derived type="_fullder)
 			}
 		}
 		Set ..QuitFound=1
@@ -504,6 +672,23 @@ Method checkCosQuitCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.C
 	$$$DEBUGMethodEnd
 	Quit ""
 }
+
+Method checkCosTryCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="TryCommand")
+{
+	$$$DEBUGMethodBegin
+	;  variable name part is the only bit we are interested in
+	; A try is defined like this "TRY" code "CATCH" variable code
+	; so the only direct variable on the try is the exception
+	Set varE=element.findFirstElementByType("Variable",0)
+	If $ISOBJECT(varE) {
+		Set varname=varE.FirstAtom().ToString(0)
+		Set ..VariablesSet(varname)=element
+		Set ..VariablesTypes(varname)="%Exception.AbstractException"
+	}
+	$$$DEBUGMethodEnd
+	Quit ""
+}
+
 
 Method checkOneClassMemeberFINAL(element As PXW.DEV.BNF.Elements.COS)
 {
@@ -515,8 +700,17 @@ Method checkOneClassMemeberFINAL(element As PXW.DEV.BNF.Elements.COS)
 		; if its a parameter variable we count this as being used
 		; {*} is special variable that is used on computed fields, ignore those
 		If '$DATA(..VariablesUsed(var)),'$DATA(..ParameterVariables(var)),var'="{*}" {
-			Set vsetE=..VariablesSet(var)
-			Do ..AddElementWarning(vsetE,var_" Set but not used")
+			Set report=1
+			If var="SQLCODE" {
+				; SQLCODE is a special case, some people check SQLCODE, some check %ROWCOUND
+				If $DATA(..VariablesUsed("%ROWCOUNT")) {
+					Set report=0
+				}
+			}
+			If report {
+				Set vsetE=..VariablesSet(var)
+				Do ..AddElementWarning(vsetE,var_" Set but not used")
+			}
 		}
 	}
 
@@ -530,7 +724,6 @@ Method checkOneClassMemeberFINAL(element As PXW.DEV.BNF.Elements.COS)
 	}
 	$$$DEBUGMethodEnd
 }
-
 Method checkCDEFAttributeCodeModeType(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="AttributeCodemodetype")
 {
 	$$$DEBUGMethodBegin
@@ -560,6 +753,29 @@ Method checkCDEFMethodAttribute(element As PXW.DEV.BNF.Elements.ClassDefinition)
 	Quit ""
 }
 
+Method checkCosSqlCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="SqlCommand")
+{
+	$$$DEBUGMethodBegin
+	; &sql will always set SQLCODE - should it set the element to the SQL command itself? Lets see what happens.
+	Set ..VariablesSet("SQLCODE")=element
+	$$$DEBUGMethodEnd
+	Quit ""
+}
+
+/// Check in-line sql for setting of variables.
+Method checkSqlSelectIntoVariable(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="SelectIntoVariable")
+{
+	$$$DEBUGMethodBegin
+	;  variable name part is the only bit we are interested in
+	Set varname=""
+	Set varE=element.findFirstElementByType("Variable",1)
+	If $ISOBJECT(varE) Set varname=varE.FirstAtom().ToString(0)
+	If varname'="" {
+		Set ..VariablesSet(varname)=element
+	}
+	$$$DEBUGMethodEnd
+	Quit ""
+}
 Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, StartClassName As %String, ElementTypeClassName As %String = "") As %String
 {
 	#dim fpE,fparamsE as PXW.DEV.BNF.Elements.COS
@@ -576,42 +792,46 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, Start
 		Set propertyname=$SELECT($EXTRACT(propertyname,1)=".":$PIECE(propertyname,".",2),1:propertyname)
 				
 		If collection'="",propertyname?1"Get".AN {
-			set collection=""
-			if ElementTypeClassName'="" {
+			Set collection=""
+			If ElementTypeClassName'="" {
 				; special case for List.Get methods where we know the element type already
 				Set type=ElementTypeClassName
-			} else {
+			} Else {
 				; or we might be able to derive it
-				if ..ClassServer.GetParameterDetails(classname,"ELEMENTTYPE",,,.elementtype) {
-					set type=elementtype
+				If ..ClassServer.GetParameterDetails(classname,"ELEMENTTYPE",,,.elementtype) {
+					Set type=elementtype
 				}
 			}
 		} Else {
 			Set found=..ClassServer.GetPropertyDetails(classname,propertyname,.type,.collection,.ElementTypeClassName)
-			if 'found {
-				set type=..ClassServer.GetMethodReturnType(classname,propertyname,.fspec)
-				set collection="",elementtype=""
+			If 'found {
+				Set type=..ClassServer.GetMethodReturnType(classname,propertyname,.fspec)
+				Set collection="",elementtype=""
 			}
 		}
 		If fspec'="" {
 			Set fparamsE=objectchain.findFirstElementByType("FunctionParameterList",0)
-			Set fpk="",count=0
-			For  {
-				Set fpE=fparamsE.findNextElement(.fpk)
-				Quit:fpk=""
-				Set count=count+1
-				If fpE.type="FunctionParameter" {
-					Set byrefE=fpE.findFirstElementByType("ByrefVariable",0)
-					If $ISOBJECT(byrefE) {
-						Set var=byrefE.ToString(0)
-						If var'="" {
-							Set btype=$LISTGET($LISTGET(fspec,count),2)
-							If btype'="" {
-								Do ..checkAndRecordVariableType(byrefE,var,btype)
+			If $ISOBJECT(fparamsE) {
+				Set fpk="",count=0
+				For  {
+					Set fpE=fparamsE.findNextElement(.fpk)
+					Quit:fpk=""
+					Set count=count+1
+					If fpE.type="FunctionParameter" {
+						Set byrefE=fpE.findFirstElementByType("ByrefVariable",0)
+						If $ISOBJECT(byrefE) {
+							Set var=byrefE.ToString(0)
+							If var'="" {
+								Set btype=$LISTGET($LISTGET(fspec,count),2)
+								If btype'="" {
+									Do ..checkAndRecordVariableType(byrefE,var,btype)
+								}
 							}
 						}
 					}
 				}
+			} Else {
+				Do ..AddElementWarning(objectchain,"Looks like a method "_$GET(classname)_"."_$GET(propertyname)_" but no parameter list found")
 			}
 		}
 
@@ -629,8 +849,8 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 
 	; some kind of set with indirection so type cannot be derived
 	; S @x
-	if '$isobject(ValueElement) quit ""
-	if 'ValueElement.IsElement quit ""
+	If '$ISOBJECT(ValueElement) Quit ""
+	If 'ValueElement.IsElement Quit ""
 
 	If ValueElement.type="Expression" {
 		Set expression=ValueElement
@@ -657,12 +877,12 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 			Set classnameele=hhclass.findFirstElementByType("ClassReference",0)
 			Set classname=classnameele.ToString(0)
 			Set finaltype=..FollowObjectChainForType(hhclass,classname)
-		} else {
+		} Else {
 			; ##super()
 			If $ISOBJECT(super) {
-				set superclass=..ClassServer.GetMethodOverrides(..This_"||"_..ThisMethod)
-				if superclass'="" {
-					s type=..ClassServer.GetMethodReturnType(superclass,..ThisMethod)
+				Set superclass=..ClassServer.GetMethodOverrides(..This_"||"_..ThisMethod)
+				If superclass'="" {
+					Set type=..ClassServer.GetMethodReturnType(superclass,..ThisMethod)
 					Set finaltype=..FollowObjectChainForType(super,type)
 					;zw type,finaltype
 				}
@@ -709,10 +929,10 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 Method FullClassName(name As %String) As %String
 {
 	If name="" Quit ""
-	if $isobject(..ClassServer) {
+	If $ISOBJECT(..ClassServer) {
 		Set fullname=..ClassServer.FullClassName(name)
-	} else {
-		set fullname=name
+	} Else {
+		Set fullname=name
 	}
 	
 	Quit fullname
@@ -835,7 +1055,7 @@ Method SimplifyStringExpressionAsElement(ValueElement As PXW.DEV.BNF.Elements.CO
 {
 	#dim partE,factorE,primaryE,finalE,expressionE as PXW.DEV.BNF.Elements.COS
 	Set stringElement=##class(PXW.DEV.Element).%New()
-	if '$ISOBJECT(ValueElement) quit ""
+	If '$ISOBJECT(ValueElement) Quit ""
 	If ValueElement.type="Expression" {
 		Set expressionE=ValueElement
 	} Else {

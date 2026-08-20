@@ -498,13 +498,11 @@ Method xrefCOSSpecialSystem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.
 {
     #dim chainE as PXW.DEV.Element
     Set classname="%SYSTEM"
-    set key="",firstAtomOfClass="",lastAtomOfClass="",chainE=""
+    set key="",chainE=""
     for  {
         set part=element.partsGetNext(.key)
         quit:key=""
         if $PIECE(part.type,":",1)="ObjectMemberIdentifier" {
-            set:firstAtomOfClass="" firstAtomOfClass=part
-            set lastAtomOfClass=part
             set classname=classname_"."_part.value
         } elseif part.type="ObjectChain" {
             set chainE=part
