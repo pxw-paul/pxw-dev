@@ -1,4 +1,4 @@
-Include PXW.Debuggers.Macros
+Include (PXW.Debuggers.Macros,PXW.DEV.BNF.macros)
 
 Class PXW.DEV.BNF.processor Extends %RegisteredObject
 {
@@ -69,8 +69,8 @@ Method processSpecificElement(element As PXW.DEV.Element) [ CodeMode = objectgen
 			}
 		}
 	}
-    Do %code.WriteLine($CHAR(9)_"Set class=$$$UPPER($classname(element)) q:class=""""")
-    Do %code.WriteLine($CHAR(9)_"Set etype=$$$UPPER(element.type) q:etype=""""")
+    Do %code.WriteLine($CHAR(9)_"Set class=$ZCONVERT($classname(element),""U"") q:class=""""")
+    Do %code.WriteLine($CHAR(9)_"Set etype=$ZCONVERT(element.type,""U"") q:etype=""""")
     Do %code.WriteLine($CHAR(9)_"$$$DEBUGMethodBegin")
 	Do %code.WriteLine($CHAR(9)_"i '$d(..processNotRequired(class,etype)) {")
 	Set (class,etype,name)="",cif="If"

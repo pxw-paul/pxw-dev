@@ -831,13 +831,15 @@ Method HtmlBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
         Set ..whitespace=parser.whitespace
         ; if we get here the next thing must be a > so check
         If $$$peek(..stream,1)'=">" {
-            Set recretok=..recover(ParentElement,.recsub,"<>","")
+            ;Set recretok=..recover(ParentElement,.recsub,"<>","")
+            Do ..recover(ParentElement,.recsub,"<>","")
         }
         Set retok=1
 	} Else {
         ;$$$DEBUG("HTMLBody RECOVER:"_$$$peek(..stream,20))
-        Set recretok=..recover(ParentElement,.recsub,"<>","")
+        ;Set recretok=..recover(ParentElement,.recsub,"<>","")
         ;$$$DEBUG("RECOVERED htmlbody:"_recretok)
+        Do ..recover(ParentElement,.recsub,"<>","")
         Set retok=1
     }
     $$$DEBUGMethodEnd
@@ -874,7 +876,8 @@ Method JsBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
         Set ..whitespace=parser.whitespace
         ; if we get here the next thing must be a > so check
         If $$$peek(..stream,1)'=">" {
-            Set recretok=..recover(ParentElement,.recsub,"<>","")
+            ;Set recretok=..recover(ParentElement,.recsub,"<>","")
+            Do ..recover(ParentElement,.recsub,"<>","")
         }
         Set retok=1
     } Else {

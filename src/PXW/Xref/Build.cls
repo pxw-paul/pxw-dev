@@ -142,9 +142,9 @@ ClassMethod BuildIfNecessary(CodeInterface As PXW.DEV.Dictionary.CodeInterface, 
 				Do ..DeleteAnalysisCalledByTypeKey1(Namespace,Type,Name)
 				Do ..DeleteCalledByTypeKey1(Namespace,Type,Name)
 			}
-			i 'DebugBuild $$$DEBUGPause
+			If 'DebugBuild $$$DEBUGPause
 			Set sc=builder.Build(Namespace,Name,text)
-			i 'DebugBuild $$$DEBUGResume
+			If 'DebugBuild $$$DEBUGResume
 		}
 		If $$$ISOK(sc) {
 			Do LastUpdate.%SetModified(1) ; because the lastupdate table is cleared via SQL as part of the build so ensure it saves again

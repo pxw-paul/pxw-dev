@@ -81,33 +81,34 @@ Method NextIndexItemByName(ByRef Name As %String = "", ByRef Type As %String = "
 Method wrapInnerAtomHTML(atom As PXW.DEV.Atom, pre As %String, post As %String)
 {
 	Set a=+atom
-    ;Set ..preI(a,$I(..preI(a)))=pre
-    ;Set ..postI(a,$I(..postI(a)))=post
-    Set ..pre(a,$INCREMENT(..pre(a)))=pre
-    Set ..post(a,$INCREMENT(..post(a)))=post
+	Set ..pre(a)=$GET(..pre(a))_pre
+	Set ..post(a)=post_$GET(..post(a))
 }
 
 Method wrapAtomHTML(atom As PXW.DEV.Atom, pre As %String, post As %String)
 {
 	Set a=+atom
-    Set ..pre(a,$INCREMENT(..pre(a)))=pre
-    Set ..post(a,$INCREMENT(..post(a)))=post
+	Set ..pre(a)=$GET(..pre(a))_pre
+	Set ..post(a)=post_$GET(..post(a))
+
 }
 
 /// eg an atom=2@PXW.DEV.Atom
 /// orefNumber is just the 2
 Method wrapObjectRefHTML(orefNumber As %Integer, pre As %String, post As %String)
 {
-    Set ..pre(orefNumber,$INCREMENT(..pre(orefNumber)))=pre
-    Set ..post(orefNumber,$INCREMENT(..post(orefNumber)))=post
+	Set a=orefNumber
+	Set ..pre(a)=$GET(..pre(a))_pre
+	Set ..post(a)=post_$GET(..post(a))
+
 }
 
 Method wrapElementHTML(element As PXW.DEV.Element, pre As %String, post As %String)
 {
-	; on elements don't wrap the whitespace
-	Set e=+element
-	Set ..pre(e,$INCREMENT(..pre(e)))=pre
-  	Set ..post(e,$INCREMENT(..post(e)))=post
+	Set a=+element
+	Set ..pre(a)=$GET(..pre(a))_pre
+	Set ..post(a)=post_$GET(..post(a))
+
 }
 
 /// Output the html directly to destination. No escaping or other formatting is done.
@@ -137,10 +138,13 @@ Method writeElement(element As PXW.DEV.Element)
 	
 	;For i=1:1:+$GET(..pre(+element)) Do ..output($GET(..pre(+element,i)))
 	Set e=+element
-	If $DATA(..pre(e),n) {
-		Set out=""
-		For i=1:1:n Set out=out_..pre(e,i)
-		Do ..output(.out)
+	;If $DATA(..pre(e),n) {
+	;	Set out=""
+	;	For i=1:1:n Set out=out_..pre(e,i)
+	;	Do ..output(.out)
+	;}
+	If $DATA(..pre(e),out) {
+		Do ..output(out)
 	}
 
 	Set akey=""
@@ -157,10 +161,13 @@ Method writeElement(element As PXW.DEV.Element)
 	}
 	
 	;For i=+$GET(..post(+element)):-1:1 Do ..output($GET(..post(+element,i)))
-	If $DATA(..post(e)) {
-		Set out=""
-		For i=n:-1:1 Set out=out_..post(e,i)
-		Do ..output(.out)
+	;If $DATA(..post(e)) {
+	;	Set out=""
+	;	For i=n:-1:1 Set out=out_..post(e,i)
+	;	Do ..output(.out)
+	;}
+	If $DATA(..post(e),out) {
+		Do ..output(out)
 	}
 	
 	$$$DEBUGMethodEnd
@@ -169,13 +176,13 @@ Method writeElement(element As PXW.DEV.Element)
 /// the only method that should actually do any output during the middle processing
 Method writeAtom(atom As PXW.DEV.Atom, preValue As %String = "", postValue As %String = "")
 {
+	$$$DEBUGMethodBegin
 	If $ISOBJECT(atom.whitespace) {
 		Do ..writeAtom(atom.whitespace,"<span class=whitespace>","</span>")
 	}
 	If $ISOBJECT(atom.comment) {
 		Do ..writeAtom(atom.comment,"<span class='"_$$$classComment_"'>","</span>")
 	}
-	$$$DEBUGMethodBegin
 
 	; add hilite on whitespace (OR ANYTHING) that is NOT going over more than 1 line
 	If ..HiLiteLine'="",atom.line=..HiLiteLine,atom.value'[$CHAR(13) {
@@ -205,23 +212,9 @@ Method writeAtom(atom As PXW.DEV.Atom, preValue As %String = "", postValue As %S
 	}
 	Do:..showPaths ..wrapAtomHTML(atom,"<span title="""_+atom_":"_atom.type_""">","</span>")
 	
-	;Set out="",a=+atom
-    ;For i=1:1:+$GET(..pre(a)) Set out=out_$GET(..pre(a,i))
-    ;Set out=out_preValue_$ZCONVERT(atom.start,"O","HTML")
-	;    For i=1:1:+$GET(..preI(a)) Set out=out_$GET(..preI(a,i))
-	;    Set out=out_$ZCONVERT(atom.value,"O","HTML")
-	;    For i=+$GET(..postI(a)):-1:1 Set out=out_$GET(..postI(a,i))
-	;Set out=out_$ZCONVERT(atom.end,"O","HTML")_postValue
-    ;For i=+$GET(..post(a)):-1:1 Set out=out_$GET(..post(a,i))
-	;Write out
-	Set out="",a=+atom
-    ;For i=1:1:+$GET(..pre(a)) Set out=out_$GET(..pre(a,i))
-    Set out=out_preValue_$ZCONVERT(atom.start,"O","HTML")
-	    If $DATA(..pre(a),n) For i=1:1:n Set out=out_..pre(a,i)
-	    Set out=out_$ZCONVERT(atom.value,"O","HTML")
-	    If $DATA(..post(a),n) For i=+n:-1:1 Set out=out_..post(a,i)
-	Set out=out_$ZCONVERT(atom.end,"O","HTML")_postValue
-    ;For i=+$GET(..post(a)):-1:1 Set out=out_$GET(..post(a,i))
+	Set a=+atom
+    Set out=preValue_$ZCONVERT(atom.start,"O","HTML")_$GET(..pre(a))_$ZCONVERT(atom.value,"O","HTML")_$GET(..post(a))_$ZCONVERT(atom.end,"O","HTML")_postValue
+
 	Write out
 	$$$DEBUGMethodEnd
 }

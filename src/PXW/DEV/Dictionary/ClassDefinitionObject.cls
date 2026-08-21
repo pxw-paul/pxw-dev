@@ -611,8 +611,15 @@ Method GetMethodReturnType(ClassName As %String, Name As %String, Output FormalS
             Do ..GetMethodDetails(typeclass,smethod,.returntype)
         }
     } 
+
+    ; if the method returns the type of its origin then this method returns itself
+    ; eg, classmethod OpenNamespace returns PXW.DEV.Dictionary.CodeInterface 
+    ;     then ##class(PXW.DEV.Dictionary.ClassDefintionObject).OpenNamespace(x) can be considered returning a ClassDefintionObject
+    If origin'="",returntype=origin Set returntype=ClassName
+
     ; if the method returns an object handle its probably %Open or %New or an IndexOpen or something that returns itself
     If returntype="%Library.ObjectHandle" Set returntype=ClassName
+
     If Name="%ConstructClone" Set returntype=ClassName
     Quit returntype
 }

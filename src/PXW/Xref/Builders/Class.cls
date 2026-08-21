@@ -1000,7 +1000,7 @@ Method xrefCOSParameterChecks(ClassName As %String, MethodPath As %String, Eleme
             Set p1=plist.GetAt(1),p2=plist.GetAt(2)
             ; ----- P1 (classname)
             Kill atoms
-            Set flat1=..flattenlist(p1,.atoms)
+            Do ..flattenlist(p1,.atoms)
             ;zw flat1,atoms
             ; "classname"
             ; flat1=$lb($lb("String","PXW.DEV.UnitTests.ClassToDisplay"))
@@ -1021,7 +1021,7 @@ Method xrefCOSParameterChecks(ClassName As %String, MethodPath As %String, Eleme
             ; ----- P2 (query)
             if class'="" {
                 Kill atoms
-                Set flat2=..flattenlist(p2,.atoms)
+                Do ..flattenlist(p2,.atoms)
                 ; "classname"
                 ; flat=$lb($lb("String","PXW.DEV.UnitTests.ClassToDisplay"))
                 if atoms.Count()=1,$Piece(atoms.GetAt(1).type,":",1)="String" {
@@ -1039,7 +1039,7 @@ Method xrefCOSParameterChecks(ClassName As %String, MethodPath As %String, Eleme
         If $ISOBJECT($GET(plist)) {
             Kill atoms
             Set p1=plist.GetAt(1)
-            Set flat=..flattenlist(p1,.atoms)
+            Do ..flattenlist(p1,.atoms)
             
             ; "%Studio.Project:ProjectList
             ; flat=$lb($lb("String","%Studio.Project:ProjectList"))

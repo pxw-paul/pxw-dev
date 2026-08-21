@@ -370,15 +370,6 @@ Method addKeywordInList(ParentElement As PXW.DEV.Element, ListOfStrings As %List
 Method addKeyword(ParentElement As PXW.DEV.Element, KeywordUpper As %String) As %Boolean
 {
     $$$DEBUGMethodBegin
-    Set ok=0
-    /*
-    If ..isKeyword(Keyword,.value) {
-        Set foundString=..next($LENGTH(value))
-        Set atom=..newAtom(..#keywordAtomType,foundString)
-        Do ParentElement.AddPart(atom)
-        Set ok=1
-    }
-    */
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
 
     Set keyword=..peekKeyword()
@@ -429,13 +420,7 @@ Method addPunctuation(ParentElement As PXW.DEV.Element, Punctuation As %String, 
     } Else {
         Set ok=0
     }
-    ;Set:$$$debugIsON %addpunct(ok,Punctuation)=$GET(%addpunct(ok,Punctuation))+1
-    /*If ..isPunctuation(Punctuation,.value) {
-        Set foundString=..next($LENGTH(value))
-        Set atom=..newAtom("punctuation",foundString)
-        Do ParentElement.AddPart(atom)
-        Set ok=1
-    }*/
+
     $$$DEBUGMethodEnd
     Quit ok
 }

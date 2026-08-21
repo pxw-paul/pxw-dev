@@ -661,6 +661,8 @@ Method checkCosQuitCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.C
 			;	Do ..AddElementWarning(element,"return type="_..ReturnType_", derived type="_derivedtype)
 			;}
 			Set fullret=..FullClassName(..ReturnType),fullder=..FullClassName(derivedtype)
+			; special case for %Open etc, same thing happens in ClassDefinitionObject
+			if fullret="%Library.ObjectHandle" set fullret=..This
 			If ..IsCompatible(fullret,fullder,.cls,.depth) {
 				Do:depth>1 ..AddElementWarning(element,"return type="_fullret_", derived type="_fullder_" but they are compatible via "_cls_" at depth "_depth)
 			} Else {
