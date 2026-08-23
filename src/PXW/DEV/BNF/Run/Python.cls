@@ -129,13 +129,16 @@ Method Name(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
         }
     
         ; is not a keyword
-        If '$LISTFIND($LISTFROMSTRING(..#Keywords),$$$UPPER(value)) {
-            Set atom=..newAtom("Identifier",value)
-            Do ParentElement.AddPart(atom)
-        } Else {
-            Set ok=0
-            Do ..gotoBookmark(.bm)
-        }
+        ;If '$LISTFIND($LISTFROMSTRING(..#Keywords),$$$UPPER(value)) {
+        ;    Set atom=..newAtom("Identifier",value)
+        ;    Do ParentElement.AddPart(atom)
+        ;} Else {
+        ;    $$$DEBUG("Reject "_value_" path="_$g(%path))
+        ;    Set ok=0
+        ;    Do ..gotoBookmark(.bm)
+        ;}
+        Set atom=..newAtom("Identifier",value) 
+        Do ParentElement.AddPart(atom)
     }
     ;$$$DEBUG("checking identifier, ok=1")
     ;zw atom

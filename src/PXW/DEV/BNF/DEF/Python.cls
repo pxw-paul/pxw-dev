@@ -62,7 +62,6 @@ simple_stmts:
 simple_stmt:
     | assignment
     | type_alias
-    | star_expressions 
     | return_stmt
     | import_stmt
     | raise_stmt
@@ -74,6 +73,7 @@ simple_stmt:
     | 'continue' 
     | global_stmt
     | nonlocal_stmt
+    | star_expressions 
 
 compound_stmt:
     | function_def

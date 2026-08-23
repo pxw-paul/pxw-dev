@@ -3,7 +3,7 @@ Class PXW.DEV.BNF.GEN.COS Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 
 Parameter KeywordPattern = "1A.AN";
 
-Parameter Keywords = "A,ARRAY,AS,B,BITLOGIC,BREAK,C,CASE,CATCH,CLASSCONTEXT,CLASSMETHOD,CLOSE,CONTINUE,D,DATA,DEF1ARG,DEFERRED,DEFINE,DEVICE,DIM,DISPLAY,DO,E,EC,ECODE,ELSE,ELSEIF,ENDIF,ES,ESTACK,ET,ETRAP,EXECUTE,EXTRACT,F,FALSE,FDBMS,FOR,G,GENERATOR,GOTO,H,HALT,HANG,HOROLOG,I,IF,IFDEF,IFNDEF,IMPORT,INCLUDE,INCREMENT,IO,J,JOB,K,KEY,KILL,L,LB,LG,LI,LIST,LISTBUILD,LISTGET,LISTNEXT,LISTUPDATE,LOCK,LOGICAL,LU,M,MERGE,METHOD,METHODIMPL,MNV,MODE,MV,MVAM,MVANS,MVCOMMAND,MVCONV,MVDATE,MVDAY,MVDICT,MVERRORS,MVFILENAME,MVFM,MVFOOTER,MVFORMAT,MVHEADER,MVID,MVLEVEL,MVMONTH,MVMORESUBVALUES,MVMOREVALUES,MVNAM,MVNB,MVND,MVNI,MVNS,MVNV,MVOPTIONS,MVP,MVPARASENTENCE,MVPRINT,MVPROCERRORS,MVPROCNAME,MVPROCPIB,MVPROCPIBOFF,MVPROCPOB,MVPROCSIB,MVPROCSIBOFF,MVPROCSOB,MVRECORD,MVSELECTED,MVSENTENCE,MVSM,MVSTDFIL,MVSVM,MVSYSRETCODE,MVTIME,MVTM,MVTTY,MVUSERRETCODE,MVVM,MVYEAR,N,NAMESPACE,NEW,NULL,O,ODBC,OF,OPEN,ORDER,P,PIECE,PRINCIPAL,PRINT,PRIVATE,PUBLIC,PYTHON,Q,QUERY,QUIT,R,READ,RET,RETURN,ROLES,RUNTIME,S,SELECT,SET,SPECIAL,SQLCOMPILE,STACK,STORAGE,SY,SYSTEM,T,TC,TCOMMIT,TEST,TEXT,THIS,THROW,THROWOBJ,TL,TLEVEL,TROLLBACK,TRUE,TRY,TS,TSTART,U,UNDEF,USE,USERNAME,V,VECTOR,VIEW,W,WHILE,WRITE,X,XECUTE,Y,ZA,ZALLOCATE,ZB,ZBREAK,ZCHILD,ZDEALLOCATE,ZE,ZEOF,ZEOS,ZERROR,ZFWCHARZ,ZH,ZHOROLOG,ZHWKATAZ,ZINSERT,ZIO,ZJOB,ZK,ZKILL,ZLOAD,ZMODE,ZN,ZNAME,ZNSPACE,ZOBJCLASSMETHOD,ZOBJMETHOD,ZORDER,ZPARENT,ZPI,ZPOS,ZPRINT,ZQUIT,ZR,ZREFERENCE,ZREMOVE,ZS,ZSAVE,ZSTORAGE,ZSYNC,ZT,ZTIMESTAMP,ZTIMEZONE,ZTRAP,ZTS,ZU,ZUTIL,ZV,ZVERSION,ZW,ZWRITE,ZZ,ZZDUMP,ZZWRITE";
+Parameter Keywords = "A,ARRAY,AS,B,BITLOGIC,BREAK,C,CASE,CATCH,CLASSCONTEXT,CLASSMETHOD,CLOSE,CONTINUE,D,DATA,DEF1ARG,DEFERRED,DEFINE,DEVICE,DIM,DISPLAY,DO,E,EC,ECODE,ELSE,ELSEIF,ENDIF,ES,ESTACK,ET,ETRAP,EXECUTE,EXTRACT,F,FALSE,FDBMS,FOR,G,GENERATOR,GET,GOTO,H,HALT,HANG,HOROLOG,I,IF,IFDEF,IFNDEF,IMPORT,INCLUDE,INCREMENT,IO,J,JOB,K,KEY,KILL,L,LB,LG,LI,LIST,LISTBUILD,LISTGET,LISTNEXT,LISTUPDATE,LOCATE,LOCK,LOGICAL,LU,M,MERGE,METHOD,METHODIMPL,MNV,MODE,MV,MVAM,MVANS,MVCOMMAND,MVCONV,MVDATE,MVDAY,MVDICT,MVERRORS,MVFILENAME,MVFM,MVFOOTER,MVFORMAT,MVHEADER,MVID,MVLEVEL,MVMONTH,MVMORESUBVALUES,MVMOREVALUES,MVNAM,MVNB,MVND,MVNI,MVNS,MVNV,MVOPTIONS,MVP,MVPARASENTENCE,MVPRINT,MVPROCERRORS,MVPROCNAME,MVPROCPIB,MVPROCPIBOFF,MVPROCPOB,MVPROCSIB,MVPROCSIBOFF,MVPROCSOB,MVRECORD,MVSELECTED,MVSENTENCE,MVSM,MVSTDFIL,MVSVM,MVSYSRETCODE,MVTIME,MVTM,MVTTY,MVUSERRETCODE,MVVM,MVYEAR,N,NAMESPACE,NEW,NULL,O,ODBC,OF,OPEN,ORDER,P,PIECE,PRINCIPAL,PRINT,PRIVATE,PUBLIC,PYTHON,Q,QUERY,QUIT,R,READ,RET,RETURN,ROLES,RUNTIME,S,SELECT,SET,SPECIAL,SQLCOMPILE,STACK,STORAGE,SY,SYSTEM,T,TC,TCOMMIT,TEST,TEXT,THIS,THROW,THROWOBJ,TL,TLEVEL,TROLLBACK,TRUE,TRY,TS,TSTART,U,UNDEF,USE,USERNAME,V,VECTOR,VIEW,W,WHILE,WRITE,X,XECUTE,Y,ZA,ZALLOCATE,ZB,ZBREAK,ZCHILD,ZDEALLOCATE,ZE,ZEOF,ZEOS,ZERROR,ZFWCHARZ,ZH,ZHOROLOG,ZHWKATAZ,ZINSERT,ZIO,ZJOB,ZK,ZKILL,ZLOAD,ZMODE,ZN,ZNAME,ZNSPACE,ZOBJCLASSMETHOD,ZOBJMETHOD,ZORDER,ZPARENT,ZPI,ZPOS,ZPRINT,ZQUIT,ZR,ZREFERENCE,ZREMOVE,ZS,ZSAVE,ZSTORAGE,ZSYNC,ZT,ZTIMESTAMP,ZTIMEZONE,ZTRAP,ZTS,ZU,ZUTIL,ZV,ZVERSION,ZW,ZWRITE,ZZ,ZZDUMP,ZZWRITE";
 
 ///  amp_op ::= '&'
 /// summary values:&
@@ -3362,7 +3362,72 @@ Method CosJsonPrim1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	quit ok
 }
 
-///  data_function_call ::= ('data' | 'd') open_bracket expression [ ',' variable_set ] close_bracket
+///  data_expression ::= this_object | variable_nodef | macrocall | Indirection | global_ref | special_variable | ( '(' expression ')' [ object_chain ] )
+/// summary=C|C|C|C|C|C|(P&C&P&[C])
+Method DataExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary C|C|C|C|C|C|(P&C&P&[C])
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..ThisObject(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..VariableNodef(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..Macrocall(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..Indirection(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..GlobalRef(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..SpecialVariable(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..DataExpression1Sub(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  '(' expression ')' [ object_chain ]
+/// summary values:(
+/// summary=P&C&P&[C]
+Method DataExpression1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&C&P&[C]
+	if '..isPunctuation("(",1) { quit 0 /* normal */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"(")  {
+		if ..Expression(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,")")  {
+				if $S(..ObjectChain(.subElement,.addedElement) :1,1:1) {
+					set done=1 ; end compileRules
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+///  data_function_call ::= ('data' | 'd') open_bracket data_expression [ ',' variable_set ] close_bracket
 /// summary values:DATA,D
 /// summary=(K|K)&C&C&[P&C]&C
 Method DataFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -3375,7 +3440,7 @@ Method DataFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	set done=0 ; method start
 	if ..DataFunctionCall1Sub(.subElement,.addedElement)  {
 		if ..OpenBracket(.subElement,.addedElement)  {
-			if ..Expression(.subElement,.addedElement)  {
+			if ..DataExpression(.subElement,.addedElement)  {
 				if ..DataFunctionCall2OptGrp(.subElement,.addedElement)  {
 					if ..CloseBracket(.subElement,.addedElement)  {
 						set done=1 ; end compileRules
@@ -5463,6 +5528,81 @@ Method GeneralIntrinsicSet(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  get_function_call ::= ('get' | 'g') open_bracket data_expression [ ',' expression ] close_bracket
+/// summary values:GET,G
+/// summary=(K|K)&C&C&[P&C]&C
+Method GetFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary (K|K)&C&C&[P&C]&C
+	if '(..isKeywordInList($lb("GET","G"))) { quit 0 /* normal */ /*1*/ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..GetFunctionCall1Sub(.subElement,.addedElement)  {
+		if ..OpenBracket(.subElement,.addedElement)  {
+			if ..DataExpression(.subElement,.addedElement)  {
+				if ..GetFunctionCall2OptGrp(.subElement,.addedElement)  {
+					if ..CloseBracket(.subElement,.addedElement)  {
+						set done=1 ; end compileRules
+					}
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+/// 'get' | 'g'
+/// summary=K|K
+Method GetFunctionCall1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	set subElement=ParentElement
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"GET")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"G")  {
+		set done=1 ; end compileRules
+	}
+
+	set ok=$s(done:1,1:0)
+	quit ok
+}
+
+/// 
+/// summary values:,
+/// summary=P&C
+Method GetFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&C
+	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,",")  {
+		if ..Expression(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
 	quit ok
 }
 
@@ -8651,20 +8791,20 @@ Method Lineref2(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 	quit ok
 }
 
-///  listbuild_function_call_set ::= ('listbuild' | 'lb') open_bracket set_value_expression (',' variable_set)* close_bracket
-/// summary values:LISTBUILD,LB
-/// summary=(K|K)&C&C&(?4punctuation:4?)*&C
+///  listbuild_function_call_set ::= ('listbuild' | 'listget' | 'lb' | 'lg') open_bracket [set_value_expression] (',' [set_value_expression])* close_bracket
+/// summary values:LISTBUILD,LISTGET,LB,LG
+/// summary=(K|K|K|K)&C&[C]&(?4punctuation:4?)*&C
 Method ListbuildFunctionCallSet(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary (K|K)&C&C&(?4punctuation:4?)*&C
-	if '(..isKeywordInList($lb("LISTBUILD","LB"))) { quit 0 /* normal */ /*1*/ }
+	; rules summary (K|K|K|K)&C&[C]&(?4punctuation:4?)*&C
+	if '(..isKeywordInList($lb("LISTBUILD","LISTGET","LB","LG"))) { quit 0 /* normal */ /*1*/ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..ListbuildFunctionCallSet1Sub(.subElement,.addedElement)  {
 		if ..OpenBracket(.subElement,.addedElement)  {
-			if ..SetValueExpression(.subElement,.addedElement)  {
+			if $S(..SetValueExpression(.subElement,.addedElement) :1,1:1) {
 				if ..ListbuildFunctionCallSet2RepZero(.subElement,.addedElement)  {
 					if ..CloseBracket(.subElement,.addedElement)  {
 						set done=1 ; end compileRules
@@ -8685,15 +8825,19 @@ Method ListbuildFunctionCallSet(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	quit ok
 }
 
-/// 'listbuild' | 'lb'
-/// summary=K|K
+/// 'listbuild' | 'listget' | 'lb' | 'lg'
+/// summary=K|K|K|K
 Method ListbuildFunctionCallSet1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"LISTBUILD")  {
 		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"LISTGET")  {
+		set done=1 ; or
 	} elseif ..addKeyword(.subElement,"LB")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"LG")  {
 		set done=1 ; end compileRules
 	}
 
@@ -8701,7 +8845,7 @@ Method ListbuildFunctionCallSet1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef 
 	quit ok
 }
 
-///  (',' variable_set)*
+///  (',' [set_value_expression])*
 Method ListbuildFunctionCallSet2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
@@ -8714,17 +8858,17 @@ Method ListbuildFunctionCallSet2RepZero(ParentElement As PXW.DEV.BNF.Element, By
 	quit ok
 }
 
-/// ',' variable_set
+/// ',' [set_value_expression]
 /// summary values:,
-/// summary=P&C
+/// summary=P&[C]
 Method ListbuildFunctionCallSet3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary P&C
+	; rules summary P&[C]
 	if '..isPunctuation(",",1) { quit 0 /* normal */ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,",")  {
-		if ..VariableSet(.subElement,.addedElement)  {
+		if $S(..SetValueExpression(.subElement,.addedElement) :1,1:1) {
 			set done=1 ; end compileRules
 		}
 	}
@@ -9137,6 +9281,123 @@ Method ListupdateFunctionCall4OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef
 			if ..Expression(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+///  locate_function_call ::= 'locate' open_bracket expression ',' expression [ ',' expression [ ',' variable_set [',' variable_set ]]] close_bracket
+/// summary values:LOCATE
+/// summary=K&C&C&P&C&[P&C&[P&C&[P&C]]]&C
+Method LocateFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary K&C&C&P&C&[P&C&[P&C&[P&C]]]&C
+	if '(..isKeyword("LOCATE")) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"LOCATE")  {
+		if ..OpenBracket(.subElement,.addedElement)  {
+			if ..Expression(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,",")  {
+					if ..Expression(.subElement,.addedElement)  {
+						if ..LocateFunctionCall1OptGrp(.subElement,.addedElement)  {
+							if ..CloseBracket(.subElement,.addedElement)  {
+								set done=1 ; end compileRules
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+/// 
+/// summary values:,
+/// summary=P&C&[P&C&[P&C]]
+Method LocateFunctionCall1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&C&[P&C&[P&C]]
+	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,",")  {
+		if ..Expression(.subElement,.addedElement)  {
+			if ..LocateFunctionCall2OptGrp(.subElement,.addedElement)  {
+				set done=1 ; end compileRules
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+/// 
+/// summary values:,
+/// summary=P&C&[P&C]
+Method LocateFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&C&[P&C]
+	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,",")  {
+		if ..VariableSet(.subElement,.addedElement)  {
+			if ..LocateFunctionCall3OptGrp(.subElement,.addedElement)  {
+				set done=1 ; end compileRules
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+}
+
+/// 
+/// summary values:,
+/// summary=P&C
+Method LocateFunctionCall3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&C
+	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,",")  {
+		if ..VariableSet(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
 		}
 	}
 
@@ -14250,11 +14511,11 @@ Method SimpleIndirection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	quit ok
 }
 
-///  special_intrinsic ::= case_function_call | select_function_call | extract_function_call | piece_function_call | data_function_call | order_function_call | listitem_function_call | listnext_function_call | listupdate_function_call | increment_function_call | method_function_call | classmethod_function_call | zobjmethod_function_call | zobjclassmethod_function_call | text_function_call | query_function_call | bitlogic_function_call | vector_function_call
-/// summary=C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
+///  special_intrinsic ::= case_function_call | select_function_call | extract_function_call | piece_function_call | get_function_call | data_function_call | order_function_call | listitem_function_call | listnext_function_call | listupdate_function_call | increment_function_call | method_function_call | classmethod_function_call | zobjmethod_function_call | zobjclassmethod_function_call | text_function_call | query_function_call | bitlogic_function_call | vector_function_call | locate_function_call
+/// summary=C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
 Method SpecialIntrinsic(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
+	; rules summary C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -14266,6 +14527,8 @@ Method SpecialIntrinsic(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	} elseif ..ExtractFunctionCall(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..PieceFunctionCall(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..GetFunctionCall(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..DataFunctionCall(.subElement,.addedElement)  {
 		set done=1 ; or
@@ -14294,6 +14557,8 @@ Method SpecialIntrinsic(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	} elseif ..BitlogicFunctionCall(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..VectorFunctionCall(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..LocateFunctionCall(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -16250,17 +16515,21 @@ Method VariableIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	quit ok
 }
 
-///  variable_nodef ::= variable_identifier
-/// summary=C
+///  variable_nodef ::= variable_identifier [ array_parameter_list ] [ object_chain ]
+/// summary=C&[C]&[C]
 Method VariableNodef(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C
+	; rules summary C&[C]&[C]
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..VariableIdentifier(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
+		if $S(..ArrayParameterList(.subElement,.addedElement) :1,1:1) {
+			if $S(..ObjectChain(.subElement,.addedElement) :1,1:1) {
+				set done=1 ; end compileRules
+			}
+		}
 	}
 
 	if done {

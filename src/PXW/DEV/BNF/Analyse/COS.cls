@@ -735,6 +735,7 @@ Method checkCDEFAttributeCodeModeType(element As PXW.DEV.BNF.Elements.ClassDefin
 	If codemode="OBJECTGENERATOR" {
 		Set ..ReturnType="%Library.Status"
 		Set ..ReturnTypeElement=element
+		Set ..VariablesTypes("%code")="%Stream.TmpCharacter"
 	} ElseIf codemode="GENERATOR" {
 		Set ..ReturnType="%Library.Status"
 		Set ..ReturnTypeElement=element
@@ -932,7 +933,8 @@ Method FullClassName(name As %String) As %String
 {
 	If name="" Quit ""
 	If $ISOBJECT(..ClassServer) {
-		Set fullname=..ClassServer.FullClassName(name)
+		Set package=$PIECE(..This,".",1,*-1)
+		Set fullname=..ClassServer.FullClassName(name,package)
 	} Else {
 		Set fullname=name
 	}

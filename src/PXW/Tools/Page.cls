@@ -172,7 +172,7 @@ ClassMethod PageScripts() As %String
 	              table.id=tid;
 	          }
 	          var bc=document.createElement("button");
-	          bc.textContent="download csv";
+	          bc.textContent='download '+filename+' csv';
 	          bc.setAttribute('pxwFile',filename);
 	          bc.setAttribute('pxwTable',tid);
 	          bc.className='noPrint';

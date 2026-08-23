@@ -128,51 +128,63 @@ ClassMethod BuildIfNecessary(CodeInterface As PXW.DEV.Dictionary.CodeInterface, 
 	Set built=""
 	Set text=""
 
-	Set builder=$SYSTEM.OBJ.New(BuilderClass)
-	Set LastUpdate=##class(PXW.Xref.LastUpdated).OpenOrNew(Namespace,Type,Name)
-	If Force || LastUpdate.NeedsUpdate(TimeChanged) {
-		Set zh=$ZHOROLOG
-		Try {
-			Set sc=CodeInterface.Load(Name,.text)
-		} Catch e {
-			Set sc=e.AsStatus()
-		}
-		If $$$ISOK(sc) {
-			If 'NoDelete {
-				Do ..DeleteAnalysisCalledByTypeKey1(Namespace,Type,Name)
-				Do ..DeleteCalledByTypeKey1(Namespace,Type,Name)
+	; check this is already building so we can skip
+	set locked=1
+	Lock +^PXWBuild(Namespace_"||"_Type_"||"_Name):0 else  s locked=0
+	if 'locked quit ""
+
+	try {
+		Set builder=$SYSTEM.OBJ.New(BuilderClass)
+		Set LastUpdate=##class(PXW.Xref.LastUpdated).OpenOrNew(Namespace,Type,Name)
+		If Force || LastUpdate.NeedsUpdate(TimeChanged) {
+			Set zh=$ZHOROLOG
+			Try {
+				Set sc=CodeInterface.Load(Name,.text)
+			} Catch e {
+				Set sc=e.AsStatus()
 			}
-			If 'DebugBuild $$$DEBUGPause
-			Set sc=builder.Build(Namespace,Name,text)
-			If 'DebugBuild $$$DEBUGResume
-		}
-		If $$$ISOK(sc) {
-			Do LastUpdate.%SetModified(1) ; because the lastupdate table is cleared via SQL as part of the build so ensure it saves again
-			Set LastUpdate.LastUpdate=TimeChanged
-			Set LastUpdate.BuildStatus=sc
-			Set LastUpdate.BuiltAt=$ZDATETIME($HOROLOG,3)
-			Set LastUpdate.CheckedAt=LastUpdate.BuiltAt
-			Set LastUpdate.BuildProcessTime=$ZHOROLOG-zh
-		    $$$DEBUGSC(savesc,LastUpdate.%Save())
-			Set built=1
+			If $$$ISOK(sc) {
+				If 'NoDelete {
+					Do ..DeleteAnalysisCalledByTypeKey1(Namespace,Type,Name)
+					Do ..DeleteCalledByTypeKey1(Namespace,Type,Name)
+				}
+				If 'DebugBuild $$$DEBUGPause
+				Set sc=builder.Build(Namespace,Name,text)
+				If 'DebugBuild $$$DEBUGResume
+			}
+			If $$$ISOK(sc) {
+				Do LastUpdate.%SetModified(1) ; because the lastupdate table is cleared via SQL as part of the build so ensure it saves again
+				Set LastUpdate.LastUpdate=TimeChanged
+				Set LastUpdate.BuildStatus=sc
+				Set LastUpdate.BuiltAt=$ZDATETIME($HOROLOG,3)
+				Set LastUpdate.CheckedAt=LastUpdate.BuiltAt
+				Set LastUpdate.BuildProcessTime=$ZHOROLOG-zh
+				$$$DEBUGSC(savesc,LastUpdate.%Save())
+				Set built=1
+			} Else {
+				Do LastUpdate.%SetModified(1)
+				Set LastUpdate.LastUpdate=""
+				Set LastUpdate.BuildStatus=sc
+				Set LastUpdate.CheckedAt=$ZDATETIME($HOROLOG,3)
+				Set LastUpdate.BuildProcessTime=$ZHOROLOG-zh
+				$$$DEBUGSC(savesc,LastUpdate.%Save())
+				Set built=0
+				$$$DEBUG("BuildIfNecessary:"_Namespace_":"_Type_":"_Name_":ERROR")
+			}
 		} Else {
-			Do LastUpdate.%SetModified(1)
-			Set LastUpdate.LastUpdate=""
-			Set LastUpdate.BuildStatus=sc
+			If 'Force {
+				Set built=""
+			}
 			Set LastUpdate.CheckedAt=$ZDATETIME($HOROLOG,3)
-			Set LastUpdate.BuildProcessTime=$ZHOROLOG-zh
-		    $$$DEBUGSC(savesc,LastUpdate.%Save())
-			Set built=0
-			$$$DEBUG("BuildIfNecessary:"_Namespace_":"_Type_":"_Name_":ERROR")
+			$$$DEBUGSC(savesc,LastUpdate.%Save())
+			Set:$$$ISERR(savesc) built=0
 		}
-	} Else {
-		If 'Force {
-			Set built=""
-		}
-		Set LastUpdate.CheckedAt=$ZDATETIME($HOROLOG,3)
-	    $$$DEBUGSC(savesc,LastUpdate.%Save())
-		Set:$$$ISERR(savesc) built=0
+	} catch e {
+		lock -^PXWBuild(Namespace_"||"_Type_"||"_Name)
+		throw e
 	}
+	lock -^PXWBuild(Namespace_"||"_Type_"||"_Name)
+
 	$$$DEBUGMethodEnd
 	Quit built
 }

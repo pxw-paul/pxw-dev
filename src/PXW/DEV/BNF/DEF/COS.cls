@@ -222,8 +222,8 @@ pattern_match_code                  ::= 'a' | 'c' | 'e' | 'l' | 'n' | 'p' | 'u' 
                                         | 'ZFWCHARZ' | 'ZHWKATAZ' 
                                         | string
 
-
-macrocall                           ::= '$$$' macro_identifier [ macro_parameter_list | macro_parameter_text ] [ macro_parameter_list ]  [ object_chain ] /* PXW $$mac(1,2)(3,4) is valid, also calling .property etc is possible */
+/* PXW $$mac(1,2)(3,4) is valid, also calling .property etc is possible */
+macrocall                           ::= '$$$' macro_identifier [ macro_parameter_list | macro_parameter_text ] [ macro_parameter_list ]  [ object_chain ] 
 macro_parameter_list                ::= '(' [ [macro_parameter] ( ',' [macro_parameter] )* ] ')'
 macro_parameter                     ::= ('.' variable_set ) | expression 
 macro_parameter_text                ::= '(' any_text_upto_close_bracket  ')'
@@ -232,7 +232,7 @@ any_text_upto_close_bracket         ::= 'code this'
 
 extrinsicfncall                     ::= '$$' label_reference  [extrinsicfncall_parameter_list ]
 extrinsicfncall_parameter_list                ::= open_bracket [ [extrinsicfncall_parameter] ( ',' [extrinsicfncall_parameter] )* ] ['...'] close_bracket
-extrinsicfncall_parameter                     ::= ('.' (this_object_direct_property | simple_indirection | variable )) | expression 
+extrinsicfncall_parameter                     ::= ('.' (this_object_direct_property | simple_indirection | byref_variable )) | expression 
 
 intrinsicfncall                     ::= '$' (special_intrinsic | general_intrinsic )
 special_intrinsic                   ::= case_function_call
