@@ -70,7 +70,7 @@ Query Get(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = 
 	--ENDIF
 		ORDER BY 
 		--IF Flags["BY CALLED"
-			 CalledByKey1,CalledByKey2,CalledByKey3,
+			 CalledByKey1,CalledByKey2,LineNumber,
 		--ENDIF
 		ItemKey1,ItemKey2
 }

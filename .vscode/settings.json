@@ -47,9 +47,8 @@
         "pxw.xref.connection": {
         "namespace": "USER",
         "host": "localhost",
-        "port": "52775",
+        "port": 52775,
         "username": "_SYSTEM",
         "scheme":"http"
     }
-
 }

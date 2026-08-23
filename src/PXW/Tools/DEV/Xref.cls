@@ -24,6 +24,7 @@ ClassMethod WriteXRef(itemtype As %String, itemk1 As %String, itemk2 As %String,
 	}
 	;w "<pre>" zw rs w "</pre>"
 	Set showk3=$SELECT(flags[",SHOWK3":1,1:"")
+	Set showln=$S(flags["BY CALLED":1,1:0)
 	Set newflags=flags
 	Set newflags=$REPLACE(newflags,",BY ITEM","")
 	Set newflags=$REPLACE(newflags,",BY CALLED","")
@@ -37,6 +38,7 @@ ClassMethod WriteXRef(itemtype As %String, itemk1 As %String, itemk2 As %String,
 	Write "				<th><a href="""_(..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,newflags_",BY CALLED"))_""">Called By Key1</a></th>",!
 	Write "				<th><a href="""_(..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,newflags_",BY CALLED"))_""">Called By Key2</a></th>",!
 	Write:showk3 "				<th><a href="""_(..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,newflags_",BY CALLED"))_""">Called By Key3</a></th>",!
+	Write:showln "				<th><a href="""_(..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,newflags_",BY CALLED"))_""">Line</a></th>",!
 	Write "				<th>Code</th>",!
 	Write "			</tr>",!
 	Write "		</thead>",!
@@ -60,6 +62,7 @@ ClassMethod WriteXRef(itemtype As %String, itemk1 As %String, itemk2 As %String,
 			} 
 		Write "</td>"
 		Write:showk3 "<td>"_..EscapeHTML(rs.CalledByKey3)_"</td>"
+		Write:showln "<td>"_..EscapeHTML(rs.LineNumber)_"</td>"
 		Write "<td><pre>"
 			Set ws=windowSize-1
 			Set mid=rs.LineNumber,rel=rs.CalledByKey3
