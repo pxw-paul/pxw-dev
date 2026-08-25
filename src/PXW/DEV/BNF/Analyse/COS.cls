@@ -31,6 +31,11 @@ Property QuitFound As %Boolean;
 /// Set when method is Abstract, which means some checks are turned off
 Property MethodIsAbstract As %Boolean;
 
+
+/// Set when class is Abstract, which means some checks are turned off
+Property ClassIsAbstract As %Boolean;
+
+
 /// Server that provide class information
 Property ClassServer As PXW.DEV.Dictionary.ClassDefinitionObject;
 
@@ -71,6 +76,8 @@ Property stringVarsElement [ MultiDimensional ];
 /// (+element,"element")=value as element
 Property stringVarsElementLast [ MultiDimensional ];
 
+property publicListList as %List;
+
 Method %OnNew(ClassServer As PXW.DEV.Dictionary.ClassDefinitionObject = "") As %Status
 {
 	$$$DEBUGMethodBegin
@@ -98,7 +105,9 @@ Method Reset()
 	Set ..ShortCommand=0
 	Set ..QuitFound=0
 	Set ..MethodIsAbstract=0
+	;Set ..ClassIsAbstract=0 ; don't reset this at the start of every method!
 	Set ..CodeMode=""
+	Set ..publicListList=""
 	
 	If $ISOBJECT(..ClassServer) {
 		Set var=""
@@ -189,21 +198,34 @@ method IsCompatible(Classname1 as %String, Classname2 as %String, output commonC
 
 	$$$DEBUGMethodBegin
 	Set commonClass="",depth=0,result=0
-	If ..ClassServer.GetClassDetails(Classname1,,,.super1),..ClassServer.GetClassDetails(Classname2,,,.super2) {
-		Set common1="",d1=0
-		For i=2:1:$LENGTH(super1,"~")-1 {
-			Set cls=$PIECE(super1,"~",i)
-			If common1="",super2[("~"_cls_"~") Set common1=cls,d1=i-1
-		}
-		Set common2="",d2=0
-		For i=2:1:$LENGTH(super2,"~")-1 {
-			Set cls=$PIECE(super2,"~",i)
-			If common2="",super1[("~"_cls_"~") Set common2=cls,d2=i-1
-		}
-		If d1>0,d1<d2 {
-			Set commonClass=common1,depth=d1,result=1
-		} ElseIf d2>0 {
-			Set commonClass=common2,depth=d2,result=1
+	s cn1=..FullClassName(Classname1)
+	s cn2=..FullClassName(Classname2)
+	; for checking compatibility ObjectHandle is like a RegisteredObject
+	set cn1=$s(cn1="%Library.ObjectHandle":"%Library.RegistedObject",1:cn1)
+	set cn2=$s(cn2="%Library.ObjectHandle":"%Library.RegistedObject",1:cn2)
+	If ..ClassServer.GetClassDetails(cn1,.classtype1,.prime1,.super1),..ClassServer.GetClassDetails(cn2,.classtype2,.prime2,.super2) {
+		set super1=super1_$s($p(prime1,",",2,*)'="":$tr($p(prime1,",",2,*),",","~")_"~",1:"")
+		set super2=super2_$s($p(prime2,",",2,*)'="":$tr($p(prime2,",",2,*),",","~")_"~",1:"")
+		; maybe parameterise this check, sometimes we want to know numbers and strings are being confused, but mostly not
+		if classtype1="datatype",classtype2="datatype" {
+			; all ok
+			set result=1,commonClass="datatype",depth=1
+		} else {
+			Set common1="",d1=0
+			For i=2:1:$LENGTH(super1,"~")-1 {
+				Set cls=$PIECE(super1,"~",i)
+				If common1="",super2[("~"_cls_"~") Set common1=cls,d1=i-1
+			}
+			Set common2="",d2=0
+			For i=2:1:$LENGTH(super2,"~")-1 {
+				Set cls=$PIECE(super2,"~",i)
+				If common2="",super1[("~"_cls_"~") Set common2=cls,d2=i-1
+			}
+			If d1>0,d1<d2 {
+				Set commonClass=common1,depth=d1,result=1
+			} ElseIf d2>0 {
+				Set commonClass=common2,depth=d2,result=1
+			}
 		}
 		$$$DEBUG($$$debugFormat("super1={super1}, super2={super2}"))
 	}
@@ -472,7 +494,7 @@ Method checkCosVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Comp
 		}
 	}
 	; ByRef variables are BEING set so dont check for undef, {var} are actually property names so skip those too
-	If element.type'="ByrefVariable",$EXTRACT(varname,1)'="%",$EXTRACT(varname,1)'="{",'$DATA(..VariablesSet(varname)),'$DATA(..ParameterVariables(varname)) {
+	If element.type'="ByrefVariable",$EXTRACT(varname,1)'="%",$EXTRACT(varname,1)'="{",'$DATA(..VariablesSet(varname)),'$DATA(..ParameterVariables(varname)),'$listfind(..publicListList,varname) {
 		Do ..AddElementWarning(element,varname_" Possible UNDEF")
 	}
 	$$$DEBUGMethodEnd
@@ -661,8 +683,8 @@ Method checkCosQuitCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.C
 			;	Do ..AddElementWarning(element,"return type="_..ReturnType_", derived type="_derivedtype)
 			;}
 			Set fullret=..FullClassName(..ReturnType),fullder=..FullClassName(derivedtype)
-			; special case for %Open etc, same thing happens in ClassDefinitionObject
-			if fullret="%Library.ObjectHandle" set fullret=..This
+			;; special case for %Open etc, same thing happens in ClassDefinitionObject
+			;if fullret="%Library.ObjectHandle" set fullret=..This
 			If ..IsCompatible(fullret,fullder,.cls,.depth) {
 				Do:depth>1 ..AddElementWarning(element,"return type="_fullret_", derived type="_fullder_" but they are compatible via "_cls_" at depth "_depth)
 			} Else {
@@ -701,7 +723,7 @@ Method checkOneClassMemeberFINAL(element As PXW.DEV.BNF.Elements.COS)
 		Quit:var=""
 		; if its a parameter variable we count this as being used
 		; {*} is special variable that is used on computed fields, ignore those
-		If '$DATA(..VariablesUsed(var)),'$DATA(..ParameterVariables(var)),var'="{*}" {
+		If '$DATA(..VariablesUsed(var)),'$DATA(..ParameterVariables(var)),var'="{*}",'$listfind(..publicListList,var) {
 			Set report=1
 			If var="SQLCODE" {
 				; SQLCODE is a special case, some people check SQLCODE, some check %ROWCOUND
@@ -717,7 +739,7 @@ Method checkOneClassMemeberFINAL(element As PXW.DEV.BNF.Elements.COS)
 	}
 
 	/// Non abstract method where there is a return type but no quit to match it
-	If $$$LOWER(..CodeMode)'="expression",'..MethodIsAbstract,..ReturnType'="",..QuitFound=0 {
+	If $$$LOWER(..CodeMode)'="expression",'..ClassIsAbstract,'..MethodIsAbstract,..ReturnType'="",..QuitFound=0 {
 		If $$$LOWER(..CodeMode)["generator" {
 			Do ..AddElementWarning(..ReturnTypeElement,"GeneratOR method should return %Status, even if the generatED code doesn't.")
 		} Else {
@@ -741,6 +763,14 @@ Method checkCDEFAttributeCodeModeType(element As PXW.DEV.BNF.Elements.ClassDefin
 		Set ..ReturnTypeElement=element
 		Set ..VariablesUsed("%code")="" ; % vars are not checked anyway, but leaving here in case this changes in the future
 	}
+	$$$DEBUGMethodEnd
+	Quit ""
+}
+
+Method checkCDEFAttributePubliclist(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="AttributePubliclist")
+{
+	$$$DEBUGMethodBegin
+	set ..publicListList=$ListFromString($tr($piece(element.ToString(0),"=",2,*),"()",""))
 	$$$DEBUGMethodEnd
 	Quit ""
 }
@@ -782,8 +812,8 @@ Method checkSqlSelectIntoVariable(element As PXW.DEV.BNF.Elements.SQL) As PXW.DE
 Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, StartClassName As %String, ElementTypeClassName As %String = "") As %String
 {
 	#dim fpE,fparamsE as PXW.DEV.BNF.Elements.COS
-	Set type=StartClassName
-    Set classname=StartClassName
+	Set type=..FullClassName(StartClassName)
+    Set classname=..FullClassName(StartClassName)
     Set objectchain=ParentElement.findFirstElementByType("ObjectChain",0)
 	If '$ISOBJECT(objectchain) Set objectchain=ParentElement.findFirstElementByType("ObjectChainNoDot",0)
 	Set collection="",elementtype=""
@@ -849,7 +879,6 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, Start
 Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 {
 	#dim element as PXW.DEV.BNF.Elements.COS
-
 	; some kind of set with indirection so type cannot be derived
 	; S @x
 	If '$ISOBJECT(ValueElement) Quit ""
@@ -876,6 +905,7 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 	If variableElement.type="Classexpr" {
 		Set hhclass=variableElement.findFirstElementByType("ClassExpression",0)
 		Set super=variableElement.findFirstElementByType("SuperExpression",0)
+
 		If $ISOBJECT(hhclass) {
 			Set classnameele=hhclass.findFirstElementByType("ClassReference",0)
 			Set classname=classnameele.ToString(0)

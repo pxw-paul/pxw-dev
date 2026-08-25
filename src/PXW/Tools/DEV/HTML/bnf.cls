@@ -38,6 +38,9 @@ Property commentid As %Integer;
 
 Property xrefCounts As %Integer [ MultiDimensional ];
 
+property classIsAbstract as %Boolean;
+
+
 Method OutputKeywordCommentAsDocumentation(Element As PXW.DEV.Element, Output commentid As %String)
 {
     #dim x as %Api.InteropEditors.v3.spec
@@ -236,6 +239,18 @@ Method writeCDEFClassReference(element As PXW.DEV.BNF.Elements.ClassDefinition) 
     Do ..wrapElementHTML(element,"<a class="_$$$classProgramName_" href="""_..HREFToClass(element.ToString(0))_""">","</a>")
     $$$DEBUGMethodEnd
     Quit ""
+}
+
+Method checkCDEFClassAttribute(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassAttribute")
+{
+	;<span title="2516:CDEFKeyword:/UdlStatement/ClassDefinition/ClassAttributes/ClassAttributeList/ClassAttribute/AttributeAbstract">Abstract</span>
+	$$$DEBUGMethodBegin
+	Set attribE=element.findFirstElementByType("AttributeAbstract")
+	If $ISOBJECT(attribE) {
+		Set ..classIsAbstract=1
+	}
+	$$$DEBUGMethodEnd
+	Quit ""
 }
 
 Method writeCDEFClassDefinition(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassDefinition")
@@ -546,6 +561,7 @@ Method writeCDEFOneClassMember2(element As PXW.DEV.BNF.Elements.ClassDefinition)
     Set ..Analyser.This=..This
     Set ..Analyser.ThisMethod=..ThisMethod
     Set ..Analyser.ClassServer=..ClassServer
+    Set ..Analyser.ClassIsAbstract=..classIsAbstract
     Do ..Analyser.checkElement(element)
 
     Set akey=""

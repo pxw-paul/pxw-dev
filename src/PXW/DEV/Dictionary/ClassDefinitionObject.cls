@@ -605,7 +605,10 @@ Method GetMethodReturnType(ClassName As %String, Name As %String, Output FormalS
         If stype="i" {
             Do ..GetIndexDetails(ClassName,sname,.typeclass)
             If typeclass="" Set typeclass="%Compiler.Type.Index"
-            Do ..GetMethodDetails(typeclass,smethod,.returntype)
+            Do ..GetMethodDetails(typeclass,smethod,.returntype,.sorigin)
+            if returntype="%Library.ObjectHandle",sorigin="%Compiler.Type.Index" {
+                set returntype=ClassName
+            }
         } If stype="q" {
             Do ..GetQueryDetails(ClassName,sname,.typeclass)
             Do ..GetMethodDetails(typeclass,smethod,.returntype)
@@ -618,7 +621,13 @@ Method GetMethodReturnType(ClassName As %String, Name As %String, Output FormalS
     If origin'="",returntype=origin Set returntype=ClassName
 
     ; if the method returns an object handle its probably %Open or %New or an IndexOpen or something that returns itself
-    If returntype="%Library.ObjectHandle" Set returntype=ClassName
+    If returntype="%Library.ObjectHandle" {
+        if origin="%Library.SystemBase" { 
+            Set returntype=ClassName
+        } elseif origin="%Library.Persistent" {
+            set returntype=ClassName
+        }
+    }
 
     If Name="%ConstructClone" Set returntype=ClassName
     Quit returntype

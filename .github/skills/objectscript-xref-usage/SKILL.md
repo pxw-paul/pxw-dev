@@ -23,7 +23,7 @@ Use this skill when the user asks which classes, methods, or properties use an O
 - `CalledByCommand` describes the relationship kind.
 - `LineNumber` is the source line in the caller member.
 
-The caller columns are named `CalledByKey1`, `CalledByKey2`, and `CalledByKey3`; they are not named `CalledByItemKey1` or `CalledByItemKey2`.
+The caller columns are named `CalledByKey1`, `CalledByKey2`, and `CalledByKey3`.
 
 ## Procedure
 

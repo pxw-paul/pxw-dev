@@ -232,14 +232,14 @@ any_text_upto_close_bracket         ::= 'code this'
 
 extrinsicfncall                     ::= '$$' label_reference  [extrinsicfncall_parameter_list ]
 extrinsicfncall_parameter_list                ::= open_bracket [ [extrinsicfncall_parameter] ( ',' [extrinsicfncall_parameter] )* ] ['...'] close_bracket
-extrinsicfncall_parameter                     ::= ('.' (this_object_direct_property | simple_indirection | byref_variable )) | expression 
+extrinsicfncall_parameter                     ::= ('.' (this_object_direct_property | simple_indirection | byref_variable )) | expression  
 
 intrinsicfncall                     ::= '$' (special_intrinsic | general_intrinsic )
 special_intrinsic                   ::= case_function_call
                                         | select_function_call
                                         | extract_function_call
                                         | piece_function_call
-                                        | get_function_call
+                                        --| get_function_call
                                         | data_function_call
                                         | order_function_call
                                         | listitem_function_call
@@ -274,6 +274,7 @@ special_intrinsic_set               ::= extract_function_call_set
                                         | listitem_function_call_set
                                         | listbuild_function_call_set
                                         | vector_function_call_set
+                                        | bit_function_call_set
                                         | mv_function_set
 general_intrinsic_set               ::= any_keyword function_parameter_list  [ object_chain ]
  
@@ -800,6 +801,7 @@ listitem_function_call              ::= ('listget' | 'list' | 'li' |'lg' ) open_
 listitem_function_call_set          ::= ('list' | 'li') open_bracket set_value_expression  [ ',' star_parameter [ ',' star_parameter ] ] close_bracket
 
 
+bit_function_call_set               ::= 'bit' open_bracket variable_set ',' expression close_bracket
 
 bitlogic_function_call              ::= 'bitlogic' open_bracket bitlogic_expression [ ',' expression ] close_bracket
 bitlogic_expression                  ::= (expression ('|' | '&' | '^' |'~')* )*
@@ -809,7 +811,9 @@ vector_function_call_set           ::= 'vector' open_bracket set_value_expressio
 
 order_function_call                ::= ('order' | 'o') open_bracket expression [',' expression [ ',' variable_set ] ] close_bracket
 
+/* Not required, leave it just to default variable as being used
 get_function_call                 ::= ('get' | 'g') open_bracket data_expression [ ',' expression ] close_bracket
+*/
 data_function_call                ::= ('data' | 'd') open_bracket data_expression [ ',' variable_set ] close_bracket
 data_expression                   ::= this_object
                                         | variable_nodef

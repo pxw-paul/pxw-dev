@@ -10912,7 +10912,7 @@ Method SignedRealNumber1Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 		quit ok
 }
 
-///  simple_stmt: | assignment | type_alias | star_expressions | return_stmt | import_stmt | raise_stmt | 'pass' | del_stmt | yield_stmt | assert_stmt | 'break' | 'continue' | global_stmt | nonlocal_stmt
+///  simple_stmt: | assignment | type_alias | return_stmt | import_stmt | raise_stmt | 'pass' | del_stmt | yield_stmt | assert_stmt | 'break' | 'continue' | global_stmt | nonlocal_stmt | star_expressions
 /// summary=?4punctuation:4?&?4punctuation:4?&?4punctuation:4?&?4punctuation:4?&?4punctuation:4?&?4punctuation:4?&?4punctuation:4?&?4punctuation:4?&?4punctuation:4?&?4punctuation:4?&?4punctuation:4?&?4punctuation:4?&?4punctuation:4?&?4punctuation:4?
 Method SimpleStmt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
@@ -10928,8 +10928,6 @@ Method SimpleStmt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		if ..Assignment(subElement,.addedElement)  {
 			set done=1 ; or
 		} elseif ..TypeAlias(subElement,.addedElement)  {
-			set done=1 ; or
-		} elseif ..StarExpressions(subElement,.addedElement)  {
 			set done=1 ; or
 		} elseif ..ReturnStmt(subElement,.addedElement)  {
 			set done=1 ; or
@@ -10952,6 +10950,8 @@ Method SimpleStmt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		} elseif ..GlobalStmt(subElement,.addedElement)  {
 			set done=1 ; or
 		} elseif ..NonlocalStmt(subElement,.addedElement)  {
+			set done=1 ; or
+		} elseif ..StarExpressions(subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 

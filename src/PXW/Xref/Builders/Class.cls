@@ -47,6 +47,8 @@ Property FixedLineNumber As %Integer;
 /// maintained by xml elements
 Property XMLPath As %String;
 
+property classIsAbstract as %Boolean;
+
 /// d ##class(PXW.Xref.Builders.Class).test()
 ClassMethod test()
 {
@@ -361,12 +363,25 @@ Method xrefCDEFClassReference(element As PXW.DEV.BNF.Elements.ClassDefinition) A
 	Do ..SaveCDEFCref(name,a.line)
 	Quit ""
 }
+Method checkCDEFClassAttribute(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassAttribute")
+{
+	;<span title="2516:CDEFKeyword:/UdlStatement/ClassDefinition/ClassAttributes/ClassAttributeList/ClassAttribute/AttributeAbstract">Abstract</span>
+	$$$DEBUGMethodBegin
+	Set attribE=element.findFirstElementByType("AttributeAbstract")
+	If $ISOBJECT(attribE) {
+		Set ..classIsAbstract=1
+	}
+	$$$DEBUGMethodEnd
+	Quit ""
+}
+
 
 Method xrefCDEFOneClassmember(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="OneClassmember")
 {
 	Set ..Analyser=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..#CodeType,"COS")
 	Set ..Analyser.ClassServer=..ClassServer
 	Set ..Analyser.This=..CalledByClassName
+	set ..Analyser.ClassIsAbstract=..classIsAbstract
 	If ..Analyser Do ..Analyser.checkElement(element)
 
 	; method,query,property etc
