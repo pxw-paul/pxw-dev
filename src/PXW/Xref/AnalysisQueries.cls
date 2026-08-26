@@ -3,8 +3,13 @@ Class PXW.Xref.AnalysisQueries Extends %RegisteredObject
 
 Query Get(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = "", ItemKey2 As %String = "", Flags As %String = "") As PXW.LIB.SQL.Query [ SqlProc ]
 {
-	SELECT NameSpace,ItemType,ItemKey1,ItemKey2,LineNumber,Description
-	       --,PXW_Xref.Queries_GetCode(NameSpace,CalledByType,CalledByKey1,CalledByKey2,CalledByKey3,ItemKey1,ItemKey2,LineNumber,:WindowSize) AS CallingCode 
+	SELECT TOP 1000 
+		NameSpace
+		,ItemType
+		,ItemKey1
+		,ItemKey2
+		,LineNumber
+		,Description
 	FROM PXW_Xref.AnalysisData
 	WHERE NameSpace=:NameSpace
 	--IF ItemType'=""
@@ -26,6 +31,41 @@ Query Get(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = 
 	--ENDIF
 		ORDER BY 
     		ItemKey1,ItemKey2
+}
+
+Query GetByDate(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = "", ItemKey2 As %String = "", Flags As %String = "",LastUpdatedSince as %TimeStamp) As PXW.LIB.SQL.Query [ SqlProc ]
+{
+	SELECT TOP 1000 
+		lu.NameSpace
+		,lu.LastUpdate
+		,lu.ItemType
+		,lu.ItemKey1
+		,ad. ItemKey2
+		,ad.LineNumber
+		,ad.Description
+	FROM PXW_Xref.LastUpdated AS lu
+	INNER JOIN PXW_Xref.AnalysisData AS ad ON ad.Namespace=lu.Namespace and ad.ItemType=lu.ItemType and ad.ItemKey1=lu.ItemKey1
+	WHERE lu.NameSpace=:NameSpace
+		AND lu.LastUpdate>:LastUpdatedSince
+	--IF ItemType'=""
+		AND lu.ItemType=:ItemType
+	--ENDIF 
+	--IF ItemKey1'="" 
+		--IF $E(ItemKey1,*)="*" 
+			AND lu.ItemKey1 %STARTSWITH $PIECE(:ItemKey1,'*',1)
+		--ELSE
+			AND lu.ItemKey1 %INLIST $LISTFROMSTRING(:ItemKey1)
+		--ENDIF
+	--ENDIF 
+	--IF ItemKey2'=""
+		--IF ItemKey2["*"
+			AND UPPER(ad.ItemKey2) LIKE (UPPER(:ItemKey2))
+		--ELSE 
+			AND UPPER(ad.ItemKey2) %INLIST $LISTFROMSTRING(UPPER(:ItemKey2))
+		--ENDIF
+	--ENDIF
+		ORDER BY 
+			lu.LastUpdate DESC, lu.ItemKey1, ad.ItemKey2
 }
 
 }

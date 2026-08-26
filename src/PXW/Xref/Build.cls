@@ -30,41 +30,58 @@ ClassMethod Build(Namespace As %String, Type As %String, SearchName As %String, 
 		Set useTheForce=Force,noDelete=0
 		While rs.%Next() {
 			Set typ=rs.%Get("Type")
-			If Force,buildmany {
-				If $DATA(status) {
-					Set status.CurrentlyBuilding="Purging Analysis data: "_Namespace_","_typ_","_package
-					$$$ThrowOnError(status.%Save())
-				}
-				Set:$$$ISOK(sc) sc=..DeleteAnalysisCalledByTypeKey1Package(Namespace,typ,package)
 
-				If $DATA(status) {
-					Set status.CurrentlyBuilding="Purging Xref data: "_Namespace_","_typ_","_package
-					$$$ThrowOnError(status.%Save())
-				}
-				Set:$$$ISOK(sc) sc=..DeleteCalledByTypeKey1Package(Namespace,typ,package)
-
-				If $DATA(status) {
-					Set status.CurrentlyBuilding="Purging LastUpdate data: "_Namespace_","_typ_","_package
-					$$$ThrowOnError(status.%Save())
-				}
-				Set:$$$ISOK(sc) sc=..DeleteLastUpdateCalledByTypeKey1Package(Namespace,typ,package)
-				; We have purged the lastupdate table so no need to force now.
-				; Which means we could kick off a Force on *, THEN build PXW package on a second process (because we are impatient)
-				; Then when the * build gets to PXW it will see that its already been done!
-				Set useTheForce=0,noDelete=1
+			; do not let anything continue if there is a delete going on
+			; This is for when we are being impatient and starting multiple processes off at the same time
+			If $DATA(status) {
+				Set status.CurrentlyBuilding="Waiting for purge "_Namespace_"||"_typ
+				$$$ThrowOnError(status.%Save())
 			}
-			Set builderClass=rs.%Get("Builder")
-			If builderClass'="" {
-				Set interface=##class(PXW.DEV.Dictionary.CodeInterface).%OpenId(rs.%Get("ID"))
-				If $DATA(status) {
-					Set status.CurrentlyBuilding="Searching "_Namespace_" : "_typ_" : "_SearchName
-					$$$ThrowOnError(status.%Save())
+
+			Lock +^PXWBuild(Namespace_"||"_typ)			
+			try {
+				If Force,buildmany {
+					If $DATA(status) {
+						Set status.CurrentlyBuilding="Purging Analysis data: "_Namespace_","_typ_","_package
+						$$$ThrowOnError(status.%Save())
+					}
+					Set:$$$ISOK(sc) sc=..DeleteAnalysisCalledByTypeKey1Package(Namespace,typ,package)
+
+					If $DATA(status) {
+						Set status.CurrentlyBuilding="Purging Xref data: "_Namespace_","_typ_","_package
+						$$$ThrowOnError(status.%Save())
+					}
+					Set:$$$ISOK(sc) sc=..DeleteCalledByTypeKey1Package(Namespace,typ,package)
+
+					If $DATA(status) {
+						Set status.CurrentlyBuilding="Purging LastUpdate data: "_Namespace_","_typ_","_package
+						$$$ThrowOnError(status.%Save())
+					}
+					Set:$$$ISOK(sc) sc=..DeleteLastUpdateCalledByTypeKey1Package(Namespace,typ,package)
+					; We have purged the lastupdate table so no need to force now.
+					; Which means we could kick off a Force on *, THEN build PXW package on a second process (because we are impatient)
+					; Then when the * build gets to PXW it will see that its already been done!
+					Set useTheForce=0,noDelete=1
 				}
-				Set rs2=interface.List(SearchName)
-				While rs2.%Next() {
-					Set timechanged=rs2.%Get("TimeChanged")
-					Set name=rs2.%Get("Name")
-					Set ^||PXWXrefBuild(interface.%Id(),$INCREMENT(count))=$LISTBUILD(typ,name,timechanged,builderClass)
+			} catch e {
+				set sc=e.AsStatus()
+			}
+			Lock -^PXWBuild(Namespace_"||"_typ)
+
+			if $$$ISOK(sc) {
+				Set builderClass=rs.%Get("Builder")
+				If builderClass'="" {
+					Set interface=##class(PXW.DEV.Dictionary.CodeInterface).%OpenId(rs.%Get("ID"))
+					If $DATA(status) {
+						Set status.CurrentlyBuilding="Searching "_Namespace_" : "_typ_" : "_SearchName
+						$$$ThrowOnError(status.%Save())
+					}
+					Set rs2=interface.List(SearchName)
+					While rs2.%Next() {
+						Set timechanged=rs2.%Get("TimeChanged")
+						Set name=rs2.%Get("Name")
+						Set ^||PXWXrefBuild(interface.%Id(),$INCREMENT(count))=$LISTBUILD(typ,name,timechanged,builderClass)
+					}
 				}
 			}
 		}
@@ -129,11 +146,11 @@ ClassMethod BuildIfNecessary(CodeInterface As PXW.DEV.Dictionary.CodeInterface, 
 	Set text=""
 
 	; check this is already building so we can skip
-	set locked=1
-	Lock +^PXWBuild(Namespace_"||"_Type_"||"_Name):0 else  s locked=0
-	if 'locked quit ""
+	Set locked=1
+	Lock +^PXWBuild(Namespace_"||"_Type_"||"_Name):0 Else  Set locked=0
+	If 'locked Quit ""
 
-	try {
+	Try {
 		Set builder=$SYSTEM.OBJ.New(BuilderClass)
 		Set LastUpdate=##class(PXW.Xref.LastUpdated).OpenOrNew(Namespace,Type,Name)
 		If Force || LastUpdate.NeedsUpdate(TimeChanged) {
@@ -179,11 +196,11 @@ ClassMethod BuildIfNecessary(CodeInterface As PXW.DEV.Dictionary.CodeInterface, 
 			$$$DEBUGSC(savesc,LastUpdate.%Save())
 			Set:$$$ISERR(savesc) built=0
 		}
-	} catch e {
-		lock -^PXWBuild(Namespace_"||"_Type_"||"_Name)
-		throw e
+	} Catch e {
+		Lock -^PXWBuild(Namespace_"||"_Type_"||"_Name)
+		Throw e
 	}
-	lock -^PXWBuild(Namespace_"||"_Type_"||"_Name)
+	Lock -^PXWBuild(Namespace_"||"_Type_"||"_Name)
 
 	$$$DEBUGMethodEnd
 	Quit built

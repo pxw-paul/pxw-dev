@@ -420,6 +420,18 @@ Method writeCDEFClassQueryBody(element As PXW.DEV.BNF.Elements.ClassDefinition) 
     Quit ""
 }
 
+Method writeCDEFVariablePublic(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="VariablePublic")
+{
+    $$$DEBUGMethodBegin
+    Set variablename=element.ToStringAtomsOnly(0)
+    ; add the hiliting function to the first atom only
+    Set atom=element.FirstAtom()
+    Set cssclass=$$$classVariable
+    Do ..wrapAtomHTML(atom,"<span class="""_cssclass_""" fetchid="""_variablename_""" onclick=""HiliteSets('"_variablename_"');"">","</span>")
+    $$$DEBUGMethodEnd
+    Quit ""
+}
+
 Method writeCDEFVariableSet(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="VariableSet")
 {
     #dim strElement as PXW.DEV.Element
@@ -722,6 +734,9 @@ Method writeCOSVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Comp
     Quit ""
 }
 
+
+
+
 Method writeCOSVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="VariableSet")
 {
     #dim strElement as PXW.DEV.Element
@@ -925,7 +940,7 @@ Method writeCOSLabelDefinition(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.B
     } Else {
         Set labname=..ThisMethod_lab
         Set anchor=$TRANSLATE("LAB"_labname,"$^%_","")
-        Do ..wrapAtomHTML(anchorAtom,"<span class="""_$$$classLabelDef_""" id="""_anchor_"SPAN"" >","</span>") ; not sure why the ID needs SPAN on the end...
+        Do ..wrapAtomHTML(labatom,"<span class="""_$$$classLabelDef_""" id="""_anchor_"SPAN"" >","</span>") ; not sure why the ID needs SPAN on the end...
         Do ..wrapAtomHTML(anchorAtom,"<a name="""_anchor_""" >","</a>") 
         Do ..AddToIndex(labname,"Label",anchor)
         /*

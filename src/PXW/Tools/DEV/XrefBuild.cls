@@ -131,6 +131,9 @@ ClassMethod WriteNav(ByRef scratch)
 {
 	Write "<a href="""_##class(PXW.Tools.DEV.XrefBuildProblems).HREFTo("")_""">Problems</a>"
 	Write "<a href="""_..HREFTo("","",1)_""">Delete status history</a>"
+	
+	Write "<a href="""_##class(PXW.Tools.DEV.Analyse).HREFTo("")_""">Analysis results</a>"
+	
 }
 
 /// Override this method to insert a form onto the header of the page.

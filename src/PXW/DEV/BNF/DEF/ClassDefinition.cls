@@ -589,7 +589,8 @@ attribute_ProcedureBlock            ::= 'procedureblock' [ '=' ( '0' | '1' ) ]
 
 attribute_PropertyClass             ::= 'propertyclass' '=' class_reference ('(' ',' class_reference ')')* 
 
-attribute_PublicList                ::= 'publiclist' '=' ( ('(' identifier (',' identifier )* ')' )  | identifier)
+attribute_PublicList                ::= 'publiclist' '=' ( ('(' variable_public (',' variable_public )* ')' )  | variable_public)
+variable_public                     ::= identifier
 
 attribute_ReadOnly                  ::= 'readonly'
 

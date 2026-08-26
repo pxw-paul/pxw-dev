@@ -60,6 +60,7 @@ ClassMethod WriteForm(ClassName As %String, Type As %String, ToolName As %String
 					<table>
 					>
 					Set FS=HREFto.FormalSpec
+					Set accesskey="accesskey=A "
 					For i=1:1:$LENGTH(FS,",") {
 						Set VAR=$PIECE($PIECE(FS,",",i),":",1)
 						Set TYP=$PIECE($PIECE(FS,",",i),":",2)
@@ -74,10 +75,11 @@ ClassMethod WriteForm(ClassName As %String, Type As %String, ToolName As %String
 							If TYP="%Boolean" {
 								&html<<td width=50%><input type=checkbox name=#(VNAME)# value=1 #($SELECT(DEF=1:"checked",1:""))#></td>>
 							} Else {
-								&html<<td width=50%><input type=text name=#(VNAME)# value='#(DEF)#'></td>>
+								&html<<td width=50%><input type=text #(accesskey)# name=#(VNAME)# value='#(DEF)#'></td>>
 							}
 							&html<<td width=25%>#(TYP)#</td>
 								</tr>>
+							Set accesskey=""
 						}
 					}
 					Set DESC=HREFto.Description

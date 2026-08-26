@@ -2535,7 +2535,7 @@ Method AttributePropertyclass2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	quit ok
 }
 
-///  attribute_PublicList ::= 'publiclist' '=' ( ('(' identifier (',' identifier )* ')' ) | identifier)
+///  attribute_PublicList ::= 'publiclist' '=' ( ('(' variable_public (',' variable_public )* ')' ) | variable_public)
 /// summary values:PUBLICLIST
 /// summary=K&P&((P&C&(?4punctuation:4?)*&P)|C)
 Method AttributePubliclist(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -2565,7 +2565,7 @@ Method AttributePubliclist(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	quit ok
 }
 
-///  ('(' identifier (',' identifier )* ')' ) | identifier
+///  ('(' variable_public (',' variable_public )* ')' ) | variable_public
 /// summary=(P&C&(?4punctuation:4?)*&P)|C
 Method AttributePubliclist1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
@@ -2574,7 +2574,7 @@ Method AttributePubliclist1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	set done=0 ; method start
 	if ..AttributePubliclist2Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..Identifier(.subElement,.addedElement)  {
+	} elseif ..VariablePublic(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -2588,7 +2588,7 @@ Method AttributePubliclist1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	quit ok
 }
 
-/// '(' identifier (',' identifier )* ')'
+/// '(' variable_public (',' variable_public )* ')'
 /// summary values:(
 /// summary=P&C&(?4punctuation:4?)*&P
 Method AttributePubliclist2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
@@ -2598,7 +2598,7 @@ Method AttributePubliclist2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"(")  {
-		if ..Identifier(.subElement,.addedElement)  {
+		if ..VariablePublic(.subElement,.addedElement)  {
 			if ..AttributePubliclist3RepZero(.subElement,.addedElement)  {
 				if ..addPunctuation(.subElement,")")  {
 					set done=1 ; end compileRules
@@ -2617,7 +2617,7 @@ Method AttributePubliclist2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	quit ok
 }
 
-///  (',' identifier )*
+///  (',' variable_public )*
 Method AttributePubliclist3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
@@ -2630,7 +2630,7 @@ Method AttributePubliclist3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef s
 	quit ok
 }
 
-/// ',' identifier
+/// ',' variable_public
 /// summary values:,
 /// summary=P&C
 Method AttributePubliclist4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
@@ -2640,7 +2640,7 @@ Method AttributePubliclist4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,",")  {
-		if ..Identifier(.subElement,.addedElement)  {
+		if ..VariablePublic(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -9775,6 +9775,30 @@ Method VariableIdentifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	}
 
 	set ok=$s(done:1,1:0)
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  variable_public ::= identifier
+/// summary=C
+Method VariablePublic(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary C
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..Identifier(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
 	$$$DEBUGMethodEnd
 	quit ok
 }

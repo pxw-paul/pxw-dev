@@ -69,7 +69,7 @@ ClassMethod WriteNav(ByRef scratch)
 				<legend>Nav form</legend>
 				<table>
 					<tr><td class=prompt>Prompt</td>
-						<td><input type=text value='default'></td>
+						<td><input accesskey=A type=text value='default'></td>
 					</tr>
 					<tr><td>&nbsp;</td><td><input type=submit></td>
 					</tr>

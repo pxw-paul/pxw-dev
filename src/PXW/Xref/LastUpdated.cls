@@ -21,6 +21,8 @@ Index PK On (NameSpace, ItemType, ItemKey1) [ Unique ];
 
 Index iCheckedAtNS On (CheckedAt, NameSpace);
 
+Index iLastUpdate on (NameSpace,LastUpdate);
+
 ClassMethod OpenOrNew(NameSpace As %String, ItemType As %String, ItemKey1 As %String) As PXW.Xref.LastUpdated
 {
     Set obj=..PKOpen(NameSpace,ItemType,ItemKey1)

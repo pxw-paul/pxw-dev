@@ -51,8 +51,11 @@ Property CodeMode As %String;
 /// ..DefinedMacros(macroname)=""
 Property DefinedMacros As %String [ MultiDimensional ];
 
-/// Flag to stop many single letter commands showing as problems in a single analysis
-Property ShortCommand As %Boolean;
+/// This points to the first Short Command found
+Property ShortCommand As PXW.DEV.Element;
+
+/// This points to the first Long Command found
+Property LongCommand As PXW.DEV.Element;
 
 /// List of variables that count as "bad" - ie keywords
 Property BadVars As %String [ MultiDimensional ];
@@ -102,7 +105,7 @@ Method Reset()
 	Kill ..BadVarsUsed
 	Kill ..stringVars
 	Kill ..stringVarsElement
-	Set ..ShortCommand=0
+	Set ..ShortCommand="",..LongCommand=""
 	Set ..QuitFound=0
 	Set ..MethodIsAbstract=0
 	;Set ..ClassIsAbstract=0 ; don't reset this at the start of every method!
@@ -198,19 +201,19 @@ method IsCompatible(Classname1 as %String, Classname2 as %String, output commonC
 
 	$$$DEBUGMethodBegin
 	Set commonClass="",depth=0,result=0
-	s cn1=..FullClassName(Classname1)
-	s cn2=..FullClassName(Classname2)
+	Set cn1=..FullClassName(Classname1)
+	Set cn2=..FullClassName(Classname2)
 	; for checking compatibility ObjectHandle is like a RegisteredObject
-	set cn1=$s(cn1="%Library.ObjectHandle":"%Library.RegistedObject",1:cn1)
-	set cn2=$s(cn2="%Library.ObjectHandle":"%Library.RegistedObject",1:cn2)
+	Set cn1=$SELECT(cn1="%Library.ObjectHandle":"%Library.RegistedObject",1:cn1)
+	Set cn2=$SELECT(cn2="%Library.ObjectHandle":"%Library.RegistedObject",1:cn2)
 	If ..ClassServer.GetClassDetails(cn1,.classtype1,.prime1,.super1),..ClassServer.GetClassDetails(cn2,.classtype2,.prime2,.super2) {
-		set super1=super1_$s($p(prime1,",",2,*)'="":$tr($p(prime1,",",2,*),",","~")_"~",1:"")
-		set super2=super2_$s($p(prime2,",",2,*)'="":$tr($p(prime2,",",2,*),",","~")_"~",1:"")
+		Set super1=super1_$SELECT($PIECE(prime1,",",2,*)'="":$TRANSLATE($PIECE(prime1,",",2,*),",","~")_"~",1:"")
+		Set super2=super2_$SELECT($PIECE(prime2,",",2,*)'="":$TRANSLATE($PIECE(prime2,",",2,*),",","~")_"~",1:"")
 		; maybe parameterise this check, sometimes we want to know numbers and strings are being confused, but mostly not
-		if classtype1="datatype",classtype2="datatype" {
+		If classtype1="datatype",classtype2="datatype" {
 			; all ok
-			set result=1,commonClass="datatype",depth=1
-		} else {
+			Set result=1,commonClass="datatype",depth=1
+		} Else {
 			Set common1="",d1=0
 			For i=2:1:$LENGTH(super1,"~")-1 {
 				Set cls=$PIECE(super1,"~",i)
@@ -239,6 +242,17 @@ Method checkCDEFOneClassMember(element As PXW.DEV.BNF.Elements.ClassDefinition) 
 	Quit ""
 }
 
+Method checkCDEFVariablePublic(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="VariablePublic")
+{
+    $$$DEBUGMethodBegin
+    Set atom=element.FirstAtom()
+	Set var=atom.ToString(0)
+	Set ..VariablesSet(var)=element
+	Set ..VariablesUsed(var)=element
+    $$$DEBUGMethodEnd
+    Quit ""
+}
+
 Method checkCosReturnTypeClassReference(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ReturnTypeClassReference")
 {
 	$$$DEBUGMethodBegin
@@ -263,9 +277,14 @@ Method checkCosCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compi
 		If '$ISOBJECT(directiveE) {
 			Set a=element.FirstAtom()
 			If $LENGTH(a.value)=1 {
-				Do ..AddElementWarning(element,"Short command")
-				Set ..ShortCommand=1
+				Set ..ShortCommand=element
 			}
+		}
+	}
+	If '..LongCommand {
+		Set a=element.FirstAtom()
+		If $LENGTH(a.value)>1 {
+			Set ..LongCommand=element
 		}
 	}
 	$$$DEBUGMethodEnd
@@ -494,7 +513,7 @@ Method checkCosVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Comp
 		}
 	}
 	; ByRef variables are BEING set so dont check for undef, {var} are actually property names so skip those too
-	If element.type'="ByrefVariable",$EXTRACT(varname,1)'="%",$EXTRACT(varname,1)'="{",'$DATA(..VariablesSet(varname)),'$DATA(..ParameterVariables(varname)),'$listfind(..publicListList,varname) {
+	If element.type'="ByrefVariable",$EXTRACT(varname,1)'="%",$EXTRACT(varname,1)'="{",'$DATA(..VariablesSet(varname)),'$DATA(..ParameterVariables(varname)) {
 		Do ..AddElementWarning(element,varname_" Possible UNDEF")
 	}
 	$$$DEBUGMethodEnd
@@ -723,7 +742,7 @@ Method checkOneClassMemeberFINAL(element As PXW.DEV.BNF.Elements.COS)
 		Quit:var=""
 		; if its a parameter variable we count this as being used
 		; {*} is special variable that is used on computed fields, ignore those
-		If '$DATA(..VariablesUsed(var)),'$DATA(..ParameterVariables(var)),var'="{*}",'$listfind(..publicListList,var) {
+		If '$DATA(..VariablesUsed(var)),'$DATA(..ParameterVariables(var)),var'="{*}" {
 			Set report=1
 			If var="SQLCODE" {
 				; SQLCODE is a special case, some people check SQLCODE, some check %ROWCOUND
@@ -746,6 +765,13 @@ Method checkOneClassMemeberFINAL(element As PXW.DEV.BNF.Elements.COS)
 			Do ..AddElementWarning(..ReturnTypeElement,"No Quit for method that has a ReturnType")
 		}
 	}
+
+	/// I am not especially bothered by short or long commands, but they should be consistent
+	If ..ShortCommand,..LongCommand {
+		Do ..AddElementWarning(..ShortCommand,"Mix of Short and Long commands")
+		;do ..AddElementWarning(..LongCommand,"Mix of Short and Long commands")
+	}
+
 	$$$DEBUGMethodEnd
 }
 Method checkCDEFAttributeCodeModeType(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="AttributeCodemodetype")
@@ -767,13 +793,14 @@ Method checkCDEFAttributeCodeModeType(element As PXW.DEV.BNF.Elements.ClassDefin
 	Quit ""
 }
 
-Method checkCDEFAttributePubliclist(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="AttributePubliclist")
+/*Method checkCDEFAttributePubliclist(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="AttributePubliclist")
 {
 	$$$DEBUGMethodBegin
 	set ..publicListList=$ListFromString($tr($piece(element.ToString(0),"=",2,*),"()",""))
 	$$$DEBUGMethodEnd
 	Quit ""
 }
+*/
 
 Method checkCDEFMethodAttribute(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="MethodAttribute")
 {

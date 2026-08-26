@@ -108,7 +108,7 @@ ClassMethod WriteNav()
 				<table>
 				
 				<tr><td class=prompt>ItemType</td>
-				<td><input type=text name=IT value='#(itemtype)#'></td>
+				<td><input type=text accesskey=A name=IT value='#(itemtype)#'></td>
 				</tr>
 				<tr><td class=prompt>ItemKey1</td>
 				<td><input type=text name=IK1 value='#(itemk1)#'></td>
