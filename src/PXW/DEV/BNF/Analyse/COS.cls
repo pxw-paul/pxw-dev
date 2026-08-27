@@ -346,6 +346,7 @@ Method checkCDEFFormalSpecItem(element As PXW.DEV.BNF.Elements.ClassDefinition) 
 		Set var=varE.ToString(0)
 		Set typeE=element.findFirstElementByType("ClassReference",1) ; go deep because of optional group
 		Set type=$SELECT($ISOBJECT(typeE):typeE.ToString(0),1:"")
+		If type="" Set type="%Library.String" ; the default
 		Set ..ParameterVariables(var)=type
 		If type'="" {
 			Set ..VariablesTypes(var)=type
@@ -906,10 +907,12 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, Start
 Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 {
 	#dim element as PXW.DEV.BNF.Elements.COS
+	
 	; some kind of set with indirection so type cannot be derived
 	; S @x
 	If '$ISOBJECT(ValueElement) Quit ""
 	If 'ValueElement.IsElement Quit ""
+
 
 	If ValueElement.type="Expression" {
 		Set expression=ValueElement
@@ -920,7 +923,7 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 	// If we call from a DO then there is no expression
 	If $ISOBJECT(expression),expression.type="Expression" {
 		Set simple=..SimplifyExpression(expression,.variableElement)
-		If simple'="-" Quit "" ; it's a number or string
+		If simple'="-" Quit "%Library.DataType" ; it's a number or string
 	} Else {
 		Set variableElement=ValueElement
 	}
@@ -928,6 +931,32 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 	If '$ISOBJECT(variableElement) Quit "" ; its something else we cannot deal with
 	
 	Set finaltype=""
+	; some macros we know $$$OK, $$$ERROR
+	If variableElement.type="Macrocall" {
+		Set nameA=variableElement.partsGetAt(2) ; second atom is the name
+		If $ISOBJECT(nameA) {
+			Set name=nameA.value
+			If (name="OK") || (name="ERROR") {
+				Set finaltype="%Library.Status"
+			}
+		}
+	}
+	If finaltype'="" Quit finaltype
+
+	If variableElement.type="CosJson" {
+		; s x={}
+		Set objE=variableElement.findFirstElementByType("CosJsonObject")
+		If $ISOBJECT(objE) {
+			Set finaltype="%Library.DynamicObject"
+		}
+		; s x=[]
+		Set arrE=variableElement.findFirstElementByType("CosJsonArray")
+		If $ISOBJECT(arrE) {
+			Set finaltype="%Library.DynamicArray"
+		}
+	}
+	If finaltype'="" Quit finaltype
+
     ; looking for ##class
 	If variableElement.type="Classexpr" {
 		Set hhclass=variableElement.findFirstElementByType("ClassExpression",0)

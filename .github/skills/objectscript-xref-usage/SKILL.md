@@ -27,11 +27,17 @@ The caller columns are named `CalledByKey1`, `CalledByKey2`, and `CalledByKey3`.
 
 ## Procedure
 
-1. Query the connected IRIS namespace with `ItemType = 'CLS'` and the target class in `ItemKey1`.
-2. Select `CalledByKey1`, `CalledByKey2`, and `LineNumber` for the caller list. Include `CalledByCommand` when the relationship type matters.
-3. Exclude rows where `CalledByKey1 = ItemKey1` when the user wants external users rather than the target class's internal references.
-4. Use `DISTINCT` only when duplicate relationship rows are not useful; preserve individual rows when the user needs every occurrence.
-5. Report the calling class, calling member, and source line. State clearly whether internal self-references were excluded.
+1. Read the workspace VS Code settings and locate `pxw.xref.connection`.
+2. Use the `namespace` value from `pxw.xref.connection` as the namespace for every xref query. Do not infer it from the active connection, the target class, or another settings key. If the setting or its namespace is missing, stop and ask for it rather than choosing a fallback.
+3. Never query `PXW_Xref.Data` in `%SYS`. In particular, do not fall back to `%SYS` when the configured namespace is unavailable, and do not run SQL in `%SYS` for this data. For this repository, the configured namespace is `USER`.
+4. Query `PXW_Xref.Data` in that configured namespace with `ItemType = 'CLS'` and the target class in `ItemKey1`.
+5. Select `CalledByKey1`, `CalledByKey2`, and `LineNumber` for the caller list. Include `CalledByCommand` when the relationship type matters.
+6. Exclude rows where `CalledByKey1 = ItemKey1` when the user wants external users rather than the target class's internal references.
+7. Use `DISTINCT` only when duplicate relationship rows are not useful; preserve individual rows when the user needs every occurrence.
+8. Resolve each returned class name to an existing workspace source file where possible. ObjectScript class names map to class files by replacing dots with path separators and appending `.cls`; search the workspace source roots when the class is not at the repository root.
+9. Render resolved class names as Markdown links to the workspace-relative file, using the xref `LineNumber` as the link anchor when that line exists in the local source. Link the member name separately only when a precise member location is known.
+10. Leave classes without a local source file as plain text and say that the source is not present in the workspace. Never fabricate file links or use `file://`/`vscode://` URLs.
+11. Report the calling class, calling member, and source line. State clearly whether internal self-references were excluded.
 
 ## Query Template
 
