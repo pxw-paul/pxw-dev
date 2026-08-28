@@ -1,54 +1,47 @@
 {
-    "files.associations": {
-
-        "Dockerfile*": "dockerfile",
-        "iris.script": "objectscript"
-      },
-    "objectscript.conn" :{
-      "active": true,
-      "ns": "USER",
+  "files.associations": {
+    "Dockerfile*": "dockerfile",
+    "iris.script": "objectscript"
+  },
+  "intersystems.testingManager.client.relativeTestRoot": "tests",
+  "sqltools.connections": [
+    {
+      "namespace": "USER",
+      "connectionMethod": "Server and Port",
+      "showSystem": false,
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 52775,
+      "https": false,
+      "askForPassword": false,
+      "driver": "InterSystems IRIS",
+      "name": "user",
       "username": "_SYSTEM",
-      "password": "SYS",
-      "docker-compose": {
-        "service": "iris",
-        "internalPort": 52775
-      },
-      "links": {
-        "UnitTest Portal": "${serverUrl}/csp/sys/%25UnitTest.Portal.Home.cls?$NAMESPACE=USER"
-      }
-    },
-    "intersystems.testingManager.client.relativeTestRoot": "tests",
-    "sqltools.connections": [
-      {
-        "namespace": "USER",
-        "connectionMethod": "Server and Port",
-        "showSystem": false,
-        "previewLimit": 50,
-        "server": "localhost",
-        "port": 52775,
-        "https": false,
-        "askForPassword": false,
-        "driver": "InterSystems IRIS",
-        "name": "user",
-        "username": "_SYSTEM",
-        "password": "SYS"
-      }
-    ],
-    "intersystems.servers": {
-      "pxw-dev": {
-        "webServer": {
-          "scheme": "http",
-          "host": "127.0.0.1",
-          "port": 52775
-        },
-        "username": "_SYSTEM"
-      }
-    },
-        "pxw.xref.connection": {
-        "namespace": "USER",
-        "host": "localhost",
-        "port": 52775,
-        "username": "_SYSTEM",
-        "scheme":"http"
+      "password": "SYS"
     }
+  ],
+  "intersystems.servers": {
+    "pxw-devrem": {
+      "webServer": {
+        "scheme": "http",
+        "host": "192.168.0.189",
+        "port": 52775,
+        "pathPrefix": ""
+      },
+      "username": "_SYSTEM",
+      "password": "SYS"
+    }
+  },
+  "pxw.xref.connection": {
+    "namespace": "USER",
+    "host": "192.168.0.189",
+    "port": 52775,
+    "username": "_SYSTEM",
+    "scheme": "http"
+  },
+  "objectscript.conn": {
+    "server": "pxw-devrem",
+    "ns": "USER",
+    "active": true
+  }
 }
