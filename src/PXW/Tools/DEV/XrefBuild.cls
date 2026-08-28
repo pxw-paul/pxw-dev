@@ -10,7 +10,6 @@ ClassMethod xrefPackage(Namespace As %String, Package As %String, Force As %Bool
 	set type=$p(Package,".",2)
 	Job ##class(PXW.Xref.Build).Build(Namespace,type,pack,Force)
 	Hang 1
-	Write !,"Submitted to background."
 	Set sc=$$$OK
 	Quit sc
 }
@@ -18,22 +17,6 @@ ClassMethod xrefPackage(Namespace As %String, Package As %String, Force As %Bool
 ClassMethod WriteMainBody()
 {
 	Do ..HREFFrom(.package,.force,.deleteold)
-	&html<
-	Enter the name of the package to build or * for all. Leave the package empty to display the current status of any builds in progress.
-	<fieldset>
-		<form id=formRoutine action='PXW.Tools.DEV.XrefBuild.cls'>
-			<input type=hidden name=IFRAME value='0'>
-			<u>P</u>ackage 
-			<input accesskey=P 
-				title='Enter Package name'
-			type=text id=inputPackage name=P value='' size=10>
-			Force <input type='checkbox' name="F" value=1>
-			<input type=hidden name="%NS" value='#(%NS)#'>
-			<input type=submit value='Go'>
-		</form>
-	</fieldset>
-	>
-
 	If +deleteold=1 {
 		Do ##class(PXW.Xref.BuildStatus).Purge()
 	}
@@ -41,9 +24,8 @@ ClassMethod WriteMainBody()
 	If package'="" {
         If package="*" Set package=""
 		Write "<pre>"
-		Write "Clearing Cache" Do ##class(PXW.DEV.Dictionary.ClassDefinitionObject).ClearCache()
-		Set sc=..xrefPackage(%NS,package,force)
-		Do ..WriteStatus(sc)
+		Write !,"Clearing Cache." Do ##class(PXW.DEV.Dictionary.ClassDefinitionObject).ClearCache()
+		Write !,"Submitting to background."	Set sc=..xrefPackage(%NS,package,force) Do ..WriteStatus(sc)
 		Write "</pre>"
 	} 
 
@@ -134,6 +116,28 @@ ClassMethod WriteNav(ByRef scratch)
 	
 	Write "<a href="""_##class(PXW.Tools.DEV.Analyse).HREFTo("")_""">Analysis results</a>"
 	
+	&HTML<
+	<form action="PXW.Tools.DEV.XrefBuild.cls">
+		<fieldset>
+			<legend id="PXWToolsDEVXrefBuildlegend">Xref Build</legend>
+			<input type="hidden" name="IFRAME" value="0">
+			<input type="hidden" name="%NS" value="#($G(%NS))#">
+			<table>			
+				<tbody>
+				<tr><td width="25%" class="prompt">Package</td>
+				<td width="50%"><input type="text" accesskey="A" name="P" value=""></td>
+				</tr>
+				<tr><td width="25%" class="prompt">Force</td>
+				<td width="50%"><input type="checkbox" name="F" value="1"></td>
+				</tr>
+				<tr><td> </td><td><input type="submit"></td></tr>
+			</tbody></table>
+		</fieldset>
+	</form>
+	<!-- Enter the name of the package to build or * for all. 
+		Leave the package empty to display the current status of any builds in progress.
+	-->
+	>
 }
 
 /// Override this method to insert a form onto the header of the page.
@@ -153,8 +157,8 @@ ClassMethod WriteHeadForm(Page As %String)
 					<input readonly size=20	type=text id=toolXrefReference name=XRNS value='#($LISTTOSTRING(runningNS))#'>
 					<input type=submit value='Go'>
 				</fieldset>
-			</form>>		
-		;Write "Backgroung build of Xref data has started. <a href="""_##class(PXW.Tools.DEV.XrefBuild).HREFTo()_""">Check progress</a>"
+			</form>
+		>		
 	}
 }
 
