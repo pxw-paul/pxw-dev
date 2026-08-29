@@ -333,7 +333,7 @@ ClassMethod GetTitle() As %String
 	} 
 
 	If method'="" {
-		Quit class_":"_method_""
+		Quit class_"||"_method_""
 	} Else {
 		Quit class
 	}

@@ -378,9 +378,23 @@ Method checkCDEFClassAttribute(element As PXW.DEV.BNF.Elements.ClassDefinition) 
 
 Method xrefCDEFOneClassmember(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="OneClassmember")
 {
+   ; a class memeber element is like this:
+    ;         Element=OneClassmember PXW.DEV.BNF.Element @1835 
+    ; item(e)=.Element=ClassMethod PXW.DEV.BNF.Element @1893
+    ; typeA  =..type=keyword:/UdlStatement/ClassDefinition/ClassMemberSection/ClassMemberList/OneClassmember/ClassMethod
+    ;         .. Method
+    ; nameE   ..Element=MethodName PXW.DEV.BNF.Element @1910
+    ;         ...Element=ClassItemIdentifier PXW.DEV.BNF.Element @1946
+    $$$DEBUGMethodBegin
+    Set item=element.partsGetAt(1)
+    Set typeA=item.partsGetAt(1)
+    Set nameE=item.partsGetAt(2)
+    Set name=nameE.ToString(0)
+
 	Set ..Analyser=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..#CodeType,"COS")
 	Set ..Analyser.ClassServer=..ClassServer
 	Set ..Analyser.This=..CalledByClassName
+	Set ..Analyser.ThisMethod=name ; the property we should use for this is worked out too late, COME BACK TO THIS AND FIX
 	set ..Analyser.ClassIsAbstract=..classIsAbstract
 	If ..Analyser Do ..Analyser.checkElement(element)
 
@@ -388,6 +402,7 @@ Method xrefCDEFOneClassmember(element As PXW.DEV.BNF.Elements.ClassDefinition) A
 	Set item=element.partsGetAt(1)
 	Set typeE=item.partsGetAt(1)
 	Set ..ThisItemType=typeE.ToString(0)
+	$$$DEBUGMethodEnd
 	Quit ""
 }
 
