@@ -38,7 +38,7 @@ Method processAtom(atom As PXW.DEV.Atom)
 /// Build a set of ifs to process any based on the type of element currently being processed.
 /// The first parameter on the formal spect is the type of element that the method handles.
 /// eg. Method writeCOSThing(element As PXW.DEV.BNF.Elements.COS) AS  As PXW.DEV.BNF.Compilers.elementHandler(Type="Thing")
-Method processSpecificElement(element As PXW.DEV.Element) [ CodeMode = objectgenerator ]
+Method processSpecificElement(element As PXW.DEV.Element,When as %String="") [ CodeMode = objectgenerator ]
 {
     #dim meth as %Dictionary.CompiledMethod
     Set opencurly="{",closecurly="}"
@@ -55,6 +55,7 @@ Method processSpecificElement(element As PXW.DEV.Element) [ CodeMode = objectgen
 				Set param=meth.ReturnTypeParams
 				;Set seq=meth.SequenceNumber
 				If param'="" {
+
 					Set etypes=$TRANSLATE($PIECE(param,"=",2),"""","")
 					If etypes'="" {
 						For i=1:1:$LENGTH(etypes,",") {

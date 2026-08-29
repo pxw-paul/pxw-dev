@@ -11,6 +11,11 @@ Parameter Language = "COS";
 /// ..VariableTypes(varname)=type
 Property VariablesTypes As %String [ MultiDimensional ];
 
+/// Keep track of variable types  at an element level, so we know that at a certain point what the variable is
+/// ..VariableTypesElement(..element)=type
+
+property VariablesTypesElement as %String [ MultiDimensional ];
+
 /// Keep track of variable types #dimmed by programmer, assumed to be more accurate than can be derived
 /// ..DimmedTypes(varname)=type
 Property DimmedTypes As %String [ MultiDimensional ];
@@ -97,7 +102,7 @@ Method %OnNew(ClassServer As PXW.DEV.Dictionary.ClassDefinitionObject = "") As %
 Method Reset()
 {
 	$$$DEBUGMethodBegin
-	Kill ..VariablesTypes
+	Kill ..VariablesTypes,..VariablesTypesElement
 	Kill ..DimmedTypes
 	Kill ..ElementWarnings
 	Kill ..ParameterVariables
@@ -496,6 +501,7 @@ Method checkAndRecordVariableType(VariableElement As PXW.DEV.BNF.Elements.COS, V
 	; we have a type so remember it, dont bother storing when it went to null, thats normally not useful
 	If finaltype'="" {
 		Set ..VariablesTypes(var)=finaltype
+		Set ..VariablesTypesElement(+VariableElement)=finaltype
 	}
 	$$$DEBUGMethodEnd
 }
@@ -1011,10 +1017,70 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 		}
 	}
 	If finaltype'="" Quit finaltype
+
+	if variableElement.type="Intrinsicfncall" {
+		set specialE=variableElement.findFirstElementByType("SpecialIntrinsic",0)
+		if $isobject(specialE) {
+			set selectE=specialE.findFirstElementByType("SelectFunctionCall",0)
+			if $isobject(selectE) {
+				set finaltype=..DeriveTypeReturnedSelect(selectE)
+			}
+		}
+	}
+	If finaltype'="" Quit finaltype
 	
 	Quit finaltype
 }
 
+/// Given a $select(x=1:object1,x=2:object2,1:"")
+/// It works out if object 1 and 2 have a common super and that is the thing derived as return type
+/// 
+method DeriveTypeReturnedSelect(Element as PXW.DEV.Element) as %String
+{
+	do Element.findElementsXPath("SelectClauses/SelectClause/SelectClauseValue",.list)
+	set finaltype=""
+	if $isobject($g(list)) {
+		set finaltype=..DeriveTypeFromList(list)
+	}
+	quit finaltype
+}
+
+method DeriveTypeReturnedCase(Element as PXW.DEV.Element) as %String
+{
+	do Element.findElementsXPath("CaseClauses/CaseClause/CaseClauseValue",.list)
+	do Element.findElementsXPath("CaseClauseDefault/CaseClauseValue",.list)
+	set finaltype=""
+	if $isobject($g(list)) {
+		set finaltype=..DeriveTypeFromList(list)
+	}
+	quit finaltype
+}
+
+method DeriveTypeFromList(list as %ListOfObjects(ELEMENTTYPE = "PXW.DEV.Element")) as %String
+{
+	set finaltype=""
+	for i=1:1:list.Count() {
+		set valueE=list.GetAt(i)
+		if $isobject(valueE) {
+			set type=..DeriveTypeReturned(valueE)
+			if type'="" {
+				if finaltype="" {
+					set finaltype=type
+				} else {
+					set compatible=..IsCompatible(finaltype,type,.common,.depth)
+					if compatible {
+						s finaltype=common
+					} else {
+						if common'="" {
+							set finaltype=common
+						}
+					}
+				}
+			}
+		}
+	}
+	quit finaltype
+}
 Method FullClassName(name As %String) As %String
 {
 	If name="" Quit ""

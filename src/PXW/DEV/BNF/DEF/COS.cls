@@ -423,7 +423,6 @@ variable                            ::= variable_identifier [ array_parameter_li
 variable_set                        ::= variable_identifier [ array_parameter_list ] [ object_chain ]
 variable_nodef                      ::= variable_identifier [ array_parameter_list ] [ object_chain ] /* Used for just mentioning a variable but not using or setting (eg #dim, $get() */
 variable_identifier                 ::= 'regexp:(\%|[a-zA-Z])[a-zA-Z0-9]*' /* % or A followed by AN* */
-/(variable_identifier_pattern         ::= (['%'] | '?1A') '?AN'  --  EXPERIMENT % or A followed by AN* */
 array_parameter_list                ::= open_bracket  expression ( ',' expression )*  close_bracket
 
 object_chain                        ::= '.' object_member_identifier [ function_parameter_list ] [ object_chain ]
@@ -772,7 +771,7 @@ zwrite_argument                     ::= expression
 
 case_function_call                  ::= 'case' open_bracket expression [ case_clauses ] [ case_clause_default ] close_bracket
 case_clauses                        ::= (( ',' case_clause ))* /* BUG IN WHILE LOOP CONSTRUCTION FOR THIS CHECK - THE COMMA IS ADDED BUT THE CASE_CLAUSE MIGHT FAIL - ONLY THE CASE_CLAUSE IS ROLLED BACK THE COMMA IS COMMITTED */
-case_clause_default                 ::= ',' ':' expression
+case_clause_default                 ::= ',' ':' case_clause_value
 case_clause                         ::= case_clause_case ':' case_clause_value
 case_clause_case                    ::= expression
 case_clause_value                   ::= expression
@@ -845,10 +844,11 @@ zobjclassmethod_function_call       ::= 'zobjclassmethod' open_bracket classmeth
 /* $LOCATE(string,regexp,start,end,val) */
 locate_function_call                ::= 'locate' open_bracket expression ',' expression [ ',' expression [ ',' variable_set [',' variable_set ]]] close_bracket
 
-select_function_call                ::= ('select' | 's') '(' select_clauses ')' [ object_chain ] /* who returns an object from a $s? */
+select_function_call                ::= ('select' | 's') '(' select_clauses ')' [ object_chain ] 
 select_clauses                      ::= select_clause ( ',' select_clause )*
-/*select_clause_default               ::= '1' ':' expression*/
-select_clause                       ::= expression ':' expression
+select_clause                       ::= select_clause_test ':' select_clause_value
+select_clause_test                  ::= expression
+select_clause_value                 ::= expression
 
     /* NO IDEA ABOUT MV, guessing!, from docs: SET $MV(dynval,-1::1)="" // appends 2nd delimiter */
 mv_function_set                     ::= 'mv' open_bracket variable_set ',' expression [ '::' expression ] [ ',' expression [ ',' expression ] ] close_bracket
