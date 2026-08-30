@@ -28,8 +28,7 @@ Method partsGetAt(key As %Integer) As PXW.DEV.Particle
 
 Method partsGetNext(ByRef key As %Integer) As PXW.DEV.Particle
 {
-	#dim %PXWparts as PXW.DEV.Particle
-	;q ..parts.GetNext(.key)
+	#dim part as PXW.DEV.Particle
 	Set key=$ORDER(%PXWparts(+$THIS,key),1,part)
 	Quit $SELECT(key'="":part,1:"")
 }

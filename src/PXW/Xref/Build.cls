@@ -221,7 +221,7 @@ ClassMethod BuildIfNecessary(CodeInterface As PXW.DEV.Dictionary.CodeInterface, 
 
 /// Stick a call to this somewhere so that it gets called often, it should ensure that a full build is done at least 1 time per day
 /// write ##class(PXW.Xref.Build).DailyBuild("LOCAL_USER")
-ClassMethod DailyBuild(Namespace As %String) As %Boolean
+ClassMethod DailyBuild() As %Boolean
 {
 	Set started=0 
 	Set rs=..SelectDailyBuildFunc()

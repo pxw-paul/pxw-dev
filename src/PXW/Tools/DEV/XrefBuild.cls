@@ -158,7 +158,7 @@ ClassMethod WriteNav(ByRef scratch)
 /// Calling page is passed in so you can decide what to display on the form/if anything.
 ClassMethod WriteHeadForm(Page As %String)
 {
-	Do ##class(PXW.Xref.Build).DailyBuild(%NS) 
+	Do ##class(PXW.Xref.Build).DailyBuild() 
 
 	&SQL(SELECT %DLIST(DISTINCT RequestNamespace) INTO :runningNS FROM PXW_Xref.BuildStatus WHERE EndDateTime is null and Running=1)
 	If (SQLCODE=0) && (runningNS'="") {

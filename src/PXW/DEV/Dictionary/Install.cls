@@ -30,15 +30,14 @@ ClassMethod Setup() As %Status
     ; This is the default namespace, if anything goes wrong this is where we count as safe
     Set:$$$ISOK(sc) sc=..SetupCLS("LOCAL_USER","LOCAL_USER","localhost",52773,"USER","_SYSTEM","SYS")
 
-    ; we are installing so kick off some builds to get started
-    if $$$ISOK(sc) {
-        j ##class(PXW.Xref.Build).Build("","","*")
-        h 1
-        j ##class(PXW.Xref.Build).Build("","","PXW*")
-    }
-
     If $$$ISERR(sc) Do $SYSTEM.Status.DisplayError(sc)
     Quit sc
+}
+
+classmethod XrefSeed() {
+    j ##class(PXW.Xref.Build).Build("LOCAL_USER","","*")
+    h 1
+    j ##class(PXW.Xref.Build).Build("LOCAL_USER","","PXW*")
 }
 
 ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, AtelierServer As %String, AtelierPort As %String, AtelierNamespace As %String, Ausername As %String, Apassword As %String) As %Status
