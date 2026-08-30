@@ -28,7 +28,15 @@ ClassMethod Setup() As %Status
     Set:$$$ISOK(sc) sc=##class(PXW.DEV.BNF.Analyse.Python).RegisterType()
     
     ; This is the default namespace, if anything goes wrong this is where we count as safe
-    Set sc=..SetupCLS("LOCAL_USER","LOCAL_USER","localhost",52773,"USER","_SYSTEM","SYS")
+    Set:$$$ISOK(sc) sc=..SetupCLS("LOCAL_USER","LOCAL_USER","localhost",52773,"USER","_SYSTEM","SYS")
+
+    ; we are installing so kick off some builds to get started
+    if $$$ISOK(sc) {
+        j ##class(PXW.Xref.Build).Build("","","*")
+        h 1
+        j ##class(PXW.Xref.Build).Build("","","PXW*")
+    }
+
     If $$$ISERR(sc) Do $SYSTEM.Status.DisplayError(sc)
     Quit sc
 }

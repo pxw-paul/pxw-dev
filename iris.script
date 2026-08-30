@@ -17,14 +17,16 @@
     //zn "IRISAPP"
 
     zn "USER"
+    
+    ; turn on the debug before its installed to aid compile
+    set ^PXW.Debuggers("ENABLED")=1
+    set ^PXW.Debuggers("BasicToFile")="/home/irisowner/dev/debug/"
+
     // Create /_vscode web app to support intersystems-community.testingmanager VS Code extension
     zpm "install vscode-per-namespace-settings"
     zpm "install pxw-debug"
     zpm "install pxw-lib-sql"
     
-    set ^PXW.Debuggers("ENABLED")=1
-    set ^PXW.Debuggers("BasicToFile")="/home/irisowner/dev/debug/"
-
     // Configure %UnitTest in IRISAPP to suit the VS Code extension
     //set ^UnitTestRoot="/usr/irissys/.vscode/IRISAPP/UnitTestRoot"
     set ^UnitTestRoot="/usr/irissys/.vscode/USER/UnitTestRoot"

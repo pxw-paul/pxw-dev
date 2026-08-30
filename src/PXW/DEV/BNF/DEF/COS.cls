@@ -239,7 +239,7 @@ special_intrinsic                   ::= case_function_call
                                         | select_function_call
                                         | extract_function_call
                                         | piece_function_call
-                                        --| get_function_call
+                                        | get_function_call
                                         | data_function_call
                                         | order_function_call
                                         | listitem_function_call
@@ -810,9 +810,10 @@ vector_function_call_set           ::= 'vector' open_bracket set_value_expressio
 
 order_function_call                ::= ('order' | 'o') open_bracket expression [',' expression [ ',' variable_set ] ] close_bracket
 
-/* Not required, leave it just to default variable as being used
-get_function_call                 ::= ('get' | 'g') open_bracket data_expression [ ',' expression ] close_bracket
-*/
+
+get_function_call                 ::= ('get' | 'g') open_bracket get_expression [ ',' expression ] close_bracket
+get_expression                    ::= expression
+
 data_function_call                ::= ('data' | 'd') open_bracket data_expression [ ',' variable_set ] close_bracket
 data_expression                   ::= this_object
                                         | variable_nodef

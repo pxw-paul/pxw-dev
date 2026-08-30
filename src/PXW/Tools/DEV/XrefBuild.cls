@@ -6,8 +6,22 @@ Parameter ToolName = "Xref Build";
 /// d ##class(PXW.Tools.DEV.XrefBuild).xrefPackage("LOCAL_USER","PXW")
 ClassMethod xrefPackage(Namespace As %String, Package As %String, Force As %Boolean = 0) As %Status
 {
-	Set pack=$PIECE(Package,"*",1)_"*"
-	set type=$p(Package,".",2)
+	if Package["." {
+		; package.type
+		; package*.type
+		; package.*.type
+		Set pack=$PIECE(Package,".",1,*-1)
+		set type=$p(Package,".",*)
+		; package.*
+		if type["*" {
+			set pack=Package
+			set type=""
+		}
+	} else {
+		set pack=Package_"*"
+		set type=""
+	}
+	if type="*" set type=""
 	Job ##class(PXW.Xref.Build).Build(Namespace,type,pack,Force)
 	Hang 1
 	Set sc=$$$OK

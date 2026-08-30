@@ -206,10 +206,10 @@ method IsCompatible(Classname1 as %String, Classname2 as %String, output commonC
 
 	$$$DEBUGMethodBegin
 	Set commonClass="",depth=0,result=0
-	if Classname1="<null>" quit 1 ; null is compatible with everything
-	if Classname2="<null>" quit 1 ; 
-	if Classname1="%Library.Any" quit 1 ; %Library.Any is compatible with everything
-	if Classname2="%Library.Any" quit 1 ; 
+	If Classname1="<null>" Quit 1 ; null is compatible with everything
+	If Classname2="<null>" Quit 1 ; 
+	If Classname1="%Library.Any" Quit 1 ; %Library.Any is compatible with everything
+	If Classname2="%Library.Any" Quit 1 ; 
 
 	Set cn1=..FullClassName(Classname1)
 	Set cn2=..FullClassName(Classname2)
@@ -589,7 +589,7 @@ Method checkCosDirectiveDimItemSet(element As PXW.DEV.BNF.Elements.COS) As PXW.D
 {
 	$$$DEBUGMethodBegin
 	Set classele=element.findFirstElementByType("ClassReference",0)
-	set classname=""
+	Set classname=""
 	If $ISOBJECT(classele) {
 		Set classname=classele.ToString(0)
 		Do element.findElementsByType("VariableSet",.variablelist,0)
@@ -603,8 +603,8 @@ Method checkCosDirectiveDimItemSet(element As PXW.DEV.BNF.Elements.COS) As PXW.D
 		Set derivedtype=..DeriveTypeReturned(dimexprE)
 		; #dim x = ##class(object).method() 
 		; it has no dimmed type so what ever we derive must be correct
-		if classname="" {
-			set classname=derivedtype
+		If classname="" {
+			Set classname=derivedtype
 			Do element.findElementsByType("VariableSet",.variablelist,0)
 			For i=1:1:variablelist.Count() {
 				Set var=variablelist.GetAt(i).ToString(0)
@@ -717,14 +717,14 @@ Method checkCosQuitCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.C
 			}
 		}
 		; return type is not set so try the origin if this is an override
-		If ..ReturnType="",$isobject(..ClassServer) {
-			if ..ClassServer.GetMethodDetails(..This,..ThisMethod,.rettype,.origin) {
-				zw rettype,origin
-				if rettype'="" {
-					set ..ReturnType=rettype
-				} else {
-					if origin'="",..ClassServer.GetMethodDetails(origin,..ThisMethod,.rettype) {
-						set ..ReturnType=rettype
+		If ..ReturnType="",$ISOBJECT(..ClassServer) {
+			If ..ClassServer.GetMethodDetails(..This,..ThisMethod,.rettype,.origin) {
+				ZWrite rettype,origin
+				If rettype'="" {
+					Set ..ReturnType=rettype
+				} Else {
+					If origin'="",..ClassServer.GetMethodDetails(origin,..ThisMethod,.rettype) {
+						Set ..ReturnType=rettype
 					}
 				}
 			}
@@ -959,7 +959,7 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 	// If we call from a DO then there is no expression
 	If $ISOBJECT(expression),expression.type="Expression" {
 		Set simple=..SimplifyExpression(expression,.variableElement)
-		If simple'="-" Quit $select(simple="""""":"<null>",1:"%Library.DataType") ; it's null or a number or string
+		If simple'="-" Quit $SELECT(simple="""""":"<null>",1:"%Library.DataType") ; it's null or a number or string
 	} Else {
 		Set variableElement=ValueElement
 	}
@@ -974,11 +974,11 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 			Set name=nameA.value
 			If (name="OK") || (name="ERROR") {
 				Set finaltype="%Library.Status"
-			} elseif (name="NULLOREF") {
-				set finaltype="<null>"
+			} ElseIf (name="NULLOREF") {
+				Set finaltype="<null>"
 			}
 		}
-	} elseIf variableElement.type="CosJson" {
+	} ElseIf variableElement.type="CosJson" {
 		; s x={}
 		Set objE=variableElement.findFirstElementByType("CosJsonObject")
 		If $ISOBJECT(objE) {
@@ -989,7 +989,7 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 		If $ISOBJECT(arrE) {
 			Set finaltype="%Library.DynamicArray"
 		}
-	} elseIf variableElement.type="Classexpr" {
+	} ElseIf variableElement.type="Classexpr" {
 		; looking for ##class
 		Set hhclass=variableElement.findFirstElementByType("ClassExpression",0)
 		If $ISOBJECT(hhclass) {
@@ -1008,7 +1008,7 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 				}
 			}
 		}
-	} elseIf variableElement.type="Variable" {
+	} ElseIf variableElement.type="Variable" {
 		; looking for variable eg obj.property
 		Set finaltype=""
 		Set variablename=variableElement.ToStringAtomsOnly(0)
@@ -1020,7 +1020,7 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 			If classname="" Set classname=$GET(..VariablesTypes(variablename))
 			If classname'=""	Set finaltype=..FollowObjectChainForType(variableElement,classname,elementtype)
 		}
-	} elseIf variableElement.type="ThisObject" {
+	} ElseIf variableElement.type="ThisObject" {
 		; this is not quite right but expressions are sooo complicated, need a generic
 		; get "first thing in expression" method
 		Set thisobjectselfE=variableElement.findFirstElementByType("ThisObjectSelf",0)
@@ -1034,18 +1034,25 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 				Set finaltype=..FollowObjectChainForType(thisobjectthisE,..This)
 			}
 		}
-	} elseif variableElement.type="Intrinsicfncall" {
-		set specialE=variableElement.findFirstElementByType("SpecialIntrinsic",0)
-		if $isobject(specialE) {
-			set selectE=specialE.findFirstElementByType("SelectFunctionCall",0)
-			if $isobject(selectE) {
-				set finaltype=..DeriveTypeReturnedSelect(selectE)
+	} ElseIf variableElement.type="Intrinsicfncall" {
+		Set specialE=variableElement.findFirstElementByType("SpecialIntrinsic",0)
+		If $ISOBJECT(specialE) {
+			Set functionE=specialE.partsGetAt(1)
+			If $ISOBJECT(functionE) {
+				If functionE.type="SelectFunctionCall" {
+					Set finaltype=..DeriveTypeReturnedSelect(functionE)
+				} ElseIf functionE.type="GetFunctionCall" {
+					Set getExpE=functionE.findFirstElementByType("GetExpression",0)
+					If $ISOBJECT(getExpE) {
+						Set finaltype=..DeriveTypeReturned(getExpE)
+					}
+				}
 			}
 		}
-	} elseif variableElement.type="SpecialVariable" {
+	} ElseIf variableElement.type="SpecialVariable" {
 		#dim x as %SYSTEM.OBJ
-		set specialElement=variableElement.findFirstElementByType("SpecialSystem",0) 
-		if $isobject(specialElement) {
+		Set specialElement=variableElement.findFirstElementByType("SpecialSystem",0) 
+		If $ISOBJECT(specialElement) {
 			Set classname="%SYSTEM"
 			Set key="" 
 			For  {
@@ -1071,57 +1078,57 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 /// 
 method DeriveTypeReturnedSelect(Element as PXW.DEV.Element) as %String
 {
-	do Element.findElementsXPath("SelectClauses/SelectClause/SelectClauseValue",.list)
-	set finaltype=""
-	if $isobject($g(list)) {
-		set finaltype=..DeriveTypeFromList(list)
+	Do Element.findElementsXPath("SelectClauses/SelectClause/SelectClauseValue",.list)
+	Set finaltype=""
+	If $ISOBJECT($GET(list)) {
+		Set finaltype=..DeriveTypeFromList(list)
 	}
-	quit finaltype
+	Quit finaltype
 }
 
 method DeriveTypeReturnedCase(Element as PXW.DEV.Element) as %String
 {
-	do Element.findElementsXPath("CaseClauses/CaseClause/CaseClauseValue",.list)
-	do Element.findElementsXPath("CaseClauseDefault/CaseClauseValue",.list)
-	set finaltype=""
-	if $isobject($g(list)) {
-		set finaltype=..DeriveTypeFromList(list)
+	Do Element.findElementsXPath("CaseClauses/CaseClause/CaseClauseValue",.list)
+	Do Element.findElementsXPath("CaseClauseDefault/CaseClauseValue",.list)
+	Set finaltype=""
+	If $ISOBJECT($GET(list)) {
+		Set finaltype=..DeriveTypeFromList(list)
 	}
-	quit finaltype
+	Quit finaltype
 }
 
 method DeriveTypeFromList(list as %ListOfObjects(ELEMENTTYPE = "PXW.DEV.Element")) as %String
 {
-	set finaltype=""
-	for i=1:1:list.Count() {
-		set valueE=list.GetAt(i)
-		if $isobject(valueE) {
-			set type=..DeriveTypeReturned(valueE)
-			if type'="" {
-				if finaltype="" {
-					set finaltype=type
-				} else {
-					set compatible=..IsCompatible(finaltype,type,.common,.depth)
-					if compatible {
-						if common'="",common'="<datatype>" {
-							s finaltype=common
+	Set finaltype=""
+	For i=1:1:list.Count() {
+		Set valueE=list.GetAt(i)
+		If $ISOBJECT(valueE) {
+			Set type=..DeriveTypeReturned(valueE)
+			If type'="" {
+				If finaltype="" {
+					Set finaltype=type
+				} Else {
+					Set compatible=..IsCompatible(finaltype,type,.common,.depth)
+					If compatible {
+						If common'="",common'="<datatype>" {
+							Set finaltype=common
 						}
-					} else {
-						if common'="",common'="<datatype>" {
-							set finaltype=common
+					} Else {
+						If common'="",common'="<datatype>" {
+							Set finaltype=common
 						}
 					}
 				}
 			}
 		}
 	}
-	quit finaltype
+	Quit finaltype
 }
 Method FullClassName(name As %String) As %String
 {
 	If name="" Quit ""
-	if name="<null>" quit name
-	if name="<datatype>" quit name
+	If name="<null>" Quit name
+	If name="<datatype>" Quit name
 	If $ISOBJECT(..ClassServer) {
 		Set package=$PIECE(..This,".",1,*-1)
 		Set fullname=..ClassServer.FullClassName(name,package)
@@ -1320,16 +1327,16 @@ Method SimplifyStringExpressionAsElement(ValueElement As PXW.DEV.BNF.Elements.CO
 							Set varElem=$GET(..stringVars(varname,"element"))
 							Do:$ISOBJECT(varElem) stringElement.partsCopy(varElem)	
 						} Else {
-							if finalE.type="Intrinsicfncall" {
-								set char=$$$UPPER(finalE.ToString(0))
-								if $e(char,1,2)="$C" {
+							If finalE.type="Intrinsicfncall" {
+								Set char=$$$UPPER(finalE.ToString(0))
+								If $EXTRACT(char,1,2)="$C" {
 									; this is a $C() so do nothing
-								} else {
+								} Else {
 									Set string=string_"?"
 									Set newatom.value="?"
 									Do stringElement.AddPart(newatom)
 								}
-							} else {
+							} Else {
 								Set string=string_"?"
 								Set newatom.value="?"
 								Do stringElement.AddPart(newatom)

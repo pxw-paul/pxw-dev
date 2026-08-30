@@ -5,7 +5,20 @@ Class PXW.Xref.Build Extends %Library.RegisteredObject
 
 /// do ##class(PXW.Xref.Build).Build("LOCAL_USER","","PXW*")
 /// s %pxwdeb=##class(PXW.Debuggers.BasicToFile).%New(),%pxwdeb.AddDateTime=1 d ##class(PXW.Xref.Build).Build("LOCAL_USER","","*",1)
-ClassMethod Build(Namespace As %String, Type As %String, SearchName As %String, Force As %Boolean = 0, direction As %Integer = 1,DebugBuild as %Boolean=0) As %Status
+/// 
+/// This will build either 1 or many items based of the given:
+/// 	Namespace - leave blank for all.
+/// 	Type      - leave blank for all or CLS for classes, INT for routines etc.
+///     Package   - A wild card search - * for all, PXW* for PXW*. Not a true wildcard, PXW*Build* will build PXW* only.
+/// 	Force 	  - Normally only classes that have changed need building, use the force flag to build "stale" data.
+/// 	DebugBuild - If there is a debug log happening, the actual build of the data will NOT go into the log unless this flag is set.
+///                  The reason is that the debug being turned on BEFORE this method is called implies you are debugging THIS, rather than all the sub classes,
+/// 				 Until I get cleverer about how the debugger works we are stuck with a flag in the parameters!
+/// 
+/// Multiple builds can be run at once if you are sensible.
+/// Do not do a something like a force build of everything while smaller build is running. You will end up purging data that has just been built.
+/// Instead, do the large force build first to get the old data purged and then do the packages in parallel.
+ClassMethod Build(Namespace As %String, Type As %String, SearchName As %String, Force As %Boolean = 0,DebugBuild as %Boolean=0) As %Status
 {
 	$$$DEBUGMethodBegin
 	$$$DEBUG("Build:"_Namespace_":"_Type_":"_SearchName)
@@ -95,7 +108,7 @@ ClassMethod Build(Namespace As %String, Type As %String, SearchName As %String, 
 				Set interface=##class(PXW.DEV.Dictionary.CodeInterface).%OpenId(iid)
 				Set key=""
 				For  {
-					Set key=$ORDER(^||PXWXrefBuild(iid,key),direction,data)
+					Set key=$ORDER(^||PXWXrefBuild(iid,key),1,data)
 					Quit:key=""
 					Set $LISTBUILD(typ,name,timechanged,builderClass)=data
 					If builderClass'="" {
@@ -220,6 +233,7 @@ ClassMethod DailyBuild(Namespace As %String) As %Boolean
 	Quit started
 }
 
+/// A list of namespaces where there has not been a build today
 Query SelectDailyBuild() As %Library.SQLQuery
 {
 	SELECT * 
@@ -229,6 +243,20 @@ Query SelectDailyBuild() As %Library.SQLQuery
 			FROM PXW_DEV_Dictionary.Namespace as nsp
 	  )
 	WHERE (StartDate IS NULL) OR (StartDate<CURRENT_DATE)
+}
+
+/// A list of namespaces where there has not been a build today
+
+Query SelectHourlyBuild() as %Library.SQLQuery
+{
+	SELECT * 
+	  FROM (
+			SELECT nsp."Name" as Namespace
+			,(SELECT MAX(StartDateTime) FROM PXW_Xref.BuildStatus AS bs WHERE bs.RequestNamespace=nsp.Name) AS StartDateTime
+			FROM PXW_DEV_Dictionary.Namespace as nsp
+	  )
+	WHERE (StartDateTime IS NULL) OR (StartDateTime<dateadd(minute,-60,current_timestamp))
+
 }
 
 Query SelectTypes(Namespace As %String, Type As %String) As PXW.LIB.SQL.Query [ SqlProc ]
@@ -353,23 +381,6 @@ ClassMethod DeleteCalledByTypeKey1(NameSpace As %String, CalledByType As %String
 	Quit sc
 }
 
-/// Start off the seeding by running builds as we can in parallel.
-/// This hopefully resolves 2 problems:
-/// 1. The time it takes for initial seeding.
-/// 2. A single seed seems run out of "something" and give up. I cannot work out why.
-/// d ##class(PXW.Debuggers.Basic).On() s sc=##class(PXW.Xref.Build).Seed("LOCAL_USER",1)
-ClassMethod Seed(NamespaceId As %String, Force As %Boolean, debug As %String) As %Status
-{
-	#dim queue as %SYSTEM.WorkMgr
 
-	Set sc=$$$OK
-	$$$DEBUG("Deleting current data")
-	Do ##class(PXW.Xref.BuildStatus).Purge()
-	$$$DEBUG("Kick off forward run")
-	Job ..Build("LOCAL_USER","","*",0,1)
-	$$$DEBUG("Kick off backward run")
-	Job ..Build("LOCAL_USER","","*",0,-1)
-	Return sc
-}
 
 }

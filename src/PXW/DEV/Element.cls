@@ -19,9 +19,10 @@ Method AddPart(Part As PXW.DEV.Particle)
 
 Method partsGetAt(key As %Integer) As PXW.DEV.Particle
 {
-	#dim part as PXW.DEV.Particle
+	;#dim part as PXW.DEV.Particle
 	;Set part=$GET(%PXWparts(+$THIS,key))
 	;Quit part
+	#dim %PXWparts as PXW.DEV.Particle
 	Quit $GET(%PXWparts(+$THIS,key))
 }
 

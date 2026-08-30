@@ -180,10 +180,10 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 
 		if forceXref {
 			$$$DEBUGNew("")
-			Do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName,1,,1)
+			Do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName,1,1)
 			$$$DEBUGStop
 		} else {
-			Do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName,forceXref)
+			Do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName,0)
 		}
 
 		Set zh(6,"xref")=$ZHOROLOG-zh,zh=$ZHOROLOG
