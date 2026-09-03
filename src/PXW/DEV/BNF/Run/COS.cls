@@ -97,7 +97,7 @@ readNextLoop2
             }
 readNextLoop		
             Set ch10=$EXTRACT(..streaminput,..stream.pos,..stream.pos+9),ch=$EXTRACT(ch10,1)
-            If ws[ch,ch'="" Set ..whitespace=..newAtom("whitespace",..nextChars(.ws)) Goto readNextLoop
+            If ws[ch,ch]"" Set ..whitespace=..newAtom("whitespace",..nextChars(.ws)) Goto readNextLoop
             If ..skipComments(.ch10) Set ..keyword="" Goto readNextLoop
             Set ..needsWScheck=0
         }
@@ -109,23 +109,20 @@ readNextLoop
 Method peekKeyword() As %String
 {
     $$$DEBUGMethodBegin
-    If ..keyword="" {
+    If ..keyword]"" {
+        Set word=$EXTRACT(..keyword,2,*) ; remove the space from the start so null is null
+    } else {
         Set word=""
         ;Set ch50=$$$peek(..stream,50)
         Set ch50=$EXTRACT(..streaminput,..stream.pos,..stream.pos+50)
         ; starts with a letter
-        If $EXTRACT(ch50,1)?1A {
+        If $EXTRACT(ch50,1,1)?1A {
             Set i=2
-            ; carries on with a letter or number
-            While $EXTRACT(ch50,i)?1AN {
-                Set i=i+1
-            }
+            While $EXTRACT(ch50,i,i)?1AN { s i=i+1 }
             Set word=$EXTRACT(ch50,1,i-1)
         } 
         Set ..keyword=" "_word ; so that even null counts as being found
-    } Else {
-        Set word=$EXTRACT(..keyword,2,*) ; remove the space from the start so null is null
-    }
+    } 
     $$$DEBUGMethodEnd
 	Quit word
 }
