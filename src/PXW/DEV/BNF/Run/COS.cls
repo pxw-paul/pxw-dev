@@ -1013,7 +1013,7 @@ Method JobLocation(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 }
 
 /// one_cos_statement ::= [ label_definition ] cos_command
-Method OneCosStatement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean [ ProcedureBlock = 1 ]
+Method CosStatement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean [ ProcedureBlock = 1 ]
 {
     $$$DEBUGMethodBegin
 	$$$BNFPATH

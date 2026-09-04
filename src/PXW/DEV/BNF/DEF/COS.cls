@@ -24,15 +24,15 @@ XData file
 open_bracket                        ::= '('  /* this is a special check that should NOT remove whitespace so things like $p(x,a,2) works and $p (x,a,2) is a fail */
 close_bracket                       ::= ')'
 
-cos_code_block                      ::= one_cos_statement+
-cos_code_block_sql                  ::= one_cos_Statement_sql+
-cos_code_block_sql_storage          ::= one_cos_Statement_sql+
-cos_code_block_trigger              ::= one_cos_statement+
+cos_code_block                      ::= cos_statement+
+cos_code_block_sql                  ::= cos_statement_sql+
+cos_code_block_sql_storage          ::= cos_statement_sql+
+cos_code_block_trigger              ::= cos_statement+
 
 /* this looks like it allows multiple labels per line but it has been overridden to deal with this properly, 
   this is really just a template definition */
-one_cos_statement                   ::= label_definition? ('.')* cos_command_or_macro
-one_cos_statement_sql               ::= ('.')* cos_command_or_macro  -- in SQLCompute mode line labels are not allowed, and variables can be {*} or {field}
+cos_statement                   ::= label_definition? ('.')* cos_command_or_macro
+cos_statement_sql               ::= ('.')* cos_command_or_macro  -- in SQLCompute mode line labels are not allowed, and variables can be {*} or {field}
 
 label_definition                    ::= label_identifier label_formal_specification? label_public_vars? label_scope? [ '{' cos_code_block? '}']
 label_formal_specification          ::= '(' [ label-formal-param-list ]  ')'
@@ -138,9 +138,9 @@ cos_command                         ::=  set_command
                                          | xecute_command
                                          /*| macrocall*/
                                          | cos_directive
-                                         | zallocate_command
+                                         --| zallocate_command
                                          | zbreak_command
-                                         | zdeallocate_command
+                                         --| zdeallocate_command
                                          | zinsert_command
                                          | zkill_command
                                          | zload_command
@@ -447,11 +447,10 @@ break_extend                        ::= expression
 break_flag                          ::= expression
 
 close_command                       ::= ('close' | 'c') post_conditional?   ','.close_item+
-close_item                          ::= close_device [ ':' close_device_parameters ]
+close_item                          ::= close_device [ ':' close_device_parameter_list ]
 close_device                        ::= expression
-close_device_parameters             ::= ( '(' close_device_parameter_list ')' ) | one_close_device_parameter
-close_device_parameter_list         ::= ':'.one_close_device_parameter+
-one_close_device_parameter          ::= expression
+close_device_parameter_list         ::= ( '(' ':'.close_device_parameter+ ')' ) | close_device_parameter 
+close_device_parameter              ::= expression
 
 continue_command                    ::= 'continue' post_conditional?  
 
@@ -469,9 +468,9 @@ do_item                             ::=  object_variable
                                           | classexpr 
                                           | ( '(' expression ')' object_chain? )
 
-for_command                         ::= ('for' | 'f') for_parameters? for_loop_statement
+for_command                         ::= ('for' | 'f') for_parameter_list? for_loop_statement
 for_loop_statement                  ::= ( '{' cos_command_or_macro? cos_code_block? '}' ) | (naked | command_list_eol )
-for_parameters                      ::= ','.for_parameter+
+for_parameter_list                  ::= ','.for_parameter+
 for_parameter                       ::= lvalue_expression '=' for_loop_specifier_list
 for_loop_specifier_list             ::= ','.for_loop_specifier+
 for_loop_specifier                  ::= for_start_value [ ':' for_increment_value [ ':' for_end_loop_value ] ]
@@ -485,8 +484,8 @@ goto_dest                           ::= goto_case_function_call | ( label_refere
 
 halt_command                        ::= ('halt' | 'h') post_conditional?  naked
 
-hang_command                        ::= ('hang' | 'h') post_conditional?  hangtime
-hangtime                            ::= ','.hang_value+
+hang_command                        ::= ('hang' | 'h') post_conditional?  hang_value_list
+hang_value_list                     ::= ','.hang_value+
 hang_value                          ::= expression
 
 
@@ -505,8 +504,8 @@ else_block                          ::= cos_directive? 'else' ( ( '{' cos_code_b
 
 else_command                        ::= ('else' | 'e') naked -- this happen in some situations like if x d .dotstructure else  d .otherdots 
 
-job_command                         ::= ('job' | 'j') post_conditional?  job_arguments
-job_arguments                       ::= ','.job_argument+
+job_command                         ::= ('job' | 'j') post_conditional?  job_argument_list
+job_argument_list                   ::= ','.job_argument+
 job_argument                        ::= job_call job_location? job_process_parameters? job_timeout_spec?
 job_call                            ::= ( label_reference function_parameter_list? ) 
                                         | class_expression
@@ -556,8 +555,8 @@ lock_type                           ::= hash_op expression
 lock_timeout                        ::= ':' expression
 lockname                            ::= global_ref | variable | macrocall | indirection
 
-merge_command                       ::= ('merge' | 'm') post_conditional?  merge_list
-merge_list                          ::= ','.merge_item+
+merge_command                       ::= ('merge' | 'm') post_conditional?  merge_item_list
+merge_item_list                     ::= ','.merge_item+
 merge_item                          ::= lvalue_expression '=' expression
 
 new_command                         ::= ('new' | 'n') post_conditional?  ( naked | new_item_list )
@@ -569,12 +568,13 @@ new_item_single_list                ::= ','.new_item_single+
 
 naked                               ::= ' ' /* this is going to need some special code to recognise naked commands */
 
-open_command                        ::= ('open' | 'o') post_conditional?  open_arguments
-open_arguments                      ::= one_open_argument ( ',' one_open_argument )*
-one_open_argument                   ::= open_device [ ':' [ ( '('  open_device_parameters ')' ) | expression ] ] [ ':' open_timeout ] [ ':' open_mnemonic_space ]
+open_command                        ::= ('open' | 'o') post_conditional?  open_argument_list
+open_argument_list                  ::= ','.open_argument+
+open_argument                       ::= open_device [ ':' [ ( '('  open_device_parameters ')' ) | expression ] ] [ ':' open_timeout ] [ ':' open_mnemonic_space ]
 open_device                         ::= expression
-open_device_parameters              ::= [one_open_device_parameter] ( ':'[ one_open_device_parameter] )*
-one_open_device_parameter           ::= ('/' identifier [ '=' open_expression_list ] ) | expression  
+--- not sure what this optional-ness is trying to solve
+open_device_parameters              ::= [open_device_parameter] ( ':' [open_device_parameter] )*
+open_device_parameter               ::= ('/' identifier [ '=' open_expression_list ] ) | expression  
 open_timeout                        ::= expression
 open_mnemonic_space                 ::= expression
 --this is for Open pDevice:(/COMMAND=pCmd:/ARGS=pCmdArgs...:/ENV=pEnvVars...:"R"):pTimeoutOpen
@@ -621,13 +621,13 @@ try_command                         ::= 'try' '{' cos_code_block? '}'
 
 tstart_command                      ::= ('tstart' | 'ts' ) post_conditional? 
 
-use_command                         ::= ('use' | 'u') post_conditional?  use_arguments
-use_arguments                       ::= ','.one_use_argument+
-one_use_argument                    ::= use_device [ ':' ( use_device_parameters_inbrackets | use_device_parameters)  ] [ ':' use_mnemonic_space ]
+use_command                         ::= ('use' | 'u') post_conditional?  use_argument_list
+use_argument_list                   ::= ','.use_argument+
+use_argument                        ::= use_device [ ':' ( use_device_parameters_inbrackets | use_device_parameter_list )  ] [ ':' use_mnemonic_space ]
 use_device                          ::= expression
-use_device_parameters_inbrackets    ::=  '('  use_device_parameters ')'
-use_device_parameters               ::= [one_use_device_parameter] ( ':' [one_use_device_parameter] )*
-one_use_device_parameter            ::= ('/' identifier [ '=' expression ] ) | expression
+use_device_parameters_inbrackets    ::=  '('  use_device_parameter_list ')'
+use_device_parameter_list           ::= [use_device_parameter] ( ':' [use_device_parameter] )*
+use_device_parameter              ::= ('/' identifier [ '=' expression ] ) | expression
 use_mnemonic_space                  ::= expression
 
 view_command                        ::= ('view' | 'v') post_conditional?   ( view_offset_form | view_block_form   )
@@ -641,8 +641,8 @@ view_newvalue                       ::= expression
 while_command                       ::= 'while' expression_list '{' cos_code_block? '}' 
 
 write_command                       ::= ('write' | 'w') post_conditional?  ( naked | write_argument_list )
-write_argument_list                 ::= ','.one_write_argument+
-one_write_argument                  ::= expression | write_control_expression_list 
+write_argument_list                 ::= ','.write_argument+
+write_argument                      ::= expression | write_control_expression_list 
 write_control_expression_list       ::= write_control_expression write_control_expression*
 write_control_expression            ::= write_format_expression
                                         | write_device_expression
@@ -654,10 +654,10 @@ write_format_expression             ::= write_bang_expression
 write_bang_expression               ::= '!'
 write_hash_expression               ::= '#'
 write_pos_expression                ::= '?' expression
-write_mnemonic_expression           ::= '/' identifier [ '('  mnemonic_arguments* ')' ]
+write_mnemonic_expression           ::= '/' identifier [ '('  write_mnemonic_list ')' ]
 write_escape_expression             ::= '*' expression
 write_device_expression             ::= '*-' expression
-mnemonic_arguments                  ::= ','.expression+
+write_mnemonic_list                 ::= ','.expression+
 
 
 mpv_command                         ::= ('mvprint' | 'mvp') post_conditional?  write_argument_list?
@@ -672,42 +672,46 @@ read_argument                       ::= read_format_character
 read_format_character               ::= '!'
                                         | '#'
                                         | ('?' expression)
-                                        | ('/' read_keyword [ '(' read_keyword_parameters ')' ])
+                                        | ('/' read_keyword [ '(' read_keyword_parameter_list ')' ])
 read_keyword                        ::= text // to next (!#?,/"
-read_keyword_parameters             ::= ','.read_keyword_parameter+
+read_keyword_parameter_list         ::= ','.read_keyword_parameter+
 read_keyword_parameter              ::= text // to next ,)!#?/
 read_prompt                         ::= string
 read_single_char                    ::= '*' lvalue_expression [ ':' expression ]
 read_length                         ::= lvalue_expression [ '#' expression ] [ ':' expression ]
 
 
-xecute_command                      ::= ( 'xecute' | 'x') post_conditional?  xecute_args
-xecute_args                         ::= ','.one_xecute_arg+
-one_xecute_arg                      ::= ( xecute_arg_with_params | xecute_arg_no_params ) post_conditional? 
-xecute_arg_with_params              ::= '(' xecute_command_text ',' xecute_param_list ')'
+xecute_command                      ::= ( 'xecute' | 'x') post_conditional?  xecute_arg_list
+xecute_arg_list                     ::= ','.xecute_arg+
+xecute_arg                          ::= ( xecute_arg_with_params | xecute_arg_no_params ) post_conditional? 
+xecute_arg_with_params              ::= '(' xecute_command_text ',' xecute_parameter_list ')'
 xecute_arg_no_params                ::= xecute_command_text
 xecute_command_text                 ::= expression
-xecute_param_list                   ::= ','.xecute_parameter+
-xecute_parameter                     ::= ('.' variable ) | expression 
+xecute_parameter_list               ::= ','.xecute_parameter+
+xecute_parameter                    ::= ('.' variable ) | expression 
 
-zallocate_command                   ::= 'zallocate' post_conditional?  [ ','.zallocate_parameter+ ] else_block?
-zallocate_parameter                 ::= [ '+' | '-' ] zallocatename_list [ zallocate_timeout ]
-zallocatename_list                  ::= ','.one_zallocatename+
-one_zallocatename                   ::= zallocatename [ zallocate_type ]
+-- ZALLOCATE and ZDALLOCATE LOOK WRONG but not sure what they should be
+/*zallocate_command                   ::= 'zallocate' post_conditional?  [ ','.zallocate_parameter+ ] else_block?
+zallocate_parameter                 ::= [ '+' | '-' ] zallocate_name_list [ zallocate_timeout ]
+zallocate_name_list                 ::= ','.zallocate_name+
+zallocate_name                      ::= zallocate_name [ zallocate_type ]
 zallocate_type                      ::= '#' '"' ( 'S' | 'E' | 'I' | 'D' )+ '"'
 zallocate_timeout                   ::= ':' expression
-zallocatename                       ::= text 
+zallocate_name                       ::= text 
+*/
 
--- much more possible and could do with naming, but are they used in real life?
-zbreak_command                      ::= ('zbreak' | 'zb') post_conditional?  [ (('/' identifier) | '$') [ ':' ( identifier | string ) [ ':' expression [ ':' expression ] ] ] ]
-
+/*
 zdeallocate_command                 ::= 'zdeallocate' post_conditional?  [ ','.zdeallocate_parameter+ ] else_block?
-zdeallocate_parameter               ::= [ '+' | '-' ] zdeallocatename_list zdeallocate_timeout?
-zdeallocatename_list                ::= ','.one_zdeallocatename.
-one_zdeallocatename                 ::= zdeallocatename zdeallocate_type?
+zdeallocate_parameter               ::= [ '+' | '-' ] zdeallocate_name_list zdeallocate_timeout?
+zdeallocate_name_list               ::= ','.zdeallocate_name.
+zdeallocate_name                    ::= zdeallocatename zdeallocate_type?
 zdeallocate_type                    ::= '#' '"' ( 'S' | 'E' | 'I' | 'D' )+ '"'
 zdeallocate_timeout                 ::= ':' expression
 zdeallocatename                     ::= text 
+*/
+
+-- much more possible and could do with naming, but are they used in real life?
+zbreak_command                      ::= ('zbreak' | 'zb') post_conditional?  [ (('/' identifier) | '$') [ ':' ( identifier | string ) [ ':' expression [ ':' expression ] ] ] ]
 
 zinsert_command                     ::= 'zinsert' // TODO
 
@@ -731,7 +735,8 @@ ztrap_command                       ::= ('ztrap' | 'zt') post_conditional?  [ na
 
 zwrite_command                      ::= ( 'zwrite' | 'zw' ) post_conditional?  ( naked | zwrite_argument_list )
 
-zwrite_argument_list                ::= ',',zwrite_argument+
+zwrite_argument_list                ::= ','.zwrite_argument+
+zwrite_argument                     ::= expression -- this will do for now
 
 zzdump_command                      ::= 'zzdump' post_conditional?  expression
 
@@ -751,22 +756,20 @@ sql_command                        ::= ('&sql(' sql_body ')') | ('&sqlcq(' sql_b
 sql_body                           ::= 'NEED SQL BODY'
 
 
-// TODO: zwrite argument is more restrictive than an expression
-zwrite_argument                     ::= expression
 
-case_function_call                  ::= 'case' open_bracket expression case_clauses? case_clause_default? close_bracket
-case_clauses                        ::= (( ',' case_clause ))* /* BUG IN WHILE LOOP CONSTRUCTION FOR THIS CHECK - THE COMMA IS ADDED BUT THE CASE_CLAUSE MIGHT FAIL - ONLY THE CASE_CLAUSE IS ROLLED BACK THE COMMA IS COMMITTED */
+case_function_call                  ::= 'case' open_bracket expression case_clause_list? case_clause_default? close_bracket
+case_clause_list                    ::= (( ',' case_clause ))* /* BUG IN WHILE LOOP CONSTRUCTION FOR THIS CHECK - THE COMMA IS ADDED BUT THE CASE_CLAUSE MIGHT FAIL - ONLY THE CASE_CLAUSE IS ROLLED BACK THE COMMA IS COMMITTED */
 case_clause_default                 ::= ',' ':' case_clause_value
 case_clause                         ::= case_clause_case ':' case_clause_value
 case_clause_case                    ::= expression
 case_clause_value                   ::= expression
 
-goto_case_function_call                  ::= '$case' open_bracket expression goto_case_clauses? goto_case_clause_default? close_bracket
-goto_case_clauses                        ::= (( ',' goto_case_clause ))* /* BUG IN WHILE LOOP CONSTRUCTION FOR THIS CHECK - THE COMMA IS ADDED BUT THE CASE_CLAUSE MIGHT FAIL - ONLY THE CASE_CLAUSE IS ROLLED BACK THE COMMA IS COMMITTED */
-goto_case_clause_default                 ::= ',' ':' label_reference
-goto_case_clause                         ::= goto_case_clause_case ':' goto_case_clause_value
-goto_case_clause_case                    ::= expression
-goto_case_clause_value                   ::= label_reference
+goto_case_function_call             ::= '$case' open_bracket expression goto_case_clause_list? goto_case_clause_default? close_bracket
+goto_case_clause_list               ::= (( ',' goto_case_clause ))* /* BUG IN WHILE LOOP CONSTRUCTION FOR THIS CHECK - THE COMMA IS ADDED BUT THE CASE_CLAUSE MIGHT FAIL - ONLY THE CASE_CLAUSE IS ROLLED BACK THE COMMA IS COMMITTED */
+goto_case_clause_default            ::= ',' ':' label_reference
+goto_case_clause                    ::= goto_case_clause_case ':' goto_case_clause_value
+goto_case_clause_case               ::= expression
+goto_case_clause_value              ::= label_reference
 
 
 
@@ -830,8 +833,8 @@ zobjclassmethod_function_call       ::= 'zobjclassmethod' open_bracket classmeth
 -- $LOCATE(string,regexp,start,end,val) 
 locate_function_call                ::= 'locate' open_bracket expression ',' expression [ ',' expression [ ',' variable_set [',' variable_set ]]] close_bracket
 
-select_function_call                ::= ('select' | 's') '(' select_clauses ')' object_chain? 
-select_clauses                      ::= ','.select_clause+
+select_function_call                ::= ('select' | 's') '(' select_clause_list ')' object_chain? 
+select_clause_list                  ::= ','.select_clause+
 select_clause                       ::= select_clause_test ':' select_clause_value
 select_clause_test                  ::= expression
 select_clause_value                 ::= expression

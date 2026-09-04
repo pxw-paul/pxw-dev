@@ -662,7 +662,7 @@ Method checkCosForCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Co
 {
 	$$$DEBUGMethodBegin
 	; the variables on a for loop do not "need" to be used so we will not check for undef on them, but we will keep track of them being used
-	Do element.findElementsXPath("ForParameters/ForParameter/LvalueExpression/VariableSet",.variablelist)
+	Do element.findElementsXPath("ForParameterList/ForParameter/LvalueExpression/VariableSet",.variablelist)
 	If $ISOBJECT($GET(variablelist)) {
 		For i=1:1:variablelist.Count() {
 			Set varE=variablelist.GetAt(i)
@@ -719,7 +719,6 @@ Method checkCosQuitCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.C
 		; return type is not set so try the origin if this is an override
 		If ..ReturnType="",$ISOBJECT(..ClassServer) {
 			If ..ClassServer.GetMethodDetails(..This,..ThisMethod,.rettype,.origin) {
-				ZWrite rettype,origin
 				If rettype'="" {
 					Set ..ReturnType=rettype
 				} Else {
@@ -1078,7 +1077,7 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 /// 
 method DeriveTypeReturnedSelect(Element as PXW.DEV.Element) as %String
 {
-	Do Element.findElementsXPath("SelectClauses/SelectClause/SelectClauseValue",.list)
+	Do Element.findElementsXPath("SelectClauseList/SelectClause/SelectClauseValue",.list)
 	Set finaltype=""
 	If $ISOBJECT($GET(list)) {
 		Set finaltype=..DeriveTypeFromList(list)
@@ -1088,7 +1087,7 @@ method DeriveTypeReturnedSelect(Element as PXW.DEV.Element) as %String
 
 method DeriveTypeReturnedCase(Element as PXW.DEV.Element) as %String
 {
-	Do Element.findElementsXPath("CaseClauses/CaseClause/CaseClauseValue",.list)
+	Do Element.findElementsXPath("CaseClauseList/CaseClause/CaseClauseValue",.list)
 	Do Element.findElementsXPath("CaseClauseDefault/CaseClauseValue",.list)
 	Set finaltype=""
 	If $ISOBJECT($GET(list)) {
