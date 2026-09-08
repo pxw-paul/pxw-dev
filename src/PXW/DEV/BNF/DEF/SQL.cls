@@ -21,6 +21,7 @@ sql_program					::= query_specification
 								| delete_command
 								| CHECKPRIV_command
 								| drop_command
+								| create_table_command
 								| (  select_into_variable '=' call_command ) /* special case of :x=call func() */
 
 query_specification         ::= [with_command ] select_command ( union select_command )*
@@ -139,6 +140,15 @@ simple_table ::= query_specification
 column_name_list ::= column_name ( ',' column_name )*
 
 table_name ::=  [ schema_name '.' ] qualified_identifier 
+
+--- only coding what I need at the moment, create table etc could be huge!
+create_table_command 		::= 'CREATE' 'TABLE' direct_table 
+								'(' ','.create_table_field+ ')'
+
+create_table_field			::= column_name column_type
+
+column_type					::= ('CHAR' '(' number ')' )
+								
 
 insert_command				::= 'INSERT' (update_keyword)* ['INTO'] direct_table insert_method
 insert_method				::= insert_set_list | insert_values_list | insert_multirow

@@ -265,20 +265,33 @@ Method compileQuickCheck(Method As %Dictionary.MethodDefinition, RulesElement As
         Set keywords=$LIST(listOfValues,1,numberofK)
         Set Method.Description=Method.Description_$CHAR(13,10)_"summary values:"_$LISTTOSTRING(keywords)
         Set wordlist="",longest=0 
-        Kill sep,wordcount
+        Kill sep,wordcount,string
         For i=1:1:$LISTLENGTH(keywords) {
             Set word=$LISTGET(keywords,i)
-            Set len=$l(word)
-            set wordlist(len)=$g(wordlist(len))_$g(sep(len))_""""_word_"""",sep(len)=",",wordcount(len)=$g(wordcount(len))+1
+            Set len=$LENGTH(word)
+            ; list of words formmatted with quites so it can be dumped into the code
+            Set wordlist(len)=$GET(wordlist(len))_$GET(sep(len))_""""_word_"""",sep(len)=",",wordcount(len)=$GET(wordcount(len))+1
+            ; list of each thing with a flag of if the string search should be used
+            If word'?1.P {
+                Set string(len)=1
+            }
         }
-        set len="",check="",sep=""
-        for  {
-            set len=$o(wordlist(len),-1)
-            quit:len=""
-            if wordcount(len)=1 {
-                set check=check_sep_"'..isPunctuation("_$$$UPPER(wordlist(len))_","_len_")",sep=","
-            } else {
-                set check=check_sep_"'..isPunctuationInList($lb("_wordlist(len)_"),"_len_")",sep=","
+        Set len="",check="",sep=""
+        For  {
+            Set len=$ORDER(wordlist(len),-1)
+            Quit:len=""
+            If wordcount(len)=1 {
+                If $GET(string(len))=1 {
+                    Set check=check_sep_"'..isStringSingle("_$$$UPPER(wordlist(len))_","_len_")",sep=","
+                } Else {
+                    Set check=check_sep_"'..isPunctuation("_$$$UPPER(wordlist(len))_","_len_")",sep=","
+                }
+            } Else {
+                If $GET(string(len))=1 {
+                    Set check=check_sep_"'..isStringInList($lb("_wordlist(len)_"),"_len_")",sep=","
+                } Else {
+                    Set check=check_sep_"'..isPunctuationInList($lb("_wordlist(len)_"),"_len_")",sep=","
+                }
             }
         }
         ;$$$WRITECR($$$Tab(indent)_"if '(..isStringInList($lb("_wordlist_"),"_longest_",.value)) { quit "_returnValue_" }")
@@ -329,9 +342,9 @@ Method compileMethodStart(Method As %Dictionary.MethodDefinition, indent As %Int
         $$$WRITECR($$$Tab(indent)_"set subElement=ParentElement")
     }
 
-    if needsDone {
+    If needsDone {
         $$$WRITECR($$$Tab(indent)_"set done=0 ; method start")
-    } else {
+    } Else {
         $$$WRITECR($$$Tab(indent)_"; method start")
     }
 }
@@ -350,18 +363,18 @@ Method compileMethodEnd(Method As %Dictionary.MethodDefinition, indent As %Integ
         $$$WRITECR($$$Tab(indent+1)_"$$$BNFROLLBACK(subElement)")
         $$$WRITECR($$$Tab(indent+1)_"set ok="_rollbackReturns)
         $$$WRITECR($$$Tab(indent)_"}")
-        if needsDebug $$$WRITECR($$$Tab(indent)_"$$$DEBUGMethodEnd")
+        If needsDebug $$$WRITECR($$$Tab(indent)_"$$$DEBUGMethodEnd")
         $$$WRITECR($$$Tab(indent)_"quit ok")
     }
-    else {
+    Else {
      	;$$$WRITECR($$$Tab(indent)_"if done {")
         ;$$$WRITECR($$$Tab(indent+1)_"set ok=1")
         ;$$$WRITECR($$$Tab(indent)_"} else {")
         ;$$$WRITECR($$$Tab(indent+1)_"set ok="_rollbackReturns)
         ;$$$WRITECR($$$Tab(indent)_"}")
-        if +rollbackReturns=1 {
+        If +rollbackReturns=1 {
             $$$WRITECR($$$Tab(indent)_"set ok=1")
-        } else {
+        } Else {
             $$$WRITECR($$$Tab(indent)_"set ok=$s(done:1,1:"_+rollbackReturns_")")
         }
         If needsDebug $$$WRITECR($$$Tab(indent)_"$$$DEBUGMethodEnd")
@@ -386,8 +399,8 @@ Method NewMethod(Name As %String, Element As PXW.DEV.Element) As %Dictionary.Met
 
 Method SubMethodName(BaseName As %String, Suffix As %String = "") As %String
 {
-    set key=BaseName_" "
-    Set ..UniqueMethodId(key)=$g(..UniqueMethodId(key))+1
+    Set key=BaseName_" "
+    Set ..UniqueMethodId(key)=$GET(..UniqueMethodId(key))+1
     Quit BaseName_..UniqueMethodId(key)_Suffix
 }
 
@@ -400,7 +413,7 @@ Method compileRules(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.E
     Set summary=..summariseRules(Element)
     Set Method.Description=Method.Description_$CHAR(13,10)_"summary="_summary
     
-    set nkey="",rkey=""
+    Set nkey="",rkey=""
     Set firstRuleE=Element.partsGetNext(.nkey)
     If $ISOBJECT(firstRuleE) {
         If firstRuleE.ToString(0)="|" {
@@ -436,9 +449,9 @@ Method compileRules(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.E
         If $ISOBJECT(nextRuleE) {
             If nextRuleE.ToString(0)="|" {
                 Set andor="OR",rkey=nkey
-                if NeedsDone {
+                If NeedsDone {
                     $$$WRITECR($$$Tab(indent+1)_"set done=1 ; or")
-                } else {
+                } Else {
                     $$$WRITECR($$$Tab(indent+1)_"; or")
                 }
             } Else {
@@ -447,9 +460,9 @@ Method compileRules(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.E
             }
         }
     }
-    IF NeedsDone {
+    If NeedsDone {
         $$$WRITECR($$$Tab(indent+1)_"set done=1 ; end compileRules")
-    } else {
+    } Else {
         $$$WRITECR($$$Tab(indent+1)_"; end compileRules")
     }
     For indent=indent:-1:1 {
@@ -666,9 +679,9 @@ Method compileRepeatZero(Method As %Dictionary.MethodDefinition, Element As PXW.
     Do ..compileRule(Method,ruleE,indent)
     $$$WRITECR(" "_$$$OpenCurly)
     
-    if needsdone {
+    If needsdone {
         $$$WRITECR($$$Tab(indent+1)_"set done=1 ;;")
-    } else {
+    } Else {
         $$$WRITECR($$$Tab(indent+1)_";")
     }
     $$$WRITECR($$$Tab(indent)_$$$CloseCurly)

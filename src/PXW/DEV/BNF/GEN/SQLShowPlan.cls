@@ -413,7 +413,7 @@ Method Content(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 Method CostSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&(?4Call:4?)*&P
-	if '..isPunctuation("<COST",5) { quit 0 /* normal */ }
+	if '..isStringSingle("<COST",5) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -582,7 +582,7 @@ Method ForEachContent2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 Method FrozenSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&(?4Call:4?)*&P
-	if '..isPunctuation("<FROZENPLAN",11) { quit 0 /* normal */ }
+	if '..isStringSingle("<FROZENPLAN",11) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -770,7 +770,7 @@ Method IndexKeyWithRange(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 Method IndexKeyWithRange1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P|P
-	if '..isPunctuation("(WITH A GIVEN SET OF VALUES)",28),'..isPunctuation("(WITH A RANGE CONDITION)",24) { quit 0 /* normal */ }
+	if '..isStringSingle("(WITH A GIVEN SET OF VALUES)",28),'..isStringSingle("(WITH A RANGE CONDITION)",24) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"(with a given set of values)")  {
@@ -1106,7 +1106,7 @@ Method IndexName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 Method InfoSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&(?4Call:4?)*&P&(?4punctuation:4?)*&P
-	if '..isPunctuation("<INFO",5) { quit 0 /* normal */ }
+	if '..isStringSingle("<INFO",5) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1230,7 +1230,7 @@ Method ModuleName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 Method ModuleSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&(?4Call:4?)*&P&(?4punctuation:4?)*&P
-	if '..isPunctuation("<MODULE",7) { quit 0 /* normal */ }
+	if '..isStringSingle("<MODULE",7) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1391,7 +1391,7 @@ Method Outdent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 Method Plan(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&(?4punctuation:4?)*&P
-	if '..isPunctuation("<PLAN>",6) { quit 0 /* normal */ }
+	if '..isStringSingle("<PLAN>",6) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1457,7 +1457,7 @@ Method Plan2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 Method Plans(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&(?4punctuation:4?)*&P
-	if '..isPunctuation("<PLANS>",7) { quit 0 /* normal */ }
+	if '..isStringSingle("<PLANS>",7) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1774,7 +1774,7 @@ Method SchemaName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 Method SqlSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&(?4punctuation:4?)*&P
-	if '..isPunctuation("<SQL>",5) { quit 0 /* normal */ }
+	if '..isStringSingle("<SQL>",5) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1890,7 +1890,7 @@ Method SubqueryName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 Method SubquerySection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&(?4Call:4?)*&P&(?4punctuation:4?)*&P
-	if '..isPunctuation("<SUBQUERY",9) { quit 0 /* normal */ }
+	if '..isStringSingle("<SUBQUERY",9) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -2249,7 +2249,7 @@ Method TableSubscriptImply2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 Method WarningSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&(?4punctuation:4?)*&P
-	if '..isPunctuation("<WARNING>",9) { quit 0 /* normal */ }
+	if '..isStringSingle("<WARNING>",9) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)

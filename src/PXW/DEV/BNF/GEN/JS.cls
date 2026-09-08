@@ -574,7 +574,7 @@ Method AssignmentOperator(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 Method BigBinaryIntegerLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary (P|P)&(?4punctuation:4?)*&K
-	if '..isPunctuationInList($lb("0B","0B"),2) { quit 0 /* normal */ }
+	if '..isStringInList($lb("0B","0B"),2) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -633,7 +633,7 @@ Method BigBinaryIntegerLiteral2RepZero(ParentElement As PXW.DEV.BNF.Element, ByR
 Method BigBinaryIntegerLiteral3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P|P
-	if '..isPunctuationInList($lb("0","1"),1) { quit 0 /* normal */ }
+	if '..isStringInList($lb("0","1"),1) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"0")  {
@@ -678,7 +678,7 @@ Method BigDecimalIntegerLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 Method BigHexIntegerLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary (P|P)&(?4punctuation:4?)*&K
-	if '..isPunctuationInList($lb("0X","0X"),2) { quit 0 /* normal */ }
+	if '..isStringInList($lb("0X","0X"),2) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -788,7 +788,7 @@ Method BigHexIntegerLiteral3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 Method BigOctalIntegerLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary (P|P)&(?4punctuation:4?)*&K
-	if '..isPunctuationInList($lb("0O","0O"),2) { quit 0 /* normal */ }
+	if '..isStringInList($lb("0O","0O"),2) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -847,7 +847,7 @@ Method BigOctalIntegerLiteral2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRe
 Method BigOctalIntegerLiteral3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P|P|P|P|P|P|P|P
-	if '..isPunctuationInList($lb("0","1","2","3","4","5","6","7"),1) { quit 0 /* normal */ }
+	if '..isStringInList($lb("0","1","2","3","4","5","6","7"),1) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"0")  {
@@ -908,7 +908,7 @@ Method BigintLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 Method BinaryIntegerLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary (P|P)&(?4punctuation:4?)*
-	if '..isPunctuationInList($lb("0B","0B"),2) { quit 0 /* normal */ }
+	if '..isStringInList($lb("0B","0B"),2) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -965,7 +965,7 @@ Method BinaryIntegerLiteral2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef 
 Method BinaryIntegerLiteral3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P|P
-	if '..isPunctuationInList($lb("0","1"),1) { quit 0 /* normal */ }
+	if '..isStringInList($lb("0","1"),1) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"0")  {
@@ -2003,7 +2003,7 @@ Method CosExpressionBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 Method CosExpressionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&C&P&[C]&P&P
-	if '..isPunctuation("#CALL(",6) { quit 0 /* normal */ }
+	if '..isStringSingle("#CALL(",6) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -2129,7 +2129,7 @@ Method CosExpressionRuntime(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 Method CosExpressionServer(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&C&P&[C]&P&P
-	if '..isPunctuation("#SERVER(",8) { quit 0 /* normal */ }
+	if '..isStringSingle("#SERVER(",8) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -2165,7 +2165,7 @@ Method CosExpressionServer(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 Method CosGtLt(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P|P
-	if '..isPunctuationInList($lb("&GT;","&LT;"),4) { quit 0 /* normal */ }
+	if '..isStringInList($lb("&GT;","&LT;"),4) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -3684,7 +3684,7 @@ Method Hashtag(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 Method HexIntegerLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary (P|P)&(?4punctuation:4?)*
-	if '..isPunctuationInList($lb("0X","0X"),2) { quit 0 /* normal */ }
+	if '..isStringInList($lb("0X","0X"),2) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -5935,7 +5935,7 @@ Method ObjectLiteral3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 Method OcosExpressionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&P&C&P&[C]&P&P
-	if '..isPunctuation("#CALL(",6) { quit 0 /* normal */ }
+	if '..isStringSingle("#CALL(",6) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -5973,7 +5973,7 @@ Method OcosExpressionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 Method OcosExpressionServer(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&P&C&P&[C]&P&P
-	if '..isPunctuation("#SERVER(",8) { quit 0 /* normal */ }
+	if '..isStringSingle("#SERVER(",8) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -6011,7 +6011,7 @@ Method OcosExpressionServer(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 Method OctalIntegerLiteral(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary (P|P)&(?4punctuation:4?)*
-	if '..isPunctuationInList($lb("0O","0O"),2) { quit 0 /* normal */ }
+	if '..isStringInList($lb("0O","0O"),2) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -6092,7 +6092,7 @@ Method OctalIntegerLiteral2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef s
 Method OctalIntegerLiteral3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P|P|P|P|P|P|P|P
-	if '..isPunctuationInList($lb("0","1","2","3","4","5","6","7"),1) { quit 0 /* normal */ }
+	if '..isStringInList($lb("0","1","2","3","4","5","6","7"),1) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"0")  {

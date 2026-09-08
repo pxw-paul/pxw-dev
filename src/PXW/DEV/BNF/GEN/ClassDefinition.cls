@@ -2448,7 +2448,7 @@ Method AttributeProcedureblock1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRe
 Method AttributeProcedureblock2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P|P
-	if '..isPunctuationInList($lb("0","1"),1) { quit 0 /* normal */ }
+	if '..isStringInList($lb("0","1"),1) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"0")  {
@@ -2829,7 +2829,7 @@ Method AttributeServeronly(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 Method AttributeServeronly1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P|P
-	if '..isPunctuationInList($lb("0","1"),1) { quit 0 /* normal */ }
+	if '..isStringInList($lb("0","1"),1) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"0")  {
@@ -3915,7 +3915,7 @@ Method AttributeSystem(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 Method AttributeSystem1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P|P|P|P|P
-	if '..isPunctuationInList($lb("0","1","2","3","4"),1) { quit 0 /* normal */ }
+	if '..isStringInList($lb("0","1","2","3","4"),1) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"0")  {
@@ -7581,7 +7581,7 @@ Method IndexProperty(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 Method IndexProperty1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P|P
-	if '..isPunctuation("(ELEMENTS)",10),'..isPunctuation("(KEYS)",6) { quit 1 /* not found is OK */ }
+	if '..isStringSingle("(ELEMENTS)",10),'..isStringSingle("(KEYS)",6) { quit 1 /* not found is OK */ }
 	set subElement=ParentElement
 	; method start
 	if ..addPunctuation(.subElement,"(ELEMENTS)")  {
@@ -8556,7 +8556,7 @@ Method OneDataAttributeValue(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 Method OneDataAttributeValue1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P|P
-	if '..isPunctuation("(ELEMENTS)",10),'..isPunctuation("(KEYS)",6) { quit 1 /* not found is OK */ }
+	if '..isStringSingle("(ELEMENTS)",10),'..isStringSingle("(KEYS)",6) { quit 1 /* not found is OK */ }
 	set subElement=ParentElement
 	; method start
 	if ..addPunctuation(.subElement,"(ELEMENTS)")  {

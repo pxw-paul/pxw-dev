@@ -1,3 +1,5 @@
+include PXW.DEV.BNF.ElementMacros
+
 /// The base class for groups of atoms that make up an element.
 /// Elements can be subclassed to store extra data. 
 Class PXW.DEV.Element Extends PXW.DEV.Particle
@@ -14,16 +16,13 @@ Method AddPart(Part As PXW.DEV.Particle)
 	;$$$DEBUG("Adding "_Part.%ClassName(1)_":"_Part.type_":"_$zconvert(Part.ToString(),"O","JSON")_":"_$s(Part.IsAtom:Part.line_","_Part.col,1:""))
 	;d ..parts.Insert(Part)
 	; this is faster than the list of objects - not much, 20%, but on dealing with millions of things its something
-	Set %PXWparts(+$THIS,$INCREMENT(%PXWparts(+$THIS)))=Part
+	;Set %PXWparts(+$THIS,$INCREMENT(%PXWparts(+$THIS)))=Part
+	$$$ELEMENTPARTADDInternal($this,Part)
 }
 
 Method partsGetAt(key As %Integer) As PXW.DEV.Particle
 {
-	;#dim part as PXW.DEV.Particle
-	;Set part=$GET(%PXWparts(+$THIS,key))
-	;Quit part
-	#dim %PXWparts as PXW.DEV.Particle
-	Quit $GET(%PXWparts(+$THIS,key))
+	Quit $$$ElementPartsGetAtInternal($THIS,key)
 }
 
 Method partsGetNext(ByRef key As %Integer) As PXW.DEV.Particle
@@ -35,15 +34,14 @@ Method partsGetNext(ByRef key As %Integer) As PXW.DEV.Particle
 
 Method partsCount() As %Integer
 {
-	;q ..parts.Count()
-	Quit +$GET(%PXWparts(+$THIS))
+	quit $$$ElementPartsCountInternal($THIS)
 }
 
 /// Copy all the parts from the source element into the current element, adding to the end of the parts (not replacing)
 Method partsCopy(Source As PXW.DEV.Element)
 {
 	Set src=+Source,this=+$THIS,c2=$GET(%PXWparts(this))
-	For i=1:1:$GET(%PXWparts(src)) Set %PXWparts(this,$INCREMENT(c2))=%PXWparts(src,i)
+	For i=1:1:%PXWparts(src) Set %PXWparts(this,$INCREMENT(c2))=%PXWparts(src,i)
 	Set %PXWparts(this)=c2
 }
 
@@ -83,16 +81,14 @@ Method GetString(Part As PXW.DEV.Element) As %String
 
 Method ToString(wspace As %String = "") As %String
 {
-	#dim a as PXW.DEV.Atom
-	#dim e as PXW.DEV.Element
-	
-	Set str="",akey=""
-	For  {
-		Set a=..partsGetNext(.akey)
-		Quit:akey=""
+	#dim a as PXW.DEV.Particle
 
+	Set str=""
+	For akey=1:1:$$$ElementPartsCount($this) {
+		set a=$$$ElementPartsGetAt($this,akey)
 		Set str=str_a.ToString(wspace)
 	}
+	
 	Quit str
 }
 
@@ -202,8 +198,8 @@ Method findFirstElementByType(Type As %String, deep As %Boolean = 1) As PXW.DEV.
 			}
 		}
 	} Else {
-		For i=1:1:..partsCount() {
-			Set ele=..partsGetAt(i)
+		For i=1:1:$$$ElementPartsCount($THIS) {
+			Set ele=$$$ElementPartsGetAt($THIS,i)
 			If ele.IsElement,$$$UPPER(ele.type)=uType {
 				Set found=ele
 				Quit ; loop
@@ -218,7 +214,7 @@ Method findNextElement(ByRef key As %Integer) As PXW.DEV.Element
 	#dim ele as PXW.DEV.Element
 	Do {
 		Set ele=..partsGetNext(.key)
-	 	If ele="" Quit
+	 	If key="" Quit 
 	} While 'ele.IsElement 
 	Quit ele
 }
@@ -379,7 +375,7 @@ Method findElementsXPathCondition(Type As %String, Condition As %String, ByRef O
 
 Method %OnNew(type As %String) As %Status
 {
-	Set ..type=$GET(type)
+	set:$d(type) ..type=type
 	Quit $$$OK
 }
 

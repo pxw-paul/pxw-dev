@@ -1,4 +1,4 @@
-Include (PXW.Debuggers.Macros, PXW.DEV.BNF.macros)
+Include (PXW.Debuggers.Macros, PXW.DEV.BNF.macros, PXW.DEV.BNF.ElementMacros)
 
 Class PXW.DEV.BNF.super Extends %RegisteredObject
 {
@@ -24,14 +24,6 @@ Property streamlen As %Integer;
 /// Set to 1 if you want to stop skipping whitespace at the end of line (eg #dim command)
 Property stopAtEOL As %Boolean [ InitialExpression = 0 ];
 
-/*
-method stopAtEOLSet(val) as %Status
-{
-    $$$DEBUG("Setting stopAtEOL="_val_", "_$g(%path))
-    s i%stopAtEOL=val
-    q $$$OK 
-}
-*/
 /// Set to 1 if you never want to skip whitespace (eg on postconditional)
 Property stopAtWhitespace As %Boolean [ InitialExpression = 0 ];
 
@@ -58,7 +50,7 @@ Method streamSet(val As PXW.DEV.InputStream) As %Status
     If $ISOBJECT(val) {
         Set i%stream=val
         Set ..streamlen=$LENGTH(val.input)
-        Set ..streaminput=val.input
+        Set ..streaminput=val.input 
     }
     Quit $$$OK
 }
@@ -96,11 +88,10 @@ ClassMethod test1(text As %String, method As %String, ByRef element As PXW.DEV.E
 Method getBookmark(ByRef bookmark As %String)
 {
     ;$$$DEBUGMethodBegin
-    
-    Set bookmark=$LISTBUILD(..stream.pos,..stream.col,..stream.line,..needsWScheck,..stopAtEOL,..stopAtWhitespace) 
+    Set stream=..stream
+    Set bookmark=$LISTBUILD(stream.pos,stream.col,stream.line,..needsWScheck,..stopAtEOL,..stopAtWhitespace) 
     Set bookmark("ws")=..whitespace
-    Set bookmark("c")=..comment
-
+    Set bookmark("c")=..comment 
     ;$$$DEBUGMethodEnd
 }
 
@@ -110,7 +101,7 @@ Method gotoBookmark(ByRef bookmark As %String)
     $$$DEBUGMethodBegin
     Set forward=(..stream.pos<$LISTGET(bookmark,1))
     $$$DEBUG("Going "_$SELECT(forward:"forward",1:"back")_" from:"_$ZCONVERT($$$peek(..stream,20),"O","JSON"))
-    
+
     Set $LISTBUILD(pos,col,line,needsWScheck,stopeol,stopws)=bookmark
     Set ..stream.pos=pos,..stream.col=col,..stream.line=line
     Set ..needsWScheck=needsWScheck
@@ -195,10 +186,10 @@ Method isPunctuationInList(ListOfStrings As %List, Length As %Integer) As %Boole
 {
     $$$DEBUGMethodBegin
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
-
     Set next50=$$$peek(..stream,Length)
-    Set UPP50=$$$UPPER(next50)
-    Set found=$LISTFIND(ListOfStrings,UPP50)
+    ;Set UPP50=$$$UPPER(next50)
+    ;Set found=$LISTFIND(ListOfStrings,UPP50)
+    Set found=$LISTFIND(ListOfStrings,next50)
     ;$$$DEBUG($s(found:"("_foundString_") ",1:"NOT ")_"found:"_UPP50_" in list "_$LISTTOSTRING(ListOfStrings))
     $$$DEBUGMethodEnd
     Quit found
@@ -280,7 +271,7 @@ Method isString(ParentElement As PXW.DEV.Element = "", StringToCheck As %String)
     Set len=$LENGTH(StringToCheck)
     Set peeked=$$$peek(..stream,len)
     If $$$UPPER(peeked)=$$$UPPER(StringToCheck) {
-        If $ISOBJECT(ParentElement) {
+        If $$$ElementIsObject(ParentElement) {
             Set value=..next(len)
             If value?1.P {
                 Set atom=..newAtom("punctuation",value)
@@ -297,21 +288,13 @@ Method isString(ParentElement As PXW.DEV.Element = "", StringToCheck As %String)
 
 Method isPunctuation(StringToCheck As %String, Length As %String) As %Boolean
 {
-    ;$$$DEBUGMethodBegin
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
- 
-    ;s ok=($$$UPPER($$$peek(..stream,Length))=StringToCheck)
-    ;s ok=($$$UPPER($EXTRACT(..streaminput,..stream.pos,..stream.pos+Length-1))=StringToCheck)
-    ;$$$DEBUGMethodEnd
-    ;Quit ok
-    quit ($$$UPPER($$$peek(..stream,Length))=StringToCheck)
+    Quit ($$$peek(..stream,Length)=StringToCheck)
 }
 
 Method addString(ParentElement As PXW.DEV.Element = "", StringToCheck As %String) As %Boolean
 {
-    //#define UPPER(%x) $zconvert(%x,"U")
     $$$DEBUGMethodBegin
-    ;d ..skipWhiteSpaceAndComments()
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
  
     $$$DEBUG("checking string '"_StringToCheck_"' found '"_$ZCONVERT($$$peek(..stream,10),"O","JS")_"'")
@@ -329,7 +312,6 @@ Method addString(ParentElement As PXW.DEV.Element = "", StringToCheck As %String
         Set ok=1
     }
     $$$DEBUG("checking string '"_StringToCheck_"' ok="_ok)
-    ;s %pxwstrings(StringToCheck_"="_ok)=$g(%pxwstrings(StringToCheck_"="_ok))+1
     $$$DEBUGMethodEnd
      Quit ok
 }
@@ -352,21 +334,6 @@ Method addStringInList(ParentElement As PXW.DEV.Element, ListOfStrings As %List,
     Quit ok
 }
 
-/*
-Method addKeywordInList(ParentElement As PXW.DEV.Element, ListOfStrings As %List, Output foundString As %String) As %Boolean
-{
-    $$$DEBUGMethodBegin
-    Set ok=0  
-    If ..isKeywordInList(ListOfStrings,.value) {
-        Set foundString=..next($LENGTH(value))
-        Set atom=..newAtom(..#keywordAtomType,foundString)
-        Do ParentElement.AddPart(atom)
-        Set ok=1
-    }
-    $$$DEBUGMethodEnd
-    Quit ok
-}
-*/
 Method addKeyword(ParentElement As PXW.DEV.Element, KeywordUpper As %String) As %Boolean
 {
     $$$DEBUGMethodBegin
@@ -374,15 +341,15 @@ Method addKeyword(ParentElement As PXW.DEV.Element, KeywordUpper As %String) As 
 
     Set keyword=..peekKeyword()
     Set UPP=$$$UPPER(keyword)
+    $$$DEBUG($$$debugFormat("addKeyword looking for {KeywordUpper} found {UPP}"))
     If (UPP=KeywordUpper) {
         Set foundString=..next($LENGTH(keyword))
         Set atom=..newAtom(..#keywordAtomType,foundString)
-        Do ParentElement.AddPart(atom)
+        Do ParentElement.AddPart(atom) 
         Set ok=1
     } Else {
         Set ok=0
     }
-
     $$$DEBUGMethodEnd
     Quit ok
 }
@@ -412,6 +379,7 @@ Method addPunctuation(ParentElement As PXW.DEV.Element, Punctuation As %String, 
  
     Set len=$LENGTH(Punctuation) 
     Set peeked=$$$peek(..stream,len)
+    $$$DEBUG($$$debugFormat("addPunctuation looking for {Punctuation} found {$zconvert(peeked,""O"",""JSON"")}"))
     If $$$UPPER(peeked)=$$$UPPER(Punctuation) {
         Set foundString=..next(len)
         Set atom=..newAtom("punctuation",foundString)
@@ -435,7 +403,7 @@ Method addPunctuationInList(ParentElement As PXW.DEV.Element, ListOfStrings As %
         Set atom=..newAtom("punctuation",foundString)
         Do ParentElement.AddPart(atom)
         Set ok=1
-    } else {
+    } Else {
         Set ok=0
     }
     $$$DEBUGMethodEnd
@@ -504,18 +472,15 @@ Method newAtom(type As %String, value As %String = "") As PXW.DEV.Atom
     Set a.value=value
 	Set a.col=..stream.col
 	Set a.line=..stream.line
-	If $ISOBJECT(..whitespace) {
+	If $$$ElementIsObject(..whitespace) {
         Set a.whitespace=..whitespace
         Set ..whitespace=""
     }
-	If $ISOBJECT(..comment) {
+	If $$$ElementIsObject(..comment) {
         Set a.comment=..comment
         Set ..comment=""
     }
     Set ..needsWScheck=1
-    ;Set %atoms=$GET(%atoms)+1
-    ;Set %atomadded=a.type_"="_a.value
-    ;Set %next50=$$$peek(..stream,50)
     Quit a
 }
 
@@ -642,11 +607,11 @@ Method recoverStopAt(StopAtList As %List) As %Boolean
 Method GetCurrentComment() As PXW.DEV.Atom
 {
     Set comment=""
-    If $ISOBJECT(..comment) {
+    If $$$ElementIsObject(..comment) {
         Set comment=..comment
         Set ..comment=""
-    } ElseIf $ISOBJECT(..whitespace) {
-        If $ISOBJECT(..whitespace.comment) {
+    } ElseIf $$$ElementIsObject(..whitespace) {
+        If $$$ElementIsObject(..whitespace.comment) {
             Set comment=..whitespace.comment
             Set ..whitespace.comment=""
         }

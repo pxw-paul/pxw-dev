@@ -103,7 +103,8 @@ dim_expression                      ::= expression
 
 class_identifier                    ::= 'regexp:(\%|[a-zA-Z])[a-zA-Z0-9\.]*)' 
 
-cos_command_or_macro                ::= cos_command | macrocall
+cos_command_or_macro                ::= macrocall | cos_command
+
 cos_command                         ::=  set_command
                                          | if_command
                                          | quit_command
@@ -216,7 +217,7 @@ term                                ::= primary
 
 pattern_match                       ::= ( "?" | "'?" ) pattern_match_combo*
 pattern_match_combo                 ::= pattern_match_repeat ( pattern_match_code | pattern_match_alternating ) 
-pattern_match_alternating           ::= '(' (  ','.pattern_match_combo ) ')'
+pattern_match_alternating           ::= '(' ','.pattern_match_combo+ ')'
 pattern_match_repeat                ::= ('regexp:[0-9]*' [ '.' [ 'regexp:[0-9]*' ] ]) | ('.' ['regexp:[0-9]*'])
 pattern_match_code                  ::= 'a' | 'c' | 'e' | 'l' | 'n' | 'p' | 'u' | 'b' | 'm' 
                                         | 'ZFWCHARZ' | 'ZHWKATAZ' 
@@ -752,7 +753,7 @@ html_body                           ::= 'NEED HTML BODY'
 js_command                          ::= ('&javascript<' | '&js<') js_body '>'
 js_body                             ::= 'NEED JS BODY'
 
-sql_command                        ::= ('&sql(' sql_body ')') | ('&sqlcq(' sql_body ')qc')
+sql_command                        ::= ('&sql(' | '&sqlcq(') sql_body (')qc' | ')')
 sql_body                           ::= 'NEED SQL BODY'
 
 

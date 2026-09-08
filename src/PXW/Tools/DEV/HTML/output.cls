@@ -150,7 +150,8 @@ Method writeElement(element As PXW.DEV.Element)
 	Set akey=""
 	For {
 		; nexting through because the element count may change if the outputter wants to add/remove elements as we go
-		Set a=element.partsGetNext(.akey)
+		;Set a=element.partsGetNext(.akey)
+		set akey=$$$ElementPartsNext(element,akey,a)
 		Quit:akey=""
 		
 		If a.IsElement {

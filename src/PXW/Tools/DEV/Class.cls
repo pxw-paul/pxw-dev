@@ -153,18 +153,27 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 		Set output.showPaths=showPaths
         Do output.begin()
 		Set scratch=output
-		Set zh(4,"render")=$ZHOROLOG-zh,zh=$ZHOROLOG
+		Set zh(4,"render start")=$ZHOROLOG-zh,zh=$ZHOROLOG
 
-		Set element=##class(PXW.DEV.Element).%New()
 		If Debug'="$TIME" $$$DEBUGPause
+		s pzh=$zh,ptot=0
+		s ozh=$zh,otot=0
+		Set element=##class(PXW.DEV.Element).%New()
 		While x.cheese(element) {
+			s ptot=ptot+($zh-pzh)
 			$$$DEBUGResume
+			s ozh=$zh
 			Do output.middle(element)
-			Set element=##class(PXW.DEV.Element).%New()
+			s otot=otot+($zh-ozh)
 			If Debug'="$TIME" $$$DEBUGPause
+			s pzh=$zh
+			Set element=##class(PXW.DEV.Element).%New()
 			;zw output.Analyser
 		}
 		$$$DEBUGResume
+
+		s zh(4.5,"render parse")=ptot
+		s zh(4.6,"render output")=otot
 
 		If 'x.stream.EOF() {
 			Write "<span id='unfinishedParse'>"
@@ -237,7 +246,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 	;ZWrite %peek
 	;zw %atoms
 	;d %session.EndSession()
-	;zw zh
+	zw zh,%RBCOUNT
     Write "</pre>"
 }
 

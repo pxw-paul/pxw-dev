@@ -33,7 +33,7 @@ ClassMethod WriteMainLeft(ByRef scratch)
         Write "</pre>"
     } Else {
         Try {
-            Do:SQL'="" ..WriteSQL(routine)
+            Do:SQL'="" ..WriteRoutine(routine)
         } Catch e {
             Do ..WriteStatus(e.AsStatus())
         }

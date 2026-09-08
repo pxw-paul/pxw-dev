@@ -23,6 +23,7 @@ classmethod All() {
     d ..ParameterPassingNumber()
     d ..ParameterPassingString()
     d ..ParameterPassingObject()
+    d ..ParameterPassingObject2()
     d ..IncrementArray()
     d ..IncrementVsString()
     d ..ConCatString()
@@ -34,9 +35,11 @@ classmethod All() {
     d ..DataTestNeg()
     d ..IfTest()
     d ..IfTestNull()
+    d ..IfTestBoo()
     d ..ReuseVar()
     d ..TestKeyword()
 }
+
 
 classmethod TestKeyword() {
 
@@ -163,59 +166,126 @@ classmethod IfTestNull() {
     s var=""
     
     s x=""
-    d ..startTimer(.res,"i x="""" { s y=1 } else { s z=1 } ; true x is null")
+    d ..startTimer(.res,"i x="""" { s y=1 } else { s y=2 } ; true x is null")
     f i=1:1:m {
-        i x="""" { s y=1 } else { s z=1 }
+        i x="""" { s y=1 } else { s y=2 }
     }
     d ..stopTimer(.res)
 
     s x=""
-    d ..startTimer(.res,"i x'="""" { s y=1 } else { s z=1 } ; false x is null")
+    d ..startTimer(.res,"i x'="""" { s y=1 } else { s y=2 } ; false x is null")
     f i=1:1:m {
-        i x'="""" { s y=1 } else { s z=1 }
+        i x'="""" { s y=1 } else { s y=2 }
     }
     d ..stopTimer(.res)
 
     s x=""
-    d ..startTimer(.res,"i x]"""" { s y=1 } else { s z=1 } ; false x is null")
+    d ..startTimer(.res,"i x]"""" { s y=1 } else { s y=2 } ; false x is null")
     f i=1:1:m {
-        i x]"""" { s y=1 } else { s z=1 }
+        i x]"""" { s y=1 } else { s y=2 }
     }
     d ..stopTimer(.res)
 
     s x=""
-    d ..startTimer(.res,"i x']"""" { s y=1 } else { s z=1 } ; true x is null")
+    d ..startTimer(.res,"i x']"""" { s y=1 } else { s y=2 } ; true x is null")
     f i=1:1:m {
-        i x']"""" { s y=1 } else { s z=1 }
+        i x']"""" { s y=1 } else { s y=2 }
     }
     d ..stopTimer(.res)
 
 
     s x="set"
-    d ..startTimer(.res,"i x="""" { s y=1 } else { s z=1 } ; false x is not null")
+    d ..startTimer(.res,"i x="""" { s y=1 } else { s y=2 } ; false x is not null")
     f i=1:1:m {
-        i x="""" { s y=1 } else { s z=1 }
+        i x="""" { s y=1 } else { s y=2 }
     }
     d ..stopTimer(.res)
 
     s x="set"
-    d ..startTimer(.res,"i x'="""" { s y=1 } else { s z=1 } ; true x is not null")
+    d ..startTimer(.res,"i x'="""" { s y=1 } else { s y=2 } ; true x is not null")
     f i=1:1:m {
-        i x'="""" { s y=1 } else { s z=1 }
+        i x'="""" { s y=1 } else { s y=2 }
     }
     d ..stopTimer(.res)
 
     s x="set"
-    d ..startTimer(.res,"i x]"""" { s y=1 } else { s z=1 } ; true x is not null")
+    d ..startTimer(.res,"i x]"""" { s y=1 } else { s y=2 } ; true x is not null")
     f i=1:1:m {
-        i x]"""" { s y=1 } else { s z=1 }
+        i x]"""" { s y=1 } else { s y=2 }
     }
     d ..stopTimer(.res)
 
     s x="set"
-    d ..startTimer(.res,"i x']"""" { s y=1 } else { s z=1 } ; false x is not null")
+    d ..startTimer(.res,"i x']"""" { s y=1 } else { s y=2 } ; false x is not null")
     f i=1:1:m {
-        i x']"""" { s y=1 } else { s z=1 }
+        i x']"""" { s y=1 } else { s y=2 }
+    }
+    d ..stopTimer(.res)
+
+
+    d ..showRes(.res,m)
+
+}
+
+classmethod IfTestBoo() {
+    d ..showHead("IfTestBoo")
+    s m=10000000
+    s var=""
+    
+    s x=0
+    d ..startTimer(.res,"i x=0 ; x=0 true ")
+    f i=1:1:m {
+        i x=0 { s y=1 } else { s y=2 } 
+    }
+    d ..stopTimer(.res)
+
+    s x=0
+    d ..startTimer(.res,"i 'x ; x=0 true ")
+    f i=1:1:m {
+        i 'x { s y=1 } else { s y=2 } 
+    }
+    d ..stopTimer(.res)
+
+    s x=1
+    d ..startTimer(.res,"i x=0 ; x=1 false ")
+    f i=1:1:m {
+        i x=0 { s y=1 } else { s y=2 } 
+    }
+    d ..stopTimer(.res)
+
+    s x=1
+    d ..startTimer(.res,"i 'x ; x=1 false ")
+    f i=1:1:m {
+        i 'x { s y=1 } else { s y=2 } 
+    }
+    d ..stopTimer(.res)
+
+    ; ----------------------------------------------------------------
+    s x=0
+    d ..startTimer(.res,"i x=1 ; x=0 false ")
+    f i=1:1:m {
+        i x=1 { s y=1 } else { s y=2 } 
+    }
+    d ..stopTimer(.res)
+
+    s x=0
+    d ..startTimer(.res,"i x ; x=0 false ")
+    f i=1:1:m {
+        i x { s y=1 } else { s y=2 } 
+    }
+    d ..stopTimer(.res)
+
+    s x=1
+    d ..startTimer(.res,"i x=1 ; x=1 true")
+    f i=1:1:m {
+        i x=1 { s y=1 } else { s y=2 } 
+    }
+    d ..stopTimer(.res)
+
+    s x=1
+    d ..startTimer(.res,"i x ; x=1 true ")
+    f i=1:1:m {
+        i x { s y=1 } else { s y=2 } 
     }
     d ..stopTimer(.res)
 
@@ -546,6 +616,31 @@ classmethod ConCatString() {
     }
     d ..stopTimer(.res)
 
+    ;-------------------------------------------------
+    s str="",str2=""
+    d ..startTimer(.res,"s x=x_str      ; str=null")
+    f i=1:1:m {
+        s x=""
+        s x=x_str
+        s x=x_str2
+    }
+    d ..stopTimer(.res)
+
+    d ..startTimer(.res,"s x=x_str_str2  ; str=null")
+    f i=1:1:m {
+        s x=""
+        s x=x_str_str2
+    }
+    d ..stopTimer(.res)
+
+    d ..startTimer(.res,"s:str'="" x=x_str ; str=null")
+    f i=1:1:m {
+        s x=""
+        s:str'="" x=x_str
+        s:str2'="" x=x_str2
+    }
+    d ..stopTimer(.res)
+
     d ..showRes(.res,m)
 
 }
@@ -747,7 +842,7 @@ classmethod ObjectCheckPos() {
     d ..stopTimer(.res)
 
     d ..startTimer(.res,"$d(o),$isobject(o) ; if it exists it MAY be an object")
-    f i=1:1:m { i $d(o) { s x=1 } }
+    f i=1:1:m { i $d(o),$isobject(o) { s x=1 } }
     d ..stopTimer(.res)
 
 
@@ -793,10 +888,8 @@ classmethod ObjectCheckNeg() {
     d ..stopTimer(.res)
 
     d ..startTimer(.res,"$d(o),$isobject(o) ; if it exists it MAY be an object")
-    f i=1:1:m { i $d(o) { s x=1 } }
+    f i=1:1:m { i $d(o),$isobject(0) { s x=1 } }
     d ..stopTimer(.res)
-
-
 
     d ..startTimer(.res,"$isobject($g(o))")
     f i=1:1:m { i $isobject($g(o)) { s x=1 } }
@@ -813,12 +906,45 @@ classmethod ObjectCheckNeg() {
     f i=1:1:m { i $g(o) { s x=1 } }
     d ..stopTimer(.res)
 
-    d ..startTimer(.res,"$d(o),o UNDEF")
+    d ..startTimer(.res,"$d(o),$isobject(o) ; UNDEF if it exists it MAY be an object")
+    f i=1:1:m { i $d(o),$isobject(0) { s x=1 } }
+    d ..stopTimer(.res)
+
+    d ..startTimer(.res,"$d(o),o ; UNDEF if it exists it MAY be an object")
     f i=1:1:m { i $d(o),o { s x=1 } }
+    d ..stopTimer(.res)
+
+    d ..startTimer(.res,"$d(o) ; UNDEF if it exists it WILL be an object")
+    f i=1:1:m { i $d(o) { s x=1 } }
     d ..stopTimer(.res)
 
     d ..startTimer(.res,"$isobject($g(o)) UNDEF")
     f i=1:1:m { i $isobject($g(o)) { s x=1 } }
+    d ..stopTimer(.res)
+
+    ; post conditional
+    d ..startTimer(.res,"s:+$g(o) UNDEF")
+    f i=1:1:m { s:+$g(o) x=1  }
+    d ..stopTimer(.res)
+
+    d ..startTimer(.res,"s:$g(o) UNDEF")
+    f i=1:1:m { s:$g(o) x=1 }
+    d ..stopTimer(.res)
+
+    d ..startTimer(.res,"s:$d(o)&&$isobject(o) ; UNDEF if it exists it MAY be an object")
+    f i=1:1:m { s:$d(o)&&$isobject(o) x=1  }
+    d ..stopTimer(.res)
+
+    d ..startTimer(.res,"s:$d(o)&&o ; UNDEF if it exists it MAY be an object")
+    f i=1:1:m { s:$d(o)&&o x=1  }
+    d ..stopTimer(.res)
+
+    d ..startTimer(.res,"s:$d(o) ; UNDEF if it exists it WILL be an object")
+    f i=1:1:m { s:$d(o) x=1  }
+    d ..stopTimer(.res)
+
+    d ..startTimer(.res,"s:$isobject($g(o)) UNDEF")
+    f i=1:1:m { s:$isobject($g(o)) x=1 }
     d ..stopTimer(.res)
 
 
@@ -906,16 +1032,59 @@ classmethod ParameterPassingObject() {
     f i=1:1:m { s x=..singleParameter(.p) }
     d ..stopTimer(.res)
 
+    d ..startTimer(.res,"..singleParameterByref(p)")
+    f i=1:1:m { s x=..singleParameterByref(p) }
+    d ..stopTimer(.res)
+
+    d ..startTimer(.res,"..singleParameterByref(.p)")
+    f i=1:1:m { s x=..singleParameterByref(.p) }
+    d ..stopTimer(.res)
+
     d ..showRes(.res,m)
 
 }
 
+classmethod ParameterPassingObject2() {
+    d ..showHead("ParameterPassingObject2")
+    s p=##class(PXW.DEV.Element).%New()
+    s m=100000
+
+    ; second parameter hardly ever used
+    d ..startTimer(.res,"..twoParameters(p)")
+    f i=1:1:m { k p2 s x=..twoParameters(p) }
+    d ..stopTimer(.res)
+
+    d ..startTimer(.res,"..twoParameters(.p)")
+    f i=1:1:m { k p2 s x=..twoParameters(.p) }
+    d ..stopTimer(.res)
+
+    d ..startTimer(.res,"..twoParameters(p,.p2)")
+    f i=1:1:m { k p2 s x=..twoParameters(p,.p2) }
+    d ..stopTimer(.res)
+
+    d ..startTimer(.res,"..twoParameters(.p,.p2)")
+    f i=1:1:m { k p2 s x=..twoParameters(.p,.p2) }
+    d ..stopTimer(.res)
+
+    ; second parameter not needed (but same processing inside)
+    d ..startTimer(.res,"..oneParameter(p)")
+    f i=1:1:m { k p2 s x=..oneParameter(p) }
+    d ..stopTimer(.res)
+
+    d ..startTimer(.res,"..oneParameter(.p)")
+    f i=1:1:m { k p2 s x=..oneParameter(.p) }
+    d ..stopTimer(.res)
+
+
+    d ..showRes(.res,m)
+
+}
 
 classmethod startTimer(byref results ,Name as %String) {
-    s zh=$zh
+    i $d(results(Name)) w !,"TEST "_Name_" Already exists" $$$ThrowStatus($$$ERROR(5001,Name_"Already exists"))
     s results("current")=Name
-    s results("zh")=zh
     s results("run order",$i(results("run order")))=Name
+    s results("zh")=$zh
 }
 classmethod stopTimer(byref results) {
     s time=$zh-results("zh")
@@ -941,14 +1110,16 @@ classmethod showRes(byref results as %String,Iterations as %Integer) {
     s t=""
     f  s t=$o(results("run order",t),1,name) q:t=""  s time=results("name",name),ranked(time,t)=name
 
-    s time="",t=""
+    s time="",t="",fastest=""
     f  {
         s time=$o(ranked(time)) 
         q:time=""  
+        i fastest="" s fastest=time
         f  {
             s t=$o(ranked(time,t),1,name) 
             q:t=""  
-            w !,time,?10,name
+            s relative=$j(time/fastest,0,4)
+            w !,relative,?8,time,?18,name
         }
     }
     w !
@@ -961,4 +1132,19 @@ classmethod basicQuit() as %Boolean {
 classmethod singleParameter(parameter as %String) as %Boolean {
     q 1
 }
+
+classmethod singleParameterByref(byref parameter as %String) as %Boolean {
+    q 1
+}
+
+classmethod twoParameters(parameter1 as PXW.DEV.Element, byref parameter2 as PXW.DEV.Element) as %Boolean {
+    s parameter2=##class(PXW.DEV.Element).%New()
+    q 1
+}
+
+classmethod oneParameter(parameter1 as PXW.DEV.Element) as %Boolean {
+    s internal=##class(PXW.DEV.Element).%New()
+    q 1
+}
+
 }

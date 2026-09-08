@@ -57,7 +57,7 @@ ClassMethod WriteInclude(Include As %String, MacroToHilite As %Integer = "", Deb
 	
 		Try {
 			;Set ok=x.CosCodeBlock(element)
-			set ok=x.OneCosStatement(element)
+			set ok=x.CosStatement(element)
 			while ok {
 				;If 'ok $$$ThrowStatus($$$ERROR(5001,"Could not parse"))
 				Set x.element=element
@@ -66,7 +66,7 @@ ClassMethod WriteInclude(Include As %String, MacroToHilite As %Integer = "", Deb
 				;W !,"------------",! D element.write()
 				Do output.middle(element)
 				Set element=##class(PXW.DEV.Element).%New()
-				set ok=x.OneCosStatement(element)
+				set ok=x.CosStatement(element)
 			}
 		} Catch e {
 			Do ..WriteStatus(e.AsStatus())

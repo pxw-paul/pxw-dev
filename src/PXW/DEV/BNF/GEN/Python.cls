@@ -3784,7 +3784,7 @@ Method ExceptStarBlock2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	quit ok
 }
 
-///  expression: | disjunction 'if' disjunction 'else' expression | disjunction | lambdef
+///  expression: | lambdef | disjunction 'if' disjunction 'else' expression | disjunction
 Method Expression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	$$$DEBUGMethodBegin
@@ -3827,11 +3827,11 @@ Method Expression1Recurse(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$DEBUGMethodBegin
 	set subElement=ParentElement
 	set done=0 ; method start
-	if ..Expression2Or(subElement,.addedElement)  {
+	if ..Lambdef(subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..Expression2Or(subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..Disjunction(subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Lambdef(subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 	set ok=$s(done:1,1:0)

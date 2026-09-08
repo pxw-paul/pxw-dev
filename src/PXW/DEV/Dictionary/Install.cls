@@ -120,7 +120,7 @@ ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, Ate
 }
 
 /// d ##class(PXW.DEV.Dictionary.Install).GenAll()
-ClassMethod GenAll()
+ClassMethod GenAll(ExportGEN as %Boolean=1)
 {
     
     ;Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.Compilers.BNF1","PXW.DEV.BNF.GEN.BNF1") 
@@ -141,7 +141,7 @@ ClassMethod GenAll()
     Set sc=##class(PXW.DEV.BNF.Compilers.Compiler).goload("PXW.DEV.BNF.DEF.SQLShowPlan","PXW.DEV.BNF.GEN.SQLShowPlan")
     If $$$ISERR(sc) Do $SYSTEM.Status.DisplayError(sc)
 
-    Do ..ExportGEN()
+    Do:ExportGEN ..ExportGEN()
 }
 
 /// d ##class(PXW.DEV.Dictionary.Install).ExportAll()

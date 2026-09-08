@@ -491,9 +491,10 @@ expressions:
     | expression
 
 expression:
+    | lambdef
     | disjunction 'if' disjunction 'else' expression 
     | disjunction
-    | lambdef
+    --| lambdef
 
 yield_expr:
     | 'yield' 'from' expression 

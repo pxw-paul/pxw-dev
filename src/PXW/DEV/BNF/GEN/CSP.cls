@@ -381,7 +381,7 @@ Method CspContent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 Method CspDoctype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
 	; rules summary P&C&[K&C&C]&P
-	if '..isPunctuation("<!DOCTYPE",9) { quit 0 /* normal */ }
+	if '..isStringSingle("<!DOCTYPE",9) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)

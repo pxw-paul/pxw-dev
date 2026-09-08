@@ -34,14 +34,11 @@ property IsAtom as %Boolean [ InitialExpression = 1];
 Method ToString(wspace As %String = "") As %String
 {
 	Set str=""
-	If $ISOBJECT(..whitespace) {
-		If wspace="" {
-			Set str=str_..whitespace.ToString()
-		} ElseIf wspace=0 {
-			Set str=str
-		}
-		Else {
-			Set str=str_wspace
+	if wspace'=0,..whitespace {
+		if wspace]"" {
+			Set str=wspace
+		} else {
+			Set str=..whitespace.ToString("")
 		}
 	}
 	Set str=str_..start

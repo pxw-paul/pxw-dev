@@ -111,14 +111,14 @@ Method peekKeyword() As %String
     $$$DEBUGMethodBegin
     If ..keyword]"" {
         Set word=$EXTRACT(..keyword,2,*) ; remove the space from the start so null is null
-    } else {
+    } Else {
         Set word=""
         ;Set ch50=$$$peek(..stream,50)
         Set ch50=$EXTRACT(..streaminput,..stream.pos,..stream.pos+50)
         ; starts with a letter
         If $EXTRACT(ch50,1,1)?1A {
             Set i=2
-            While $EXTRACT(ch50,i,i)?1AN { s i=i+1 }
+            While $EXTRACT(ch50,i,i)?1AN { Set i=i+1 }
             Set word=$EXTRACT(ch50,1,i-1)
         } 
         Set ..keyword=" "_word ; so that even null counts as being found
@@ -525,8 +525,13 @@ Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 /***********************************************************
  OVERRIDES FOR PERFORMANCE 
 ***********************************************************/
+
 Method Dyadicop(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
+    d:..needsWScheck ..skipWhiteSpaceAndComments()
+    s p=$$$peek(..stream,1)
+    i ":,{}$()"[p q 0 ; timesaver, these chars are NOT part of dyadicop
+    i p'?1P q 0 ; timesaver
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	;$$$DEBUG("%path="_%path)
@@ -544,6 +549,7 @@ Method Dyadicop(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 		$$$BNFCOMMIT(subElement,ParentElement)
 		Set retok=1
 	} Else {
+        ;w !,$ZCONVERT($$$peek(..stream,20),"O","JSON")
 		$$$BNFROLLBACK(subElement)
 		Set retok=0
 	}
@@ -997,7 +1003,7 @@ Method AmpOp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 
 Method CloseSqOp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
-    if ..CloseSqOpDisable Quit 0
+    If ..CloseSqOpDisable Quit 0
     Quit ##super(.ParentElement,.supElement)
 }
 
@@ -1193,11 +1199,11 @@ Method CosDirective(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 /// summary=C
 Method DimExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-    set oldmode=..stopAtEOL
-    set ..stopAtEOL=0
-    set ok=##super(ParentElement,.subElement)
-    set ..stopAtEOL=oldmode
-    quit ok
+    Set oldmode=..stopAtEOL
+    Set ..stopAtEOL=0
+    Set ok=##super(ParentElement,.subElement)
+    Set ..stopAtEOL=oldmode
+    Quit ok
 }
 
 /// command_list_eol ::= cos_command ( cos_command )* /* needs to stop at end of line */
@@ -1246,7 +1252,7 @@ Method SubExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 Method CloseBracket(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
     ;If ..isStringSingle(")",.value)=0 Quit 0
-    If $$$peek(..stream,1)'=")" Quit 0
+ 	if '(..isStringSingle(")",.value)) { quit 0 /* normal */ /*3 */ }
     $$$DEBUGMethodBegin
     Set atom=..newAtom("punctuation",..nextNotEOL(1))
     Do ParentElement.AddPart(atom)
@@ -1363,7 +1369,7 @@ Method CosDirectiveDefineSubst(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 Method CosCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
-	Set retok=##super(ParentElement,.subElement)
+ 	Set retok=##super(ParentElement,.subElement)
     
     If retok=0 {
         If ..codemode="DEFINE" {
