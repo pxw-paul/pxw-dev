@@ -1482,7 +1482,7 @@ Method CosCodeBlock1RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	set subElement=ParentElement
 	set done=0 ; method start
 	set done=0 ; must be at least 1
-	while ..CosStatement(.subElement,.addedElement)  {
+	while '..isPunctuation("}",1),..CosStatement(.subElement,.addedElement)  {
 		set done=1
 	}
 	set ok=$s(done:1,1:0)

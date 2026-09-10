@@ -277,56 +277,51 @@ Method findElementsByType(Type As %String, ByRef OutputList As %Library.ListOfOb
 	}
 }
 
-/*
-Method findElementsByClass(ClassName As %String, ByRef OuputArray As %String)
-{
-	If ..%IsA(ClassName) Set OuputArray(+$THIS)=$THIS
-	For i=1:1:..partsCount() {
-		Set ele=..partsGetAt(i)
-		If ele.IsElement {
-			Do ele.findElementTypes(ClassName,.OuputArray)
-		}
-	}
-}
-*/
 /// Use an XPath type syntax to navigate
 /// eg https://www.w3schools.com/xml/xpath_syntax.asp
 /// NOT dealing with * for the time being, it makes life complicated, and we should know our own paths
 /// only supports 1 condition level check (because its all based on PIECES)
 ///  eg; p1/p2[sub1=xxx] is ok
 ///      p2/p2[sub1/sup2=xxx] will not work
+/// This is relatively slow. Might be better to go for findElementByType for simpler structures.
 Method findElementsXPath(Path As %String, ByRef OutputList As %Library.ListOfObjects(ELEMENTTYPE="PXW.DEV.Element"))
 {
 	#dim item1 as PXW.DEV.Element
 	$$$DEBUGMethodBegin
 	; find everything on the first step of the path
-	Set stepI=1
-	Set step1=$PIECE(Path,"/",stepI)
-
-	Set stepField=$PIECE(step1,"[",1),stepCondition=$PIECE($PIECE(step1,"[",2,*),"]",1)
-	Set list1=##class(%Library.ListOfObjects).%New()
-	Do ..findElementsXPathCondition(stepField,stepCondition,list1)
-	
-	; go along each step after and find all the sub elements that are in the previous list
-	; each time we go along the steps we use the output of the previous step as the input of
-	; of the next search
-	; list1 from above builds list2, list1 is reset to list2 and it runs again
-	; if the step is * this means anything will do (look deep)
-	; otherwise just look a the next level
-	Set stepI=stepI+1
-	For si=stepI:1:$LENGTH(Path,"/") {
-		Set step2=$PIECE(Path,"/",si)
-		Set stepField=$PIECE(step2,"[",1),stepCondition=$PIECE($PIECE(step2,"[",2,*),"]",1)
-		Set list2=##class(%Library.ListOfObjects).%New()
-		For i=1:1:list1.Count() {
-			Set item1=list1.GetAt(i)
-			Do item1.findElementsXPathCondition(stepField,stepCondition,list2)		
+	set pathList=$listfromstring(Path,"/")
+	Set stepI=0
+	if $listnext(pathList,stepI,step1) {
+		Set stepField=$PIECE(step1,"[",1),stepCondition=$PIECE($PIECE(step1,"[",2,*),"]",1)
+		s list1=""
+		Do ..findElementsXPathCondition(stepField,stepCondition,.list1)
+		
+		; go along each step after and find all the sub elements that are in the previous list
+		; each time we go along the steps we use the output of the previous step as the input of
+		; of the next search
+		; list1 from above builds list2, list1 is reset to list2 and it runs again
+		; if the step is * this means anything will do (look deep)
+		; otherwise just look a the next level
+		if list1 {
+			;Set stepI=stepI+1
+			;For si=stepI:1:$LENGTH(Path,"/") {
+			;	Set step2=$PIECE(Path,"/",si)
+			while $listnext(pathList,stepI,step2) {
+				set list2=""
+				if list1 {
+					Set stepField=$PIECE(step2,"[",1),stepCondition=$PIECE($PIECE(step2,"[",2,*),"]",1)
+					For i=1:1:list1.Count() {
+						Set item1=list1.GetAt(i)
+						Do item1.findElementsXPathCondition(stepField,stepCondition,.list2)		
+					}
+				}
+				Set list1=list2
+			}
 		}
-		Set list1=list2
 	}
 	; the logic above is confusing me, below feels wrong, but I want to ADD to the output list if there is already one
 	; meaning the the function is called twice with the same .outputlist on the caller all the elements are added together.
-	If $ISOBJECT($GET(OutputList)) {
+	If $g(OutputList) {
 		For i=1:1:list1.Count() { 
 			Do OutputList.Insert(list1.GetAt(i))
 		}
@@ -336,7 +331,6 @@ Method findElementsXPath(Path As %String, ByRef OutputList As %Library.ListOfObj
 	$$$DEBUG("OuputList.Count()="_OutputList.Count())
 	$$$DEBUGMethodEnd
 }
-
 /// Condition only supports = at the moment
 Method findElementsXPathCondition(Type As %String, Condition As %String, ByRef OutputList As %Library.ListOfObjects)
 {
@@ -344,20 +338,23 @@ Method findElementsXPathCondition(Type As %String, Condition As %String, ByRef O
 	Set condfield=$PIECE(Condition,"=",1)
 	Set condvalue=$PIECE(Condition,"=",2,*)
 	Set uType=$$$UPPER(Type)
-	For i=1:1:..partsCount() {
-		Set ele=..partsGetAt(i)
+	For i=1:1:$$$ElementPartsCount($this) {
+		Set ele=$$$ElementPartsGetAt($this,i)
 		If ele.IsElement,$$$UPPER(ele.type)=uType {
-			If '$ISOBJECT($GET(OutputList)) { 
+			If 'OutputList { 
 				Set OutputList=##class(%Library.ListOfObjects).%New()
 			}
 			If condfield'="" {
+				set itemstocheck=""
 				Do ele.findElementsXPath(condfield,.itemsToCheck)
 				Set ok=1
-				For j=1:1:itemsToCheck.Count() {
-					Set condE=itemsToCheck.GetAt(j)
-					Set value=condE.ToString()
-					If value'=condvalue {
-						Set ok=0
+				if itemstocheck {
+					For j=1:1:itemsToCheck.Count() {
+						Set condE=itemsToCheck.GetAt(j)
+						Set value=condE.ToString()
+						If value'=condvalue {
+							Set ok=0
+						}
 					}
 				}
 				If ok {

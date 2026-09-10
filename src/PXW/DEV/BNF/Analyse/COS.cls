@@ -343,10 +343,12 @@ Method checkCDEFFormalSpecItem(element As PXW.DEV.BNF.Elements.ClassDefinition) 
 	; for listOfObjects we want to know the element type if there is one
 	Set elementType=""
 	Do element.findElementsXPath("AsTypeClassReference/TypeClassReference/TypeParameters/TypeParametersList/TypeParameterItem[ClassItemIdentifier=ELEMENTTYPE]/String",.listOfElementTypes)
-	For i=1:1:listOfElementTypes.Count() { 
-		Set itemE=listOfElementTypes.GetAt(i)
-		Set atom=itemE.FirstAtom()
-		Set elementType=$TRANSLATE(atom.value,"""","")
+	if $isobject($g(listOfElementTypes)) {
+		For i=1:1:listOfElementTypes.Count() { 
+			Set itemE=listOfElementTypes.GetAt(i)
+			Set atom=itemE.FirstAtom()
+			Set elementType=$TRANSLATE(atom.value,"""","")
+		}
 	}
 
 	Set modeE=element.findFirstElementByType("FormalSpecMode",0)
@@ -356,7 +358,7 @@ Method checkCDEFFormalSpecItem(element As PXW.DEV.BNF.Elements.ClassDefinition) 
 		Set var=varE.ToString(0)
 		Set typeE=element.findFirstElementByType("ClassReference",1) ; go deep because of optional group
 		Set type=$SELECT($ISOBJECT(typeE):typeE.ToString(0),1:"")
-		If type="" Set type="%Library.String" ; the default
+		If mode="",type="" Set type="%Library.String" ; the default - but for our purposes we only want that to occur on BYREF parameters, 
 		Set ..ParameterVariables(var)=type
 		If type'="" {
 			Set ..VariablesTypes(var)=type
@@ -385,25 +387,26 @@ Method checkCosSetItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compi
 	; work out what is being set
 	$$$DEBUGMethodBegin
 	Do element.findElementsXPath("SetValueExpression/VariableSet",.variablelist)
-	For i=1:1:variablelist.Count() {
-		Set varE=variablelist.GetAt(i)
-		Set var=varE.ToString(0)
-		Set currentlySetting(var)=varE
-		; if its JUST a variable then we are interested in keeping track of it
-		If varE.partsCount()=1 {
-			Set ..VariablesSet(var)=varE
-			Set currentStringVars(var)=varE
-		} Else {
-			; its an array or some sort of object.property, so its a var being used
-			Set varname=varE.FirstAtom().ToString(0)
-			Set ..VariablesUsed(varname)=varE
-			; if its very complicated (eg object.property) then we will not deal with string tracking for the moment (its doing my head in)
-			;Set currentStringVars(varname)=varE
-			;Set currentStringVarsArray(varname)=varE
-			
+	if $isobject($g(variablelist)) {
+		For i=1:1:variablelist.Count() {
+			Set varE=variablelist.GetAt(i)
+			Set var=varE.ToString(0)
+			Set currentlySetting(var)=varE
+			; if its JUST a variable then we are interested in keeping track of it
+			If varE.partsCount()=1 {
+				Set ..VariablesSet(var)=varE
+				Set currentStringVars(var)=varE
+			} Else {
+				; its an array or some sort of object.property, so its a var being used
+				Set varname=varE.FirstAtom().ToString(0)
+				Set ..VariablesUsed(varname)=varE
+				; if its very complicated (eg object.property) then we will not deal with string tracking for the moment (its doing my head in)
+				;Set currentStringVars(varname)=varE
+				;Set currentStringVarsArray(varname)=varE
+				
+			}
 		}
 	}
-
 	; work out what its being set to
 	Set value=element.findFirstElementByType("SetExpression",0)
 	Set derivedtype=..DeriveTypeReturned(value)
@@ -904,31 +907,33 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, Start
 				Set collection="",elementtype=""
 			}
 		}
-		If fspec'="" {
-			Set fparamsE=objectchain.findFirstElementByType("FunctionParameterList",0)
-			If $ISOBJECT(fparamsE) {
-				Set fpk="",count=0
-				For  {
-					Set fpE=fparamsE.findNextElement(.fpk)
-					Quit:fpk=""
-					Set count=count+1
-					If fpE.type="FunctionParameter" {
-						Set byrefE=fpE.findFirstElementByType("ByrefVariable",0)
-						If $ISOBJECT(byrefE) {
-							Set var=byrefE.ToString(0)
-							If var'="" {
-								Set btype=$LISTGET($LISTGET(fspec,count),2)
-								If btype'="" {
-									Do ..checkAndRecordVariableType(byrefE,var,btype)
-								}
+		
+		If fspec'="" { 
+			; Walk through the parameters keeping count as we go.
+			; Do not use xpath all the way to byref because that will skip the parameters that are not byref
+			; and we won't be able to work out it's position in the formal spec.
+			set fparamlist=""
+			do objectchain.findElementsXPath("FunctionParameterList/FunctionParameter",.fparamlist)
+			If fparamlist {
+				For count=1:1:fparamlist.Count() {
+					Set fpE=fparamlist.GetAt(count)
+					Set byrefE=fpE.findFirstElementByType("ByrefVariable",0)
+					If byrefE {
+						Set var=byrefE.ToString(0)
+						If var'="" {
+							Set btype=$LISTGET($LISTGET(fspec,count),2)
+							If btype'="" {
+								Do ..checkAndRecordVariableType(byrefE,var,btype)
 							}
 						}
 					}
 				}
 			} Else {
-				Do ..AddElementWarning(objectchain,"Looks like a method "_$GET(classname)_"."_$GET(propertyname)_" but no parameter list found")
+				;Do ..AddElementWarning(objectchain,"Looks like a method "_$GET(classname)_"."_$GET(propertyname)_" but no parameter list found")
+				; Thats fine, eg %New() does not have parameter list
 			}
-		}
+		}			
+
 
         Set objectchain=objectchain.findFirstElementByType("ObjectChain",0)
         Set classname=type

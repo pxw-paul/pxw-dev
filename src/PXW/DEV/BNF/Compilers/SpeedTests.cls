@@ -525,21 +525,23 @@ classmethod NestFunctions() {
     s line="abcdefghijklmnopqrstuvwxyz"
     s char="x"
 
+    ; note: the default $$$UPPER conversion is upper=$zu(28,string,5)
+    ; this is also comparing the speed of $zconvert(string,"U")
     d ..startTimer(.res,"s len=$l(char),read=$e(line,1,len),upper=$$$UPPER(read)")
     f i=1:1:m {
         s len=$l(char),read=$e(line,1,len),upper=$$$UPPER(read)
     }
     d ..stopTimer(.res)
 
-    d ..startTimer(.res,"s read=$e(line,1,$l(char)),upper=$$$UPPER(read)")
+    d ..startTimer(.res,"s read=$e(line,1,$l(char)),upper=$zu(28,read,5)")
     f i=1:1:m {
-        s read=$e(line,1,$l(char)),upper=$$$UPPER(read)
+        s read=$e(line,1,$l(char)),upper=$zu(28,read,5) 
     }
     d ..stopTimer(.res)
 
-    d ..startTimer(.res,"s upper=$$$UPPER($e(line,1,$l(char)))")
+    d ..startTimer(.res,"s upper=$zu(28,$e(line,1,$l(char)),5)")
     f i=1:1:m {
-        s upper=$$$UPPER($e(line,1,$l(char)))
+        s upper=$zu(28,$e(line,1,$l(char)),5)
     }
     d ..stopTimer(.res)
 
