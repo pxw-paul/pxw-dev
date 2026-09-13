@@ -167,6 +167,13 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 			s otot=otot+($zh-ozh)
 			If Debug'="$TIME" $$$DEBUGPause
 			s pzh=$zh
+
+			if Debug["$WRITE" {
+				zw output.Analyser
+				do element.write()
+			}
+
+
 			Set element=##class(PXW.DEV.Element).%New()
 			;zw output.Analyser
 		}
@@ -188,7 +195,8 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 		Set zh(5,"render end")=$ZHOROLOG-zh,zh=$ZHOROLOG
 
 		if forceXref {
-			$$$DEBUGNew("")
+			$$$DEBUGNew(##class(PXW.Tools.Debugger).%New())
+			$$$DEBUG("Xref build")
 			Do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName,1,1)
 			$$$DEBUGStop
 		} else {
@@ -246,7 +254,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 	;ZWrite %peek
 	;zw %atoms
 	;d %session.EndSession()
-	zw zh,%RBCOUNT
+	;zw zh,%RBCOUNT
     Write "</pre>"
 }
 

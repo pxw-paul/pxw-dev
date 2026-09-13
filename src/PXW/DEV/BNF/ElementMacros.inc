@@ -23,3 +23,6 @@ ROUTINE PXW.DEV.BNF.ElementMacros [Type=INC]
 ///
 #define ELEMENTPARTADD(%e,%p) Set %PXWparts(+%e,$INCREMENT(%PXWparts(+%e)))=%p
 #define ELEMENTPARTADDInternal(%e,%p) Set %PXWparts(+%e,$INCREMENT(%PXWparts(+%e)))=%p
+
+#define ELEMENTPARTCOPY(%e,%src) Set src=+%src,this=+%e,c2=$GET(%PXWparts(this)) For i=1:1:%PXWparts(src) { Set %PXWparts(this,$INCREMENT(c2))=%PXWparts(src,i) } Set %PXWparts(this)=c2
+#define ELEMENTPARTCOPYInternal(%e,%src) Set src=+%src,this=+%e,c2=$GET(%PXWparts(this)) For i=1:1:%PXWparts(src) { Set %PXWparts(this,$INCREMENT(c2))=%PXWparts(src,i) } Set %PXWparts(this)=c2

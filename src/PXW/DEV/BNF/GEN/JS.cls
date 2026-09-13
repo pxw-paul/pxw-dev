@@ -1395,10 +1395,10 @@ Method CaseClause2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 }
 
 ///  case_Clauses ::= case_Clause*
-/// summary=(?4Call:4?)*
+/// summary=(C)*
 Method CaseClauses(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary (?4Call:4?)*
+	; rules summary (C)*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1421,7 +1421,7 @@ Method CaseClauses(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 ///  case_Clause*
 Method CaseClauses1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4Call:4?
+	; rules summary C
 	set subElement=ParentElement
 	; method start
 	while ..CaseClause(.subElement,.addedElement)  {
@@ -1712,10 +1712,10 @@ Method ClassElementName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 }
 
 ///  class_Tail ::= ["Extends" single_Expression] '{' class_Element* '}'
-/// summary=[K&C]&P&(?4Call:4?)*&P
+/// summary=[K&C]&P&(C)*&P
 Method ClassTail(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary [K&C]&P&(?4Call:4?)*&P
+	; rules summary [K&C]&P&(C)*&P
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -1769,7 +1769,7 @@ Method ClassTail1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 ///  class_Element*
 Method ClassTail2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4Call:4?
+	; rules summary C
 	set subElement=ParentElement
 	; method start
 	while ..ClassElement(.subElement,.addedElement)  {
@@ -9067,10 +9067,10 @@ Method SourceElement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 }
 
 ///  source_Elements ::= source_Element*
-/// summary=(?4Call:4?)*
+/// summary=(C)*
 Method SourceElements(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary (?4Call:4?)*
+	; rules summary (C)*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9093,7 +9093,7 @@ Method SourceElements(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 ///  source_Element*
 Method SourceElements1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4Call:4?
+	; rules summary C
 	set subElement=ParentElement
 	; method start
 	while ..SourceElement(.subElement,.addedElement)  {
@@ -9166,10 +9166,10 @@ Method Statement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 }
 
 ///  statement_List ::= statement*
-/// summary=(?4Call:4?)*
+/// summary=(C)*
 Method StatementList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary (?4Call:4?)*
+	; rules summary (C)*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9192,7 +9192,7 @@ Method StatementList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 ///  statement*
 Method StatementList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4Call:4?
+	; rules summary C
 	set subElement=ParentElement
 	; method start
 	while ..Statement(.subElement,.addedElement)  {
@@ -9203,10 +9203,10 @@ Method StatementList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 }
 
 ///  statement_List_mandatory ::= statement+
-/// summary=(?4Call:4?)+
+/// summary=(C)+
 Method StatementListMandatory(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary (?4Call:4?)+
+	; rules summary (C)+
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9229,7 +9229,7 @@ Method StatementListMandatory(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 ///  statement+
 Method StatementListMandatory1RepOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4Call:4?
+	; rules summary C
 	set subElement=ParentElement
 	set done=0 ; method start
 	set done=0 ; must be at least 1

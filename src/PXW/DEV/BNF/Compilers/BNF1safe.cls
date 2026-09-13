@@ -527,12 +527,14 @@ Method RepeatSepRule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	Set done=0 ; method start
-	If ..Keyword(subElement,.addedElement)  {
-		Set done=1 ; or
-	} ElseIf ..Subrule(subElement,.addedElement)  {
-		Set done=1 ; or
-	} ElseIf ..Call(subElement,.addedElement)  {
-		Set done=1 ; end compileRules
+	if ..OptionalSingle(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..Keyword(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..Subrule(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..Call(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
 	}
 	If done {
 		$$$BNFCOMMIT(subElement,ParentElement)

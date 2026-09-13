@@ -16,6 +16,10 @@ Property VariablesTypes As %String [ MultiDimensional ];
 
 property VariablesTypesElement as %String [ MultiDimensional ];
 
+/// keyed by variable name, in certain situations we know a 
+/// variable is a ListOf something and it could also define what it is a list of
+property ListVarElementType as %String [ MultiDimensional ];
+
 /// Keep track of variable types #dimmed by programmer, assumed to be more accurate than can be derived
 /// ..DimmedTypes(varname)=type
 Property DimmedTypes As %String [ MultiDimensional ];
@@ -170,38 +174,6 @@ Method IsExtension(Classname As %String, SuperClass As %String) As %Boolean
 	Quit 0
 }
 
-/*
-set a=##class(PXW.DEV.BNF.Analyse.COS).%New(),a.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace("LOCAL_USER")
-; Atom and Element are quite compatible based on the Particle being at depth 2
-USER>w a.IsCompatible("PXW.DEV.Atom","PXW.DEV.Element",.c,.d),! zw c,d
-1
-c="PXW.DEV.Particle"
-d=2
-
-USER>w a.IsCompatible("PXW.DEV.Element","PXW.DEV.Atom",.c,.d),! zw c,d
-1
-c="PXW.DEV.Particle"
-d=2
-
-
-; Particle and Element are very compatible based on the Particle being at depth 1 (ie Element extends Particle)
-USER>w a.IsCompatible("PXW.DEV.Particle","PXW.DEV.Element",.c,.d),! zw c,d
-1
-c="PXW.DEV.Particle"
-d=1
-
-
-USER>w a.IsCompatible("PXW.DEV.Element","PXW.DEV.Particle",.c,.d),! zw c,d
-1
-c="PXW.DEV.Particle"
-d=1
-
-; Element and This class share the compatible %RegisteredObject at a depth of 3, is that really compatible depends on usage of the objects
-USER>w a.IsCompatible("PXW.DEV.Element","PXW.DEV.BNF.Analyse.COS",.c,.d),! zw c,d
-1
-c="%Library.RegisteredObject"
-d=3
-*/
 method IsCompatible(Classname1 as %String, Classname2 as %String, output commonClass as %String, output depth as %String) as %Boolean {
 
 	$$$DEBUGMethodBegin
@@ -384,22 +356,28 @@ Method checkCDEFFormalSpecItem(element As PXW.DEV.BNF.Elements.ClassDefinition) 
 /// that is executed in directly (especially sql)
 Method checkCosSetItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="SetItem")
 {
+	#dim varE,oldStrElement,newStrElement as PXW.DEV.Element
+
 	; work out what is being set
 	$$$DEBUGMethodBegin
 	Do element.findElementsXPath("SetValueExpression/VariableSet",.variablelist)
 	if $isobject($g(variablelist)) {
 		For i=1:1:variablelist.Count() {
 			Set varE=variablelist.GetAt(i)
-			Set var=varE.ToString(0)
-			Set currentlySetting(var)=varE
+			Set var=varE.FirstAtom().ToString(0)
+			;Set currentlySetting(var)=varE
 			; if its JUST a variable then we are interested in keeping track of it
 			If varE.partsCount()=1 {
 				Set ..VariablesSet(var)=varE
 				Set currentStringVars(var)=varE
+				Set currentlySetting(var)=varE
+				do ..DeriveTypeReturned(varE)
 			} Else {
 				; its an array or some sort of object.property, so its a var being used
 				Set varname=varE.FirstAtom().ToString(0)
 				Set ..VariablesUsed(varname)=varE
+				
+				do ..DeriveTypeReturned(varE)
 				; if its very complicated (eg object.property) then we will not deal with string tracking for the moment (its doing my head in)
 				;Set currentStringVars(varname)=varE
 				;Set currentStringVarsArray(varname)=varE
@@ -472,7 +450,7 @@ Method checkCosSetItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compi
 	Quit ""
 }
 
-Method checkAndRecordVariableType(VariableElement As PXW.DEV.BNF.Elements.COS, Variable As %String, DerivedType As %String)
+Method checkAndRecordVariableType(VariableElement As PXW.DEV.BNF.Elements.COS, Variable As %String, DerivedType As %String,ListElementTypeClass as %String="")
 {
 	$$$DEBUGMethodBegin
 	Set var=Variable
@@ -480,6 +458,7 @@ Method checkAndRecordVariableType(VariableElement As PXW.DEV.BNF.Elements.COS, V
 	Set derivedtype=..FullClassName(DerivedType)
 	Set dimmedtype=..FullClassName($GET(..DimmedTypes(var)))
 	Set currenttype=..FullClassName($GET(..VariablesTypes(var)))
+	set listelementtype=..FullClassName(ListElementTypeClass) ; for LISTS etc that return a type
 	If dimmedtype'="",derivedtype'="",dimmedtype'=derivedtype {
 		;If (..IsExtension(derivedtype,dimmedtype)=0) && (..IsExtension(dimmedtype,derivedtype)=0) {
 		;	Do ..AddElementWarning(velement,"Derived type of "_var_" ("_derivedtype_") differs to dimmed type ("_dimmedtype_")")
@@ -507,11 +486,17 @@ Method checkAndRecordVariableType(VariableElement As PXW.DEV.BNF.Elements.COS, V
 		}
 	}
 	; we have a type so remember it, dont bother storing when it went to null, thats normally not useful
-	If finaltype'="" {
+	If finaltype'="",finaltype'="<null>" {
 		Set ..VariablesTypes(var)=finaltype
 		Set ..VariablesTypesElement(+VariableElement)=finaltype
+		Set ..ListVarElementType(var)=listelementtype
 	}
 	$$$DEBUGMethodEnd
+}
+
+method checkChainableThing(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ThisObject,ThisObjectSet")
+{
+	do ..DeriveTypeReturned(element)
 }
 
 Method checkCosVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="Variable,ByrefVariable")
@@ -520,6 +505,12 @@ Method checkCosVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Comp
 	;  variable name part is the only bit we are interested in
 	Set varname=element.FirstAtom().ToString(0)
 	Set ..VariablesUsed(varname,+element)=element
+	; each time a variable is used record its current type, I think there are many places that might do this so only set once
+	;if '$d(..VariablesTypesElement(+element)) {
+		set ..VariablesTypesElement(+element)=$g(..VariablesTypes(varname))
+		; this does all sorts of things along the way (side effect, a bit nasty)
+		Do ..DeriveTypeReturned(element)
+	;}
 	Set uvar=$$$UPPER(varname)
 	If $DATA(..BadVars(uvar)) {
 		If '$DATA(..BadVarsUsed(uvar)) {
@@ -543,6 +534,11 @@ Method checkCosVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.C
 	Set varname=element.FirstAtom().ToString(0)
 	If varname'="" {
 		Set ..VariablesSet(varname)=element
+		if '$d(..VariablesTypesElement(+element)) {
+			set ..VariablesTypesElement(+element)=$g(..VariablesTypes(varname))
+			; this does all sorts of things along the way (side effect, a bit nasty)
+			Do ..DeriveTypeReturned(element)
+		}
 	}
 	$$$DEBUGMethodEnd
 	Quit ""
@@ -554,6 +550,13 @@ Method checkCosObjectVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BN
 	;  variable name part is the only bit we are interested in
 	Set varname=element.FirstAtom().ToString(0)
 	Set ..VariablesUsed(varname)=element
+
+	if '$d(..VariablesTypesElement(+element)) {
+		set ..VariablesTypesElement(+element)=$g(..VariablesTypes(varname))
+		; this does all sorts of things along the way (side effect, a bit nasty)
+		Do ..DeriveTypeReturned(element)
+	}
+
 	$$$DEBUGMethodEnd
 	Quit ""
 }
@@ -764,7 +767,7 @@ Method checkCosTryCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Co
 	If $ISOBJECT(varE) {
 		Set varname=varE.FirstAtom().ToString(0)
 		Set ..VariablesSet(varname)=element
-		Set ..VariablesTypes(varname)="%Exception.AbstractException"
+		Set ..VariablesTypes(varname)="%Exception.SystemException"
 	}
 	$$$DEBUGMethodEnd
 	Quit ""
@@ -882,14 +885,15 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, Start
     Set objectchain=ParentElement.findFirstElementByType("ObjectChain",0)
 	If '$ISOBJECT(objectchain) Set objectchain=ParentElement.findFirstElementByType("ObjectChainNoDot",0)
 	Set collection="",elementtype=""
-    While $ISOBJECT(objectchain) {
-		;d objectchain.write()
-		Set fspec=""
+	if ElementTypeClassName'="" s collection="yes"
+	s loopcount=0
+	While $ISOBJECT(objectchain) {
+		s loopcount=loopcount+1
+		Set fspec="",fspecparsed=""
         ; the objectchain has the "." and the name
         Set propertyname=objectchain.ToStringAtomsOnly(0)
 		Set propertyname=$SELECT($EXTRACT(propertyname,1)=".":$PIECE(propertyname,".",2),1:propertyname)
-				
-		If collection'="",propertyname?1"Get".AN {
+		If collection'="",propertyname?0.1"%"1"Get".AN {
 			Set collection=""
 			If ElementTypeClassName'="" {
 				; special case for List.Get methods where we know the element type already
@@ -903,12 +907,16 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, Start
 		} Else {
 			Set found=..ClassServer.GetPropertyDetails(classname,propertyname,.type,.collection,.ElementTypeClassName)
 			If 'found {
-				Set type=..ClassServer.GetMethodReturnType(classname,propertyname,.fspec)
+				Set type=..ClassServer.GetMethodReturnType(classname,propertyname,.fspecparsed,.MYfspec)
 				Set collection="",elementtype=""
 			}
 		}
-		
-		If fspec'="" { 
+		set ..VariablesTypesElement(+objectchain)=type
+
+		If fspecparsed'="" { 
+			; if MYfspec exists, this was parsed by from the method definition and may not match the 
+			; offical parsed fs
+
 			; Walk through the parameters keeping count as we go.
 			; Do not use xpath all the way to byref because that will skip the parameters that are not byref
 			; and we won't be able to work out it's position in the formal spec.
@@ -921,9 +929,18 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, Start
 					If byrefE {
 						Set var=byrefE.ToString(0)
 						If var'="" {
-							Set btype=$LISTGET($LISTGET(fspec,count),2)
+							set fsitem=$LISTGET(MYfspec,count)
+							if fsitem="" s fsitem=$LISTGET(fspecparsed,count)
+							Set btype=$LISTGET(fsitem,2)
 							If btype'="" {
-								Do ..checkAndRecordVariableType(byrefE,var,btype)
+								s et=""
+								; look to see if there is an element type parameter
+								for i=5:2:$ll(fsitem) {
+									set pname=$lg(fsitem,i)
+									set pvalue=$lg(fsitem,i+1)
+									if pname="ELEMENTTYPE" s et=pvalue
+								}
+								Do ..checkAndRecordVariableType(byrefE,var,btype,et)
 							}
 						}
 					}
@@ -933,13 +950,11 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, Start
 				; Thats fine, eg %New() does not have parameter list
 			}
 		}			
-
-
+		
         Set objectchain=objectchain.findFirstElementByType("ObjectChain",0)
         Set classname=type
     }
-	
-    Quit type
+	Quit type
 }
 
 /// Returns the name of the class of the type of thing.
@@ -947,6 +962,7 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, Start
 Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 {
 	#dim element as PXW.DEV.BNF.Elements.COS
+	#dim nameA,specialA as PXW.DEV.Atom
 	
 	; some kind of set with indirection so type cannot be derived
 	; S @x
@@ -1008,11 +1024,10 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 				If superclass'="" {
 					Set type=..ClassServer.GetMethodReturnType(superclass,..ThisMethod)
 					Set finaltype=..FollowObjectChainForType(super,type)
-					;zw type,finaltype
 				}
 			}
 		}
-	} ElseIf variableElement.type="Variable" {
+	} ElseIf (variableElement.type="Variable") {
 		; looking for variable eg obj.property
 		Set finaltype=""
 		Set variablename=variableElement.ToStringAtomsOnly(0)
@@ -1021,10 +1036,51 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 		If variablename'="" {
 			Set classname=$GET(..DimmedTypes(variablename))
 			Set elementtype=$GET(..DimmedTypes(variablename,"ELEMENTTYPE"))
+			if elementtype="" set elementtype=$g(..ListVarElementType(variablename))
+			If classname="" Set classname=$GET(..VariablesTypes(variablename))
+			If classname'=""	Set finaltype=..FollowObjectChainForType(variableElement,classname,elementtype)
+		}
+	} ElseIf (variableElement.type="VariableSet") {
+		; looking for variable eg obj.property
+		Set finaltype=""
+		Set variablename=variableElement.ToStringAtomsOnly(0)
+		; when working out a type use the #DIM type if there is one
+		; possible that name cannot be determined at this point eg {*}
+		If variablename'="" {
+			Set classname=$GET(..DimmedTypes(variablename))
+			Set elementtype=$GET(..DimmedTypes(variablename,"ELEMENTTYPE"))
+			if elementtype="" set elementtype=$g(..ListVarElementType(variablename))
+			If classname="" Set classname=$GET(..VariablesTypes(variablename))
+			If classname'=""	Set finaltype=..FollowObjectChainForType(variableElement,classname,elementtype)
+		}
+	} ElseIf (variableElement.type="ObjectVariable") {
+		; looking for variable eg obj.property
+		Set finaltype=""
+		Set variablename=variableElement.ToStringAtomsOnly(0)
+		; when working out a type use the #DIM type if there is one
+		; possible that name cannot be determined at this point eg {*}
+		If variablename'="" {
+			Set classname=$GET(..DimmedTypes(variablename))
+			Set elementtype=$GET(..DimmedTypes(variablename,"ELEMENTTYPE"))
+			if elementtype="" set elementtype=$g(..ListVarElementType(variablename))
 			If classname="" Set classname=$GET(..VariablesTypes(variablename))
 			If classname'=""	Set finaltype=..FollowObjectChainForType(variableElement,classname,elementtype)
 		}
 	} ElseIf variableElement.type="ThisObject" {
+		; this is not quite right but expressions are sooo complicated, need a generic
+		; get "first thing in expression" method
+		Set thisobjectselfE=variableElement.findFirstElementByType("ThisObjectSelf",0)
+		; otherwise its ..property
+		If $ISOBJECT(thisobjectselfE) {
+			Set finaltype=..FollowObjectChainForType(thisobjectselfE,..This)
+		} Else {
+			; check for $this.property
+			Set thisobjectthisE=variableElement.findFirstElementByType("ThisObjectThis",0)
+			If $ISOBJECT(thisobjectthisE) {
+				Set finaltype=..FollowObjectChainForType(thisobjectthisE,..This)
+			}
+		}
+	} ElseIf variableElement.type="ThisObjectSet" {
 		; this is not quite right but expressions are sooo complicated, need a generic
 		; get "first thing in expression" method
 		Set thisobjectselfE=variableElement.findFirstElementByType("ThisObjectSelf",0)
@@ -1060,10 +1116,10 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 			Set classname="%SYSTEM"
 			Set key="" 
 			For  {
-				Set part=specialElement.partsGetNext(.key)
+				Set specialA=specialElement.partsGetNext(.key)
 				Quit:key=""
-				If $PIECE(part.type,":",1)="ObjectMemberIdentifier" {
-					Set classname=classname_"."_part.value
+				If $PIECE(specialA.type,":",1)="ObjectMemberIdentifier" {
+					Set classname=classname_"."_specialA.value
 				} 
 			}
 			Set finaltype=..FollowObjectChainForType(specialElement,classname)
@@ -1150,6 +1206,7 @@ Method FullClassName(name As %String) As %String
 /// If there is anything else eg 1+1, then this is complex (for now) so it will return -.
 Method SimplifyExpression(expressionElement As PXW.DEV.BNF.Elements.COS, Output variableElement As PXW.DEV.BNF.Elements.COS) As %String
 {
+	#dim factorE,primaryOrMonE as PXW.DEV.Element
 
 	; var+1 as an expression looks like this:
 	;.Element=Expression PXW.DEV.BNF.Element @19

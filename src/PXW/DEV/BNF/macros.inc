@@ -10,7 +10,8 @@ ROUTINE PXW.DEV.BNF.macros [Type=INC]
 #define BNFCOMMIT(%sub,%parent) if $$$ElementPartsExist(%sub) { $$$ELEMENTPARTADD(%parent,%sub) }
 
 /// commit the transaction to the parent, by copying the data rather than creating a new node
-#define BNFCOMMITCOPY(%sub,%parent) do:$$$ElementPartsExist(%sub) %parent.partsCopy(.%sub) 
+///#define BNFCOMMITCOPY(%sub,%parent) do:$$$ElementPartsExist(%sub) %parent.partsCopy(.%sub) 
+#define BNFCOMMITCOPY(%sub,%parent) If $$$ElementPartsExist(%sub) { $$$ELEMENTPARTCOPY(%parent,%sub) }
  
 /// rollback the transaction 
 /// define BNFROLLBACK(%sub) $$$DEBUG("BNFROLLBACK:"_$p($g(%path),"/",*)) s:%sub.partsCount() rbcount=$i(%RBCOUNT(##Expression(""""_%methodname_""""))) d:%sub.partsCount() ..gotoBookmark(.##SAFEExpression("%sub"_"BM")) kill %sub

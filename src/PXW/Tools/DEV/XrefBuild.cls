@@ -130,6 +130,7 @@ ClassMethod WriteNav(ByRef scratch)
 	
 	Write "<a href="""_##class(PXW.Tools.DEV.Analyse).HREFTo("")_""">Analysis results</a>"
 	
+	write "<a href="""_##class(PXW.Tools.DEV.Xref).HREFTo("")_""">Xref Search</a>"
 	&HTML<
 	<form action="PXW.Tools.DEV.XrefBuild.cls">
 		<fieldset>

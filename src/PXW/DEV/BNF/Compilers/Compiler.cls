@@ -191,7 +191,16 @@ Method compileDefinition(Element As PXW.DEV.Element)
     
     Set indent=1
     Set summary=..summariseRules(rulesE)
-    If summary="R" {
+    If summary="P&(C)*&P" {
+        ; a rule like "{ code* }"
+        ; can be optimised
+        Set transaction=1,debug=1,copymode=0,quickCheckDone=1,needpath=1
+        Do ..compileQuickCheck(method,rulesE,indent)
+        Do ..compileMethodStart(method,indent,needpath,transaction,debug)
+        Do ..compileInteruptableLoop(method,rulesE,indent,quickCheckDone)
+        Do ..compileMethodEnd(method,indent,,transaction,debug,copymode)
+
+    } elseif summary="R" {
         ; regex is a special kind of rule, more like a subrule
         Set transaction=0,debug=1,copymode=1,quickCheckDone=1
         Do ..compileQuickCheck(method,rulesE,indent)
@@ -355,7 +364,7 @@ Method compileMethodEnd(Method As %Dictionary.MethodDefinition, indent As %Integ
     #define WRITECR(%code) $$$WRITELINE(Method,%code)
     ;zw Method,indent,rollbackReturns,needsTransaction,needsDebug,copyMode
 	If needsTransaction {
-        $$$WRITECR($$$Tab(indent)_"if done {")
+        $$$WRITECR($$$Tab(indent)_"if done {")       
         If copyMode=0 $$$WRITECR($$$Tab(indent+1)_"$$$BNFCOMMIT(subElement,ParentElement)")
         If copyMode=1 $$$WRITECR($$$Tab(indent+1)_"$$$BNFCOMMITCOPY(subElement,ParentElement)")
         $$$WRITECR($$$Tab(indent+1)_"set ok=1")
@@ -480,6 +489,7 @@ Method compileRule(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.El
     #define WRITE(%code) $$$WRITENOLINE(Method,%code)
 
     Set subelement=Element.partsGetNext("") ; get the first thing
+
     If subelement.type="Keyword" {
         Set atom=subelement.FirstAtom()
         Set word=atom.value
@@ -538,7 +548,7 @@ Method compileRule(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.El
     } ElseIf subelement.type="OptionalSingle" { 
         Set ruleE=subelement.findFirstElementByType("OptionalableRule",0)
         $$$WRITE("$s(")
-        Do ..compileRule(Method,ruleE)
+        Do ..compileRule(Method,ruleE,0,subElementVar)
         $$$WRITE(":1,1:1) ")
     } Else {
         $$$WRITE("; don't know what to do with "_subelement.type)
@@ -550,7 +560,7 @@ Method compileRepeatSep(Method As %Dictionary.MethodDefinition, Element As PXW.D
     #define WRITE(%code) $$$WRITENOLINE(Method,%code)
     #define WRITECR(%code) $$$WRITELINE(Method,%code)
     Set indent=1
-    Set path=1
+    Set path=0
     Set transaction=1,debug=0
     Set copy=1
     Set Method.Description=Element.ToString(" ")
@@ -720,6 +730,58 @@ Method compilePeek(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.El
 	$$$WRITECR($$$Tab(indent)_"quit ok")
 }
 
+Method compileInteruptableLoop(Method as %Dictionary.MethodDefinition, Element as PXW.DEV.Element, indentOfParent as %Integer, CallThisMethod as %String)
+{
+    ; expects a rule that is like:
+    /*
+    0Element=Rules PXW.DEV.BNF.Element @16124
+    1.Element=Rule PXW.DEV.BNF.Element @16122
+    2..Element=Keyword PXW.DEV.BNF.Element @16118
+    3...type=String:
+    3... '{'
+    1.Element=Rule PXW.DEV.BNF.Element @16114
+    2..Element=RepeatZero PXW.DEV.BNF.Element @16106
+    3...Element=RepeatableRule PXW.DEV.BNF.Element @16104
+    4....Element=Call PXW.DEV.BNF.Element @16110
+    5.....type=Call:
+    5..... cos_statement
+    3...type=punctuation:
+    3... *
+    1.Element=Rule PXW.DEV.BNF.Element @16100
+    2..Element=Keyword PXW.DEV.BNF.Element @16096
+    3...type=String:
+    3... '}'
+    */
+
+    #define WRITE(%code) $$$WRITENOLINE(Method,%code)
+    #define WRITECR(%code) $$$WRITELINE(Method,%code)
+
+    ; this will return the puntuation in the list of values
+    ; $lb("{","}")
+    Set summary=..summariseRules(Element,.listOfValues)
+   
+    set start=$lg(listOfValues,1)
+    set end=$lg(listOfValues,2)
+    set call=Element.findFirstElementByType("Call",1).ToString(0)
+    set callMethod=..methodName(call)
+    set indent=indentOfParent
+    /*
+        if addpunct(start) {
+            while 'ispunct(end), call {}
+            if addpunct(end) {
+                s done=1
+            }
+        }
+    */
+
+    $$$WRITECR($$$Tab(indent)_"If ..addPunctuation(subElement,"""_start_""") "_$$$OpenCurly)
+    $$$WRITECR($$$Tab(indent+1)_"While '..isPunctuation("""_end_""", "_$LENGTH(end)_"),.."_callMethod_"(.subElement,.addedElement) "_$$$OpenCurly_" "_$$$CloseCurly)
+    $$$WRITECR($$$Tab(indent+1)_"If ..addPunctuation(subElement,"""_end_""") "_$$$OpenCurly)
+    $$$WRITECR($$$Tab(indent+2)_"Set done=1")
+    $$$WRITECR($$$Tab(indent+1)_""_$$$CloseCurly)
+    $$$WRITECR($$$Tab(indent)_""_$$$CloseCurly)
+}
+
 Method findModifier(Element As PXW.DEV.Element) As %String
 {
     Set modE=Element.findFirstElementByType("Modifier",0)
@@ -809,26 +871,29 @@ Method summariseRule(Element As PXW.DEV.Element, listOfValues As %List = "") As 
                 Set summary="P" ; punctuation
                 Set listOfValues=listOfValues_$LISTBUILD($$$UPPER(word)) ; needs to be upper because of things like i%
             }
-        } ElseIf subelement.type="Call" {
+        } ElseIf $p(subelement.type,":",1)="Call" {
             ;Set mnameA=Element.FirstAtom()
             ;Set mname=..methodName(mnameA.ToString(0))
             Set summary="C"
-        } ElseIf subelement.type="Subrule" {
+        } ElseIf $p(subelement.type,":",1)="Subrule" {
             Set rulesE=subelement.findFirstElementByType("rules",0)
             Set subsumm=..summariseRules(rulesE,.listOfValues)
             Set summary="("_subsumm_")"
-        } ElseIf subelement.type="Optionalgroup" {
+        } ElseIf $p(subelement.type,":",1)="Optionalgroup" {
             Set rulesE=subelement.findFirstElementByType("rules",0)
             Set summary="["_..summariseRules(rulesE,.listOfValues)_"]"
-        } ElseIf subelement.type="OptionalGroup" {
+        } ElseIf $p(subelement.type,":",1)="OptionalGroup" {
             Set rulesE=subelement.findFirstElementByType("rules",0)
             Set summary="["_..summariseRules(rulesE,.listOfValues)_"]"
-        } ElseIf subelement.type="RepeatOne" {
+        } ElseIf $p(subelement.type,":",1)="RepeatOne" {
             Set ruleE=subelement.findFirstElementByType("RepeatableRule") 
             Set summary="("_..summariseRules(ruleE,.listOfValues)_")+"
-        } ElseIf subelement.type="RepeatZero" {
+        } ElseIf $p(subelement.type,":",1)="RepeatZero" {
             Set ruleE=subelement.findFirstElementByType("RepeatableRule") 
             Set summary="("_..summariseRules(ruleE,.listOfValues)_")*"
+        } ElseIf $p(subelement.type,":",1)="RepeatSep" {
+            Set ruleE=subelement.findFirstElementByType("RepeatSepRule") 
+            Set summary="."_..summariseRules(ruleE,.listOfValues)_"."
         } Else {
             Set summary="?4"_subelement.type_"4?"
         }

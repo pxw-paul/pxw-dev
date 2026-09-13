@@ -121,7 +121,8 @@ ClassMethod getMethods()
         Set classname=rs.Get("Name")
         Set class=##class(%Dictionary.CompiledClass).%OpenId(classname)
         ; if the super class is the base class then we are not interested, we want the runtime version
-        If $ISOBJECT(class),class.Super'="PXW.DEV.BNF.super" {
+        ; unless this is one of the BNF Safe classes.
+        If $ISOBJECT(class),((class.Super'="PXW.DEV.BNF.super") || (classname["safe")) {
             Write "<details>"
             Write "<summary>"_$$$HTMLENCODE(classname)_"</summary>"
             For i=1:1:class.Methods.Count() {

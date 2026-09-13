@@ -1,5 +1,5 @@
 /// Make a dynamic query on Atelier behave like a normal resultset
-Class PXW.DEV.Dictionary.AtelierRS Extends %RegisteredObject
+Class PXW.DEV.Dictionary.AtelierRS Extends %Library.AbstractResultSet 
 {
 
 Property %QueryResultContent As %Library.DynamicObject;

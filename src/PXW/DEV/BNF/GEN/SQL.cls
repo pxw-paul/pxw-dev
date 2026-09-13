@@ -83,10 +83,10 @@ Method AsClause(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 
 ///  bracket_table ::= '(' ( (bracket_table join*) | (table_reference join*) ) ')'
 /// summary values:(
-/// summary=P&((C&(?4Call:4?)*)|(C&(?4Call:4?)*))&P
+/// summary=P&((C&(C)*)|(C&(C)*))&P
 Method BracketTable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&((C&(?4Call:4?)*)|(C&(?4Call:4?)*))&P
+	; rules summary P&((C&(C)*)|(C&(C)*))&P
 	if '..isPunctuation("(",1) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -112,10 +112,10 @@ Method BracketTable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 }
 
 ///  (bracket_table join*) | (table_reference join*)
-/// summary=(C&(?4Call:4?)*)|(C&(?4Call:4?)*)
+/// summary=(C&(C)*)|(C&(C)*)
 Method BracketTable1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary (C&(?4Call:4?)*)|(C&(?4Call:4?)*)
+	; rules summary (C&(C)*)|(C&(C)*)
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..BracketTable2Sub(.subElement,.addedElement)  {
@@ -135,10 +135,10 @@ Method BracketTable1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 }
 
 /// bracket_table join*
-/// summary=C&(?4Call:4?)*
+/// summary=C&(C)*
 Method BracketTable2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary C&(?4Call:4?)*
+	; rules summary C&(C)*
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..BracketTable(.subElement,.addedElement)  {
@@ -160,7 +160,7 @@ Method BracketTable2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 ///  join*
 Method BracketTable3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4Call:4?
+	; rules summary C
 	set subElement=ParentElement
 	; method start
 	while ..Join(.subElement,.addedElement)  {
@@ -171,10 +171,10 @@ Method BracketTable3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 }
 
 /// table_reference join*
-/// summary=C&(?4Call:4?)*
+/// summary=C&(C)*
 Method BracketTable4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary C&(?4Call:4?)*
+	; rules summary C&(C)*
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..TableReference(.subElement,.addedElement)  {
@@ -196,7 +196,7 @@ Method BracketTable4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 ///  join*
 Method BracketTable5RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4Call:4?
+	; rules summary C
 	set subElement=ParentElement
 	; method start
 	while ..Join(.subElement,.addedElement)  {
@@ -744,10 +744,10 @@ Method ColumnType1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 ///  create_table_command ::= 'CREATE' 'TABLE' direct_table '(' ','.create_table_field+ ')'
 /// summary values:CREATE
-/// summary=K&K&C&P&?4RepeatSep4?&P
+/// summary=K&K&C&P&.C.&P
 Method CreateTableCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&K&C&P&?4RepeatSep4?&P
+	; rules summary K&K&C&P&.C.&P
 	if '(..isKeyword("CREATE")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -782,7 +782,6 @@ Method CreateTableCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 Method CreateTableCommand1RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4String:4?
-	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	set done=0 ; must be at least 1

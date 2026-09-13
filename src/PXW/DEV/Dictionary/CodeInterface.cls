@@ -48,7 +48,7 @@ ClassMethod OpenNamespace(Namespace As %String) As PXW.DEV.Dictionary.CodeInterf
 
 /// Needs to return at least SubType,Name,TimeChanged, and optionally ID
 /// The return must be similar to %ResultSet
-Method List(SearchName As %String) As %RegisteredObject [ Abstract ]
+Method List(SearchName As %String) As %Library.AbstractResultSet [ Abstract ]
 {
 }
 
@@ -57,7 +57,7 @@ Method List(SearchName As %String) As %RegisteredObject [ Abstract ]
 /// This is compatible with the object returned from list.
 /// 
 /// The default behaviour of this is to treat ResultSet as a result set. If your List method returns something else you will need to override this.
-Method ListNext(ResultSet As %RegisteredObject, Output SubType As %String, Output Name As %String, Output TimeChanged As %String, Output ID As %String) As %Boolean
+Method ListNext(ResultSet As %Library.AbstractResultSet, Output SubType As %String, Output Name As %String, Output TimeChanged As %String, Output ID As %String) As %Boolean
 {
     Set next=ResultSet.%Next()
     If next {

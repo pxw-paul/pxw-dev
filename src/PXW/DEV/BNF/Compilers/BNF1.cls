@@ -11,15 +11,21 @@ XData file
 <bnf>
 <data><![CDATA[
 
-/*
- eg
-    
-*/
 
 file            ::= definition*
 definition      ::= IDENTIFIER EQUALS rules
 rules           ::= rule*
-rule            ::= repeat_sep | repeat_zero | repeat_one | optional_single | KEYWORD | or | subrule | optional_group | call | look_ahead | not_rule
+rule            ::= repeat_sep 
+                    | repeat_zero 
+                    | repeat_one 
+                    | optional_single 
+                    | KEYWORD 
+                    | or 
+                    | subrule 
+                    | optional_group 
+                    | call 
+                    | look_ahead 
+                    | not_rule
 or              ::= '|'
 repeat          ::= repeat_zero | repeat_one
 repeat_zero     ::= repeatable_rule '*'            # 0 or more items 
@@ -30,13 +36,16 @@ subrule         ::= '(' rules ')'
 optional_group  ::= '[' rules ']'                  # something in [], [ item ] means item is optional, [ item | other ] means either item or other can be there 
 
 optional_single ::= optionalable_rule '?'          # rule::=command post_conditional? -- post_conditional is optional 
-optionalable_rule ::= KEYWORD | subrule | call
+optionalable_rule ::= KEYWORD | subrule | call 
 
 call            ::= IDENTIFIER 
 
+-- repeat_sep means you can define a rule like this:
+-- separator.rule+    means allow rule,rule,rule    there must be at least 1 rule
+-- separator.rule?+   means allow ,rule,,rule       ie the rule is optional, 
 repeat_sep      ::= repeat_sep_separator '.' repeat_sep_rule '+'   # s.e+ 
 repeat_sep_separator ::= KEYWORD | subrule | call 
-repeat_sep_rule ::= KEYWORD | subrule | call 
+repeat_sep_rule ::= optional_single | KEYWORD | subrule | call 
 
 look_ahead      ::= '&' look_ahead_rule
 look_ahead_rule ::=  KEYWORD | subrule | call 

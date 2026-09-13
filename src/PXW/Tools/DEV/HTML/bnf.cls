@@ -701,8 +701,9 @@ Method writeCOSVariableTypes(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF
     ; don't worry about that at the moment!
     If variablename'="",$ISOBJECT(..Analyser) {        
         ; when working out a type use the #DIM type if there is one
-        Set classname=$GET(..Analyser.DimmedTypes(variablename))
-        If classname="" Set classname=$GET(..Analyser.VariablesTypes(variablename))
+        ;Set classname=$GET(..Analyser.DimmedTypes(variablename))
+        ;If classname="" Set classname=$GET(..Analyser.VariablesTypes(variablename))
+        set classname=$g(..Analyser.VariablesTypesElement(+element))
         If classname'="" Do ..FollowObjectChainForType(element,classname)
 
         ; treat %parameter("xxx") as a parameter
@@ -1074,7 +1075,7 @@ Method writeCOSSqlBody(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compi
     Quit ""
 }
 
-Method writeObjectVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ObjectVariable")
+Method writeCOSObjectVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ObjectVariable")
 {
     $$$DEBUGMethodBegin
     Set variablename=element.ToStringAtomsOnly(0)
@@ -1273,7 +1274,7 @@ Method writeSQLProgram(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compi
 
 Method writeSQLSelectCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compilers.elementHandler(Type="SelectCommand")
 {
-    #dim subAnalyser as PXW.DEV.BNF.Analyse.SQL
+    #dim sqlanalyse as PXW.DEV.BNF.Analyse.SQL
     #define colname(%cn) $TR($$$UPPER(%cn),$c(34),"")
 
     $$$DEBUGMethodBegin
@@ -1592,7 +1593,7 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName
     } Else {
         Set objectchain=ParentElement.findFirstElementByType("ObjectChain",1) ; var.property
     }
-    
+    set toclass=StartClassName
     Set path=""
     While $ISOBJECT(objectchain) {
         
@@ -1608,11 +1609,14 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName
         }
 
         Set path=path_"."_propertyatom.value
-		Do ..wrapAtomHTML(propertyatom,"<a class="""_$$$classObjectMember_""" href="""_..HREFToClass(StartClassName,path)_""">","</a>")
+		;Do ..wrapAtomHTML(propertyatom,"<a class="""_$$$classObjectMember_""" href="""_..HREFToClass(toclass,path)_""">","</a>")
+        Do ..wrapAtomHTML(propertyatom,"<a class="""_$$$classObjectMember_""" href="""_..HREFToClass(toclass,propertyatom.value)_""">","</a>")
+        set toclass=$g(..Analyser.VariablesTypesElement(+objectchain))
         Do ..writeCOSParameterChecks(StartClassName,path,objectchain)
 
         Set objectchain=objectchain.findFirstElementByType("ObjectChain",0) 
     }
+
     $$$DEBUGMethodEnd
 }
 
@@ -1741,7 +1745,7 @@ Method writeCOSParameterChecks(ClassName As %String, MethodPath As %String, Elem
     $$$DEBUGMethodEnd
 }
 
-ClassMethod flattenlist(Element As PXW.DEV.Element, AtomList As %Library.ListOfObjects) As %List
+ClassMethod flattenlist(Element As PXW.DEV.Element, AtomList As %Library.ListOfObjects(ELEMENTTYPE = "PXW.DEV.Atom")) As %List
 {
 	#dim a as PXW.DEV.Atom
 	#dim e as PXW.DEV.Element

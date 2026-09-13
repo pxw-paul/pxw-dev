@@ -21,33 +21,35 @@ XData file
  * COS grammar
  */ 
 
-open_bracket                        ::= '('  /* this is a special check that should NOT remove whitespace so things like $p(x,a,2) works and $p (x,a,2) is a fail */
+open_bracket                        ::= '('  -- this is a special check that should NOT remove whitespace so things like $p(x,a,2) works and $p (x,a,2) is a fail 
 close_bracket                       ::= ')'
 
-cos_code_block                      ::= cos_statement+
+cos_code_block                      ::= cos_statement*
 cos_code_block_sql                  ::= cos_statement_sql+
 cos_code_block_sql_storage          ::= cos_statement_sql+
 cos_code_block_trigger              ::= cos_statement+
 
-/* this looks like it allows multiple labels per line but it has been overridden to deal with this properly, 
-  this is really just a template definition */
+cos_code_block_curly                ::= '{' cos_statement* '}'
+
+-- this looks like it allows multiple labels per line but it has been overridden to deal with this properly, 
+-- this is really just a template definition
 cos_statement                   ::= label_definition? ('.')* cos_command_or_macro
 cos_statement_sql               ::= ('.')* cos_command_or_macro  -- in SQLCompute mode line labels are not allowed, and variables can be {*} or {field}
 
-label_definition                    ::= label_identifier label_formal_specification? label_public_vars? label_scope? [ '{' cos_code_block? '}']
+label_definition                    ::= label_identifier label_formal_specification? label_public_vars? label_scope? [ '{' cos_code_block'}']
 label_formal_specification          ::= '(' [ label-formal-param-list ]  ')'
 label-formal-param-list             ::= ','.label-one-formal-param+ ['...']
 label-one-formal-param              ::= [ '&' ] label-param-name [ label-param-default-value ]
 label-param-default-value           ::= '=' expression
-label-param-name                    ::= variable_set /*identifier*/
+label-param-name                    ::= variable_set 
 label_scope                         ::= 'public' | 'private' | 'methodimpl' 
 label_public_vars                   ::= '[' label_public_vars_list? ']'
 label_public_vars_list              ::= ','.variable+
-
-label_reference                     ::= (( label_identifier  | simple_indirection ) [ '^' routine_env? ( routine_identifier  | simple_indirection) ])  /* lab^rouine */
-                                        | ('^' routine_env? (routine_identifier | simple_indirection) )                                                /* ^routine -- no label */
+ 
+label_reference                     ::= (( label_identifier  | simple_indirection ) [ '^' routine_env? ( routine_identifier  | simple_indirection) ])  -- lab^rouine
+                                        | ('^' routine_env? (routine_identifier | simple_indirection) )                                                -- ^routine -- no label
 label_identifier                    ::= [ '%' ] 'regexp:[0-9A-Za-z]+'
-routine_identifier                  ::= 'regexp:(\%|[a-zA-Z])[a-zA-Z0-9]*' /* % or A followed by AN* */
+routine_identifier                  ::= 'regexp:(\%|[a-zA-Z])[a-zA-Z0-9]*' -- % or A followed by AN* 
 routine_env                         ::= '|' expression? '|' 
 cos_directive                       ::= '#' ( cos_directive_define
                                         | cos_directive_dim
@@ -74,8 +76,8 @@ cos_directive_define_name           ::= macro_identifier
 cos_directive_define_subst          ::= [ command_list_eol_continue | expression_list ] text_to_eol_continue 
 cos_directive_dim                   ::= 'dim' ','.cos_directive_dim_item+ -- Studio and VSCode do not allow multiple dims on one line, but the compiler does not complain (unless there is an =) and some intersystems code has it! %Installer.Invoke 
 cos_directive_dim_item              ::= cos_directive_dim_item_set | cos_directive_dim_item_noset 
-cos_directive_dim_item_set          ::= variable_set [(',' variable_set )*] [ 'as' [('array' | 'list') 'of'] class_reference ] '=' dim_expression 
-cos_directive_dim_item_noset        ::= variable_nodef [(',' variable_nodef )*] [ 'as' [('array' | 'list') 'of'] class_reference ] 
+cos_directive_dim_item_set          ::= ','.variable_set+ [ 'as' [('array' | 'list') 'of'] class_reference ] '=' dim_expression 
+cos_directive_dim_item_noset        ::= ','.variable_nodef+ [ 'as' [('array' | 'list') 'of'] class_reference ] 
 cos_directive_else                  ::= 'else'
 cos_directive_elseif                ::= 'elseif' expression
 cos_directive_endif                 ::= 'endif'
@@ -91,7 +93,7 @@ cos_directive_undef                 ::= 'undef' macro_identifier
 
 cos_directive_include_list          ::= '(' ','.cos_directive_include_name+ ')'
 cos_directive_include_name          ::= include_identifier
-/* only seen these in MACs */
+--only seen these in MACs
 cos_directive_classcontext          ::= 'classcontext' class_reference
 cos_directive_generator             ::= 'generator'
 cos_directive_classmethod           ::= 'classmethod' object_member_identifier
@@ -115,7 +117,7 @@ cos_command                         ::=  set_command
                                          | continue_command
                                          | goto_command
                                          | else_command
-                                         | hang_command /* hang must come before halt */
+                                         | hang_command -- hang must come before halt 
                                          | halt_command
                                          | job_command
                                          | sql_command
@@ -137,7 +139,6 @@ cos_command                         ::=  set_command
                                          | while_command
                                          | write_command
                                          | xecute_command
-                                         /*| macrocall*/
                                          | cos_directive
                                          --| zallocate_command
                                          | zbreak_command
@@ -182,12 +183,11 @@ text                                ::= 'regexp:.*'
 
 expression                          ::= factor ( pattern_match | (dyadicop factor ))*
 
-factor                              ::= ( monadicop )* primary      -- can be any number of +- or '
+factor                              ::= monadicop* primary      -- can be any number of +- or '
 monadicop                           ::= "+" | "-" | "'" | "~"       -- not sure what ~ is but its used in bitlogic 
 
-/* THIS HAS BEEN HAND CODED IN THE RUN CLASS 
-    COULD THE OPTIMISATION DONE THERE BE DONE AUTOMATICALLY?
-*/
+-- THIS HAS BEEN HAND CODED IN THE RUN CLASS 
+--    COULD THE OPTIMISATION DONE THERE BE DONE AUTOMATICALLY?
 dyadicop                            ::= "+" 
                                           | "-" 
                                           | "\\" 
@@ -223,16 +223,16 @@ pattern_match_code                  ::= 'a' | 'c' | 'e' | 'l' | 'n' | 'p' | 'u' 
                                         | 'ZFWCHARZ' | 'ZHWKATAZ' 
                                         | string
 
-/* PXW $$mac(1,2)(3,4) is valid, also calling .property etc is possible */
+-- $$mac(1,2)(3,4) is valid, also calling .property etc is possible 
 macrocall                           ::= '$$$' macro_identifier [ macro_parameter_list | macro_parameter_text ] macro_parameter_list?  object_chain?
-macro_parameter_list                ::= '(' [ [macro_parameter] ( ',' [macro_parameter] )* ] ')'
+macro_parameter_list                ::= '(' [ ','.macro_parameter+ ] ')'
 macro_parameter                     ::= ('.' variable_set ) | expression 
 macro_parameter_text                ::= '(' any_text_upto_close_bracket  ')'
 macro_identifier                    ::= [ '%' ] 'regexp:[0-9A-Za-z]+'
 any_text_upto_close_bracket         ::= 'code this'
 
 extrinsicfncall                     ::= '$$' label_reference  extrinsicfncall_parameter_list?
-extrinsicfncall_parameter_list      ::= open_bracket [ [extrinsicfncall_parameter] ( ',' [extrinsicfncall_parameter] )* ] ['...'] close_bracket
+extrinsicfncall_parameter_list      ::= open_bracket [ ','.extrinsicfncall_parameter?+ ] ['...'] close_bracket
 extrinsicfncall_parameter           ::= ('.' ( this_object_direct_property | simple_indirection | byref_variable ) ) | expression  
 
 intrinsicfncall                     ::= '$' (special_intrinsic | general_intrinsic )
@@ -258,10 +258,10 @@ special_intrinsic                   ::= case_function_call
                                         | locate_function_call
 general_intrinsic                   ::= any_keyword function_parameter_list object_chain?
 
-function_parameter_list             ::= open_bracket [ function_parameter? ( ',' function_parameter? )* ] ['...'] close_bracket
-function_parameter_list_items       ::= [ function_parameter? ( ',' function_parameter? )* ] ['...']
+function_parameter_list             ::= open_bracket [ ','.function_parameter?+ ] ['...'] close_bracket
+function_parameter_list_items       ::= [ ','.function_parameter?+ ] ['...']
 function_parameter                  ::= ( '.' ( this_object_direct_property | simple_indirection | byref_variable )) | expression | empty_parameter
-byref_variable                      ::= variable_set /* maybe set_value_expression would be better, but requires more careful check on analysis */
+byref_variable                      ::= variable_set -- maybe set_value_expression would be better, but requires more careful check on analysis
 empty_parameter                     ::= 'SPECIAL'
 
 intrinsicfncall_set                 ::= '$' (special_intrinsic_set | general_intrinsic_set )
@@ -304,22 +304,22 @@ global_ref_special                   ::= '^$' [ global_ref_env  | global_ref_env
 global_ref_macro                     ::= '^' macrocall [subscript_parameter_list]
 global_ref_naked                     ::= '^' subscript_parameter_list
 global_ref_env                       ::= '|' [ expression ] '|' 
-global_ref_env_two                   ::= '[' primary [ ',' primary ] ']' /* for now we use primary, expression uses [] which confuse the expression (where ] is a valid operator) */
+global_ref_env_two                   ::= '[' primary [ ',' primary ] ']' -- for now we use primary, expression uses [] which confuse the expression (where ] is a valid operator) 
 global_name                         ::= global_identifier
 
 primary                             ::= number
                                           | string
                                           | macrocall
-                                          | macro_expression /* not sure "primary" is the right place for this but we are not validating, just trying to make sense */
+                                          | macro_expression 
                                           | this_object
-                                          | extrinsicfncall /* PXW $$lab() */
-                                          | intrinsicfncall /* PXW $function() */
+                                          | extrinsicfncall 
+                                          | intrinsicfncall 
                                           | classexpr
                                           | variable
-                                          | special_variable /* $h etc */
+                                          | special_variable 
                                           | Indirection
                                           | global_ref
-                                          | ( sub_expression object_chain? ) /* a brackeded expression can return an object (x).prop */
+                                          | ( sub_expression object_chain? ) -- a brackeded expression can return an object (x).prop 
                                           | (cos_json object_chain?)
 
 sub_expression                      ::= '(' expression ')' 
@@ -349,12 +349,10 @@ special_variable                    ::= '$' ('DEVICE' -- Contains user-specified
                                           | 'STACK' -- Special variable that contains the number of context frames saved on the call stack.
                                           | 'STORAGE' -- Contains the number of bytes available for local variable storage.
                                           | python_import
-                                          /*| ('SYSTEM' object_chain?)  -- Contains system information about system objects.*/
                                           | special_system
                                           | 'SY'
                                           | 'S' -- storage
                                           | 'TEST' -- Contains the truth value resulting from the last command using the timeout option.
-                                          /*| ('THIS' object_chain? )  -- Contains the current class context.*/
                                           | 'THIS'
                                           | 'THROWOBJ' -- Contains the OREF from an unsuccessful THROW.
                                           | 'TLEVEL' -- Contains the current nesting level for transaction processing.
@@ -401,17 +399,17 @@ special_variable                    ::= '$' ('DEVICE' -- Contains user-specified
                                           | 'MVSVM' | 'MVSYSRETCODE' | 'MVTIME' |'MVTM' | 'MVTTY' | 'MVUSERRETCODE' | 'MVVM' | 'MVYEAR'
                                           | 'MVERRORS' | 'MVFOOTER' | 'MVMORESUBVALUES' | 'MVMOREVALUES' | 'MVOPTIONS' | 'MVPROCERRORS'
                                           | 'MVPROCNAME' | 'MVPROCPIB' | 'MVPROCPIBOFF' | 'MVPROCPOB' | 'MVPROCSIB' | 'MVPROCSIBOFF' | 'MVPROCSOB'
-                                          ) /* should this be just a general "read anything" ?*/
+                                          ) -- should this be just a general "read anything" ?
 
 special_system                      ::= 'SYSTEM' ('.' object_member_identifier !'(' )*  object_chain?
 
-/* Special function that we want to deal with  - need to make it so we can extend this without changing this bnf - different apps may want to look for something else. */
+-- Special function that we want to deal with  - need to make it so we can extend this without changing this bnf - different apps may want to look for something else. 
 python_import                       ::= 'system' '.' 'python' '.' 'import' '(' string ')' -- $ is already consumed by caller
 
 variable                            ::= variable_identifier array_parameter_list? object_chain?
 variable_set                        ::= variable_identifier array_parameter_list? object_chain?
 variable_nodef                      ::= variable_identifier array_parameter_list? object_chain? -- Used for just mentioning a variable but not using or setting (eg #dim, $get() 
-variable_identifier                 ::= 'regexp:(\%|[a-zA-Z])[a-zA-Z0-9]*' /* % or A followed by AN* */
+variable_identifier                 ::= 'regexp:(\%|[a-zA-Z])[a-zA-Z0-9]*' -- % or A followed by AN* 
 array_parameter_list                ::= open_bracket  ','.expression+ close_bracket
 
 object_chain                        ::= '.' object_member_identifier function_parameter_list? object_chain?
@@ -425,7 +423,7 @@ number                              ::= ('regexp:[0-9]*' [ '.' 'regexp:[0-9]+'] 
 string                              ::= '""' | ('"' 'regexp:[^\"\r\n]*' '"')
 
 identifier                          ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)'
-global_identifier                   ::= 'regexp:(\%|\$|[a-zA-Z])[a-zA-Z0-9\.]*' /* % or $ or A followed by AN. */
+global_identifier                   ::= 'regexp:(\%|\$|[a-zA-Z])[a-zA-Z0-9\.]*' -- % or $ or A followed by AN.
 
 post_conditional                    ::= ':' expression
 
@@ -433,16 +431,15 @@ expression_list                     ::= ','.expression+
 
 lvalue_expression                   ::= this_object_set
                                         | variable_set
-                                        | intrinsicfncall_set /* $property, $list, $piece, $extract */
-                                        | special_variable /* some can be set or newed ! */
+                                        | intrinsicfncall_set 
+                                        | special_variable 
                                         | macrocall
                                         | Indirection
                                         | global_ref_set
 
 
-/**
- * COS commands
- */
+-- COS commands
+ 
 break_command                       ::= ('break' | 'b') post_conditional? [ naked | ( break_extend | break_flag )]
 break_extend                        ::= expression
 break_flag                          ::= expression
@@ -457,20 +454,19 @@ continue_command                    ::= 'continue' post_conditional?
 
 do_command                          ::= ('do' | 'd') ( do_while | do_label ) 
 do_label                            ::= post_conditional?  ( naked | do_item_list )
-do_while                            ::= '{' cos_code_block? '}' 'while' expression_list
+do_while                            ::= cos_code_block_curly 'while' expression_list
 do_item_list                        ::= do_item post_conditional? ( ',' do_item post_conditional? )*
 do_item                             ::=  object_variable
-                                          | this_object 
-                                          /*| simple_indirection */
+                                          | this_object  
                                           | ( label_reference [ function_parameter_list ] ) 
                                           | system_object
                                           | macrocall
-                                          | intrinsicfncall /* not all of these are "valid" but it should be ok here */
+                                          | intrinsicfncall
                                           | classexpr 
                                           | ( '(' expression ')' object_chain? )
 
 for_command                         ::= ('for' | 'f') for_parameter_list? for_loop_statement
-for_loop_statement                  ::= ( '{' cos_command_or_macro? cos_code_block? '}' ) | (naked | command_list_eol )
+for_loop_statement                  ::= ( '{' cos_command_or_macro? cos_code_block '}' ) | (naked | command_list_eol )
 for_parameter_list                  ::= ','.for_parameter+
 for_parameter                       ::= lvalue_expression '=' for_loop_specifier_list
 for_loop_specifier_list             ::= ','.for_loop_specifier+
@@ -490,18 +486,18 @@ hang_value_list                     ::= ','.hang_value+
 hang_value                          ::= expression
 
 
-/* #directives around code bits of the IF is odd 
-   if x 
-#if 0 
-  elseif
-#endif
- so should we treat elseif and else as commands in their own right so we don't have mid command directives?
- */
+-- #directives around code bits of the IF is odd 
+--   if x 
+-- #if 0 
+--  elseif
+-- #endif
+-- so should we treat elseif and else as commands in their own right so we don't have mid command directives?
+
 if_command                          ::= ('if' | 'i')  ( naked | expression_list) ( naked | [then_block] ) elseif_block_list? else_block? -- not sure what "if   set x=1 " means but no expression is possible 
-then_block                          ::= ( '{'  cos_code_block? '}' ) | command_list_eol
+then_block                          ::= cos_code_block_curly | command_list_eol
 elseif_block_list                   ::= elseif_block+
-elseif_block                        ::= cos_directive? 'elseif' expression_list ( ( '{' cos_code_block? '}' ) | command_list_eol )
-else_block                          ::= cos_directive? 'else' ( ( '{' cos_code_block? '}' ) | command_list_eol )
+elseif_block                        ::= cos_directive? 'elseif' expression_list ( cos_code_block_curly | command_list_eol )
+else_block                          ::= cos_directive? 'else' ( cos_code_block_curly | command_list_eol )
 
 else_command                        ::= ('else' | 'e') naked -- this happen in some situations like if x d .dotstructure else  d .otherdots 
 
@@ -546,7 +542,8 @@ kill_parameter_list                 ::= ','.kill_parameter+
 kill_parameter                      ::= kill_exclusive_list | kill_item
 kill_exclusive_list                 ::= '(' kill_item_list ')'
 kill_item_list                      ::= ','.kill_item+
-kill_item                           ::= set_item_single 
+/*kill_item                           ::= set_item_single */
+kill_item                           ::= set_value_expression
                                         
 lock_command                        ::= ('lock' | 'l') post_conditional?  ( naked | ( [ ','.lock_parameter+ ] else_block? ) )
 lock_parameter                      ::= [ '+' | '-' ] (lockname_list | lockname_list_item) lock_timeout?
@@ -567,14 +564,15 @@ new_item_single                     ::= lvalue_expression
 new_item_varlist                    ::= '(' new_item_single_list ')'
 new_item_single_list                ::= ','.new_item_single+
 
-naked                               ::= ' ' /* this is going to need some special code to recognise naked commands */
+naked                               ::= ' ' -- this is going to need some special code to recognise naked commands 
 
 open_command                        ::= ('open' | 'o') post_conditional?  open_argument_list
 open_argument_list                  ::= ','.open_argument+
 open_argument                       ::= open_device [ ':' [ ( '('  open_device_parameters ')' ) | expression ] ] [ ':' open_timeout ] [ ':' open_mnemonic_space ]
 open_device                         ::= expression
 --- not sure what this optional-ness is trying to solve
-open_device_parameters              ::= [open_device_parameter] ( ':' [open_device_parameter] )*
+-- open_device_parameters              ::= [open_device_parameter] ( ':' [open_device_parameter] )*
+open_device_parameters              ::= ':'.open_device_parameter?+
 open_device_parameter               ::= ('/' identifier [ '=' open_expression_list ] ) | expression  
 open_timeout                        ::= expression
 open_mnemonic_space                 ::= expression
@@ -597,7 +595,7 @@ return_expression                     ::= expression
 
 set_command                         ::= ('set' | 's') post_conditional?  set_item_list
 set_item_list                       ::= ','.set_item+
-set_item                            ::= (( set_value_expression | ('(' ','.set_value_expression+ ')'  )) '=' set_expression) | simple_indirection
+set_item                            ::= (( set_value_expression | ('(' ','.set_value_expression+ ')' )) '=' set_expression) | simple_indirection
 set_item_single                     ::= lvalue_expression
 
 set_value_expression                   ::= this_object_set
@@ -605,7 +603,7 @@ set_value_expression                   ::= this_object_set
                                         | macrocall
                                         | Indirection
                                         | global_ref_set
-                                        | intrinsicfncall_set /* $property, $list, $piece, $extract */
+                                        | intrinsicfncall_set 
                                         | special_variable
                                         | ( '(' set_value_expression ')'  object_chain? )
 set_expression                      ::= expression
@@ -616,9 +614,9 @@ throw_command                       ::= 'throw' post_conditional?  [ naked | exp
 
 trollback_command                   ::= 'trollback' post_conditional?  '1'?
 
-try_command                         ::= 'try' '{' cos_code_block? '}'
-                                        (cos_directive)* /* #dim between try and catch */
-                                        'catch' [ variable | ( '(' variable ')' ) ] '{' cos_code_block? '}'
+try_command                         ::= 'try' cos_code_block_curly
+                                         cos_directive* -- #dim between try and catch 
+                                        'catch' [ variable | ( '(' variable ')' ) ] cos_code_block_curly
 
 tstart_command                      ::= ('tstart' | 'ts' ) post_conditional? 
 
@@ -639,7 +637,7 @@ view_mode                           ::= expression
 view_length                         ::= expression
 view_newvalue                       ::= expression
 
-while_command                       ::= 'while' expression_list '{' cos_code_block? '}' 
+while_command                       ::= 'while' expression_list cos_code_block_curly 
 
 write_command                       ::= ('write' | 'w') post_conditional?  ( naked | write_argument_list )
 write_argument_list                 ::= ','.write_argument+
@@ -774,19 +772,18 @@ goto_case_clause_value              ::= label_reference
 
 
 
-extract_function_call               ::= ('extract' | 'e') open_bracket expression [ ',' star_parameter [ ',' star_parameter ] ] close_bracket
+extract_function_call               ::= ('extract' | 'e') open_bracket           expression [ ',' star_parameter [ ',' star_parameter ] ] close_bracket
 extract_function_call_set           ::= ('extract' | 'e') open_bracket set_value_expression [ ',' star_parameter [ ',' star_parameter ] ] close_bracket
  
-piece_function_call                 ::= ('piece' | 'p') open_bracket expression ',' expression [ ',' star_parameter [ ',' star_parameter ] ] close_bracket
+piece_function_call                 ::= ('piece' | 'p') open_bracket           expression ',' expression [ ',' star_parameter [ ',' star_parameter ] ] close_bracket
 piece_function_call_set             ::= ('piece' | 'p') open_bracket set_value_expression ',' expression [ ',' star_parameter [ ',' star_parameter ] ] close_bracket
 
-/*listbuild_function_call             ::= ('listbuild' | 'lb') open_bracket  expression (',' expression)* close_bracket*/
 listbuild_function_call_set         ::= ('listbuild' | 'listget' | 'lb' | 'lg') open_bracket  [set_value_expression] (',' [set_value_expression])* close_bracket
 
 listupdate_function_call            ::= ('listupdate' | 'lu') open_bracket  expression ',' expression (',' [ expression ':' expression] )* close_bracket
 
-listitem_function_call              ::= ('listget' | 'list' | 'li' |'lg' ) open_bracket expression  [ ',' star_parameter [ ',' star_parameter ] ] close_bracket
-listitem_function_call_set          ::= ('list' | 'li') open_bracket set_value_expression  [ ',' star_parameter [ ',' star_parameter ] ] close_bracket
+listitem_function_call              ::= ('listget' | 'list' | 'li' |'lg' ) open_bracket           expression  [ ',' star_parameter [ ',' star_parameter ] ] close_bracket
+listitem_function_call_set          ::= ('list' | 'li')                    open_bracket set_value_expression  [ ',' star_parameter [ ',' star_parameter ] ] close_bracket
 
 
 bit_function_call_set               ::= 'bit' open_bracket variable_set ',' expression close_bracket
@@ -794,7 +791,7 @@ bit_function_call_set               ::= 'bit' open_bracket variable_set ',' expr
 bitlogic_function_call              ::= 'bitlogic' open_bracket bitlogic_expression [ ',' expression ] close_bracket
 bitlogic_expression                  ::= (expression ('|' | '&' | '^' |'~')* )*
 
-vector_function_call               ::= 'vector' open_bracket expression [ ',' star_parameter [ ',' star_parameter ] ] close_bracket
+vector_function_call               ::= 'vector' open_bracket          expression [ ',' star_parameter [ ',' star_parameter ] ] close_bracket
 vector_function_call_set           ::= 'vector' open_bracket set_value_expression  ',' expression ',' expression close_bracket
 
 order_function_call                ::= ('order' | 'o') open_bracket expression [',' expression [ ',' variable_set ] ] close_bracket
@@ -815,8 +812,8 @@ data_expression                   ::= this_object
 listnext_function_call             ::= 'listnext' open_bracket expression [',' expression [ ',' variable_set ] ] close_bracket
 
 text_function_call                  ::= ('text' | 't') open_bracket text_label_reference close_bracket
-text_label_reference                ::= (( (label_identifier [ '+' expression ]) | ('+' expression) | simple_indirection ) [ '^' [routine_env] ( routine_identifier  | simple_indirection) ])  /* lab^rouine */
-                                        | ('^' [routine_env] (routine_identifier | simple_indirection) ) /* ^routine -- no label */
+text_label_reference                ::= (( (label_identifier [ '+' expression ]) | ('+' expression) | simple_indirection ) [ '^' [routine_env] ( routine_identifier  | simple_indirection) ])  -- lab^rouine 
+                                        | ('^' [routine_env] (routine_identifier | simple_indirection) ) -- ^routine -- no label 
 
 query_function_call                 ::= ('query' | 'q') open_bracket expression [',' expression [ ',' variable_set ] ] close_bracket
 
@@ -824,11 +821,11 @@ star_parameter                      ::= ('*' expression?) | expression
 
 increment_function_call             ::= ('increment' | 'i') '(' (variable_set | global_ref_set) [',' expression ] ')'
 
-method_function_call                ::= 'method' open_bracket classmethod_class ',' classmethod_method [ ',' function_parameter_list_items ] close_bracket object_chain?
+method_function_call                ::=      'method' open_bracket classmethod_class ',' classmethod_method [ ',' function_parameter_list_items ] close_bracket object_chain?
 classmethod_function_call           ::= 'classmethod' open_bracket classmethod_class ',' classmethod_method [ ',' function_parameter_list_items ] close_bracket object_chain?
 classmethod_class                   ::= expression
 classmethod_method                  ::= expression
-zobjmethod_function_call            ::= 'zobjmethod' open_bracket classmethod_class ',' classmethod_method [ ',' function_parameter_list_items ] close_bracket object_chain?
+zobjmethod_function_call            ::=      'zobjmethod' open_bracket classmethod_class ',' classmethod_method [ ',' function_parameter_list_items ] close_bracket object_chain?
 zobjclassmethod_function_call       ::= 'zobjclassmethod' open_bracket classmethod_class ',' classmethod_method [ ',' function_parameter_list_items ] close_bracket object_chain?
 
 -- $LOCATE(string,regexp,start,end,val) 
@@ -840,16 +837,16 @@ select_clause                       ::= select_clause_test ':' select_clause_val
 select_clause_test                  ::= expression
 select_clause_value                 ::= expression
 
-    /* NO IDEA ABOUT MV, guessing!, from docs: SET $MV(dynval,-1::1)="" // appends 2nd delimiter */
+-- NO IDEA ABOUT MV, guessing!, from docs: SET $MV(dynval,-1::1)="" // appends 2nd delimiter 
 mv_function_set                     ::= 'mv' open_bracket variable_set ',' expression [ '::' expression ] [ ',' expression [ ',' expression ] ] close_bracket
 
-expression_function_call            ::= '##expression' function_parameter_list  /* function? or more similar to macro? */
-safeexpression_function_call        ::= '##safeexpression' function_parameter_list  /* function? or more similar to macro? */
+expression_function_call            ::= '##expression'     function_parameter_list  -- function? or more similar to macro? 
+safeexpression_function_call        ::= '##safeexpression' function_parameter_list  -- function? or more similar to macro?
 
 any_keyword                         ::= 'need any keyword'
 
 cos_json                            ::= cos_json_object | cos_json_array | cos_json_prim
-cos_json_object                     ::= '{' [ cos_json_pair ( ',' cos_json_pair )*] '}'
+cos_json_object                     ::= '{' [ ','.cos_json_pair+ ] '}'
 cos_json_pair                       ::= json_string ':' cos_json
 cos_json_prim                       ::= number | json_string | 'true' | 'false' | 'null' | ( '(' expression ')' )
 cos_json_array                      ::= '[' [ ','.cos_json+ ] ']' 

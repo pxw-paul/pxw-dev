@@ -67,9 +67,11 @@ Method writeFull(indent As %String)
 /// write out basic info of the atom
 Method writeDebug(indent As %String)
 {
-	$$$DEBUG(($j($l(indent),2))_indent_"type="_..type)
-	;i $isobject(..whitespace) d ..whitespace.display(indent_"  ")
-	$$$DEBUG(($j($l(indent),2))_indent_" "_$zconvert(..start_..value_..end,"O","JS"))
+	i $$$debugIsON {
+		$$$DEBUG(($j($l(indent),2))_indent_"type="_..type)
+		;i $isobject(..whitespace) d ..whitespace.display(indent_"  ")
+		$$$DEBUG(($j($l(indent),2))_indent_" "_$zconvert(..start_..value_..end,"O","JS"))
+	}
 }
 
 /// write out basic info of the atom

@@ -40,9 +40,10 @@ Method partsCount() As %Integer
 /// Copy all the parts from the source element into the current element, adding to the end of the parts (not replacing)
 Method partsCopy(Source As PXW.DEV.Element)
 {
-	Set src=+Source,this=+$THIS,c2=$GET(%PXWparts(this))
-	For i=1:1:%PXWparts(src) Set %PXWparts(this,$INCREMENT(c2))=%PXWparts(src,i)
-	Set %PXWparts(this)=c2
+	$$$ELEMENTPARTCOPYInternal($this,Source)
+	;Set src=+Source,this=+$THIS,c2=$GET(%PXWparts(this))
+	;For i=1:1:%PXWparts(src) Set %PXWparts(this,$INCREMENT(c2))=%PXWparts(src,i)
+	;Set %PXWparts(this)=c2
 }
 
 Method partsClear()
@@ -142,7 +143,7 @@ Method writeDebug(indent As %String = "")
 	For  {
 		Set a=..partsGetNext(.akey)
 		Quit:akey=""
-		
+
 		Do a.writeDebug(indent_".")
 	}
 }
@@ -231,7 +232,7 @@ Method countElements() As %Integer
 /// deep = 0 means look only at the children of this object
 /// deep = 1 means go deep until we find what we need but do not go deeper
 /// deep = 2 means go through ALL paths finding all elements of that type
-Method findElementsByType(Type As %String, ByRef OutputList As %Library.ListOfObjects, deep As %Boolean = 2)
+Method findElementsByType(Type As %String, ByRef OutputList As %Library.ListOfObjects(ELEMENTTYPE = "PXW.DEV.Element"), deep As %Boolean = 2)
 {
 	Set uType=$$$UPPER(Type)
 	If deep=2 {
@@ -321,14 +322,14 @@ Method findElementsXPath(Path As %String, ByRef OutputList As %Library.ListOfObj
 	}
 	; the logic above is confusing me, below feels wrong, but I want to ADD to the output list if there is already one
 	; meaning the the function is called twice with the same .outputlist on the caller all the elements are added together.
-	If $g(OutputList) {
+	If list1,$g(OutputList) {
 		For i=1:1:list1.Count() { 
 			Do OutputList.Insert(list1.GetAt(i))
 		}
 	} Else {
 		Set OutputList=list1
 	}
-	$$$DEBUG("OuputList.Count()="_OutputList.Count())
+	$$$DEBUG("OuputList.Count()="_$s(OutputList:OutputList.Count(),1:"UNDEFINDED"))
 	$$$DEBUGMethodEnd
 }
 /// Condition only supports = at the moment

@@ -6,7 +6,7 @@ Class PXW.DEV.BNF.processor Extends %RegisteredObject
 /// This holds a list of all elements that do not have a specific handler set up.
 /// It is built up as processing takes place, so no need to work out in advance
 /// what is going to be processed.
-Property processNotRequired As %String [ MultiDimensional ];
+Property processNotRequired As %String [ MultiDimensional, Private ];
 
 /// This is the main method to call to process a BNF element object.
 /// It will call any special processing for the element type

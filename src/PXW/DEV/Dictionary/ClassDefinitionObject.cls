@@ -362,7 +362,7 @@ Method ListMethodDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierRS
     $$$DEBUGMethodBegin
  	Set server=..AtelierSettings.ServerName
 	Set sql=""
-    Set sql=sql_"SELECT parent,Name,ReturnType,Origin,Stub,' ' || FormalSpecParsed as fsp, CodeMode" ; stub is undocumented but it seems to be "source name.method name.source type (i=index,a=property)
+    Set sql=sql_"SELECT parent,Name,ReturnType,Origin,Stub, FormalSpec, ' ' || FormalSpecParsed as fsp, CodeMode" ; stub is undocumented but it seems to be "source name.method name.source type (i=index,a=property)
     Set sql=sql_" ,parent->SqlSchemaName,SqlName "
     Set sql=sql_" FROM %Dictionary.CompiledMethod "
     Set sql=sql_" WHERE parent=?"
@@ -384,14 +384,127 @@ Method CacheListMethodDetails(ClassName As %String)
         Set mname=rs.%Get("Name")
         Set stub=rs.%Get("Stub")
         Set rt=rs.%Get("ReturnType")
-        Set fs=$EXTRACT(rs.%Get("fsp"),2,*) ; remove leading " " because atelier does not like the encoded list (in v2)
+        Set fs=..MyFormalSpecParse(rs.%Get("FormalSpec"))
+        Set fsp=$EXTRACT(rs.%Get("fsp"),2,*) ; remove leading " " because atelier does not like the encoded list (in v2)
         Set codemode=rs.%Get("CodeMode")
         Set sqlschema=rs.%Get("SqlSchemaName")
         Set sqlname=rs.%Get("SqlName")
-        Set data=$LISTBUILD(mname,rt,rs.%Get("Origin"),stub,fs,codemode,sqlschema,sqlname)
+        Set data=$LISTBUILD(mname,rt,rs.%Get("Origin"),stub,fsp,codemode,sqlschema,sqlname,fs)
         Set ^PXW.Cache("CDEF",NS,$$$UPPER(cn),"GMD",$$$UPPER(mname))=data
         If sqlschema'="",sqlname'="" Set ^PXW.Cache("CDEFPROC",NS,$$$UPPER(sqlschema),$$$UPPER(sqlname))=$LISTBUILD(cn,mname)
     }
+}
+
+classmethod MyFormalSpecParse(FormalSpec as %String) as %List
+{
+    s fslist=""
+    s pos=1
+    s ok=(FormalSpec'="")
+    while ok {
+        s mode="",name="",type="",typeparams="",default=""
+        
+        ; mode
+        if $e(FormalSpec,pos)?1P {
+            s mode=$e(FormalSpec,pos)
+            s pos=pos+1
+        }
+        
+        ; name
+        s start=pos
+        if $e(FormalSpec,pos)="%" { s pos=pos+1 }
+        while $e(FormalSpec,pos)?1AN { 
+            s pos=pos+1 
+        }
+        s name=$e(FormalSpec,start,pos-1)
+        
+        ; type
+        if $e(FormalSpec,pos)=":" {
+            set pos=pos+1,start=pos
+            if $e(FormalSpec,pos)="%" { s pos=pos+1 }
+            while ($e(FormalSpec,pos)?1AN) || ($e(FormalSpec,pos)=".") { 
+                s pos=pos+1 
+            }
+            s type=$e(FormalSpec,start,pos-1)
+            if $e(FormalSpec,pos)="(" {
+                s pos=pos+1
+                ; type parameters
+                s tpok=1
+                while tpok {
+                    s start=pos
+                    s tpname="",tpvalue=""
+                    while $e(FormalSpec,pos)'="", $e(FormalSpec,pos)'="=" {
+                        s pos=pos+1
+                    }
+                    s tpname=$e(FormalSpec,start,pos-1)
+                    s dok=1,instring=0
+                    s pos=pos+1,start=pos
+                    while dok {
+                        if instring=0,$e(FormalSpec,pos)="""" {
+                            s instring=1
+                            s pos=pos+1
+                        } elseif instring=1,$e(FormalSpec,pos)="""" {
+                            s pos=pos+1
+                            if $e(FormalSpec,pos)="""" {
+                                s pos=pos+1
+                            } else {
+                                s instring=0
+                            }
+                        } else {
+                            s pos=pos+1
+                        }
+                        ; end of default
+                        s dok=1
+                        i $e(FormalSpec,pos)="" s dok=0
+                        i instring=0,$e(FormalSpec,pos)=")" s dok=0
+                        i instring=0,$e(FormalSpec,pos)="," s dok=0
+                    }
+                    s tpvalue=$e(FormalSpec,start,pos-1)                    
+                    s typeparams=typeparams_$lb(tpname)_$lb(tpvalue)
+                     
+                    if $e(FormalSpec,pos)="," s pos=pos+1
+                    s tpok=0
+                    if $e(FormalSpec,pos)'=")" s tpok=1
+                }
+                s pos=pos+1 ; move past the )
+            }
+        }
+
+        ; default
+        if $e(FormalSpec,pos)="=" {
+            set pos=pos+1,start=pos
+            s dok=1,instring=0
+            while dok {
+                if instring=0,$e(FormalSpec,pos)="""" {
+                    s instring=1
+                    s pos=pos+1
+                } elseif instring=1,$e(FormalSpec,pos)="""" {
+                    s pos=pos+1
+                    if $e(FormalSpec,pos)="""" {
+                        s pos=pos+1
+                    } else {
+                        s instring=0
+                    }
+                } else {
+                    s pos=pos+1
+                }
+                ; end of default
+                s dok=1
+                i $e(FormalSpec,pos)="" s dok=0
+                i instring=0,$e(FormalSpec,pos)="," s dok=0
+            }
+            s default=$e(FormalSpec,start,pos-1)
+        }
+
+        s fslist=fslist_$lb($lb(name,type,mode,default)_typeparams)
+
+        ; next
+        s ok=0
+        i $e(FormalSpec,pos)="," {
+            s ok=1
+            s pos=pos+1
+        }
+    }
+    q fslist
 }
 
 Method ListIndexDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierRS
@@ -556,7 +669,10 @@ Method GetPropertyParameterDetails(ClassName As %String, PropertyName As %String
 
 /// Returns 1 if details were found
 /// Sets ReturnType to the defined return type, to work out more information about the return type use GetMethodReturnType 
-Method GetMethodDetails(ClassName As %String, Name As %String, Output ReturnType As %String, Output Origin As %String, Output Stub As %String, Output FormalSpecParsed As %List, Output CodeMode As %String) As %Boolean
+/// FormalSpec is parsed by me from the original FS which might not have
+///    a type, whereas the parsed one on the compiled method will have a type
+///    of %String
+Method GetMethodDetails(ClassName As %String, Name As %String, Output ReturnType As %String, Output Origin As %String, Output Stub As %String, Output FormalSpecParsed As %List, Output CodeMode As %String,FormalSpec as %List) As %Boolean
 {
     ;New %NS Set %NS=..Namespace.Name
     Set NS=..Namespace.Name
@@ -579,12 +695,15 @@ Method GetMethodDetails(ClassName As %String, Name As %String, Output ReturnType
     ; set by the cache but not used here
     ;Set SQLSchemaName=$LISTGET(data,7)
     ;Set SQLName=$LISTGET(data,8)
+    Set FormalSpec=$LISTGET(data,9)
+
+    $$$DEBUG(("GetMethodDetails "_ClassName_"||"_Name_" data="_$s(data="":"null",1:"ok")))
 
     If data="" Quit 0
 	Quit 1
 }
 
-Method GetMethodReturnType(ClassName As %String, Name As %String, Output FormalSpecParsed) As %String
+Method GetMethodReturnType(ClassName As %String, Name As %String, Output FormalSpecParsed as %List, output FormalSpec as %List) As %String
 {
     If ClassName="" Quit ""
 
@@ -594,7 +713,7 @@ Method GetMethodReturnType(ClassName As %String, Name As %String, Output FormalS
 	; sometimes fields have quotes around
 	If $EXTRACT(ufield,1)="""",$EXTRACT(ufield,*)="""" Set ufield=$EXTRACT(ufield,2,*-1)
 
-	Set found=..GetMethodDetails(ClassName,Name,.returntype,.origin,.stub,.FormalSpecParsed)
+	Set found=..GetMethodDetails(ClassName,Name,.returntype,.origin,.stub,.FormalSpecParsed,.codemode,.FormalSpec)
 
     ; if the return type is not set see if this was derived from some other thing
     If found,returntype="" {
@@ -681,9 +800,10 @@ Method GetQueryDetails(ClassName As %String, Name As %String, Output Type As %St
 ClassMethod FullClassName(Class As %String, CurrentPackage As %String = "") As %String
 {
 	If Class="" Quit ""
-	If $EXTRACT(Class,1)="%",$LENGTH(Class,".")=1 Set Class="%Library."_$EXTRACT(Class,2,*)
-	If Class'[".",CurrentPackage'="" Set Class=CurrentPackage_"."_Class
-	Quit Class
+    set name=$TRANSLATE(Class,"""","") ; remove quotes
+	If $EXTRACT(name,1)="%",$LENGTH(name,".")=1 Set name="%Library."_$EXTRACT(name,2,*)
+	If name'[".",CurrentPackage'="" Set name=CurrentPackage_"."_name
+	Quit name
 }
 
 Method List(Name As %String) As PXW.DEV.Dictionary.AtelierRS
@@ -890,6 +1010,8 @@ Method GetParameterDetails(ClassName As %String, Name As %String, Output Type As
  	Set ufield=$$$UPPER(Name)
 	; sometimes fields have quotes around
 	If $EXTRACT(ufield,1)="""",$EXTRACT(ufield,*)="""" Set ufield=$EXTRACT(ufield,2,*-1)
+    ; sometimes it is referred to starting #
+    if $EXTRACT(ufield,1)="#" set ufield=$e(ufield,2,*)
 
     Do ..CacheIfNecessary(fcn,"GAD")
 

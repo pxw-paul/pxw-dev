@@ -159,7 +159,6 @@ Method SelectCommand(element As PXW.DEV.Element)
             }
         }
         If $ISOBJECT($GET(tableelements)) {
-            #dim tref
             For ti=1:1:tableelements.Count() {
                 Set tablename="",tablealias=" "
                 Set tref=tableelements.GetAt(ti)
@@ -308,7 +307,7 @@ Method DeleteCommand(element As PXW.DEV.Element)
     }
 }
 
-ClassMethod findElementsByTypeNoSubQueries(Object As PXW.DEV.Element, Type As %String, ByRef OutputList As %ListOfObjects)
+ClassMethod findElementsByTypeNoSubQueries(Object As PXW.DEV.Element, Type As %String, ByRef OutputList As %ListOfObjects(ELEMENTTYPE="PXW.DEV.Element"))
 {
     #dim ele as PXW.DEV.Element
     If Object.type=Type {
