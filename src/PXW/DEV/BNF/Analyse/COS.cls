@@ -178,8 +178,8 @@ method IsCompatible(Classname1 as %String, Classname2 as %String, output commonC
 
 	$$$DEBUGMethodBegin
 	Set commonClass="",depth=0,result=0
-	If Classname1="<null>" Quit 1 ; null is compatible with everything
-	If Classname2="<null>" Quit 1 ; 
+	If Classname1="-null-" Quit 1 ; null is compatible with everything
+	If Classname2="-null-" Quit 1 ; 
 	If Classname1="%Library.Any" Quit 1 ; %Library.Any is compatible with everything
 	If Classname2="%Library.Any" Quit 1 ; 
 
@@ -194,7 +194,7 @@ method IsCompatible(Classname1 as %String, Classname2 as %String, output commonC
 		; maybe parameterise this check, sometimes we want to know numbers and strings are being confused, but mostly not
 		If classtype1="datatype",classtype2="datatype" {
 			; all ok
-			Set result=1,commonClass="<datatype>",depth=1
+			Set result=1,commonClass="-datatype-",depth=1
 		} Else {
 			Set common1="",d1=0
 			For i=2:1:$LENGTH(super1,"~")-1 {
@@ -486,7 +486,7 @@ Method checkAndRecordVariableType(VariableElement As PXW.DEV.BNF.Elements.COS, V
 		}
 	}
 	; we have a type so remember it, dont bother storing when it went to null, thats normally not useful
-	If finaltype'="",finaltype'="<null>" {
+	If finaltype'="",finaltype'="-null-" {
 		Set ..VariablesTypes(var)=finaltype
 		Set ..VariablesTypesElement(+VariableElement)=finaltype
 		Set ..ListVarElementType(var)=listelementtype
@@ -609,7 +609,7 @@ Method checkCosDirectiveDimItemSet(element As PXW.DEV.BNF.Elements.COS) As PXW.D
 		Set derivedtype=..DeriveTypeReturned(dimexprE)
 		; #dim x = ##class(object).method() 
 		; it has no dimmed type so what ever we derive must be correct
-		If classname="" {
+		If classname="",derivedtype'="",derivedtype'="-null-" {
 			Set classname=derivedtype
 			Do element.findElementsByType("VariableSet",.variablelist,0)
 			For i=1:1:variablelist.Count() {
@@ -907,8 +907,23 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, Start
 		} Else {
 			Set found=..ClassServer.GetPropertyDetails(classname,propertyname,.type,.collection,.ElementTypeClassName)
 			If 'found {
-				Set type=..ClassServer.GetMethodReturnType(classname,propertyname,.fspecparsed,.MYfspec)
-				Set collection="",elementtype=""
+				s found=..ClassServer.GetMethodDetails(classname,propertyname)
+				if found {
+					Set type=..ClassServer.GetMethodReturnType(classname,propertyname,.fspecparsed,.MYfspec)
+					Set collection="",elementtype=""
+				}
+			} 
+			if 'found {
+				; once on a dynamic object, stay there
+				if $e(classname,1,16)="%Library.Dynamic" {
+					; check if it could be an array
+					;i ..ClassServer.GetMethodDetails("%Library.DynamicArray",propertyname) {
+					;	s classname="%Library.DynamicArray"
+					;} elseif ..ClassServer.GetMethodDetails("%Library.DynamicObject",propertyname) {
+					;	s classname="%Library.DynamicObject"
+					;}
+					set type=classname
+				}
 			}
 		}
 		set ..VariablesTypesElement(+objectchain)=type
@@ -958,10 +973,10 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, Start
 }
 
 /// Returns the name of the class of the type of thing.
-/// It can also return the string "<null>" which means the thing is a NULL ("")
+/// It can also return the string "-null-" which means the thing is a NULL ("")
 Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 {
-	#dim element as PXW.DEV.BNF.Elements.COS
+	#dim element,functionE as PXW.DEV.BNF.Elements.COS
 	#dim nameA,specialA as PXW.DEV.Atom
 	
 	; some kind of set with indirection so type cannot be derived
@@ -979,7 +994,7 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 	// If we call from a DO then there is no expression
 	If $ISOBJECT(expression),expression.type="Expression" {
 		Set simple=..SimplifyExpression(expression,.variableElement)
-		If simple'="-" Quit $SELECT(simple="""""":"<null>",1:"%Library.DataType") ; it's null or a number or string
+		If simple'="-" Quit $SELECT(simple="""""":"-null-",1:"%Library.DataType") ; it's null or a number or string
 	} Else {
 		Set variableElement=ValueElement
 	}
@@ -995,19 +1010,20 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 			If (name="OK") || (name="ERROR") {
 				Set finaltype="%Library.Status"
 			} ElseIf (name="NULLOREF") {
-				Set finaltype="<null>"
+				Set finaltype="-null-"
 			}
 		}
 	} ElseIf variableElement.type="CosJson" {
 		; s x={}
-		Set objE=variableElement.findFirstElementByType("CosJsonObject")
+		Set objE=variableElement.findFirstElementByType("CosJsonObject",0)
 		If $ISOBJECT(objE) {
 			Set finaltype="%Library.DynamicObject"
-		}
-		; s x=[]
-		Set arrE=variableElement.findFirstElementByType("CosJsonArray")
-		If $ISOBJECT(arrE) {
-			Set finaltype="%Library.DynamicArray"
+		} else {
+			; s x=[]
+			Set arrE=variableElement.findFirstElementByType("CosJsonArray",0)
+			If $ISOBJECT(arrE) {
+				Set finaltype="%Library.DynamicArray"
+			}
 		}
 	} ElseIf variableElement.type="Classexpr" {
 		; looking for ##class
@@ -1170,11 +1186,11 @@ method DeriveTypeFromList(list as %ListOfObjects(ELEMENTTYPE = "PXW.DEV.Element"
 				} Else {
 					Set compatible=..IsCompatible(finaltype,type,.common,.depth)
 					If compatible {
-						If common'="",common'="<datatype>" {
+						If common'="",common'="-datatype-" {
 							Set finaltype=common
 						}
 					} Else {
-						If common'="",common'="<datatype>" {
+						If common'="",common'="-datatype-" {
 							Set finaltype=common
 						}
 					}
@@ -1187,8 +1203,8 @@ method DeriveTypeFromList(list as %ListOfObjects(ELEMENTTYPE = "PXW.DEV.Element"
 Method FullClassName(name As %String) As %String
 {
 	If name="" Quit ""
-	If name="<null>" Quit name
-	If name="<datatype>" Quit name
+	If name="-null-" Quit name
+	If name="-datatype-" Quit name
 	If $ISOBJECT(..ClassServer) {
 		Set package=$PIECE(..This,".",1,*-1)
 		Set fullname=..ClassServer.FullClassName(name,package)

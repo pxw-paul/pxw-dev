@@ -18,17 +18,17 @@ Method resetAll(element As PXW.DEV.Element)
 {
     set akey=""
  	For  {
-		Set a=element.partsGetNext(.akey)
+		Set part=element.partsGetNext(.akey)
 		Quit:akey=""
 		
-	    If a.IsElement {
-			Do ..resetAll(a)
-		} ElseIf a.IsAtom {
-            Set type=$$$UPPER($PIECE(a.type,":",1))
+	    If part.IsElement {
+			Do ..resetAll(part)
+		} ElseIf part.IsAtom {
+            Set type=$$$UPPER($PIECE(part.type,":",1))
             ; this is the word "method" or "property" etc
             If type="KEYWORD" {
             }
-            Do ..resetWhitespace(a)     
+            Do ..resetWhitespace(part)
 		}
 	}
 }
@@ -46,6 +46,8 @@ Method resetWhitespace(Atom As PXW.DEV.Atom)
 
 Method setAll(element As PXW.DEV.Element)
 {
+    #dim atom as PXW.DEV.Atom
+
     ;s type=element.type
     ;zw type,flags
     If element.type="XmlStartTag" {
@@ -67,13 +69,13 @@ Method setAll(element As PXW.DEV.Element)
 
     set akey=""
    	For  {
-		Set a=element.partsGetNext(.akey)
+		Set atom=element.partsGetNext(.akey)
 		Quit:akey=""
 		
-	    If a.IsElement {
-			Do ..setAll(a)
+	    If atom.IsElement {
+			Do ..setAll(atom)
 		} else {
-            set a.line=..currentLine
+            set atom.line=..currentLine
         }
 	}
 }

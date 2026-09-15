@@ -133,7 +133,6 @@ Method writeElement(element As PXW.DEV.Element)
 
 Method writeElementBNF1(element As PXW.DEV.Element)
 {
-    #dim parser as PXW.DEV.BNF.super
     $$$DEBUGMethodBegin
     Set input=element.ToString()
     If input["::=" {
@@ -198,6 +197,7 @@ Method writeCDEFIncludeName(element As PXW.DEV.BNF.Elements.ClassDefinition) As 
 
 Method writeCDEFOneClassMember(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="OneClassmember")
 {
+    #dim itemE as PXW.DEV.Element
     ; a class memeber element is like this:
     ;         Element=OneClassmember PXW.DEV.BNF.Element @1835 
     ; item(e)=.Element=ClassMethod PXW.DEV.BNF.Element @1893
@@ -206,10 +206,10 @@ Method writeCDEFOneClassMember(element As PXW.DEV.BNF.Elements.ClassDefinition) 
     ; nameE   ..Element=MethodName PXW.DEV.BNF.Element @1910
     ;         ...Element=ClassItemIdentifier PXW.DEV.BNF.Element @1946
     $$$DEBUGMethodBegin
-    Set item=element.partsGetAt(1)
-    Set typeA=item.partsGetAt(1)
+    Set itemE=element.partsGetAt(1)
+    Set typeA=itemE.partsGetAt(1)
     Set ..ThisItemType=typeA.ToString(0)
-    Set nameE=item.partsGetAt(2)
+    Set nameE=itemE.partsGetAt(2)
     If $LISTFIND($LISTBUILD("PropertyName","MethodName","ClassParameterName","IndexName","TriggerName","ForeignkeyName","StorageName","QueryName","XdataName"),nameE.type) {
         Set name=nameE.ToString(0)
         Set anchor="anchor"_name_nameE.type
@@ -550,8 +550,7 @@ Method writeCDEFTypeClassReference(element As PXW.DEV.BNF.Elements.ClassDefiniti
     
         Set paramE=element.findFirstElementByType("TypeParameters",0)
         If $ISOBJECT(paramE) {
-            Set list=##class(%ListOfObjects).%New()
-            Do paramE.findElementsByType("ClassItemIdentifier",list,2)
+            Do paramE.findElementsByType("ClassItemIdentifier",.list,2)
             For i=1:1:list.Count() {
                 Set itemE=list.GetAt(i)
                 If $LISTFIND($LISTFROMSTRING("Property","Relationship"),..ThisItemType) {
@@ -703,7 +702,7 @@ Method writeCOSVariableTypes(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF
         ; when working out a type use the #DIM type if there is one
         ;Set classname=$GET(..Analyser.DimmedTypes(variablename))
         ;If classname="" Set classname=$GET(..Analyser.VariablesTypes(variablename))
-        set classname=$g(..Analyser.VariablesTypesElement(+element))
+        Set classname=$GET(..Analyser.VariablesTypesElement(+element))
         If classname'="" Do ..FollowObjectChainForType(element,classname)
 
         ; treat %parameter("xxx") as a parameter
@@ -741,6 +740,7 @@ Method writeCOSVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Comp
 Method writeCOSVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="VariableSet")
 {
     #dim strElement as PXW.DEV.Element
+    #dim atom as PXW.DEV.Atom
 
     $$$DEBUGMethodBegin
     Set variablename=element.ToStringAtomsOnly(0)
@@ -748,7 +748,12 @@ Method writeCOSVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.C
     Set atom=element.FirstAtom()
     Set cssclass=$$$classVariableSet
     If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(variablename) Set cssclass=$$$classVariableParameterSet
-    Do ..wrapAtomHTML(atom,"<span class="""_cssclass_""" varid="""_variablename_""" onclick=""HiliteSets('"_variablename_"');"">","</span>")
+
+    if $ISOBJECT(..Analyser),$d(..Analyser.VariablesTypesElement(+element)) {
+        Do ..wrapAtomHTML(atom,"<span title=""Type is "_..Analyser.VariablesTypesElement(+element)_""" class="""_cssclass_""" varid="""_variablename_""" onclick=""HiliteSets('"_variablename_"');"">","</span>")
+    } else {
+        Do ..wrapAtomHTML(atom,"<span class="""_cssclass_""" varid="""_variablename_""" onclick=""HiliteSets('"_variablename_"');"">","</span>")
+    }
 
     If $ISOBJECT(..Analyser),$DATA(..Analyser.stringVarsElement(+element)) {
         Set value=..Analyser.stringVarsElement(+element)
@@ -886,18 +891,19 @@ Method writeCOSSuperExpression(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.B
 Method writeCOSSpecialSystem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="SpecialSystem")
 {
     #dim chainE as PXW.DEV.Element
+    #dim atom as PXW.DEV.Atom
     $$$DEBUGMethodBegin  
     Set classname="%SYSTEM"
     Set key="",firstAtomOfClass="",lastAtomOfClass="",chainE=""
     For  {
-        Set part=element.partsGetNext(.key)
+        Set atom=element.partsGetNext(.key)
         Quit:key=""
-        If $PIECE(part.type,":",1)="ObjectMemberIdentifier" {
-            Set:firstAtomOfClass="" firstAtomOfClass=part
-            Set lastAtomOfClass=part
-            Set classname=classname_"."_part.value
-        } ElseIf part.type="ObjectChain" {
-            Set chainE=part
+        If $PIECE(atom.type,":",1)="ObjectMemberIdentifier" {
+            Set:firstAtomOfClass="" firstAtomOfClass=atom
+            Set lastAtomOfClass=atom
+            Set classname=classname_"."_atom.value
+        } ElseIf atom.type="ObjectChain" {
+            Set chainE=atom
         }
     }
     If $ISOBJECT(firstAtomOfClass),$ISOBJECT(lastAtomOfClass) {
@@ -1234,7 +1240,7 @@ Method writeSQLJoin(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compiler
     Quit ""
 }
 
-ClassMethod findElementsSkipSub(Object As PXW.DEV.Element, Type As %String, ByRef OutputList As %ListOfObjects)
+ClassMethod findElementsSkipSub(Object As PXW.DEV.Element, Type As %String, ByRef OutputList As %ListOfObjects(ELEMENTTYPE = "PXW.DEV.Element"))
 {
     #dim ele as PXW.DEV.Element
     If Object.type=Type {
@@ -1460,6 +1466,8 @@ Method writePYFile(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compil
 
 Method writePYClassDefRaw(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassDefRaw")
 {
+    #dim nameatom as PXW.DEV.Atom
+
     $$$DEBUGMethodBegin
     Set nameatom=element.partsGetAt(2) ; should be 2
     If $ISOBJECT(nameatom) {
@@ -1488,6 +1496,7 @@ Method writePYFunctionDef(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF
 
 Method writePYFunctionDefRaw(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="FunctionDefRaw")
 {
+    #dim nameatom as PXW.DEV.Atom
     $$$DEBUGMethodBegin
     Set nameatom=element.partsGetAt(2) ; should be 2
     If $ISOBJECT(nameatom) {
@@ -1547,20 +1556,22 @@ Method writePYParam(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compi
 
 Method writePYAtom(element As PXW.DEV.BNF.Elements.Python) As PXW.DEV.BNF.Compilers.elementHandler(Type="Atom")
 {
+    #dim atom as PXW.DEV.Atom
+
     $$$DEBUGMethodBegin
     Set akey=""
     For  {
-        Set a=element.partsGetNext(.akey)
+        Set atom=element.partsGetNext(.akey)
         Quit:akey=""
 
-        If a.IsAtom {
-            Set type=$PIECE(a.type,":",1)
+        If atom.IsAtom {
+            Set type=$PIECE(atom.type,":",1)
             If type="Identifier" {
-                Set varname=a.value
+                Set varname=atom.value
                 Set cssclass=$$$classVariable
                 If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(varname) Set cssclass=$$$classVariableParameter
                 If $ISOBJECT(..PythonAnalyser),..PythonAnalyser.IsParameterVariable(varname) Set cssclass=$$$classVariableParameter
-                Do ..wrapAtomHTML(a,"<span class="""_cssclass_""" fetchid="""_varname_""" onclick=""HiliteSets('"_varname_"');"">","</span>")
+                Do ..wrapAtomHTML(atom,"<span class="""_cssclass_""" fetchid="""_varname_""" onclick=""HiliteSets('"_varname_"');"">","</span>")
             } 
         }
     }    
@@ -1577,6 +1588,8 @@ method writePY(element As PXW.DEV.BNF.Elements.Python) AS PXW.DEV.BNF.Compilers.
 */
 Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName As %String)
 {
+    #dim atom as PXW.DEV.Atom
+
     $$$DEBUGMethodBegin
     If (ParentElement.type="ThisObject") || (ParentElement.type="ThisObjectSet") {
         Set this=ParentElement.findFirstElementByType("ThisObjectSelf",0) ; ..property
@@ -1593,25 +1606,24 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName
     } Else {
         Set objectchain=ParentElement.findFirstElementByType("ObjectChain",1) ; var.property
     }
-    set toclass=StartClassName
+    Set toclass=StartClassName
     Set path=""
     While $ISOBJECT(objectchain) {
         
         Set propertyatom="",akey=""
         ; the objectchain has the "." and the name
         For  {
-            Set a=objectchain.partsGetNext(.akey)
+            Set atom=objectchain.partsGetNext(.akey)
             Quit:akey=""
 
-            If a.IsAtom,a.value'="." {
-                Set propertyatom=a
+            If atom.IsAtom,atom.value'="." {
+                Set propertyatom=atom
             }
         }
 
         Set path=path_"."_propertyatom.value
-		;Do ..wrapAtomHTML(propertyatom,"<a class="""_$$$classObjectMember_""" href="""_..HREFToClass(toclass,path)_""">","</a>")
-        Do ..wrapAtomHTML(propertyatom,"<a class="""_$$$classObjectMember_""" href="""_..HREFToClass(toclass,propertyatom.value)_""">","</a>")
-        set toclass=$g(..Analyser.VariablesTypesElement(+objectchain))
+		Do ..wrapAtomHTML(propertyatom,"<a class="""_$$$classObjectMember_""" href="""_..HREFToClass(toclass,propertyatom.value)_""">","</a>")
+        Set toclass=$GET(..Analyser.VariablesTypesElement(+objectchain))
         Do ..writeCOSParameterChecks(StartClassName,path,objectchain)
 
         Set objectchain=objectchain.findFirstElementByType("ObjectChain",0) 

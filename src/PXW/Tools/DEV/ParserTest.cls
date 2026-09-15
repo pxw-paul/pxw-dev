@@ -41,6 +41,8 @@ ClassMethod WriteMainLeft(ByRef scratch)
 ClassMethod WriteMainRight(ByRef scratch)
 {
     #dim element as PXW.DEV.Element
+    #dim atom as PXW.DEV.Atom
+
     Do ..HREFFrom(.text,.class,.method,.writefull)
     ;zw text,class,method,writefull,$$$debugObject
     If $ISOBJECT($GET(scratch)) {
@@ -50,13 +52,13 @@ ClassMethod WriteMainRight(ByRef scratch)
             If writefull {
                 Do element.writeDebugFull() 
                 $$$DEBUGPause
-                w !,"Element as $list and listobject",!
-                s list=..flattenlist(element,.atoms)
-                ZW list
-                if $isobject(atoms) {
-                    f i=1:1:atoms.Count() {
-                        s a=atoms.GetAt(i)
-                        w !,i_" "_$p(a.type,":",1)_":"_a.value
+                Write !,"Element as $list and listobject",!
+                Set list=..flattenlist(element,.atoms)
+                ZWrite list
+                If $ISOBJECT(atoms) {
+                    For i=1:1:atoms.Count() {
+                        Set atom=atoms.GetAt(i)
+                        Write !,i_" "_$PIECE(atom.type,":",1)_":"_a.value
                     }
                 }
                 $$$DEBUGResume
@@ -66,7 +68,7 @@ ClassMethod WriteMainRight(ByRef scratch)
         } Else {
             If writefull {
                 Do element.writeFull()
-                s list=..flattenlist(element,.atoms) zw list,atoms ; if $isobject(atoms) zw atoms
+                Set list=..flattenlist(element,.atoms) ZWrite list,atoms ; if $isobject(atoms) zw atoms
             } Else {
                 Do element.write()
             }
@@ -190,8 +192,8 @@ ClassMethod flattenlist(Element As PXW.DEV.Element, AtomList As %Library.ListOfO
         Set single=0
     }
 	If 'single {
-        Set list=list_$lb($lb(Element.type,""))
-        set newatom=##class(PXW.DEV.Atom).%New(),newatom.type=Element.type,newatom.value="" d AtomList.Insert(newatom)
+        Set list=list_$LISTBUILD($LISTBUILD(Element.type,""))
+        Set newatom=##class(PXW.DEV.Atom).%New(),newatom.type=Element.type,newatom.value="" Do AtomList.Insert(newatom)
     }
 	For  {
 		Set a=Element.partsGetNext(.akey)
@@ -208,9 +210,9 @@ ClassMethod flattenlist(Element As PXW.DEV.Element, AtomList As %Library.ListOfO
             If a.value'?1.P {
                 Set list=list_$LISTBUILD($LISTBUILD("keyword",a.value))
                 Do AtomList.Insert(a)
-            } else {
-                Set list=list_$lb($lb("punctuation",a.value))
-                do AtomList.Insert(a)
+            } Else {
+                Set list=list_$LISTBUILD($LISTBUILD("punctuation",a.value))
+                Do AtomList.Insert(a)
             }
 
         } Else {

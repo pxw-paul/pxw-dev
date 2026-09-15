@@ -234,6 +234,8 @@ Method countElements() As %Integer
 /// deep = 2 means go through ALL paths finding all elements of that type
 Method findElementsByType(Type As %String, ByRef OutputList As %Library.ListOfObjects(ELEMENTTYPE = "PXW.DEV.Element"), deep As %Boolean = 2)
 {
+	#dim ele as PXW.DEV.Element
+	
 	Set uType=$$$UPPER(Type)
 	If deep=2 {
 		If $$$UPPER(..type)=uType {

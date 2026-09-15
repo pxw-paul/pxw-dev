@@ -130,8 +130,12 @@ ClassMethod HREFTo(ItemType As %String = "", ItemKey1 As %String = "", ItemKey2 
 
 ClassMethod GetTitle() As %String
 {
-	Do ..HREFFrom(.itemtype,.itemk1,.itemk2)
-	Quit "Analysis of "_itemtype_" "_itemk1_":"_itemk2
+	Do ..HREFFrom(.itemtype,.itemk1,.itemk2,,.lastupdate)
+	set title="Analysis of "_itemtype_" "_itemk1_":"_itemk2
+	If itemk1="",itemk2="",lastupdate="" {
+		set title="Showing recently updated"
+	}
+	Quit title
 }
 
 }
