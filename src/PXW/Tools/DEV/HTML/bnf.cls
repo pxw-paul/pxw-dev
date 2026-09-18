@@ -750,7 +750,11 @@ Method writeCOSVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.C
     If $ISOBJECT(..Analyser),..Analyser.IsParameterVariable(variablename) Set cssclass=$$$classVariableParameterSet
 
     if $ISOBJECT(..Analyser),$d(..Analyser.VariablesTypesElement(+element)) {
-        Do ..wrapAtomHTML(atom,"<span title=""Type is "_..Analyser.VariablesTypesElement(+element)_""" class="""_cssclass_""" varid="""_variablename_""" onclick=""HiliteSets('"_variablename_"');"">","</span>")
+        ; don't overwrite any previous warnings tool tip
+        set atom=element.FirstAtom()
+        if '$d(..Analyser.ElementWarnings(+atom)) {
+            Do ..wrapAtomHTML(atom,"<span title=""Type is "_..Analyser.VariablesTypesElement(+element)_""" class="""_cssclass_""" varid="""_variablename_""" onclick=""HiliteSets('"_variablename_"');"">","</span>")
+        }
     } else {
         Do ..wrapAtomHTML(atom,"<span class="""_cssclass_""" varid="""_variablename_""" onclick=""HiliteSets('"_variablename_"');"">","</span>")
     }

@@ -1,7 +1,7 @@
 Class PXW.Xref.AnalysisQueries Extends %RegisteredObject
 {
 
-Query Get(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = "", ItemKey2 As %String = "", Flags As %String = "") As PXW.LIB.SQL.Query [ SqlProc ]
+Query Get(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = "", ItemKey2 As %String = "",Type as %String) As PXW.LIB.SQL.Query [ SqlProc ]
 {
 	SELECT TOP 1000 
 		NameSpace
@@ -9,6 +9,7 @@ Query Get(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = 
 		,ItemKey1
 		,ItemKey2
 		,LineNumber
+		,Type
 		,Description
 	FROM PXW_Xref.AnalysisData
 	WHERE NameSpace=:NameSpace
@@ -29,11 +30,18 @@ Query Get(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = 
 			AND UPPER(ItemKey2) %INLIST $LISTFROMSTRING(UPPER(:ItemKey2))
 		--ENDIF
 	--ENDIF
-		ORDER BY 
-    		ItemKey1,ItemKey2
+	--IF Type'="" 
+		--IF $E(Type,*)="*" 
+			AND Type %STARTSWITH $PIECE(:Type,'*',1)
+		--ELSE
+			AND Type %INLIST $LISTFROMSTRING(:Type)
+		--ENDIF
+	--ENDIF
+	ORDER BY 
+    	ItemKey1,ItemKey2
 }
 
-Query GetByDate(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = "", ItemKey2 As %String = "", Flags As %String = "",LastUpdatedSince as %TimeStamp) As PXW.LIB.SQL.Query [ SqlProc ]
+Query GetByDate(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = "", ItemKey2 As %String = "", Type as %String = "", LastUpdatedSince as %TimeStamp) As PXW.LIB.SQL.Query [ SqlProc ]
 {
 	SELECT TOP 1000 
 		lu.NameSpace
@@ -42,6 +50,7 @@ Query GetByDate(NameSpace As %String, ItemType As %String = "", ItemKey1 As %Str
 		,lu.ItemKey1
 		,ad. ItemKey2
 		,ad.LineNumber
+		,ad.Type
 		,ad.Description
 	FROM PXW_Xref.LastUpdated AS lu
 	INNER JOIN PXW_Xref.AnalysisData AS ad ON ad.Namespace=lu.Namespace and ad.ItemType=lu.ItemType and ad.ItemKey1=lu.ItemKey1
@@ -64,8 +73,15 @@ Query GetByDate(NameSpace As %String, ItemType As %String = "", ItemKey1 As %Str
 			AND UPPER(ad.ItemKey2) %INLIST $LISTFROMSTRING(UPPER(:ItemKey2))
 		--ENDIF
 	--ENDIF
-		ORDER BY 
-			lu.LastUpdate DESC, lu.ItemKey1, ad.ItemKey2
+	--IF Type'="" 
+		--IF $E(Type,*)="*" 
+			AND Type %STARTSWITH $PIECE(:Type,'*',1)
+		--ELSE
+			AND Type %INLIST $LISTFROMSTRING(:Type)
+		--ENDIF
+	--ENDIF
+	ORDER BY 
+		lu.LastUpdate DESC, lu.ItemKey1, ad.ItemKey2
 }
 
 }

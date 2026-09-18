@@ -17,9 +17,9 @@ ClassMethod WriteMainBody(ByRef scratch)
 		Write "<p>Redirected from "_..EscapeHTML(cls)_"</p>"
 	} 
 
-	if ocls'="" {
+	If ocls'="" {
 		Do ..WriteClass(ocls,debug,bookmark,linenumber,.scratch,FormatOptions) 
-	} else {
+	} Else {
 		Write "<p>Unable to find class "_cls_"</p>"
 	}
 	Quit
@@ -123,7 +123,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 	
     Set output=##class(PXW.Tools.DEV.HTML.bnf).%New()
 	Set output.ThisType=..#CodeType
-	Set output.FormatEmbeddedSQl=$s($$$UPPER(FormatOptions)["NOSQLFORMATTING":0,1:1)
+	Set output.FormatEmbeddedSQl=$SELECT($$$UPPER(FormatOptions)["NOSQLFORMATTING":0,1:1)
 	Set output.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)
 	Set sc=output.ClassServer.GetClassStudioText(ClassName,.text,.linesOfCode,.timestamp)
 	Set zh(1,"load")=$ZHOROLOG-zh,zh=$ZHOROLOG
@@ -156,21 +156,21 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 		Set zh(4,"render start")=$ZHOROLOG-zh,zh=$ZHOROLOG
 
 		If Debug'="$TIME" $$$DEBUGPause
-		s pzh=$zh,ptot=0
-		s ozh=$zh,otot=0
+		Set pzh=$ZHOROLOG,ptot=0
+		Set ozh=$ZHOROLOG,otot=0
 		Set element=##class(PXW.DEV.Element).%New()
 		While x.cheese(element) {
-			s ptot=ptot+($zh-pzh)
+			Set ptot=ptot+($ZHOROLOG-pzh)
 			$$$DEBUGResume
-			s ozh=$zh
+			Set ozh=$ZHOROLOG
 			Do output.middle(element)
-			s otot=otot+($zh-ozh)
+			Set otot=otot+($ZHOROLOG-ozh)
 			If Debug'="$TIME" $$$DEBUGPause
-			s pzh=$zh
+			Set pzh=$ZHOROLOG
 
-			if Debug["$WRITE" {
-				zw output.Analyser
-				do element.write()
+			If Debug["$WRITE" {
+				ZWrite output.Analyser
+				Do element.write()
 			}
 
 
@@ -179,8 +179,8 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 		}
 		$$$DEBUGResume
 
-		s zh(4.5,"render parse")=ptot
-		s zh(4.6,"render output")=otot
+		Set zh(4.5,"render parse")=ptot
+		Set zh(4.6,"render output")=otot
 
 		If 'x.stream.EOF() {
 			Write "<span id='unfinishedParse'>"
@@ -194,12 +194,12 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 
 		Set zh(5,"render end")=$ZHOROLOG-zh,zh=$ZHOROLOG
 
-		if forceXref {
+		If forceXref {
 			$$$DEBUGNew(##class(PXW.Tools.Debugger).%New())
 			$$$DEBUG("Xref build")
 			Do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName,1,1)
 			$$$DEBUGStop
-		} else {
+		} Else {
 			Do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName,0)
 		}
 
@@ -272,12 +272,12 @@ ClassMethod WriteNav(ByRef scratch)
 		}
 		Write "<hr>"
 	}
-	do ..HREFFrom(.class,.path,.instanceclass,.linenumber,,.propertyparam,.formatoptions)
+	Do ..HREFFrom(.class,.path,.instanceclass,.linenumber,,.propertyparam,.formatoptions)
     Write "<a href=# onclick='MakeStringsInteresting(); '>Strings</a>"
-    if formatoptions'["NOSQLFORMATTING" {
+    If formatoptions'["NOSQLFORMATTING" {
 		Write "<a href="""_..HREFTo(class,path,linenumber,%NS,instanceclass,propertyparam,formatoptions_"NOSQLFORMATTING")_""">No Embedded SQL Formatting</a>"
-	} else {
-		set off=$replace(formatoptions,"NOSQLFORMATTING","")
+	} Else {
+		Set off=$REPLACE(formatoptions,"NOSQLFORMATTING","")
 		Write "<a href="""_..HREFTo(class,path,linenumber,%NS,instanceclass,propertyparam,off)_""">Embedded SQL Formatting</a>"
 	}
 }
@@ -301,7 +301,7 @@ ClassMethod HREFFrom(Output Class As %String, Output Path As %String, Output Ins
 	Set LineNumber=$$$ReqGet("LN")
 	Set Debug=$$$ReqGet("DEBUG")
 	Set PropertyParameter=$$$ReqGet("PP")
-	set FormatOptions=$$$ReqGet("FO")
+	Set FormatOptions=$$$ReqGet("FO")
 }
 
 /// Class=name of base class to display

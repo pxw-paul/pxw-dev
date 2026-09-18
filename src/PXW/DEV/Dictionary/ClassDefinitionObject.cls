@@ -397,114 +397,114 @@ Method CacheListMethodDetails(ClassName As %String)
 
 classmethod MyFormalSpecParse(FormalSpec as %String) as %List
 {
-    s fslist=""
-    s pos=1
-    s ok=(FormalSpec'="")
-    while ok {
-        s mode="",name="",type="",typeparams="",default=""
+    Set fslist=""
+    Set pos=1
+    Set ok=(FormalSpec'="")
+    While ok {
+        Set mode="",name="",type="",typeparams="",default=""
         
         ; mode
-        if $e(FormalSpec,pos)?1P {
-            s mode=$e(FormalSpec,pos)
-            s pos=pos+1
+        If $EXTRACT(FormalSpec,pos)?1P {
+            Set mode=$EXTRACT(FormalSpec,pos)
+            Set pos=pos+1
         }
         
         ; name
-        s start=pos
-        if $e(FormalSpec,pos)="%" { s pos=pos+1 }
-        while $e(FormalSpec,pos)?1AN { 
-            s pos=pos+1 
+        Set start=pos
+        If $EXTRACT(FormalSpec,pos)="%" { Set pos=pos+1 }
+        While $EXTRACT(FormalSpec,pos)?1AN { 
+            Set pos=pos+1 
         }
-        s name=$e(FormalSpec,start,pos-1)
+        Set name=$EXTRACT(FormalSpec,start,pos-1)
         
         ; type
-        if $e(FormalSpec,pos)=":" {
-            set pos=pos+1,start=pos
-            if $e(FormalSpec,pos)="%" { s pos=pos+1 }
-            while ($e(FormalSpec,pos)?1AN) || ($e(FormalSpec,pos)=".") { 
-                s pos=pos+1 
+        If $EXTRACT(FormalSpec,pos)=":" {
+            Set pos=pos+1,start=pos
+            If $EXTRACT(FormalSpec,pos)="%" { Set pos=pos+1 }
+            While ($EXTRACT(FormalSpec,pos)?1AN) || ($EXTRACT(FormalSpec,pos)=".") { 
+                Set pos=pos+1 
             }
-            s type=$e(FormalSpec,start,pos-1)
-            if $e(FormalSpec,pos)="(" {
-                s pos=pos+1
+            Set type=$EXTRACT(FormalSpec,start,pos-1)
+            If $EXTRACT(FormalSpec,pos)="(" {
+                Set pos=pos+1
                 ; type parameters
-                s tpok=1
-                while tpok {
-                    s start=pos
-                    s tpname="",tpvalue=""
-                    while $e(FormalSpec,pos)'="", $e(FormalSpec,pos)'="=" {
-                        s pos=pos+1
+                Set tpok=1
+                While tpok {
+                    Set start=pos
+                    Set tpname="",tpvalue=""
+                    While $EXTRACT(FormalSpec,pos)'="", $EXTRACT(FormalSpec,pos)'="=" {
+                        Set pos=pos+1
                     }
-                    s tpname=$e(FormalSpec,start,pos-1)
-                    s dok=1,instring=0
-                    s pos=pos+1,start=pos
-                    while dok {
-                        if instring=0,$e(FormalSpec,pos)="""" {
-                            s instring=1
-                            s pos=pos+1
-                        } elseif instring=1,$e(FormalSpec,pos)="""" {
-                            s pos=pos+1
-                            if $e(FormalSpec,pos)="""" {
-                                s pos=pos+1
-                            } else {
-                                s instring=0
+                    Set tpname=$EXTRACT(FormalSpec,start,pos-1)
+                    Set dok=1,instring=0
+                    Set pos=pos+1,start=pos
+                    While dok {
+                        If instring=0,$EXTRACT(FormalSpec,pos)="""" {
+                            Set instring=1
+                            Set pos=pos+1
+                        } ElseIf instring=1,$EXTRACT(FormalSpec,pos)="""" {
+                            Set pos=pos+1
+                            If $EXTRACT(FormalSpec,pos)="""" {
+                                Set pos=pos+1
+                            } Else {
+                                Set instring=0
                             }
-                        } else {
-                            s pos=pos+1
+                        } Else {
+                            Set pos=pos+1
                         }
                         ; end of default
-                        s dok=1
-                        i $e(FormalSpec,pos)="" s dok=0
-                        i instring=0,$e(FormalSpec,pos)=")" s dok=0
-                        i instring=0,$e(FormalSpec,pos)="," s dok=0
+                        Set dok=1
+                        If $EXTRACT(FormalSpec,pos)="" Set dok=0
+                        If instring=0,$EXTRACT(FormalSpec,pos)=")" Set dok=0
+                        If instring=0,$EXTRACT(FormalSpec,pos)="," Set dok=0
                     }
-                    s tpvalue=$e(FormalSpec,start,pos-1)                    
-                    s typeparams=typeparams_$lb(tpname)_$lb(tpvalue)
+                    Set tpvalue=$EXTRACT(FormalSpec,start,pos-1)                    
+                    Set typeparams=typeparams_$LISTBUILD(tpname)_$LISTBUILD(tpvalue)
                      
-                    if $e(FormalSpec,pos)="," s pos=pos+1
-                    s tpok=0
-                    if $e(FormalSpec,pos)'=")" s tpok=1
+                    If $EXTRACT(FormalSpec,pos)="," Set pos=pos+1
+                    Set tpok=0
+                    If $EXTRACT(FormalSpec,pos)'=")" Set tpok=1
                 }
-                s pos=pos+1 ; move past the )
+                Set pos=pos+1 ; move past the )
             }
         }
 
         ; default
-        if $e(FormalSpec,pos)="=" {
-            set pos=pos+1,start=pos
-            s dok=1,instring=0
-            while dok {
-                if instring=0,$e(FormalSpec,pos)="""" {
-                    s instring=1
-                    s pos=pos+1
-                } elseif instring=1,$e(FormalSpec,pos)="""" {
-                    s pos=pos+1
-                    if $e(FormalSpec,pos)="""" {
-                        s pos=pos+1
-                    } else {
-                        s instring=0
+        If $EXTRACT(FormalSpec,pos)="=" {
+            Set pos=pos+1,start=pos
+            Set dok=1,instring=0
+            While dok {
+                If instring=0,$EXTRACT(FormalSpec,pos)="""" {
+                    Set instring=1
+                    Set pos=pos+1
+                } ElseIf instring=1,$EXTRACT(FormalSpec,pos)="""" {
+                    Set pos=pos+1
+                    If $EXTRACT(FormalSpec,pos)="""" {
+                        Set pos=pos+1
+                    } Else {
+                        Set instring=0
                     }
-                } else {
-                    s pos=pos+1
+                } Else {
+                    Set pos=pos+1
                 }
                 ; end of default
-                s dok=1
-                i $e(FormalSpec,pos)="" s dok=0
-                i instring=0,$e(FormalSpec,pos)="," s dok=0
+                Set dok=1
+                If $EXTRACT(FormalSpec,pos)="" Set dok=0
+                If instring=0,$EXTRACT(FormalSpec,pos)="," Set dok=0
             }
-            s default=$e(FormalSpec,start,pos-1)
+            Set default=$EXTRACT(FormalSpec,start,pos-1)
         }
 
-        s fslist=fslist_$lb($lb(name,type,mode,default)_typeparams)
+        Set fslist=fslist_$LISTBUILD($LISTBUILD(name,type,mode,default)_typeparams)
 
         ; next
-        s ok=0
-        i $e(FormalSpec,pos)="," {
-            s ok=1
-            s pos=pos+1
+        Set ok=0
+        If $EXTRACT(FormalSpec,pos)="," {
+            Set ok=1
+            Set pos=pos+1
         }
     }
-    q fslist
+    Quit fslist
 }
 
 Method ListIndexDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierRS
@@ -697,7 +697,7 @@ Method GetMethodDetails(ClassName As %String, Name As %String, Output ReturnType
     ;Set SQLName=$LISTGET(data,8)
     Set FormalSpec=$LISTGET(data,9)
 
-    $$$DEBUG(("GetMethodDetails "_ClassName_"||"_Name_" data="_$s(data="":"null",1:"ok")))
+    $$$DEBUG(("GetMethodDetails "_ClassName_"||"_Name_" data="_$SELECT(data="":"null",1:"ok")))
 
     If data="" Quit 0
 	Quit 1
@@ -725,8 +725,8 @@ Method GetMethodReturnType(ClassName As %String, Name As %String, Output FormalS
             Do ..GetIndexDetails(ClassName,sname,.typeclass)
             If typeclass="" Set typeclass="%Compiler.Type.Index"
             Do ..GetMethodDetails(typeclass,smethod,.returntype,.sorigin)
-            if returntype="%Library.ObjectHandle",sorigin="%Compiler.Type.Index" {
-                set returntype=ClassName
+            If returntype="%Library.ObjectHandle",sorigin="%Compiler.Type.Index" {
+                Set returntype=ClassName
             }
         } If stype="q" {
             Do ..GetQueryDetails(ClassName,sname,.typeclass)
@@ -741,10 +741,10 @@ Method GetMethodReturnType(ClassName As %String, Name As %String, Output FormalS
 
     ; if the method returns an object handle its probably %Open or %New or an IndexOpen or something that returns itself
     If returntype="%Library.ObjectHandle" {
-        if origin="%Library.SystemBase" { 
+        If origin="%Library.SystemBase" { 
             Set returntype=ClassName
-        } elseif origin="%Library.Persistent" {
-            set returntype=ClassName
+        } ElseIf origin="%Library.Persistent" {
+            Set returntype=ClassName
         }
     }
 
@@ -800,7 +800,7 @@ Method GetQueryDetails(ClassName As %String, Name As %String, Output Type As %St
 ClassMethod FullClassName(Class As %String, CurrentPackage As %String = "") As %String
 {
 	If Class="" Quit ""
-    set name=$TRANSLATE(Class,"""","") ; remove quotes
+    Set name=$TRANSLATE(Class,"""","") ; remove quotes
 	If $EXTRACT(name,1)="%",$LENGTH(name,".")=1 Set name="%Library."_$EXTRACT(name,2,*)
 	If name'[".",CurrentPackage'="" Set name=CurrentPackage_"."_name
 	Quit name
@@ -1011,7 +1011,7 @@ Method GetParameterDetails(ClassName As %String, Name As %String, Output Type As
 	; sometimes fields have quotes around
 	If $EXTRACT(ufield,1)="""",$EXTRACT(ufield,*)="""" Set ufield=$EXTRACT(ufield,2,*-1)
     ; sometimes it is referred to starting #
-    if $EXTRACT(ufield,1)="#" set ufield=$e(ufield,2,*)
+    If $EXTRACT(ufield,1)="#" Set ufield=$EXTRACT(ufield,2,*)
 
     Do ..CacheIfNecessary(fcn,"GAD")
 

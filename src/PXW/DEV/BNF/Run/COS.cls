@@ -528,10 +528,10 @@ Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 
 Method Dyadicop(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
-    d:..needsWScheck ..skipWhiteSpaceAndComments()
-    s p=$$$peek(..stream,1)
-    i ":,{}$()"[p q 0 ; timesaver, these chars are NOT part of dyadicop
-    i p'?1P q 0 ; timesaver
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+    Set p=$$$peek(..stream,1)
+    If ":,{}$()"[p Quit 0 ; timesaver, these chars are NOT part of dyadicop
+    If p'?1P Quit 0 ; timesaver
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	;$$$DEBUG("%path="_%path)
@@ -1252,7 +1252,7 @@ Method SubExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 Method CloseBracket(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
 {
     ;If ..isStringSingle(")",.value)=0 Quit 0
- 	if '(..isStringSingle(")",.value)) { quit 0 /* normal */ /*3 */ }
+ 	If '(..isStringSingle(")",.value)) { Quit 0 /* normal */ /*3 */ }
     $$$DEBUGMethodBegin
     Set atom=..newAtom("punctuation",..nextNotEOL(1))
     Do ParentElement.AddPart(atom)

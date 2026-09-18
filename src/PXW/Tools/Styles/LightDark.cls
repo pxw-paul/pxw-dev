@@ -190,7 +190,7 @@ Method WriteStyles()
 
 	/* various high-lighting styles */
 
-	.hilite {  background-color: var(--bgHilite); border-bottom:1px solid yellow;
+	.hilite {  background-color: var(--bgHilite); 
 		animation-name: blinker;
 		animation-duration: 1s;
 		animation-iteration-count:20;

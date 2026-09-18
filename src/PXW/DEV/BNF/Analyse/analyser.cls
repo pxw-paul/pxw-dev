@@ -32,12 +32,14 @@ Method checkElement(element As PXW.DEV.Element)
 	}
 }
 
-Method AddElementWarning(element As PXW.DEV.Element, text As %String)
+Method AddElementWarning(element As PXW.DEV.Element, type as %String, text As %String)
 {
 	; errors will be reported on atoms
 	Set a=element.FirstAtom()
 	If $ISOBJECT(a) {
-		Set ..ElementWarnings(+a)=$GET(..ElementWarnings(+a))_text_" "
+		Set prev=$GET(..ElementWarnings(+a))
+		Set sep=$SELECT(prev="":"",1:$CHAR(13))
+		Set ..ElementWarnings(+a)=prev_sep_type_":"_text_" "
 	}
 }
 

@@ -11,6 +11,8 @@ Property ItemKey2 As %String(MAXLEN = 1024);
 
 Property LineNumber As %Integer;
 
+/// Short Type of the warning (eg UNDEF)
+property Type as %String;
 Property Description As %String(MAXLEN = 1024, TRUNCATE = 1);
 
 Index iAll On (NameSpace, ItemType, ItemKey1, ItemKey2);
@@ -40,6 +42,9 @@ Storage Default
 </Value>
 <Value name="7">
 <Value>Description</Value>
+</Value>
+<Value name="8">
+<Value>Type</Value>
 </Value>
 </Data>
 <DataLocation>^PXW.Xref.AnalysisDataD</DataLocation>

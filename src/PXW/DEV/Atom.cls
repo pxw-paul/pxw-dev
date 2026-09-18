@@ -50,7 +50,7 @@ Method ToString(wspace As %String = "") As %String
 /// write out basic info of the atom
 Method write(indent As %String)
 {
-	Write ($j($l(indent),2))_indent_"type="_..type,!
+	Write ($j($l(indent),2))_indent_"type="_..type_" @"_+$THIS,!
 	;i $isobject(..whitespace) d ..whitespace.display(indent_"  ")
 	Write ($j($l(indent),2))_indent_" "_..start_..value_..end,!
 }
@@ -58,7 +58,7 @@ Method write(indent As %String)
 /// write out the full details of the atom (with comments etc)
 Method writeFull(indent As %String)
 {
-	Write ($j($l(indent),2))_indent_"type="_..type,!
+	Write ($j($l(indent),2))_indent_"type="_..type_" @"_+$THIS,!
 	Do:$ISOBJECT(..whitespace) ..whitespace.writeFull(indent_"  ")
 	Do:$ISOBJECT(..comment) ..comment.writeFull(indent_"  ")
 	Write ($j($l(indent),2))_indent_" "_$zconvert(..start_..value_..end,"O","JS"),!

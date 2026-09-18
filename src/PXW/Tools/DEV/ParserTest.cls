@@ -58,7 +58,7 @@ ClassMethod WriteMainRight(ByRef scratch)
                 If $ISOBJECT(atoms) {
                     For i=1:1:atoms.Count() {
                         Set atom=atoms.GetAt(i)
-                        Write !,i_" "_$PIECE(atom.type,":",1)_":"_a.value
+                        Write !,i_" "_$PIECE(atom.type,":",1)_":"_atom.value
                     }
                 }
                 $$$DEBUGResume

@@ -104,17 +104,19 @@ Method Build(Namespace As %String, ItemKey1 As %String, PreLoadedText As %String
 
 Method SaveAnalysis(atom As PXW.DEV.Atom, Description As %String) As %Status
 {
-	Set adata=##class(PXW.Xref.AnalysisData).%New()
-	Set adata.ItemKey1=..CalledByClassName
-	Set adata.ItemKey2=..CalledByItemName
-	Set adata.ItemType="CLS"
-	Set adata.LineNumber=$SELECT(..FixedLineNumber:..FixedLineNumber,1:atom.line)
-	Set adata.Description=Description
-	;Set sc=adata.%Save()
-	;If $$$ISERR(sc) {
-	;	$$$DEBUG($EXTRACT($SYSTEM.Status.GetErrorText(sc),1,100))
-	;}
-	$$$DEBUGSC(sc,adata.%Save())
+	; description can contain several warnings separated by $c(13)
+	For i=1:1:$LENGTH(Description,$CHAR(13)) {
+		Set desc=$PIECE(Description,$CHAR(13),i)
+		$$$DEBUG("Save analysis:"_desc)
+		Set adata=##class(PXW.Xref.AnalysisData).%New()
+		Set adata.ItemKey1=..CalledByClassName
+		Set adata.ItemKey2=..CalledByItemName
+		Set adata.ItemType="CLS"
+		Set adata.LineNumber=$SELECT(..FixedLineNumber:..FixedLineNumber,1:atom.line)
+		Set adata.Description=$PIECE(desc,":",2,*)
+		Set adata.Type=$PIECE(desc,":",1)
+		$$$DEBUGSC(sc,adata.%Save())
+	}
 	Quit sc
 }
 
@@ -147,19 +149,19 @@ Method SaveCOSXref(ItemType As %String, ItemKey1 As %String, ItemKey2 As %String
 	
 	; for xref to classes set the full spec of the class - maybe a new method needed for CLS and others
 	; * is a special case where we know the method but not the class (eg $classmethod)
-	set ik1=ItemKey1
-	if ik1="*" {
+	Set ik1=ItemKey1
+	If ik1="*" {
 
-	} elseif ItemType="CLS" {
-		s ik1=..ClassServer.FullClassName(ItemKey1,$PIECE(..CalledByClassName,".",1,*-1))
-		if '..ClassServer.GetPropertyDetails(ik1,ItemKey2)
+	} ElseIf ItemType="CLS" {
+		Set ik1=..ClassServer.FullClassName(ItemKey1,$PIECE(..CalledByClassName,".",1,*-1))
+		If '..ClassServer.GetPropertyDetails(ik1,ItemKey2)
 		, '..ClassServer.GetMethodDetails(ik1,ItemKey2)
 		, '..ClassServer.GetParameterDetails(ik1,ItemKey2)
 		, '..ClassServer.GetIndexDetails(ik1,ItemKey2)
 		, '..ClassServer.GetQueryDetails(ik1,ItemKey2)
 		{
 			$$$DEBUG("ItemKey1 set to UNKNOWN: "_ItemKey1_":"_ItemKey2)
-			s ik1="UNKNOWN ("_ik1_")"
+			Set ik1="UNKNOWN ("_ik1_")"
 		}
 	} 
 	Set xref=##class(PXW.Xref.Data).%New()
@@ -191,13 +193,13 @@ Method SaveCOSXref(ItemType As %String, ItemKey1 As %String, ItemKey2 As %String
 		Set origin="",stub=""
 		If ..ClassServer.GetMethodDetails(ItemKey1,ItemKey2,,.origin,.stub),origin'=ItemKey1 {
 			; also xref the origin class
-			if origin'="" {
+			If origin'="" {
 				$$$DEBUG("Calling save(method) "_origin_":"_ItemKey2)
 				Do ..SaveCOSXref(ItemType,origin,ItemKey2,CalledByCommand,Atom)
 			}
 		} ElseIf ..ClassServer.GetPropertyDetails(ItemKey1,ItemKey2,,,,.origin),origin'=ItemKey1 {
 			; also xref the origin class
-			if origin'="" {
+			If origin'="" {
 				$$$DEBUG("Calling save(property) "_origin_":"_ItemKey2)
 				Do:origin'="" ..SaveCOSXref(ItemType,origin,ItemKey2,CalledByCommand,Atom)
 			}
@@ -206,21 +208,21 @@ Method SaveCOSXref(ItemType As %String, ItemKey1 As %String, ItemKey2 As %String
 			If ($PIECE(stub,".",*)="q") {
 				; if the item is a function based on a query (eg GetFunc) then xref the query
 				Set query=$PIECE(stub,".",1)
-				if query'="" {
+				If query'="" {
 					$$$DEBUG("Calling save(query) "_ItemKey1_":"_query)
 					Do ..SaveCOSXref(ItemType,ItemKey1,query,CalledByCommand,Atom)
 				}
 			} ElseIf $PIECE(stub,".",*)="a" {
 				; if the item is a function based on a property (eg ThingGetLogicalToDisplay) then xref the property
 				Set prop=$PIECE(stub,".",1)
-				if prop'="" {
+				If prop'="" {
 					$$$DEBUG("Calling save(prop) "_ItemKey1_":"_prop)
 					Do ..SaveCOSXref(ItemType,ItemKey1,prop,CalledByCommand,Atom)
 				}
 			} ElseIf $PIECE(stub,".",*)="i" {
 				; if the item is a function based on an index (eg PKOpen) then xref the property
 				Set index=$PIECE(stub,".",1)
-				if index'="" {
+				If index'="" {
 					$$$DEBUG("Calling save(index) "_ItemKey1_":"_index)
 					Do ..SaveCOSXref(ItemType,ItemKey1,index,CalledByCommand,Atom)
 				}
@@ -249,7 +251,7 @@ Method SaveSQLXref(ItemType As %String, ItemKey1 As %String, ItemKey2 As %String
 	Set xref.CalledByCommand=CalledByCommand
 	Set xref.ItemType=ItemType
 	Set xref.ItemKey1=ItemKey1
-	Set xref.ItemKey2=$tr(ItemKey2,$c(34),"") ; remove "" from sql names
+	Set xref.ItemKey2=$TRANSLATE(ItemKey2,$CHAR(34),"") ; remove "" from sql names
 	If 'xref.AlreadyExists() {
 		Set sc=xref.%Save()
 		If $$$ISERR(sc) {
@@ -275,7 +277,7 @@ Method xrefElement(element As PXW.DEV.Element)
 	$$$DEBUGMethodBegin
     Set oldXMLPath=..XMLPath
 
-	do ..processSpecificElement(element)
+	Do ..processSpecificElement(element)
 
 	If element.type="WithClause" {
        Set aliasE=element.findFirstElementByType("AliasName")	
@@ -285,7 +287,7 @@ Method xrefElement(element As PXW.DEV.Element)
  	; from SQL
 	Set oldInView=..InView
 
-	set akey=""
+	Set akey=""
 	For  {
 		Set part=element.partsGetNext(.akey)
 		Quit:akey=""
@@ -293,7 +295,7 @@ Method xrefElement(element As PXW.DEV.Element)
 	    If part.IsElement {
 			Do ..xrefElement(part)
 		} ElseIf part.IsAtom {
-			set atom=part
+			Set atom=part
             Set type=$$$UPPER($PIECE(atom.type,":",1))
             ; this is the word "method" or "property" etc
             If type="KEYWORD" {
@@ -435,7 +437,7 @@ Method xrefCDEFOneClassmember(element As PXW.DEV.BNF.Elements.ClassDefinition) A
 	Set ..Analyser.ClassServer=..ClassServer
 	Set ..Analyser.This=..CalledByClassName
 	Set ..Analyser.ThisMethod=name ; the property we should use for this is worked out too late, COME BACK TO THIS AND FIX
-	set ..Analyser.ClassIsAbstract=..classIsAbstract
+	Set ..Analyser.ClassIsAbstract=..classIsAbstract
 	If ..Analyser Do ..Analyser.checkElement(element)
 
 	; method,query,property etc
@@ -575,23 +577,23 @@ Method xrefCOSSpecialSystem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.
 	#dim atom as PXW.DEV.Atom
 
     Set classname="%SYSTEM"
-    set key="",chainE=""
-    for  {
+    Set key="",chainE=""
+    For  {
 		; DOES THIS WORK!?
-        set part=element.partsGetNext(.key)
-        quit:key=""
-        if $PIECE(part.type,":",1)="ObjectMemberIdentifier" {
-			set atom=part
-            set classname=classname_"."_atom.value
-        } elseif part.type="ObjectChain" {
-            set chainE=part
+        Set part=element.partsGetNext(.key)
+        Quit:key=""
+        If $PIECE(part.type,":",1)="ObjectMemberIdentifier" {
+			Set atom=part
+            Set classname=classname_"."_atom.value
+        } ElseIf part.type="ObjectChain" {
+            Set chainE=part
         }
     }
     ;if $ISOBJECT(firstAtomOfClass),$ISOBJECT(lastAtomOfClass) {
         ;do ..wrapAtomHTML(firstAtomOfClass,"<a class="""_$$$classProgramName_""" href="""_..HREFToClass(classname)_""">","")
         ;do ..wrapAtomHTML(lastAtomOfClass,"","</a>")
     ;}
-    do:$ISOBJECT(chainE) ..FollowObjectChainForType(chainE,classname)
+    Do:$ISOBJECT(chainE) ..FollowObjectChainForType(chainE,classname)
     $$$DEBUGMethodEnd
     Quit ""
 }
@@ -618,7 +620,7 @@ Method xrefCOSVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compi
 		; when working out a type use the #DIM type if there is one
 		Set classname=$GET(..Analyser.DimmedTypes(variablename))
 		If classname="" {
-			set classname=$GET(..Analyser.VariablesTypesElement(+element))
+			Set classname=$GET(..Analyser.VariablesTypesElement(+element))
 			Set:classname="" classname=$GET(..Analyser.VariablesTypes(variablename))
 		}
 		$$$DEBUG("xrefCOSVariable, variablename="_variablename_", classname="_classname)
@@ -954,9 +956,9 @@ Method xrefSQLStoredFunction(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
 {
     $$$DEBUGMethodBegin
     Set spnameA=element.FirstAtom()
-    if $isobject(spnameA),..This'="",$ISOBJECT(..ClassServer) {
-        set schema=..ClassServer.GetClassSchemaName(..This)
-        if schema'="" {
+    If $ISOBJECT(spnameA),..This'="",$ISOBJECT(..ClassServer) {
+        Set schema=..ClassServer.GetClassSchemaName(..This)
+        If schema'="" {
 			Set class=..ClassServer.GetClassNameFromStoredProc(schema_"."_spnameA.ToString(0),.method,..CalledByClassName)
 			Set cbk2=$GET(..SQLPaths(+element),"unk")
 			If class'="" {
@@ -1012,7 +1014,7 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName
         Set objectchain=ParentElement.findFirstElementByType("ObjectChain",1) ; var.property
     }
     Set path="",sep=""
-	set toclass=StartClassName
+	Set toclass=StartClassName
     While $ISOBJECT(objectchain) {
 		$$$DEBUG("Following chain:"_toclass)
         
@@ -1029,7 +1031,7 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName
 
 		Set command=ParentElement.type
 		Do ..SaveCOSXref("CLS",toclass,propertyatom.value,command,propertyatom)
-		set toclass=$g(..Analyser.VariablesTypesElement(+objectchain))
+		Set toclass=$GET(..Analyser.VariablesTypesElement(+objectchain))
         Set path=path_sep_propertyatom.value,sep="."
 		Do ..xrefCOSParameterChecks(StartClassName,path,objectchain)
 
@@ -1095,7 +1097,7 @@ Method xrefCOSParameterChecks(ClassName As %String, MethodPath As %String, Eleme
         Set paramsE=Element.findFirstElementByType("FunctionParameterList")
         Do paramsE.findElementsByType("FunctionParameter",.plist,0)
         If $ISOBJECT($GET(plist)) {
-            set class="",query=""
+            Set class="",query=""
             Set p1=plist.GetAt(1),p2=plist.GetAt(2)
             ; ----- P1 (classname)
             Kill atoms
@@ -1103,7 +1105,7 @@ Method xrefCOSParameterChecks(ClassName As %String, MethodPath As %String, Eleme
             ;zw flat1,atoms
             ; "classname"
             ; flat1=$lb($lb("String","PXW.DEV.UnitTests.ClassToDisplay"))
-            if atoms.Count()=1,$Piece(atoms.GetAt(1).type,":",1)="String" {
+            If atoms.Count()=1,$PIECE(atoms.GetAt(1).type,":",1)="String" {
                 Set class=atoms.GetAt(1).value
             }
             ; ..%ClassName(1)
@@ -1118,12 +1120,12 @@ Method xrefCOSParameterChecks(ClassName As %String, MethodPath As %String, Eleme
             }
  
             ; ----- P2 (query)
-            if class'="" {
+            If class'="" {
                 Kill atoms
                 Do ..flattenlist(p2,.atoms)
                 ; "classname"
                 ; flat=$lb($lb("String","PXW.DEV.UnitTests.ClassToDisplay"))
-                if atoms.Count()=1,$Piece(atoms.GetAt(1).type,":",1)="String" {
+                If atoms.Count()=1,$PIECE(atoms.GetAt(1).type,":",1)="String" {
                     Set query=atoms.GetAt(1).value
                     Set a=atoms.GetAt(1)
                     ;Do ..wrapAtomHTML(a,"<a class="_$$$classProgramName_" href="""_..HREFToClass(class,query)_""">","</a>")

@@ -17,7 +17,7 @@ Method AddPart(Part As PXW.DEV.Particle)
 	;d ..parts.Insert(Part)
 	; this is faster than the list of objects - not much, 20%, but on dealing with millions of things its something
 	;Set %PXWparts(+$THIS,$INCREMENT(%PXWparts(+$THIS)))=Part
-	$$$ELEMENTPARTADDInternal($this,Part)
+	$$$ELEMENTPARTADDInternal($THIS,Part)
 }
 
 Method partsGetAt(key As %Integer) As PXW.DEV.Particle
@@ -34,13 +34,13 @@ Method partsGetNext(ByRef key As %Integer) As PXW.DEV.Particle
 
 Method partsCount() As %Integer
 {
-	quit $$$ElementPartsCountInternal($THIS)
+	Quit $$$ElementPartsCountInternal($THIS)
 }
 
 /// Copy all the parts from the source element into the current element, adding to the end of the parts (not replacing)
 Method partsCopy(Source As PXW.DEV.Element)
 {
-	$$$ELEMENTPARTCOPYInternal($this,Source)
+	$$$ELEMENTPARTCOPYInternal($THIS,Source)
 	;Set src=+Source,this=+$THIS,c2=$GET(%PXWparts(this))
 	;For i=1:1:%PXWparts(src) Set %PXWparts(this,$INCREMENT(c2))=%PXWparts(src,i)
 	;Set %PXWparts(this)=c2
@@ -85,8 +85,8 @@ Method ToString(wspace As %String = "") As %String
 	#dim a as PXW.DEV.Particle
 
 	Set str=""
-	For akey=1:1:$$$ElementPartsCount($this) {
-		set a=$$$ElementPartsGetAt($this,akey)
+	For akey=1:1:$$$ElementPartsCount($THIS) {
+		Set a=$$$ElementPartsGetAt($THIS,akey)
 		Set str=str_a.ToString(wspace)
 	}
 	
@@ -292,11 +292,11 @@ Method findElementsXPath(Path As %String, ByRef OutputList As %Library.ListOfObj
 	#dim item1 as PXW.DEV.Element
 	$$$DEBUGMethodBegin
 	; find everything on the first step of the path
-	set pathList=$listfromstring(Path,"/")
+	Set pathList=$LISTFROMSTRING(Path,"/")
 	Set stepI=0
-	if $listnext(pathList,stepI,step1) {
+	If $LISTNEXT(pathList,stepI,step1) {
 		Set stepField=$PIECE(step1,"[",1),stepCondition=$PIECE($PIECE(step1,"[",2,*),"]",1)
-		s list1=""
+		Set list1=""
 		Do ..findElementsXPathCondition(stepField,stepCondition,.list1)
 		
 		; go along each step after and find all the sub elements that are in the previous list
@@ -305,13 +305,13 @@ Method findElementsXPath(Path As %String, ByRef OutputList As %Library.ListOfObj
 		; list1 from above builds list2, list1 is reset to list2 and it runs again
 		; if the step is * this means anything will do (look deep)
 		; otherwise just look a the next level
-		if list1 {
+		If list1 {
 			;Set stepI=stepI+1
 			;For si=stepI:1:$LENGTH(Path,"/") {
 			;	Set step2=$PIECE(Path,"/",si)
-			while $listnext(pathList,stepI,step2) {
-				set list2=""
-				if list1 {
+			While $LISTNEXT(pathList,stepI,step2) {
+				Set list2=""
+				If list1 {
 					Set stepField=$PIECE(step2,"[",1),stepCondition=$PIECE($PIECE(step2,"[",2,*),"]",1)
 					For i=1:1:list1.Count() {
 						Set item1=list1.GetAt(i)
@@ -324,14 +324,14 @@ Method findElementsXPath(Path As %String, ByRef OutputList As %Library.ListOfObj
 	}
 	; the logic above is confusing me, below feels wrong, but I want to ADD to the output list if there is already one
 	; meaning the the function is called twice with the same .outputlist on the caller all the elements are added together.
-	If list1,$g(OutputList) {
+	If list1,$GET(OutputList) {
 		For i=1:1:list1.Count() { 
 			Do OutputList.Insert(list1.GetAt(i))
 		}
 	} Else {
 		Set OutputList=list1
 	}
-	$$$DEBUG("OuputList.Count()="_$s(OutputList:OutputList.Count(),1:"UNDEFINDED"))
+	$$$DEBUG("OuputList.Count()="_$SELECT(OutputList:OutputList.Count(),1:"UNDEFINDED"))
 	$$$DEBUGMethodEnd
 }
 /// Condition only supports = at the moment
@@ -341,17 +341,17 @@ Method findElementsXPathCondition(Type As %String, Condition As %String, ByRef O
 	Set condfield=$PIECE(Condition,"=",1)
 	Set condvalue=$PIECE(Condition,"=",2,*)
 	Set uType=$$$UPPER(Type)
-	For i=1:1:$$$ElementPartsCount($this) {
-		Set ele=$$$ElementPartsGetAt($this,i)
+	For i=1:1:$$$ElementPartsCount($THIS) {
+		Set ele=$$$ElementPartsGetAt($THIS,i)
 		If ele.IsElement,$$$UPPER(ele.type)=uType {
 			If 'OutputList { 
 				Set OutputList=##class(%Library.ListOfObjects).%New()
 			}
 			If condfield'="" {
-				set itemstocheck=""
+				Set itemstocheck=""
 				Do ele.findElementsXPath(condfield,.itemsToCheck)
 				Set ok=1
-				if itemstocheck {
+				If itemstocheck {
 					For j=1:1:itemsToCheck.Count() {
 						Set condE=itemsToCheck.GetAt(j)
 						Set value=condE.ToString()
@@ -375,7 +375,7 @@ Method findElementsXPathCondition(Type As %String, Condition As %String, ByRef O
 
 Method %OnNew(type As %String) As %Status
 {
-	set:$d(type) ..type=type
+	Set:$DATA(type) ..type=type
 	Quit $$$OK
 }
 
