@@ -75,9 +75,9 @@ Query GetByDate(NameSpace As %String, ItemType As %String = "", ItemKey1 As %Str
 	--ENDIF
 	--IF Type'="" 
 		--IF $E(Type,*)="*" 
-			AND Type %STARTSWITH $PIECE(:Type,'*',1)
+			AND ad.Type %STARTSWITH $PIECE(:Type,'*',1)
 		--ELSE
-			AND Type %INLIST $LISTFROMSTRING(:Type)
+			AND ad.Type %INLIST $LISTFROMSTRING(:Type)
 		--ENDIF
 	--ENDIF
 	ORDER BY 

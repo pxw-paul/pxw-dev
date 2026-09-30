@@ -1624,10 +1624,16 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName
                 Set propertyatom=atom
             }
         }
-
-        Set path=path_"."_propertyatom.value
-		Do ..wrapAtomHTML(propertyatom,"<a class="""_$$$classObjectMember_""" href="""_..HREFToClass(toclass,propertyatom.value)_""">","</a>")
-        Set toclass=$GET(..Analyser.VariablesTypesElement(+objectchain))
+        ; If we have an analyser then use it's results otherwise work it out the old way:
+        ; The old way is to build a "path" and put that into the href and work out the
+        ; final class when the link is clicked.
+        if $ISOBJECT(..Analyser) {
+            Do ..wrapAtomHTML(propertyatom,"<a class="""_$$$classObjectMember_""" href="""_..HREFToClass(toclass,propertyatom.value)_""">","</a>")
+            Set toclass=$GET(..Analyser.VariablesTypesElement(+objectchain))
+        } else {
+            Set path=path_"."_propertyatom.value
+            Do ..wrapAtomHTML(propertyatom,"<a class="""_$$$classObjectMember_""" href="""_..HREFToClass(toclass,path)_""">","</a>")
+        }
         Do ..writeCOSParameterChecks(StartClassName,path,objectchain)
 
         Set objectchain=objectchain.findFirstElementByType("ObjectChain",0) 

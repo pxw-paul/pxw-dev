@@ -30,7 +30,8 @@ ClassMethod WriteMainBody()
 				</details>
 				<details open>
 					<summary id="MainForm">Main Form</summary>
-					<form>
+					#($s(##class(PXW.Tools.Index).WriteForm(..%ClassName(1),..#ToolType,..#ToolName):"",1:"FAILED TO WRITE FORM"))#
+					<!--form>
 						<fieldset>
 							<legend>Main form</legend>
 							<table>
@@ -41,7 +42,7 @@ ClassMethod WriteMainBody()
 								</tr>
 							</table>
 						</fieldset>
-					</form>
+					</form-->
 				</details>
 		<!-- /*</div> -->
 		
@@ -64,7 +65,7 @@ ClassMethod WriteNav(ByRef scratch)
 		<a href="#">Nav 2 (no style)</a>
 		<a href="#">These are simple links</a>
 		<hr>
-		<form>
+		<!--form>
 			<fieldset>
 				<legend>Nav form</legend>
 				<table>
@@ -75,9 +76,10 @@ ClassMethod WriteNav(ByRef scratch)
 					</tr>
 				</table>
 			</fieldset>
-		</form>
+		</form-->
 
 	>
+	d ##class(PXW.Tools.Index).WriteForm(..%ClassName(1),..#ToolType,..#ToolName)
 }
 
 ClassMethod WriteHilite() As %String
@@ -354,6 +356,15 @@ ClassMethod WriteStyleChangeSelection() As %String
 	Quit ""
 }
 
+/// <p>
+/// Switch to a new style.
+/// </p>
+/// <dl>
+///     <dt>NewStyle</dt>
+///     <dd>The name of the new style to use.</dd>
+/// </dl>
+/// <p>
+/// Styles can be created by extending <class>PXW.Tools.Styles.super</class>
 ClassMethod HREFTo(NewStyle As %String) As %String
 {
 	set NewStyle=$G(NewStyle,$G(%STYLENAME))

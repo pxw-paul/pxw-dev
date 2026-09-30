@@ -124,7 +124,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 		Set s="" For  Set s=$ORDER(%pxwstrings(s),1,n) Quit:s=""  Set %pxwstringsX(n,s)=""
 		Write "<pre>" ZWrite %pxwstrings,%pxwstringsX,%pxw1,%RBCOUNT Write "</pre>"
 		Set totaltime=0,totalcalls=0
-		Set rs=##clasS(%Library.ResultSet).%New("PXW.Debuggers.Timing:SelectResults")
+		Set rs=##clasS(%Library.ResultSet).%New("PXW.Tools.DebugTiming:SelectResults")
 		$$$THROWONERROR(sc,rs.%Execute())
 		&html<<table filename="Timings.csv">
 			<tr><th>ClassName</th><th>MethodName</th><th>TotalTime</th><th>CountOfCalls</th><th>AverageTime</th><th>PercentageOfTime</th></tr>>

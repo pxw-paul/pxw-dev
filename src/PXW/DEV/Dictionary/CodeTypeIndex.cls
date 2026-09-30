@@ -27,7 +27,7 @@ ClassMethod RegisterType(Usage As %String, CodeType As %String, Class As %String
     If cti.Class=Class {
         Set sc=cti.%Save()
     } Else {
-        Set sc=$$$ERROR(5001,"CodeType ("_Usage_","_CodeType_") is already linked to "_cti.DisplayPageClass)
+        Set sc=$$$ERROR(5001,"CodeType ("_Usage_","_CodeType_") is already linked to "_cti.Class)
     }
     Quit sc
 }

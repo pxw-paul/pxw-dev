@@ -30,7 +30,7 @@ ClassMethod WriteXRef(itemtype As %String, itemk1 As %String, itemk2 As %String,
 	Set newflags=$REPLACE(newflags,",BY CALLED","")
 	Write "<table filename='XREF_"_itemk1_"'>"
 	Write "		<thead>",!
-	Write "			<tr>",!
+	Write "			<p>",!
 	Write "				<th><a href="""_(..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,newflags_",BY ITEM"))_""">Item Key1</a></th>",!
 	Write "				<th><a href="""_(..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,newflags_",BY ITEM"))_""">Item Key2</a></th>",!
 	Write "				<th>Mode</th>",!
@@ -40,7 +40,7 @@ ClassMethod WriteXRef(itemtype As %String, itemk1 As %String, itemk2 As %String,
 	Write:showk3 "				<th><a href="""_(..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,newflags_",BY CALLED"))_""">Called By Key3</a></th>",!
 	Write:showln "				<th><a href="""_(..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,newflags_",BY CALLED"))_""">Line</a></th>",!
 	Write "				<th>Code</th>",!
-	Write "			</tr>",!
+	Write "			</p>",!
 	Write "		</thead>",!
 	Write "		<tbody>",!
 	Write "		",! 
@@ -99,47 +99,49 @@ ClassMethod WriteNav()
 	If flags'["SUPER" Write "<a href="""_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,flags_",SUPER",codeSearch)_""">Include Super</a>"
 	If flags["SUPER" Write "<a href="""_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,$REPLACE(flags,",SUPER",""),codeSearch)_""">Exclude Super</a>"
 
+	d ##class(PXW.Tools.Index).WriteForm(..%ClassName(1),..#ToolType,..#ToolName)
+
+	/*
 	&html<
 		<form action='PXW.Tools.DEV.Xref.cls'>
 			<fieldset>
 				<legend id=PXWToolsDEVXreflegend>PXW.Tools.DEV.Xref</legend>
 				<input type=hidden name=IFRAME value='0'>
 				<input type=hidden name='%NS' value='#($GET(%NS))#'>
-				<table>
 				
-				<tr><td class=prompt>ItemType</td>
-				<td><input type=text accesskey=A name=IT value='#(itemtype)#'></td>
-				</tr>
-				<tr><td class=prompt>ItemKey1</td>
-				<td><input type=text name=IK1 value='#(itemk1)#'></td>
-				</tr>
-				<tr><td class=prompt>ItemKey2</td>
-				<td><input type=text name=IK2 value='#(itemk2)#'></td>
-				</tr>
-				<tr><td class=prompt>Mode</td>
-				<td><input type=text name=CBC value='#(calledByCommand)#'></td>
-				</tr>
-				<tr><td class=prompt>CalledByKey1</td>
-				<td><input type=text name=CBK1 value='#(calledByKey1)#'></td>
-				</tr>
-				<tr><td class=prompt>CalledByKey2</td>
-				<td><input type=text name=CBK2 value='#(calledByKey2)#'></td>
-				</tr>
-				<tr><td class=prompt>CodeSearch</td>
-				<td><input type=text name=CS value='#(codeSearch)#'></td>
-				</tr>
-				<tr><td class=prompt>WindowSize</td>
-				<td><input type=text name=WS value='#(windowSize)#'></td>
-				</tr>
-				<tr><td class=prompt>Flags</td>
-				<td><input type=text name=F value='#(flags)#'></td>
-				</tr>
-				<tr><td>&nbsp;</td><td><input type=submit></td>
-				</tr>
-				</table>
+				<p><label for=IT>ItemType</label>
+				<input id=IT type=text accesskey=A name=IT value='#(itemtype)#'>
+				</p>
+				<p><label for=IK1>ItemKey1</label>
+				<input id=IK1 type=text name=IK1 value='#(itemk1)#'>
+				</p>
+				<p><label for=IK2>ItemKey2</label>
+				<input id=IK2 type=text name=IK2 value='#(itemk2)#'>
+				</p>
+				<p><label for=CBC>Mode</label>
+				<input id=CBC type=text name=CBC value='#(calledByCommand)#'>
+				</p>
+				<p><label for=CBK1>CalledByKey1</label>
+				<input id=CBK1 type=text name=CBK1 value='#(calledByKey1)#'>
+				</p>
+				<p><label for=CBK2>CalledByKey2</label>
+				<input id=CBK2 type=text name=CBK2 value='#(calledByKey2)#'>
+				</p>
+				<p><label for=CS>CodeSearch</label>
+				<input id=CS type=text name=CS value='#(codeSearch)#'>
+				</p>
+				<p><label for=WS>WindowSize</label>
+				<input id=WS type=text name=WS value='#(windowSize)#'>
+				</p>
+				<p><label for=F>Flags</label>
+				<input id=F type=text name=F value='#(flags)#'>
+				</p>
+				<p><input id=SUB type=submit>
+				</p>
 			</fieldset>
 		</form>
 	>
+	*/
 	Set ons=%NS,%NS="LOCAL_USER"
 	Write "<a target=_blank title='To get an idea of what the parameters can do' href="""_##class(PXW.Tools.DEV.Class).HREFTo("PXW.Xref.Queries","Get")_""">Show query</a>",!
 	Set %NS=ons

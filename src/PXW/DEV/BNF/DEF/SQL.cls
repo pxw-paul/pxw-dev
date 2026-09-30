@@ -67,11 +67,18 @@ join_on						::= 'ON' sql_expression
 
 bracket_table				::= '(' ( (bracket_table join*) | (table_reference join*) ) ')'
 
-table_reference             ::= stored_proc_table | direct_table | derived_table
+table_reference             ::= json_table | stored_proc_table | direct_table | derived_table
 direct_table				::= table_name [ table_as_clause ]
 
 table_reference_noalias     ::= direct_table_noalias | derived_table_noalias
 direct_table_noalias		::= table_name 
+
+json_table					::= 'JSON_TABLE' '(' json_table_value ',' json_table_path 'COLUMNS' json_table_col_map_list ')' table_as_clause?
+json_table_value			::= sql_expression
+json_table_path				::= sql_string
+json_table_col_map_list		::= '(' ','.json_table_col_map+ ')'
+json_table_col_map			::= column_name column_type 'PATH' sql_string
+
 
 index_reference				::= [ table_reference_noalias '.' ] identifier
 index_reference_list		::= index_reference ( ',' index_reference )*
@@ -147,7 +154,10 @@ create_table_command 		::= 'CREATE' 'TABLE' direct_table
 
 create_table_field			::= column_name column_type
 
-column_type					::= ('CHAR' '(' number ')' )
+column_type					::= ('CHAR' '(' number ')')
+								| ('VARCHAR' ['(' number ')'] )
+								| 'TIMESTAMP'
+								| 'INT'
 								
 
 insert_command				::= 'INSERT' (update_keyword)* ['INTO'] direct_table insert_method

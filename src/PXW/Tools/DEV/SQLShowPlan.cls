@@ -177,6 +177,18 @@ ClassMethod WriteScripts()
 	Do ##class(PXW.Tools.DEV.Class).WriteScripts()
 }
 
+/// <p>
+/// Show a query plan for the given query.
+/// </p>
+/// <p>
+/// The SQL is parsed and expanded to show any views as embedded SQL.
+/// </p>
+/// <dl>
+///     <dt>SQL</dt>
+///     <dd>The SQL to be tested.</dd>
+///     <dt>Routine</dt>
+///     <dd>If provided the INT code of the given routine is displayed in place of the parsed SQL.</dd>
+/// </dl>
 ClassMethod HREFTo(SQL As %String,Routine as %String) As %String
 {
     Set href=##super()

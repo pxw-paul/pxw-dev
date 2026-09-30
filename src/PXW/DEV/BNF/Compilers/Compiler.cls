@@ -27,6 +27,7 @@ Method %OnNew(inputText As %String) As %Status
 ClassMethod goload(DEFClass As %String = "", DestinationClass As %String, forceVersion As %String = "") As %Status
 {
     #dim compiler as PXW.DEV.BNF.Compilers.Compiler
+    #dim parser as PXW.DEV.BNF.Compilers.BNF1safe
 
     Set input=..load(DEFClass_"||"_"file",.arr,.version)
     If forceVersion'="" Set version=forceVersion
@@ -46,7 +47,8 @@ ClassMethod goload(DEFClass As %String = "", DestinationClass As %String, forceV
     Set compiler.Loader=$SYSTEM.OBJ.New(DEFClass)
     Set elementtype=$PARAMETER(compiler.Loader,"SubElementType")
     Set KeywordPattern=$PARAMETER(compiler.Loader,"KeywordPattern")
-    If compiler.parser.File(subElement,.fileElement) {
+    Set parser=compiler.parser
+    If parser.File(subElement,.fileElement) {
         Set sc=compiler.compile(fileElement,DestinationClass,elementtype,KeywordPattern) 
         If $$$ISOK(sc) {
             Set sc=$SYSTEM.OBJ.Compile(DestinationClass,"ckb")
@@ -758,7 +760,7 @@ Method compileInteruptableLoop(Method as %Dictionary.MethodDefinition, Element a
 
     ; this will return the puntuation in the list of values
     ; $lb("{","}")
-    Set summary=..summariseRules(Element,.listOfValues)
+    Do ..summariseRules(Element,.listOfValues)
    
     set start=$lg(listOfValues,1)
     set end=$lg(listOfValues,2)

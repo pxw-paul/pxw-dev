@@ -47,7 +47,14 @@ ClassMethod WriteNav(ByRef scratch)
 	Do ##class(PXW.Tools.Index).WriteNav()
 }
 
-ClassMethod HREFTo(NewServer As %String) As %String
+/// <p>
+/// Switch to another NameSpace.
+/// </p>
+/// <dl>
+///     <dt>NameSpace</dt>
+///     <dd>The new namespace to switch to.</dd>
+/// </dl>
+ClassMethod HREFTo(NameSpace As %String) As %String
 {
     Set:$DATA(%NS) ons=%NS
     Set:$DATA(%NSORIGINAL) onso=%NSORIGINAL

@@ -19,7 +19,7 @@ Method checkElement(element As PXW.DEV.Element)
 {
 	#dim a as PXW.DEV.Atom
 
-	Do ..processSpecificElement(element)
+	Do ..processSpecificElement(element,"PRE")
 
 	Set akey=""
 	For  {
@@ -30,6 +30,7 @@ Method checkElement(element As PXW.DEV.Element)
 			Do ..checkElement(part)
 		} 
 	}
+	Do ..processSpecificElement(element,"POST")
 }
 
 Method AddElementWarning(element As PXW.DEV.Element, type as %String, text As %String)

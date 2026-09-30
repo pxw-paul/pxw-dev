@@ -15,7 +15,7 @@ Method WriteStyles()
 
 
 		/* background colours: ;*/
-		--bgNormal: light-dark( #ffffff, #0E0E0E);;
+		--bgNormal: light-dark( #ffffff, #0E0E0E);
 		--bgAlternate1: light-dark( #EEEEEE, #2E2E2E);
 		--bgAlternate2: light-dark( #DDDDDD, #3E3E3E);
 		--bgAlternate3: light-dark( #FFFFFF,black);
@@ -62,7 +62,7 @@ Method WriteStyles()
 	a:active { text-decoration:none;  color: inherit; }
 	pre { margin:0px; tab-size:4; font-size: medium;}
     fieldset { border-color: var(--borderNormal); border-radius:10px 0 5px 0;}
-    
+    fieldset p label { display: block; font-weight: bold; }
     /*
         +----------------------------------------------+
         |header #toolsHead                             |
@@ -108,6 +108,9 @@ Method WriteStyles()
 		padding-bottom:0.2em;
 	}
 
+	dl { margin:20px; }
+	dt { font-weight: bold;}
+
 	/* END of style of the app */
 	/* Start of nav */
 	#toolsMainBodyNav .CDEFPropertyName::after  { white-space: nowrap;  content: " property"; color:silver;}
@@ -118,7 +121,9 @@ Method WriteStyles()
 	#toolsMainBodyNav .CDEFIndexName::after  { white-space: nowrap; content: " index"; color:silver;}
 	#toolsMainBodyNav .CDEFXdataName::after  { white-space: nowrap; content: " xdata"; color:silver;}
 	
-    nav a { margin-top: 0.25em;}
+	#toolsMainBodyNav { resize: horizontal;}
+	nav { background-color: var(--bgAlternate1); height:100%; overflow:auto; }
+    nav a { margin-top: 0.25em; }
 	
 	nav details::details-content {
 		padding-left:2em;

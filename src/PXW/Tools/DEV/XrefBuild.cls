@@ -111,7 +111,21 @@ ClassMethod HREFFrom(Output Package As %String, Output force As %Boolean, Output
   	Set DeleteOld=+%request.Get("DO")
 }
 
-/// This should return a string of the href to this page based on the input parameters
+/// <p>
+/// Build the given package's Xref.
+/// </p>
+/// <dl>
+///     <dt>Package</dt>
+///     <dd>The name of the Package to build. * means build all.</dd>
+///     <dt>Force</dt>
+///     <dd><ul>
+/// 			<li>0 means just rebuild anything that has been updated since the last build.</li>
+///				<li>1 means rebuild anything.</li>
+/// 		</ul>
+///		</dd>
+///     <dt>DeleteOld</dt>
+///     <dd>Delete the history of previous runs.</dd>
+/// </dl>
 ClassMethod HREFTo(Package As %String = "", Force As %Boolean = 0, DeleteOld As %Boolean = 0) As %String
 {
 	Set href=##super()
@@ -131,28 +145,29 @@ ClassMethod WriteNav(ByRef scratch)
 	Write "<a href="""_##class(PXW.Tools.DEV.Analyse).HREFTo("")_""">Analysis results</a>"
 	
 	write "<a href="""_##class(PXW.Tools.DEV.Xref).HREFTo("")_""">Xref Search</a>"
+
+	; DO NOT use the default, we are doing a special thing here, making all the defaults null.
+	;d ##class(PXW.Tools.Index).WriteForm(..%ClassName(1),..#ToolType,..#ToolName)
 	&HTML<
 	<form action="PXW.Tools.DEV.XrefBuild.cls">
 		<fieldset>
 			<legend id="PXWToolsDEVXrefBuildlegend">Xref Build</legend>
 			<input type="hidden" name="IFRAME" value="0">
 			<input type="hidden" name="%NS" value="#($G(%NS))#">
-			<table>			
-				<tbody>
-				<tr><td width="25%" class="prompt">Package</td>
-				<td width="50%"><input type="text" accesskey="A" name="P" value=""></td>
-				</tr>
-				<tr><td width="25%" class="prompt">Force</td>
-				<td width="50%"><input type="checkbox" name="F" value="1"></td>
-				</tr>
-				<tr><td> </td><td><input type="submit"></td></tr>
-			</tbody></table>
+			<p><label for=xrefP>Package</label>
+			<input id=xrefP type="text" accesskey="A" name="P" value="">
+			</p>
+			<p><label for=xrefF>Force</label>
+			<input id=xrefF type="checkbox" name="F" value="1">
+			</p>
+			<p><input type="submit"></p>
 		</fieldset>
 	</form>
 	<!-- Enter the name of the package to build or * for all. 
 		Leave the package empty to display the current status of any builds in progress.
 	-->
 	>
+	
 }
 
 /// Override this method to insert a form onto the header of the page.

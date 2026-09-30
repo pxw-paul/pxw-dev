@@ -20,7 +20,6 @@ ClassMethod WriteStyles()
 
 ClassMethod WriteMainBody()
 {
-
 	Set rs=##class(PXW.Tools.Queries).SelectToolsForNamespaceFunc(%NS)
 	
 	;Write "<div class='grid-container'>"
@@ -29,16 +28,63 @@ ClassMethod WriteMainBody()
 		set name=rs.%Get("ClassName")
 		Set type=rs.%Get("ToolType")
 		Set toolname=rs.%Get("ToolName")
-		Do ..WriteForm(name,type,toolname)
+		Do ..WriteFormInSection(name,type,toolname)
 	}
 	Write "</div>"
 }
 
+/// This will write out the form based on the ClassName HREFTo method.
+/// It pulls the defaults directly from the %request data.
+ClassMethod WriteForm(ClassName As %String, Type As %String, ToolName As %String) as %Status
+{
+	Set HREFto=##class(%Dictionary.MethodDefinition).%OpenId(ClassName_"||HREFTo")
+	Set legname=$TRANSLATE(ClassName,".","")_"legend"
+	Set aname=$TRANSLATE(ClassName,".","")_"anchor"
+	If HREFto="" Quit 1
+	&html<
+		<form action='#(ClassName)#.cls'>
+			<fieldset>
+				<legend id=#(legname)#>#(ToolName)#</legend>
+				<input type=hidden name=IFRAME value='0'>
+				<input type=hidden name='%NS' value='#($GET(%NS))#'>
+				>
+				Set FS=HREFto.FormalSpec
+				Set accesskey="accesskey=A "
+				For i=1:1:$LENGTH(FS,",") {
+					Set VAR=$PIECE($PIECE(FS,",",i),":",1)
+					Set TYP=$PIECE($PIECE(FS,",",i),":",2)
+					Set DEF=$PIECE(TYP,"=",2),TYP=$PIECE(TYP,"=",1)
+					; if this is not a default parameter name output it (this might be left over from a previous thing)
+					If VAR'="",VAR'?1"P"1N {
+						; the url code is normally the capital letters/numbers of the variable name,
+						; if I find one thats not I will deal with this later
+						Set VNAME=$TRANSLATE(VAR,"abcdefghijklmnopqrstuvwxyz")
+						Set DEF=$TRANSLATE(DEF,"""")
+						set DEF=%request.Get(VNAME,DEF)
+						Set iid=aname_VNAME
+						&html<<p><label for=#(iid)#>#(VAR)#</label>>
+						If TYP="%Boolean" {
+							&html<<input id=#(iid)# type=checkbox name=#(VNAME)# value=1 #($SELECT(DEF=1:"checked",1:""))#>>
+						} Else {
+							&html<<input id=#(iid)# type=text #(accesskey)# name=#(VNAME)# value='#(DEF)#'>>
+						}
+						&html<</p>>
+						Set accesskey=""
+					} else {
+						;WRITE "else VAR="_VAR
+					}
+				}
+				&html<<input type=submit>
+			</fieldset>
+		</form>
+	>
+	Quit $$$OK
+}
 /// This is a quick way of dumping out a form from the spec of the method HREFTo.
 /// Its following the convention that Capital letters of the parameter will
 /// be used as the name of the parameter in the URL.
 /// Doing it this way for speed of development.
-ClassMethod WriteForm(ClassName As %String, Type As %String, ToolName As %String) As %Status
+ClassMethod WriteFormInSection(ClassName As %String, Type As %String, ToolName As %String) As %Status
 {
 
 	; if there is no HREFto method then we cannot link to this.
@@ -52,46 +98,15 @@ ClassMethod WriteForm(ClassName As %String, Type As %String, ToolName As %String
 		&html<
 		<details id="#(aname)#" class=#(css)#>
 			<summary>#(ToolName)#</summary>
-			<form action='#(ClassName)#.cls'>
-				<fieldset>
-					<legend id=#(legname)#>#(ToolName)#</legend>
-					<input type=hidden name=IFRAME value='0'>
-					<input type=hidden name='%NS' value='#($GET(%NS))#'>
-					<table>
-					>
-					Set FS=HREFto.FormalSpec
-					Set accesskey="accesskey=A "
-					For i=1:1:$LENGTH(FS,",") {
-						Set VAR=$PIECE($PIECE(FS,",",i),":",1)
-						Set TYP=$PIECE($PIECE(FS,",",i),":",2)
-						Set DEF=$PIECE(TYP,"=",2),TYP=$PIECE(TYP,"=",1)
-						; if this is not a default parameter name output it
-						If VAR'?1"P"1N {
-							; the url code is normally the capital letters/numbers of the variable name,
-							; if I find one thats not I will deal with this later
-							Set VNAME=$TRANSLATE(VAR,"abcdefghijklmnopqrstuvwxyz")
-							Set DEF=$TRANSLATE(DEF,"""")
-							&html<<tr><td width=25% class=prompt>#(VAR)#</td>>
-							If TYP="%Boolean" {
-								&html<<td width=50%><input type=checkbox name=#(VNAME)# value=1 #($SELECT(DEF=1:"checked",1:""))#></td>>
-							} Else {
-								&html<<td width=50%><input type=text #(accesskey)# name=#(VNAME)# value='#(DEF)#'></td>>
-							}
-							&html<<td width=25%>#(TYP)#</td>
-								</tr>>
-							Set accesskey=""
-						}
-					}
-					Set DESC=HREFto.Description
-					; get the stuff between <dl> and </dl>
-					Set DESC=$PIECE($PIECE(DESC,"<dl>",2),"</dl>",1)
-					
-					&html<<tr><td>&nbsp;</td><td><input type=submit></td><td>&nbsp;</td></tr>
-						</table>
-				</fieldset>
-			</form>
-		</details>
 		>
+		w "<span style=""display:inline-block"">" 
+			d ..WriteForm(ClassName,Type,ToolName) 
+		w "</span>"
+		w "<span style=""valign:top; display:inline-block"">" 
+			if HREFto.Description'="" write HREFto.Description
+		w "</span>"
+		
+		&html<</details>>
 	}
 	Quit 1
 }

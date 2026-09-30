@@ -181,10 +181,11 @@ Method CacheIfNecessary(ClassName As %String, Parts As %String = "", TimeStamp A
         Set docache=0
         Set timechanged=$GET(^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD"))
         If timechanged="" Set docache=1
+        If timechanged="no kill" set docache=2,timechanged=""
         If TimeStamp'="",TimeStamp]timechanged Set docache=1
         If docache {
             $$$DEBUG("Fetching from GMD DB_"_ClassName_" timechanged="_timechanged_" TimeStamp="_TimeStamp)
-            Kill ^PXW.Cache("CDEF",NS,fcn,"GMD")
+            Kill:docache=1 ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD")
             Do ..CacheListMethodDetails(fcn)
             Set ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD")=$SELECT(TimeStamp'="":TimeStamp,1:1)
         }
@@ -195,7 +196,7 @@ Method CacheIfNecessary(ClassName As %String, Parts As %String = "", TimeStamp A
         If timechanged="" Set docache=1
         If TimeStamp'="",TimeStamp]timechanged Set docache=1
         If docache {
-            Kill ^PXW.Cache("CDEF",NS,fcn,"GPD")
+            Kill ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GPD")
             $$$DEBUG("Fetching from GPD DB_"_ClassName_" timechanged="_timechanged_" TimeStamp="_TimeStamp)
             Do ..CacheListProperyDetails(fcn)
             Set ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GPD")=$SELECT(TimeStamp'="":TimeStamp,1:1)
@@ -207,7 +208,7 @@ Method CacheIfNecessary(ClassName As %String, Parts As %String = "", TimeStamp A
         If timechanged="" Set docache=1
         If TimeStamp'="",TimeStamp]timechanged Set docache=1
         If docache {
-            Kill ^PXW.Cache("CDEF",NS,fcn,"GAD")
+            Kill ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GAD")
             $$$DEBUG("Fetching from GAD DB_"_ClassName_" timechanged="_timechanged_" TimeStamp="_TimeStamp)
             Do ..CacheListParameterDetails(fcn)
             Set ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GAD")=$SELECT(TimeStamp'="":TimeStamp,1:1)
@@ -220,7 +221,7 @@ Method CacheIfNecessary(ClassName As %String, Parts As %String = "", TimeStamp A
         If TimeStamp'="",TimeStamp]timechanged Set docache=1
         If docache {
             $$$DEBUG("Fetching from GID DB_"_ClassName_" timechanged="_timechanged_" TimeStamp="_TimeStamp)
-            Kill ^PXW.Cache("CDEF",NS,fcn,"GID")
+            Kill ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GID")
             Do ..CacheListIndexDetails(fcn)
             Set ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GID")=$SELECT(TimeStamp'="":TimeStamp,1:1)
         }
@@ -232,7 +233,7 @@ Method CacheIfNecessary(ClassName As %String, Parts As %String = "", TimeStamp A
         If TimeStamp'="",TimeStamp]timechanged Set docache=1
         If docache {
             $$$DEBUG("Fetching from GQD DB_"_ClassName_" timechanged="_timechanged_" TimeStamp="_TimeStamp)
-            Kill ^PXW.Cache("CDEF",NS,fcn,"GQD")
+            Kill ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GQD")
             Do ..CacheListQueryDetails(fcn)
             Set ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GQD")=$SELECT(TimeStamp'="":TimeStamp,1:1)
         }
@@ -293,10 +294,13 @@ Method ListProperyDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierRS
     ;Set sql=sql_"SELECT parent,Name,RuntimeType,SQLFieldName,Collection,Type,Origin "
     ;Set sql=sql_"FROM %Dictionary.CompiledProperty "
     ;Set sql=sql_"WHERE parent=?"
+    ; this fetches the type from the origin class definition, this means that we know if the programmer
+    ; left the type unspecified rather than the default by iris (%string)
     Set sql=sql_"SELECT * FROM("
-    Set sql=sql_"    SELECT parent,Name,RuntimeType,SQLFieldName,Collection,Type,Origin "
-    Set sql=sql_"    FROM %Dictionary.CompiledProperty "
-    Set sql=sql_"    WHERE COALESCE(Parent->ClassType,'')!='view'"
+    Set sql=sql_"    SELECT cp.parent,cp.Name,cp.RuntimeType,cp.SQLFieldName,cp.Collection,pd.Type,cp.Origin "
+    Set sql=sql_"    FROM %Dictionary.CompiledProperty as cp"
+    Set sql=sql_"    LEFT OUTER JOIN %Dictionary.PropertyDefinition as pd on pd.parent=cp.origin and pd.name=cp.name"
+    Set sql=sql_"    WHERE COALESCE(cp.Parent->ClassType,'')!='view'"
     Set sql=sql_"    UNION"
     Set sql=sql_"    SELECT c.Name as parent, p.column_name as name, null as runtimetype, column_name as sqlfieldname, null as collection,null as type, null as Origin"
     Set sql=sql_"    FROM %Dictionary.CompiledClass as c"
@@ -320,8 +324,9 @@ Method CacheListProperyDetails(ClassName As %String, TimeStamp As %TimeStamp = "
         Set cn=rs.%Get("parent")
         Set psqlname=rs.%Get("SqlFieldName")
         Set pname=rs.%Get("Name")
+        Set type=..FullClassName(rs.%Get("Type"),$p(ClassName,".",1,*-1))
         Set data=$LISTBUILD(pname,rs.%Get("RuntimeType"),psqlname,
-                    rs.%Get("Collection"),rs.%Get("Type"),rs.%Get("Origin"))            
+                    rs.%Get("Collection"),type,rs.%Get("Origin"))            
         If psqlname'="" Set ^PXW.Cache("CDEF",NS,$$$UPPER(cn),"GPD","sqlname",$$$UPPER(psqlname))=data
         Set ^PXW.Cache("CDEF",NS,$$$UPPER(cn),"GPD","propertyname",$$$UPPER(pname))=data
     }
@@ -363,7 +368,7 @@ Method ListMethodDetails(ClassName As %String) As PXW.DEV.Dictionary.AtelierRS
  	Set server=..AtelierSettings.ServerName
 	Set sql=""
     Set sql=sql_"SELECT parent,Name,ReturnType,Origin,Stub, FormalSpec, ' ' || FormalSpecParsed as fsp, CodeMode" ; stub is undocumented but it seems to be "source name.method name.source type (i=index,a=property)
-    Set sql=sql_" ,parent->SqlSchemaName,SqlName "
+    Set sql=sql_" ,parent->SqlSchemaName,SqlName,Abstract "
     Set sql=sql_" FROM %Dictionary.CompiledMethod "
     Set sql=sql_" WHERE parent=?"
     Set parameters($INCREMENT(parameters))=ClassName
@@ -384,18 +389,19 @@ Method CacheListMethodDetails(ClassName As %String)
         Set mname=rs.%Get("Name")
         Set stub=rs.%Get("Stub")
         Set rt=rs.%Get("ReturnType")
-        Set fs=..MyFormalSpecParse(rs.%Get("FormalSpec"))
+        Set fs=..MyFormalSpecParse(rs.%Get("FormalSpec"),ClassName)
         Set fsp=$EXTRACT(rs.%Get("fsp"),2,*) ; remove leading " " because atelier does not like the encoded list (in v2)
         Set codemode=rs.%Get("CodeMode")
         Set sqlschema=rs.%Get("SqlSchemaName")
         Set sqlname=rs.%Get("SqlName")
-        Set data=$LISTBUILD(mname,rt,rs.%Get("Origin"),stub,fsp,codemode,sqlschema,sqlname,fs)
+        Set abstract=rs.%Get("Abstract")
+        Set data=$LISTBUILD(mname,rt,rs.%Get("Origin"),stub,fsp,codemode,sqlschema,sqlname,fs,abstract)
         Set ^PXW.Cache("CDEF",NS,$$$UPPER(cn),"GMD",$$$UPPER(mname))=data
         If sqlschema'="",sqlname'="" Set ^PXW.Cache("CDEFPROC",NS,$$$UPPER(sqlschema),$$$UPPER(sqlname))=$LISTBUILD(cn,mname)
     }
 }
 
-classmethod MyFormalSpecParse(FormalSpec as %String) as %List
+classmethod MyFormalSpecParse(FormalSpec as %String,ThisClass as %String) as %List
 {
     Set fslist=""
     Set pos=1
@@ -425,6 +431,7 @@ classmethod MyFormalSpecParse(FormalSpec as %String) as %List
                 Set pos=pos+1 
             }
             Set type=$EXTRACT(FormalSpec,start,pos-1)
+            Set type=..FullClassName(type,$p(ThisClass,".",1,*-1))
             If $EXTRACT(FormalSpec,pos)="(" {
                 Set pos=pos+1
                 ; type parameters
@@ -573,9 +580,10 @@ Method CacheListQueryDetails(ClassName As %String)
 
 Method GetPropertyNameSQL(ClassName As %String, SQLName As %String) As %String
 {
+    If ClassName="" Quit ""
+    If SQLName="" Quit ""
     ;New %NS Set %NS=..Namespace.Name
     Set NS=..Namespace.Name
-    If ClassName="" Quit ""
 
     Set fcn=..FullClassName(ClassName)
     
@@ -597,12 +605,11 @@ Method GetPropertyNameSQL(ClassName As %String, SQLName As %String) As %String
 
 Method GetPropertyTypeSQL(ClassName As %String, SQLName As %String) As %String
 {
-    ;New %NS Set %NS=..Namespace.Name
-    Set NS=..Namespace.Name
     If ClassName="" Quit ""
+    If SQLName="" Quit ""
 
+    Set NS=..Namespace.Name
     Set fcn=..FullClassName(ClassName)
-
  	Set ufield=$$$UPPER(SQLName)
 	; sometimes fields have quotes around
 	If $EXTRACT(ufield,1)="""",$EXTRACT(ufield,*)="""" Set ufield=$EXTRACT(ufield,2,*-1)
@@ -617,9 +624,11 @@ Method GetPropertyTypeSQL(ClassName As %String, SQLName As %String) As %String
 /// Returns 1 if details were found
 Method GetPropertyDetails(ClassName As %String, Name As %String, Output RuntimeType As %String, Output Collection As %String, Output Type As %String, Output Origin As %String) As %Boolean
 {
+    If ClassName="" Quit 0
+    If Name="" Quit 0
+
     ;New %NS Set %NS=..Namespace.Name
     Set NS=..Namespace.Name
-    If ClassName="" Quit 0
     Set fcn=..FullClassName(ClassName)
 
  	Set ufield=$$$UPPER(Name)
@@ -645,6 +654,7 @@ Method GetPropertyDetails(ClassName As %String, Name As %String, Output RuntimeT
 Method GetPropertyParameterDetails(ClassName As %String, PropertyName As %String, ParameterName As %String, Output SourceClass As %String) As %Boolean
 {
     If ClassName="" Quit 0
+    If PropertyName="" Quit 0
     
     Set found=0
     ; find the type of the property
@@ -674,15 +684,41 @@ Method GetPropertyParameterDetails(ClassName As %String, PropertyName As %String
 ///    of %String
 Method GetMethodDetails(ClassName As %String, Name As %String, Output ReturnType As %String, Output Origin As %String, Output Stub As %String, Output FormalSpecParsed As %List, Output CodeMode As %String,FormalSpec as %List) As %Boolean
 {
-    ;New %NS Set %NS=..Namespace.Name
-    Set NS=..Namespace.Name
     If ClassName="" Quit 0
+    If Name="" Quit 0
 
+    Set NS=..Namespace.Name
     Set fcn=..FullClassName(ClassName)
-
- 	Set ufield=$$$UPPER(Name)
+	Set ufield=$$$UPPER(Name)
 	; sometimes fields have quotes around
 	If $EXTRACT(ufield,1)="""",$EXTRACT(ufield,*)="""" Set ufield=$EXTRACT(ufield,2,*-1)
+
+    ; some classes do not have all the inherited members, so work out here
+    ; eg %BigData.ECPMsgConnection
+    if '$d(^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD")) {
+        if ..GetClassDetails(ClassName,,.super) {
+            for i=1:1:$l(super,",") {
+                s superclass=$p(super,",",i)
+                i superclass'="" {
+                    s fullsuper=..FullClassName(superclass)
+                    do ..GetMethodDetails(superclass,Name)
+                    s mname=""
+                    ; do not copy in the abstract methods, they are not inherited
+                    f  {
+                        s mname=$o(^PXW.Cache("CDEF",NS,$$$UPPER(fullsuper),"GMD",mname),1,mdata)
+                        q:mname=""
+                        i +$lg(mdata,10)=0 {
+                            s ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD",mname)=mdata
+                        }
+                    }
+                    ;m ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD")=^PXW.Cache("CDEF",NS,$$$UPPER(fullsuper),"GMD")
+                }
+            }
+            ; reset so that it will cache
+            s ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD")="no kill"
+        }
+    }
+
 
     Do ..CacheIfNecessary(fcn,"GMD")
 	  
@@ -696,6 +732,7 @@ Method GetMethodDetails(ClassName As %String, Name As %String, Output ReturnType
     ;Set SQLSchemaName=$LISTGET(data,7)
     ;Set SQLName=$LISTGET(data,8)
     Set FormalSpec=$LISTGET(data,9)
+    Set Abstract=$LISTGET(data,10)
 
     $$$DEBUG(("GetMethodDetails "_ClassName_"||"_Name_" data="_$SELECT(data="":"null",1:"ok")))
 
@@ -706,8 +743,7 @@ Method GetMethodDetails(ClassName As %String, Name As %String, Output ReturnType
 Method GetMethodReturnType(ClassName As %String, Name As %String, Output FormalSpecParsed as %List, output FormalSpec as %List) As %String
 {
     If ClassName="" Quit ""
-
-    ;s fcn=..FullClassName(ClassName)
+    If Name="" Quit ""
 
 	Set ufield=$$$UPPER(Name)
 	; sometimes fields have quotes around
@@ -755,12 +791,11 @@ Method GetMethodReturnType(ClassName As %String, Name As %String, Output FormalS
 /// Returns 1 if details were found
 Method GetIndexDetails(ClassName As %String, Name As %String, Output TypeClass As %String, Output Origin As %String, Output Properties As %String) As %Boolean
 {
-    ;New %NS Set %NS=..Namespace.Name
-    Set NS=..Namespace.Name
     If ClassName="" Quit 0
+    If Name="" Quit 0
 
+    Set NS=..Namespace.Name
     Set fcn=..FullClassName(ClassName)
-
     Set ufield=$$$UPPER(Name)
 	; sometimes fields have quotes around
 	If $EXTRACT(ufield,1)="""",$EXTRACT(ufield,*)="""" Set ufield=$EXTRACT(ufield,2,*-1)
@@ -778,12 +813,11 @@ Method GetIndexDetails(ClassName As %String, Name As %String, Output TypeClass A
 /// Returns 1 if details were found
 Method GetQueryDetails(ClassName As %String, Name As %String, Output Type As %String, Output Origin As %String) As %Boolean
 {
-    ;New %NS Set %NS=..Namespace.Name
-    Set NS=..Namespace.Name
     If ClassName="" Quit 0
+    If Name="" Quit 0
 
+    Set NS=..Namespace.Name
     Set fcn=..FullClassName(ClassName)
-
  	Set ufield=$$$UPPER(Name)
 	; sometimes fields have quotes around
 	If $EXTRACT(ufield,1)="""",$EXTRACT(ufield,*)="""" Set ufield=$EXTRACT(ufield,2,*-1)
@@ -873,11 +907,10 @@ Method CacheClearClassDetails(ClassName As %String, ClassGone As %Boolean = 0)
 /// Pass in a ClassName in any case (eg PXW.dev.dictionary.classdefinition) and Name is returned in the correct case
 Method GetClassDetails(ClassName As %String, Output classtype As %String, Output Super As %String, Output PrimarySuper As %String, Output Name As %String, Output IncludeAll As %String, Output IncludeGenAll As %String, Output PropertyClass As %String) As %Boolean
 {
-    ;New %NS Set %NS=..Namespace.Name
-    Set NS=..Namespace.Name
-    ; this should not need to be here but I have not sorted out subqueries properly
     If ClassName="" Quit 0
-  
+
+    Set NS=..Namespace.Name
+    ; this should not need to be here but I have not sorted out subqueries properly  
     Set fcn=..FullClassName(ClassName)
 	; converts a classname to the right case by selecting it in a query
    
@@ -1001,10 +1034,10 @@ Method GetClassNameFromStoredProc(SQLProcName As %String, Output method As %Stri
 
 Method GetParameterDetails(ClassName As %String, Name As %String, Output Type As %String, Output Origin As %String, Output Default As %String) As %Boolean
 {
-   
-    ;New %NS Set %NS=..Namespace.Name
-    Set NS=..Namespace.Name
     If ClassName="" Quit 0
+    If Name="" Quit 0
+
+    Set NS=..Namespace.Name
     Set fcn=..FullClassName(ClassName) 
 
  	Set ufield=$$$UPPER(Name)

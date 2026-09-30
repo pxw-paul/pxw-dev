@@ -95,6 +95,14 @@ ClassMethod HREFFrom()
 ///   quit href
 /// }
 /// </example>
+/// 
+/// <p>
+/// Use This as a template for the comments of all the override methods.
+/// </p>
+/// <dl>
+///     <dt>p1</dt>
+///     <dd></dd>
+/// </dl>
 ClassMethod HREFTo() As %String
 {
 	Set href=..%ClassName(1)_".cls"
@@ -332,7 +340,8 @@ ClassMethod PageMain() As %String
 }
 
 /// This controls the layout of the whole page, setting up the main grid etc based on PageBody and PageMain divs.
-/// Not much in the way of colour defined here, its just about the shape of the page.
+/// Not much in the way of colour defined here, its just about the shape of the page and some simple spacing 
+/// to make the page usable even if there is no other style applied.
 /// Change colours using %STYLE.
 ClassMethod PageStyle() As %String
 {
@@ -350,7 +359,7 @@ ClassMethod PageStyle() As %String
 				'toolsTitle toolsTitle'
 				'toolsMainBodyNav toolsMainBodyContent'
 				'toolsFooter toolsFooter';
-			grid-template-columns: #(" minmax(15%, auto) ")# #("1fr")#;
+			grid-template-columns: #(" minmax(20ch, auto) ")# #("1fr")#;
 			grid-template-rows: auto auto #("1fr")# auto;
 			grid-column-gap: 0;
 			grid-row-gap: 0;			
@@ -414,6 +423,9 @@ ClassMethod PageStyle() As %String
 			grid-area: toolsMainFoot;
 			overflow:auto;
 		}
+
+		/* It is expected that all fields in a fieldset will be in a <p> with a label and an input */		
+		fieldset p label { display: block; font-weight: bold; }
 
 		.nocopy	{
 			-webkit-user-select: none;

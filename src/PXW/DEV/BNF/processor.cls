@@ -15,6 +15,7 @@ Property processNotRequired As %String [ MultiDimensional, Private ];
 Method processElement(element As PXW.DEV.Element)
 {
 	$$$DEBUGMethodBegin
+	do ..processSpecificElement(element,"PRE")
 	set partkey=""
 	For  {
 		Set part=element.partsGetNext(.partkey)
@@ -26,6 +27,7 @@ Method processElement(element As PXW.DEV.Element)
 			Do ..processAtom(part)
 		}
 	}
+	do ..processSpecificElement(element,"POST")
 	$$$DEBUGMethodEnd
 }
 
@@ -34,11 +36,12 @@ Method processAtom(atom As PXW.DEV.Atom)
 {
 }
 
+
 /// Look for any methods that have a return type of "PXW.DEV.BNF.Compilers.elementHandler".
 /// Build a set of ifs to process any based on the type of element currently being processed.
 /// The first parameter on the formal spect is the type of element that the method handles.
 /// eg. Method writeCOSThing(element As PXW.DEV.BNF.Elements.COS) AS  As PXW.DEV.BNF.Compilers.elementHandler(Type="Thing")
-Method processSpecificElement(element As PXW.DEV.Element,When as %String="") [ CodeMode = objectgenerator ]
+Method processSpecificElement(element As PXW.DEV.Element,When as %String="PRE") [ CodeMode = objectgenerator ]
 {
     #dim meth as %Dictionary.CompiledMethod
     Set opencurly="{",closecurly="}"
@@ -55,15 +58,18 @@ Method processSpecificElement(element As PXW.DEV.Element,When as %String="") [ C
 				Set param=meth.ReturnTypeParams
 				;Set seq=meth.SequenceNumber
 				If param'="" {
-
-					Set etypes=$TRANSLATE($PIECE(param,"=",2),"""","")
+					; very simple parsing of
+					; Type="list,of,type",When="POST"
+					Set etypes=$p($p($PIECE(param,"Type=",2),"""",2),"""",1)
+					set when=$p($p($PIECE(param,"When=",2),"""",2),"""",1)
+					set when=$s(when="":"PRE",1:when)
 					If etypes'="" {
 						For i=1:1:$LENGTH(etypes,",") {
 							Set etype=$PIECE(etypes,",",i)
 							; key by sequence for potential time saving - not implemented properly
 							;Set defseq=##class(%Dictionary.MethodDefinition).%OpenId(meth.Origin_"||"_meth.Name).SequenceNumber
 							;Set methodseq(class,(10000+defseq)_(10000+seq),etype,meth.Name)=meth
-							Set methods(class,etype,meth.Name)=meth
+							Set methods(when,class,etype,meth.Name)=meth
 						}
 					}
 				}
@@ -73,37 +79,50 @@ Method processSpecificElement(element As PXW.DEV.Element,When as %String="") [ C
     Do %code.WriteLine($CHAR(9)_"Set class=$ZCONVERT($classname(element),""U"") q:class=""""")
     Do %code.WriteLine($CHAR(9)_"Set etype=$ZCONVERT(element.type,""U"") q:etype=""""")
     Do %code.WriteLine($CHAR(9)_"$$$DEBUGMethodBegin")
-	Do %code.WriteLine($CHAR(9)_"i '$d(..processNotRequired(class,etype)) {")
-	Set (class,etype,name)="",cif="If"
-	For  {
-		Set class=$ORDER(methods(class))
-		Quit:class=""
+	Do %code.WriteLine($CHAR(9)_"i '$d(..processNotRequired(When,class,etype)) {")
+	Set when="",wif="If"
+	for  {
+		Set when=$o(methods(when))
+		quit:when=""
 
-		Do %code.WriteLine($CHAR(9,9)_cif_" class="""_$$$UPPER(class)_""" "_opencurly)
-		
-		Set ifcommand="If"
+		Do %code.WriteLine($CHAR(9,9)_wif_" When="""_$$$UPPER(when)_""" "_opencurly)
+
+
+		Set (class,etype,name)="",cif="If"
 		For  {
-			Set etype=$ORDER(methods(class,etype))
-			Quit:etype=""
+			Set class=$ORDER(methods(when,class))
+			Quit:class=""
 
-			; etype will contain the quotes
-			Do %code.WriteLine($CHAR(9,9,9)_ifcommand_" etype="""_$$$UPPER(etype)_""" "_opencurly)
+			Do %code.WriteLine($CHAR(9,9,9)_cif_" class="""_$$$UPPER(class)_""" "_opencurly)
 			
+			Set ifcommand="If"
 			For  {
-				Set name=$ORDER(methods(class,etype,name),1,meth)
-				Quit:name=""
+				Set etype=$ORDER(methods(when,class,etype))
+				Quit:etype=""
+
+				; etype will contain the quotes
+				Do %code.WriteLine($CHAR(9,9,9,9)_ifcommand_" etype="""_$$$UPPER(etype)_""" "_opencurly)
 				
-				Do %code.WriteLine($CHAR(9,9,9,9)_"do .."_meth.Name_"(.element)")
-			}
+				For  {
+					Set name=$ORDER(methods(when,class,etype,name),1,meth)
+					Quit:name=""
+					
+					Do %code.WriteLine($CHAR(9,9,9,9,9)_"do .."_meth.Name_"(.element)")
+				} ; method loop
+				Do %code.WriteLine($CHAR(9,9,9,9)_closecurly)
+				Set ifcommand="Elseif"
+			} ; element type loop
+			; set flag to say that this type of thing does NOT have a redirect
+			Do %code.WriteLine($CHAR(9,9,9,9)_" else { s ..processNotRequired(When,class,etype)=1 }")
 			Do %code.WriteLine($CHAR(9,9,9)_closecurly)
-			Set ifcommand="Elseif"
-		}
-		; set flag to say that this type of thing does NOT have a redirect
-		Do %code.WriteLine($CHAR(9,9,9)_" else { s ..processNotRequired(class,etype)=1 }")
+			Set cif="Elseif"
+		} ; class loop
 		Do %code.WriteLine($CHAR(9,9)_closecurly)
-		Set cif="Elseif"
-    }
-	Do %code.WriteLine($CHAR(9)_"}")
+		Set wif="ElseIf"	
+
+	} ; when loop
+
+	Do %code.WriteLine($CHAR(9)_closecurly)
     Do %code.WriteLine($CHAR(9)_"$$$DEBUGMethodEnd")
 	
     Quit $$$OK

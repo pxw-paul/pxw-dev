@@ -49,7 +49,21 @@ ClassMethod WriteNav(ByRef scratch)
 	Write "<a href="""_##class(PXW.Tools.DEV.XrefBuild).HREFTo()_""">Build Xref</a>"
 }
 
-/// This should return a string of the href to this page based on the input parameters
+/// <p>
+/// Show all the problems found during Xref build.
+/// </p>
+/// <p>
+/// The problems could be either: 
+/// <ul><li>Errors in the build process i.e. a bug.</a>
+/// 	<li>Problems found during the parsing. This could be a bug in the parser
+/// 		or an actual problem in the code being parsed.
+/// 	</li>
+///	</ul>
+/// </p>
+/// <dl>
+///     <dt>NameSpace</dt>
+///     <dd>Namespace to display the for.</dd>
+/// </dl>
 ClassMethod HREFTo(NameSpace As %String) As %String
 {
 	; this bit of code is all over the place, big mistake; using floater variable for namespace

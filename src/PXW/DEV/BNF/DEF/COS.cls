@@ -798,7 +798,7 @@ order_function_call                ::= ('order' | 'o') open_bracket expression [
 
 
 get_function_call                 ::= ('get' | 'g') open_bracket get_expression [ ',' expression ] close_bracket
-get_expression                    ::= expression
+get_expression                    ::= data_expression
 
 data_function_call                ::= ('data' | 'd') open_bracket data_expression [ ',' variable_set ] close_bracket
 data_expression                   ::= this_object

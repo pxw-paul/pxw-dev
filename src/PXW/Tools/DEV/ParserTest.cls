@@ -94,6 +94,19 @@ ClassMethod WriteNav()
     Do ..getMethods()
 }
 
+/// <p>
+/// Use this to test any parser.
+/// </p>
+/// <dl>
+///     <dt>Text</dt>
+///     <dd>The text to be parsed.</dd>
+///     <dt>Class</dt>
+///     <dd>The name of the parser class to be tested.</dd>
+///     <dt>Method</dt>
+///     <dd>The name of the parser method to be tested.</dd>
+///     <dt>WriteFull</dt>
+///     <dd>Use this to get more detailed output.</dd>
+/// </dl>
 ClassMethod HREFTo(Text As %String, Class As %String, Method As %String, WriteFull As %String) As %String
 {
     Set href=##super()

@@ -149,9 +149,12 @@ Method SaveCOSXref(ItemType As %String, ItemKey1 As %String, ItemKey2 As %String
 	
 	; for xref to classes set the full spec of the class - maybe a new method needed for CLS and others
 	; * is a special case where we know the method but not the class (eg $classmethod)
-	Set ik1=ItemKey1
+	Set ik1=ItemKey1,save=1
 	If ik1="*" {
-
+		; star is special case
+	} ElseIf ik1?1"%Exception."1.E {
+		; %Exception package does not seem to pull inherited methods into compiled class definition
+		; so allow these through without check
 	} ElseIf ItemType="CLS" {
 		Set ik1=..ClassServer.FullClassName(ItemKey1,$PIECE(..CalledByClassName,".",1,*-1))
 		If '..ClassServer.GetPropertyDetails(ik1,ItemKey2)
@@ -159,75 +162,85 @@ Method SaveCOSXref(ItemType As %String, ItemKey1 As %String, ItemKey2 As %String
 		, '..ClassServer.GetParameterDetails(ik1,ItemKey2)
 		, '..ClassServer.GetIndexDetails(ik1,ItemKey2)
 		, '..ClassServer.GetQueryDetails(ik1,ItemKey2)
+		, '..ClassServer.GetMethodDetails(ik1,"%DispatchGetProperty")
+		, '..ClassServer.GetMethodDetails(ik1,"%DispatchMethod")
 		{
+			;If ik1="%SQL.StatementResult" {
+			;	; probably a dispacth property, don't bother with indexing these
+			;	; possibly we could link to the query?
+			;	Set save=0
+			;
+			;}
 			$$$DEBUG("ItemKey1 set to UNKNOWN: "_ItemKey1_":"_ItemKey2)
 			Set ik1="UNKNOWN ("_ik1_")"
 		}
-	} 
-	Set xref=##class(PXW.Xref.Data).%New()
-	Set xref.CalledByType=..#CodeType
-	Set xref.CalledByKey1=..CalledByClassName
-	Set xref.CalledByKey2=..CalledByItemName
-	Set xref.CalledByCommand=CalledByCommand
-	Set xref.ItemType=ItemType
-	;Set xref.ItemKey1=$SELECT(ItemKey1="*":ItemKey1,ItemType="CLS":..ClassServer.FullClassName(ItemKey1,$PIECE(..CalledByClassName,".",1,*-1)),1:ItemKey1)
-	Set xref.ItemKey1=ik1
-	Set xref.ItemKey2=ItemKey2
-	If $ISOBJECT(Atom) {
-		Set xref.CalledByKey3=$SELECT(..FixedLineNumber:..FixedLineNumber,1:Atom.line)-..ClassElementLineNumber
-		Set xref.LineNumber=$SELECT(..FixedLineNumber:..FixedLineNumber,1:Atom.line)
-	} Else {
-		Set xref.LineNumber=0
 	}
-
-	Set sc=$$$OK
-	If 'xref.AlreadyExists() {
-		Set sc=xref.%Save()
-		If $$$ISERR(sc) {
-			$$$DEBUG($EXTRACT($SYSTEM.Status.GetErrorText(sc),1,100))
+	If save {
+		Set xref=##class(PXW.Xref.Data).%New()
+		Set xref.CalledByType=..#CodeType
+		Set xref.CalledByKey1=..CalledByClassName
+		Set xref.CalledByKey2=..CalledByItemName
+		Set xref.CalledByCommand=CalledByCommand
+		Set xref.ItemType=ItemType
+		;Set xref.ItemKey1=$SELECT(ItemKey1="*":ItemKey1,ItemType="CLS":..ClassServer.FullClassName(ItemKey1,$PIECE(..CalledByClassName,".",1,*-1)),1:ItemKey1)
+		Set xref.ItemKey1=ik1
+		Set xref.ItemKey2=ItemKey2
+		If $ISOBJECT(Atom) {
+			Set xref.CalledByKey3=$SELECT(..FixedLineNumber:..FixedLineNumber,1:Atom.line)-..ClassElementLineNumber
+			Set xref.LineNumber=$SELECT(..FixedLineNumber:..FixedLineNumber,1:Atom.line)
 		} Else {
-			$$$DEBUG("Saved "_xref.%Id())
+			Set xref.LineNumber=0
 		}
-	}
-	If $$$ISOK(sc),ItemType="CLS" {
-		Set origin="",stub=""
-		If ..ClassServer.GetMethodDetails(ItemKey1,ItemKey2,,.origin,.stub),origin'=ItemKey1 {
-			; also xref the origin class
-			If origin'="" {
-				$$$DEBUG("Calling save(method) "_origin_":"_ItemKey2)
-				Do ..SaveCOSXref(ItemType,origin,ItemKey2,CalledByCommand,Atom)
-			}
-		} ElseIf ..ClassServer.GetPropertyDetails(ItemKey1,ItemKey2,,,,.origin),origin'=ItemKey1 {
-			; also xref the origin class
-			If origin'="" {
-				$$$DEBUG("Calling save(property) "_origin_":"_ItemKey2)
-				Do:origin'="" ..SaveCOSXref(ItemType,origin,ItemKey2,CalledByCommand,Atom)
-			}
-		}
-		If (stub'="") {
-			If ($PIECE(stub,".",*)="q") {
-				; if the item is a function based on a query (eg GetFunc) then xref the query
-				Set query=$PIECE(stub,".",1)
-				If query'="" {
-					$$$DEBUG("Calling save(query) "_ItemKey1_":"_query)
-					Do ..SaveCOSXref(ItemType,ItemKey1,query,CalledByCommand,Atom)
-				}
-			} ElseIf $PIECE(stub,".",*)="a" {
-				; if the item is a function based on a property (eg ThingGetLogicalToDisplay) then xref the property
-				Set prop=$PIECE(stub,".",1)
-				If prop'="" {
-					$$$DEBUG("Calling save(prop) "_ItemKey1_":"_prop)
-					Do ..SaveCOSXref(ItemType,ItemKey1,prop,CalledByCommand,Atom)
-				}
-			} ElseIf $PIECE(stub,".",*)="i" {
-				; if the item is a function based on an index (eg PKOpen) then xref the property
-				Set index=$PIECE(stub,".",1)
-				If index'="" {
-					$$$DEBUG("Calling save(index) "_ItemKey1_":"_index)
-					Do ..SaveCOSXref(ItemType,ItemKey1,index,CalledByCommand,Atom)
-				}
-			}
 
+		Set sc=$$$OK
+		If 'xref.AlreadyExists() {
+			Set sc=xref.%Save()
+			If $$$ISERR(sc) {
+				$$$DEBUG($EXTRACT($SYSTEM.Status.GetErrorText(sc),1,100))
+			} Else {
+				$$$DEBUG("Saved "_xref.%Id())
+			}
+		}
+		If $$$ISOK(sc),ItemType="CLS" {
+			Set origin="",stub=""
+			If ..ClassServer.GetMethodDetails(ItemKey1,ItemKey2,,.origin,.stub),origin'=ItemKey1 {
+				; also xref the origin class
+				If origin'="" {
+					$$$DEBUG("Calling save(method) "_origin_":"_ItemKey2)
+					Do ..SaveCOSXref(ItemType,origin,ItemKey2,CalledByCommand,Atom)
+				}
+			} ElseIf ..ClassServer.GetPropertyDetails(ItemKey1,ItemKey2,,,,.origin),origin'=ItemKey1 {
+				; also xref the origin class
+				If origin'="" {
+					$$$DEBUG("Calling save(property) "_origin_":"_ItemKey2)
+					Do:origin'="" ..SaveCOSXref(ItemType,origin,ItemKey2,CalledByCommand,Atom)
+				}
+			}
+			If (stub'="") {
+				If ($PIECE(stub,".",*)="q") {
+					; if the item is a function based on a query (eg GetFunc) then xref the query
+					Set query=$PIECE(stub,".",1)
+					If query'="" {
+						$$$DEBUG("Calling save(query) "_ItemKey1_":"_query)
+						Do ..SaveCOSXref(ItemType,ItemKey1,query,CalledByCommand,Atom)
+					}
+				} ElseIf $PIECE(stub,".",*)="a" {
+					; if the item is a function based on a property (eg ThingGetLogicalToDisplay) then xref the property
+					Set prop=$PIECE(stub,".",1)
+					If prop'="" {
+						$$$DEBUG("Calling save(prop) "_ItemKey1_":"_prop)
+						Do ..SaveCOSXref(ItemType,ItemKey1,prop,CalledByCommand,Atom)
+					}
+				} ElseIf $PIECE(stub,".",*)="i" {
+					; if the item is a function based on an index (eg PKOpen) then xref the property
+					Set index=$PIECE(stub,".",1)
+					If index'="" {
+						$$$DEBUG("Calling save(index) "_ItemKey1_":"_index)
+						Do ..SaveCOSXref(ItemType,ItemKey1,index,CalledByCommand,Atom)
+					}
+				}
+
+			}
 		}
 	}
 }

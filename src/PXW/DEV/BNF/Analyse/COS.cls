@@ -160,9 +160,11 @@ Method checkElement(element As PXW.DEV.Element)
 	}
 
 	; AFTER full analysis we can flag a couple of things
-	If element.type="OneClassmember" {
-		Do ..checkOneClassMemeberFINAL(element)
-	}
+	;If element.type="OneClassmember" {
+	;	Do ..checkOneClassMemeberFINAL(element)
+	;}
+	Do ..processSpecificElement(element,"POST")
+
 }
 
 /// Check to see if Classname is a subclass of the given superclass
@@ -547,7 +549,6 @@ Method checkCosObjectVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BN
 		; this does all sorts of things along the way (side effect, a bit nasty)
 		Do ..DeriveTypeReturned(element)
 	}
-
 	$$$DEBUGMethodEnd
 	Quit ""
 }
@@ -754,7 +755,7 @@ Method checkCosTryCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Co
 }
 
 
-Method checkOneClassMemeberFINAL(element As PXW.DEV.BNF.Elements.COS)
+Method checkCDEFOneClassMemberVars(element As PXW.DEV.BNF.Elements.ClassDefinition) as PXW.DEV.BNF.Compilers.elementHandler(Type = "OneClassmember",When="POST")
 {
 	$$$DEBUGMethodBegin
 	Set var=$CHAR($ASCII("%")+1) ; skip over % variables, we don't care if they are used they might be used in deeper, untrackable ways
@@ -777,7 +778,24 @@ Method checkOneClassMemeberFINAL(element As PXW.DEV.BNF.Elements.COS)
 			}
 		}
 	}
+	$$$DEBUGMethodEnd
+	Quit ""
+}
 
+Method checkCDEFOneClassMemberComm(element As PXW.DEV.BNF.Elements.ClassDefinition) as PXW.DEV.BNF.Compilers.elementHandler(Type = "OneClassmember",When="POST")
+{
+	$$$DEBUGMethodBegin
+	/// I am not especially bothered by short or long commands, but they should be consistent
+	If ..ShortCommand,..LongCommand {
+		Do ..AddElementWarning(..ShortCommand,"COMM","Mix of Short and Long commands")
+	}
+	$$$DEBUGMethodEnd
+	Quit ""
+}
+
+Method checkCDEFOneClassMemberRtype(element As PXW.DEV.BNF.Elements.ClassDefinition) as PXW.DEV.BNF.Compilers.elementHandler(Type = "OneClassmember",When="POST")
+{
+	$$$DEBUGMethodBegin
 	/// Non abstract method where there is a return type but no quit to match it
 	If $$$LOWER(..CodeMode)'="expression",'..ClassIsAbstract,'..MethodIsAbstract,..ReturnType'="",..QuitFound=0 {
 		If $$$LOWER(..CodeMode)["generator" {
@@ -786,14 +804,11 @@ Method checkOneClassMemeberFINAL(element As PXW.DEV.BNF.Elements.COS)
 			Do ..AddElementWarning(..ReturnTypeElement,"QMISS","No Quit for method that has a ReturnType")
 		}
 	}
-
-	/// I am not especially bothered by short or long commands, but they should be consistent
-	If ..ShortCommand,..LongCommand {
-		Do ..AddElementWarning(..ShortCommand,"COMM","Mix of Short and Long commands")
-	}
-
 	$$$DEBUGMethodEnd
+	Quit ""
 }
+
+
 Method checkCDEFAttributeCodeModeType(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="AttributeCodemodetype")
 {
 	$$$DEBUGMethodBegin
@@ -885,11 +900,22 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.BNF.Elements.COS, Start
 			}
 		} Else {
 			Set found=..ClassServer.GetPropertyDetails(classname,propertyname,.type,.collection,.ElementTypeClassName)
+			If found {
+				; we are only interesting in the type/ElementType distinction on a collection
+				; where type="%collection.*" and element type is what it is a collection of
+				; otherwise we want just what was defined in the class
+				If collection="" Set type=ElementTypeClassName
+			}
 			If 'found {
-				Set found=..ClassServer.GetMethodDetails(classname,propertyname)
+				Set found=..ClassServer.GetMethodDetails(classname,propertyname,,,.stub)
 				If found {
-					Set type=..ClassServer.GetMethodReturnType(classname,propertyname,.fspecparsed,.MYfspec)
-					Set collection="",elementtype=""
+					; 
+					If stub'="" {
+
+					} Else {
+						Set type=..ClassServer.GetMethodReturnType(classname,propertyname,.fspecparsed,.MYfspec)
+						Set collection="",elementtype=""
+					}
 				}
 			} 
 			If 'found {
@@ -1105,7 +1131,6 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 			}
 		}
 	} ElseIf variableElement.type="SpecialVariable" {
-		#dim x as %SYSTEM.OBJ
 		Set specialElement=variableElement.findFirstElementByType("SpecialSystem",0) 
 		If $ISOBJECT(specialElement) {
 			Set classname="%SYSTEM"
@@ -1120,10 +1145,6 @@ Method DeriveTypeReturned(ValueElement As PXW.DEV.BNF.Elements.COS) As %String
 			Set finaltype=..FollowObjectChainForType(specialElement,classname)
 		}
 	}
-
-
-
-
 
 	Quit finaltype
 }

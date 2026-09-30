@@ -32,7 +32,13 @@ ClassMethod WriteMainBody(ByRef scratch)
     >
 }
 
-/// This should return a string of the href to this page based on the input parameters
+/// <p>
+/// Used to SHOW the settings only. There is no update yet.
+/// </p>
+/// <dl>
+///     <dt></dt>
+///     <dd></dd>
+/// </dl>
 ClassMethod HREFTo() As %String
 {
     Quit ##super()

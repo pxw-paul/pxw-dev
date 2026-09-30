@@ -15,7 +15,7 @@ Parameter ToolName = "Code Analysis Results";
 ClassMethod WriteMainBody()
 {
 	Do ..HREFFrom(.itemtype,.itemk1,.itemk2,.type,.lastupdate)
-	If itemk1="",itemk2="",lastupdate="" {
+	If itemk1="",itemk2="",type="",lastupdate="" {
 		Write "Showing what has been updated recently"
 		Set lastupdate="T-1"
 	} 
@@ -34,8 +34,11 @@ ClassMethod WriteAnalysis(itemtype As %String, itemk1 As %String, itemk2 As %Str
 			Set starttime=$HOROLOG+($EXTRACT(LastUpdate,3,*)*mult)
 			Set starttime=$ZDATE(starttime,3)
 		}
+		;zw %NS,itemtype,itemk1,itemk2,type,starttime,LastUpdate
 		Set rs=##class(PXW.Xref.AnalysisQueries).GetByDateFunc(%NS,itemtype,itemk1,itemk2,type,starttime)
 	} Else {
+		;s starttime="dddd"
+		;zw %NS,itemtype,itemk1,itemk2,type,starttime
 		Set rs=##class(PXW.Xref.AnalysisQueries).GetFunc(%NS,itemtype,itemk1,itemk2,type)
 	}
 	;s newflags=flags
@@ -76,35 +79,7 @@ ClassMethod WriteNav()
 {
 	Write "<a href="""_##class(PXW.Tools.DEV.XrefBuild).HREFTo()_""">Build Xref/Analysis</a>"
 	
-	Do ..HREFFrom(.itemtype,.itemk1,.itemk2,.type,.lastupdated)
-	&html<
-		<form action='PXW.Tools.DEV.Analyse.cls'>
-			<fieldset>
-				<legend id=PXWToolsDEVAnalyselegend>Code Analysis Results</legend>
-				<input type=hidden name=IFRAME value='0'>
-				<input type=hidden name='%NS' value='LOCAL_USER'>
-				<table>					
-					<tr><td width=25% class=prompt>ItemType</td>
-						<td width=50%><input accesskey=A type=text name=IT value='#(itemtype)#'></td>
-					</tr>
-					<tr><td width=25% class=prompt>ItemKey1</td>
-						<td width=50%><input type=text name=IK1 value='#(itemk1)#'></td>
-					</tr>
-					<tr><td width=25% class=prompt>ItemKey2</td>
-						<td width=50%><input type=text name=IK2 value='#(itemk2)#'></td>
-					</tr>
-					<tr><td width=25% class=prompt>Type</td>
-						<td width=50%><input type=text name=T value='#(type)#'></td>
-					</tr>
-					<tr><td width=25% class=prompt>Last Updated</td>
-						<td width=50%><input type=text name=LU value='#(lastupdated)#'></td>
-					</tr>
-					<tr><td>&nbsp;</td><td><input type=submit></td>
-					</tr>
-					</table>
-			</fieldset>
-		</form>
-	>
+	d ##class(PXW.Tools.Index).WriteForm(..%ClassName(1),..#ToolType,..#ToolName)
 }
 
 /// This shoud output some variables, getting the data from %request
@@ -117,7 +92,16 @@ ClassMethod HREFFrom(Output ItemType As %String, Output ItemKey1 As %String, Out
 	Set LastUpdate=%request.Get("LU")
 }
 
-/// This should return a string of the href to this page based on the input parameters
+/// <p>
+/// Show the analysis warnings found during analysis of the code. The analysis happens during the Xref Build.
+/// </p>
+/// <dl>
+/// 	<dt>ItemType</dt>	<dd>What type of items to view (CLS, GBL, INT etc).</dd>
+/// 	<dt>ItemKey1</dt>	<dd>Name of items to view, eg classname (wildcard *).</dd>
+/// 	<dt>ItemKey2</dt>	<dd>Name of sub item to look for, eg method name (wildcard *).</dd>
+/// 	<dt>Type</dt>		<dd>Type of analysis warnings to display (VTYPE etc) (wildcard *).</dd>
+/// 	<dt>LastUpdate</dt>	<dd>Show only recent items updated by entering a date. T-n allowed.</dd>
+/// </dl>
 ClassMethod HREFTo(ItemType As %String = "", ItemKey1 As %String = "", ItemKey2 As %String = "", Type As %String = "",LastUpdate as %String="") As %String
 {
 	Set href=##super()
