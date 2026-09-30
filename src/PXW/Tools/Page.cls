@@ -427,6 +427,9 @@ ClassMethod PageStyle() As %String
 		/* It is expected that all fields in a fieldset will be in a <p> with a label and an input */		
 		fieldset p label { display: block; font-weight: bold; }
 
+		/* definition lists used for help on HREFTo methods */
+		dl dt { font-weight: bold; margin-top: 0.5em;}
+
 		.nocopy	{
 			-webkit-user-select: none;
 			-khtml-user-select: none;

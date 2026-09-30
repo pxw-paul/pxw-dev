@@ -30,7 +30,7 @@ ClassMethod WriteMainBody()
 				</details>
 				<details open>
 					<summary id="MainForm">Main Form</summary>
-					#($s(##class(PXW.Tools.Index).WriteForm(..%ClassName(1),..#ToolType,..#ToolName):"",1:"FAILED TO WRITE FORM"))#
+					#($s(##class(PXW.Tools.Index).WriteFormInSection(..%ClassName(1),..#ToolType,"Example form"):"",1:"FAILED TO WRITE FORM"))#
 					<!--form>
 						<fieldset>
 							<legend>Main form</legend>
@@ -65,19 +65,6 @@ ClassMethod WriteNav(ByRef scratch)
 		<a href="#">Nav 2 (no style)</a>
 		<a href="#">These are simple links</a>
 		<hr>
-		<!--form>
-			<fieldset>
-				<legend>Nav form</legend>
-				<table>
-					<tr><td class=prompt>Prompt</td>
-						<td><input accesskey=A type=text value='default'></td>
-					</tr>
-					<tr><td>&nbsp;</td><td><input type=submit></td>
-					</tr>
-				</table>
-			</fieldset>
-		</form-->
-
 	>
 	d ##class(PXW.Tools.Index).WriteForm(..%ClassName(1),..#ToolType,..#ToolName)
 }
