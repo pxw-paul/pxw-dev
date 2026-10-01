@@ -5214,7 +5214,7 @@ Method GeneralIntrinsicSet(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	quit ok
 }
 
-///  get_expression ::= expression
+///  get_expression ::= data_expression
 /// summary=C
 Method GetExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
@@ -5223,7 +5223,7 @@ Method GetExpression(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Expression(.subElement,.addedElement)  {
+	if ..DataExpression(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 

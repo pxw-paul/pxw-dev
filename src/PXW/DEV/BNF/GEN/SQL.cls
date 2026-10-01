@@ -3,7 +3,7 @@ Class PXW.DEV.BNF.GEN.SQL Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 
 Parameter KeywordPattern = "1.A";
 
-Parameter Keywords = "ABS,ACOS,ALL,AND,AS,ASC,ASCII,ASIN,ATAN,AVG,BETWEEN,BOTH,BY,CALL,CASE,CAST,CEILING,CHAR,CHARINDEX,CLOSE,COALESCE,CONCAT,CONVERT,COS,COT,COUNT,CREATE,CROSS,CURDATE,CURRENT,CURSOR,CURTIME,D,DATABASE,DATALENGTH,DATE,DATEADD,DATEDIFF,DATENAME,DATEPART,DAY,DAYNAME,DAYOFMONTH,DAYOFWEEK,DAYOFYEAR,DD,DECLARE,DECODE,DEGREES,DELETE,DESC,DISTINCT,DROP,DW,DY,E,ELSE,EMBEDDING,END,ESCAPE,EXECUTE,EXISTS,EXP,FETCH,FLOOR,FN,FOLLOWING,FOR,FROM,FULL,GETDATE,GETUTCDATE,GREATEST,GROUP,H,HASHBYTES,HAVING,HH,HOUR,IFNULL,IN,INNER,INSERT,INSTR,INTO,IS,ISNULL,ISNUMERIC,JOIN,LCASE,LEADING,LEAST,LEFT,LEN,LENGTH,LIKE,LIST,LOG,LOWER,LPAD,LTRIM,M,MAX,MI,MILLISECOND,MIN,MINUTE,MM,MOD,MONTH,MONTHNAME,MS,N,NATURAL,NOT,NOW,NULL,NULLIF,NVL,ON,ONLY,OPEN,OR,ORDER,OUTER,OVER,PARTITION,PI,POSITION,POWER,PRECEDING,PREDICT,PROBABILITY,Q,QQ,QUARTER,RADIANS,READ,REFERENCES,REPEAT,REPLACE,REPLICATE,REVERSE,RIGHT,ROUND,ROW,ROWS,RPAD,RTRIM,S,SECOND,SELECT,SET,SIGN,SIN,SIZE,SOME,SPACE,SQLTIMESTAMP,SQRT,SQUARE,SS,STR,STRING,STS,STUFF,SUBSTR,SUBSTRING,SUM,SYSDATE,TABLE,TAN,THEN,TIMESTAMPADD,TIMESTAMPDIFF,TOP,TRAILING,TRIM,TRUNCATE,UCASE,UNBOUNDED,UNION,UPDATE,UPPER,USER,USING,VALUES,VIEW,W,WEEK,WEEKDAY,WHEN,WHERE,WITH,WK,WW,XMLCONCAT,XMLELEMENT,XMLFOREST,Y,YEAR,YY,YYYY";
+Parameter Keywords = "ABS,ACOS,ALL,AND,AS,ASC,ASCII,ASIN,ATAN,AVG,BETWEEN,BOTH,BY,CALL,CASE,CAST,CEILING,CHAR,CHARINDEX,CLOSE,COALESCE,COLUMNS,CONCAT,CONVERT,COS,COT,COUNT,CREATE,CROSS,CURDATE,CURRENT,CURSOR,CURTIME,D,DATABASE,DATALENGTH,DATE,DATEADD,DATEDIFF,DATENAME,DATEPART,DAY,DAYNAME,DAYOFMONTH,DAYOFWEEK,DAYOFYEAR,DD,DECLARE,DECODE,DEGREES,DELETE,DESC,DISTINCT,DROP,DW,DY,E,ELSE,EMBEDDING,END,ESCAPE,EXECUTE,EXISTS,EXP,FETCH,FLOOR,FN,FOLLOWING,FOR,FROM,FULL,GETDATE,GETUTCDATE,GREATEST,GROUP,H,HASHBYTES,HAVING,HH,HOUR,IFNULL,IN,INNER,INSERT,INSTR,INT,INTO,IS,ISNULL,ISNUMERIC,JOIN,LCASE,LEADING,LEAST,LEFT,LEN,LENGTH,LIKE,LIST,LOG,LOWER,LPAD,LTRIM,M,MAX,MI,MILLISECOND,MIN,MINUTE,MM,MOD,MONTH,MONTHNAME,MS,N,NATURAL,NOT,NOW,NULL,NULLIF,NVL,ON,ONLY,OPEN,OR,ORDER,OUTER,OVER,PARTITION,PATH,PI,POSITION,POWER,PRECEDING,PREDICT,PROBABILITY,Q,QQ,QUARTER,RADIANS,READ,REFERENCES,REPEAT,REPLACE,REPLICATE,REVERSE,RIGHT,ROUND,ROW,ROWS,RPAD,RTRIM,S,SECOND,SELECT,SET,SIGN,SIN,SIZE,SOME,SPACE,SQLTIMESTAMP,SQRT,SQUARE,SS,STR,STRING,STS,STUFF,SUBSTR,SUBSTRING,SUM,SYSDATE,TABLE,TAN,THEN,TIMESTAMP,TIMESTAMPADD,TIMESTAMPDIFF,TOP,TRAILING,TRIM,TRUNCATE,UCASE,UNBOUNDED,UNION,UPDATE,UPPER,USER,USING,VALUES,VARCHAR,VIEW,W,WEEK,WEEKDAY,WHEN,WHERE,WITH,WK,WW,XMLCONCAT,XMLELEMENT,XMLFOREST,Y,YEAR,YY,YYYY";
 
 ///  alias_name ::= identifier
 /// summary=C
@@ -692,16 +692,22 @@ Method ColumnReferenceImplicit2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef s
 	quit ok
 }
 
-///  column_type ::= ('CHAR' '(' number ')' )
-/// summary=(K&P&C&P)
+///  column_type ::= ('CHAR' '(' number ')') | ('VARCHAR' ['(' number ')'] ) | 'TIMESTAMP' | 'INT'
+/// summary=(K&P&C&P)|(K&[P&C&P])|K|K
 Method ColumnType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary (K&P&C&P)
+	; rules summary (K&P&C&P)|(K&[P&C&P])|K|K
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..ColumnType1Sub(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..ColumnType2Sub(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"TIMESTAMP")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"INT")  {
 		set done=1 ; end compileRules
 	}
 
@@ -738,6 +744,58 @@ Method ColumnType1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	} else {
 		$$$BNFROLLBACK(subElement)
 		set ok=0
+	}
+	quit ok
+}
+
+/// 'VARCHAR' ['(' number ')']
+/// summary values:VARCHAR
+/// summary=K&[P&C&P]
+Method ColumnType2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary K&[P&C&P]
+	if '(..isKeyword("VARCHAR")) { quit 0 /* normal */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"VARCHAR")  {
+		if ..ColumnType3OptGrp(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// 
+/// summary values:(
+/// summary=P&C&P
+Method ColumnType3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary P&C&P
+	if '..isPunctuation("(",1) { quit 1 /* not found is OK */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"(")  {
+		if ..Number(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,")")  {
+				set done=1 ; end compileRules
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	quit ok
 }
@@ -2441,6 +2499,185 @@ Method JoinedTable1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 		$$$BNFROLLBACK(subElement)
 		set ok=0
 	}
+	quit ok
+}
+
+///  json_table ::= 'JSON_TABLE' '(' json_table_value ',' json_table_path 'COLUMNS' json_table_col_map_list ')' table_as_clause?
+/// summary values:JSON_TABLE
+/// summary=P&P&C&P&C&K&C&P&?4OptionalSingle4?
+Method JsonTable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary P&P&C&P&C&K&C&P&?4OptionalSingle4?
+	if '..isStringSingle("JSON_TABLE",10) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"JSON_TABLE")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..JsonTableValue(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,",")  {
+					if ..JsonTablePath(.subElement,.addedElement)  {
+						if ..addKeyword(.subElement,"COLUMNS")  {
+							if ..JsonTableColMapList(.subElement,.addedElement)  {
+								if ..addPunctuation(.subElement,")")  {
+									if $s(..TableAsClause(.subElement,.addedElement) :1,1:1)  {
+										set done=1 ; end compileRules
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  json_table_col_map ::= column_name column_type 'PATH' sql_string
+/// summary=C&C&K&C
+Method JsonTableColMap(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary C&C&K&C
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..ColumnName(.subElement,.addedElement)  {
+		if ..ColumnType(.subElement,.addedElement)  {
+			if ..addKeyword(.subElement,"PATH")  {
+				if ..SqlString(.subElement,.addedElement)  {
+					set done=1 ; end compileRules
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  json_table_col_map_list ::= '(' ','.json_table_col_map+ ')'
+/// summary values:(
+/// summary=P&.C.&P
+Method JsonTableColMapList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary P&.C.&P
+	if '..isPunctuation("(",1) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"(")  {
+		if ..JsonTableColMapList1RepSep(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,")")  {
+				set done=1 ; end compileRules
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  ','.json_table_col_map+
+Method JsonTableColMapList1RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary ?4String:4?
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	set done=0 ; must be at least 1
+	if ..JsonTableColMap(.subElement,.addedElement) {
+		set done=1,ok=1 ; found 1
+		do {
+			$$$BNFSTART(repElement)
+			set ok=(..addPunctuation(.repElement,",")  && ..JsonTableColMap(.repElement,.addedElement) )
+			if ok {
+				$$$BNFCOMMITCOPY(repElement,subElement)
+			} else {
+				$$$BNFROLLBACK(repElement)
+			}
+		} while ok
+	}
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+///  json_table_path ::= sql_string
+/// summary=C
+Method JsonTablePath(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary C
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..SqlString(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  json_table_value ::= sql_expression
+/// summary=C
+Method JsonTableValue(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary C
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..SqlExpression(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
 	quit ok
 }
 
@@ -7810,16 +8047,18 @@ Method TableName1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	quit ok
 }
 
-///  table_reference ::= stored_proc_table | direct_table | derived_table
-/// summary=C|C|C
+///  table_reference ::= json_table | stored_proc_table | direct_table | derived_table
+/// summary=C|C|C|C
 Method TableReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C|C|C
+	; rules summary C|C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..StoredProcTable(.subElement,.addedElement)  {
+	if ..JsonTable(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..StoredProcTable(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..DirectTable(.subElement,.addedElement)  {
 		set done=1 ; or

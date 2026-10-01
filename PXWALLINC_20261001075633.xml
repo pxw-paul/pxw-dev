@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="IRIS" version="26" zv="IRIS for UNIX (Ubuntu Server LTS for x86-64 Containers) 2026.1 (Build 234U)" ts="2026-09-18 08:03:47">
+<Export generator="IRIS" version="26" zv="IRIS for UNIX (Ubuntu Server LTS for x86-64 Containers) 2026.1 (Build 234U)" ts="2026-10-01 07:56:33">
 <Class name="PXW.DEV.Atom">
 <Super>PXW.DEV.Particle</Super>
 <TimeChanged>67830,28950.607042217</TimeChanged>
@@ -161,7 +161,7 @@ Find the left-most comment which could be before some whitespace.</Description>
 <Class name="PXW.DEV.BNF.Analyse.COS">
 <IncludeCode>PXW.Debuggers.Macros</IncludeCode>
 <Super>PXW.DEV.BNF.Analyse.analyser</Super>
-<TimeChanged>67830,62309.873885496</TimeChanged>
+<TimeChanged>67837,30165.375795021</TimeChanged>
 <TimeCreated>67812,67238.099286582</TimeCreated>
 
 <Parameter name="CodeType">
@@ -409,9 +409,10 @@ best to analyse the entire codeblock all at once.</Description>
 	}
 
 	; AFTER full analysis we can flag a couple of things
-	If element.type="OneClassmember" {
-		Do ..checkOneClassMemeberFINAL(element)
-	}
+	;If element.type="OneClassmember" {
+	;	Do ..checkOneClassMemeberFINAL(element)
+	;}
+	Do ..processSpecificElement(element,"POST")
 ]]></Implementation>
 </Method>
 
@@ -848,7 +849,6 @@ that is executed in directly (especially sql)</Description>
 		; this does all sorts of things along the way (side effect, a bit nasty)
 		Do ..DeriveTypeReturned(element)
 	}
-
 	$$$DEBUGMethodEnd
 	Quit ""
 ]]></Implementation>
@@ -1092,8 +1092,10 @@ that is executed in directly (especially sql)</Description>
 ]]></Implementation>
 </Method>
 
-<Method name="checkOneClassMemeberFINAL">
-<FormalSpec>element:PXW.DEV.BNF.Elements.COS</FormalSpec>
+<Method name="checkCDEFOneClassMemberVars">
+<FormalSpec>element:PXW.DEV.BNF.Elements.ClassDefinition</FormalSpec>
+<ReturnType>PXW.DEV.BNF.Compilers.elementHandler</ReturnType>
+<ReturnTypeParams>Type="OneClassmember",When="POST"</ReturnTypeParams>
 <Implementation><![CDATA[
 	$$$DEBUGMethodBegin
 	Set var=$CHAR($ASCII("%")+1) ; skip over % variables, we don't care if they are used they might be used in deeper, untrackable ways
@@ -1116,7 +1118,32 @@ that is executed in directly (especially sql)</Description>
 			}
 		}
 	}
+	$$$DEBUGMethodEnd
+	Quit ""
+]]></Implementation>
+</Method>
 
+<Method name="checkCDEFOneClassMemberComm">
+<FormalSpec>element:PXW.DEV.BNF.Elements.ClassDefinition</FormalSpec>
+<ReturnType>PXW.DEV.BNF.Compilers.elementHandler</ReturnType>
+<ReturnTypeParams>Type="OneClassmember",When="POST"</ReturnTypeParams>
+<Implementation><![CDATA[
+	$$$DEBUGMethodBegin
+	/// I am not especially bothered by short or long commands, but they should be consistent
+	If ..ShortCommand,..LongCommand {
+		Do ..AddElementWarning(..ShortCommand,"COMM","Mix of Short and Long commands")
+	}
+	$$$DEBUGMethodEnd
+	Quit ""
+]]></Implementation>
+</Method>
+
+<Method name="checkCDEFOneClassMemberRtype">
+<FormalSpec>element:PXW.DEV.BNF.Elements.ClassDefinition</FormalSpec>
+<ReturnType>PXW.DEV.BNF.Compilers.elementHandler</ReturnType>
+<ReturnTypeParams>Type="OneClassmember",When="POST"</ReturnTypeParams>
+<Implementation><![CDATA[
+	$$$DEBUGMethodBegin
 	/// Non abstract method where there is a return type but no quit to match it
 	If $$$LOWER(..CodeMode)'="expression",'..ClassIsAbstract,'..MethodIsAbstract,..ReturnType'="",..QuitFound=0 {
 		If $$$LOWER(..CodeMode)["generator" {
@@ -1125,13 +1152,8 @@ that is executed in directly (especially sql)</Description>
 			Do ..AddElementWarning(..ReturnTypeElement,"QMISS","No Quit for method that has a ReturnType")
 		}
 	}
-
-	/// I am not especially bothered by short or long commands, but they should be consistent
-	If ..ShortCommand,..LongCommand {
-		Do ..AddElementWarning(..ShortCommand,"COMM","Mix of Short and Long commands")
-	}
-
 	$$$DEBUGMethodEnd
+	Quit ""
 ]]></Implementation>
 </Method>
 
@@ -1250,11 +1272,22 @@ Check in-line sql for setting of variables.</Description>
 			}
 		} Else {
 			Set found=..ClassServer.GetPropertyDetails(classname,propertyname,.type,.collection,.ElementTypeClassName)
+			If found {
+				; we are only interesting in the type/ElementType distinction on a collection
+				; where type="%collection.*" and element type is what it is a collection of
+				; otherwise we want just what was defined in the class
+				If collection="" Set type=ElementTypeClassName
+			}
 			If 'found {
-				Set found=..ClassServer.GetMethodDetails(classname,propertyname)
+				Set found=..ClassServer.GetMethodDetails(classname,propertyname,,,.stub)
 				If found {
-					Set type=..ClassServer.GetMethodReturnType(classname,propertyname,.fspecparsed,.MYfspec)
-					Set collection="",elementtype=""
+					; 
+					If stub'="" {
+
+					} Else {
+						Set type=..ClassServer.GetMethodReturnType(classname,propertyname,.fspecparsed,.MYfspec)
+						Set collection="",elementtype=""
+					}
 				}
 			} 
 			If 'found {
@@ -1474,7 +1507,6 @@ It can also return the string "-null-" which means the thing is a NULL ("")</Des
 			}
 		}
 	} ElseIf variableElement.type="SpecialVariable" {
-		#dim x as %SYSTEM.OBJ
 		Set specialElement=variableElement.findFirstElementByType("SpecialSystem",0) 
 		If $ISOBJECT(specialElement) {
 			Set classname="%SYSTEM"
@@ -1489,10 +1521,6 @@ It can also return the string "-null-" which means the thing is a NULL ("")</Des
 			Set finaltype=..FollowObjectChainForType(specialElement,classname)
 		}
 	}
-
-
-
-
 
 	Quit finaltype
 ]]></Implementation>
@@ -2404,7 +2432,7 @@ returns the full table name of the column</Description>
 
 <Class name="PXW.DEV.BNF.Analyse.analyser">
 <Super>PXW.DEV.BNF.processor</Super>
-<TimeChanged>67830,62432.853727655</TimeChanged>
+<TimeChanged>67831,66359.585567812</TimeChanged>
 <TimeCreated>67812,67238.049915655</TimeCreated>
 
 <Parameter name="CodeType">
@@ -2438,7 +2466,7 @@ Warnings assigned to elements
 <Implementation><![CDATA[
 	#dim a as PXW.DEV.Atom
 
-	Do ..processSpecificElement(element)
+	Do ..processSpecificElement(element,"PRE")
 
 	Set akey=""
 	For  {
@@ -2449,6 +2477,7 @@ Warnings assigned to elements
 			Do ..checkElement(part)
 		} 
 	}
+	Do ..processSpecificElement(element,"POST")
 ]]></Implementation>
 </Method>
 
@@ -4500,7 +4529,7 @@ summary values:(</Description>
 <Class name="PXW.DEV.BNF.Compilers.Compiler">
 <IncludeCode>PXW.DEV.BNF.Compilers.macros</IncludeCode>
 <Super>%RegisteredObject</Super>
-<TimeChanged>67825,60421.56846994</TimeChanged>
+<TimeChanged>67836,62534.316947001</TimeChanged>
 <TimeCreated>67812,67238.334389937</TimeCreated>
 <DependsOn>PXW.DEV.BNF.super</DependsOn>
 
@@ -4553,6 +4582,7 @@ summary values:(</Description>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
     #dim compiler as PXW.DEV.BNF.Compilers.Compiler
+    #dim parser as PXW.DEV.BNF.Compilers.BNF1safe
 
     Set input=..load(DEFClass_"||"_"file",.arr,.version)
     If forceVersion'="" Set version=forceVersion
@@ -4572,7 +4602,8 @@ summary values:(</Description>
     Set compiler.Loader=$SYSTEM.OBJ.New(DEFClass)
     Set elementtype=$PARAMETER(compiler.Loader,"SubElementType")
     Set KeywordPattern=$PARAMETER(compiler.Loader,"KeywordPattern")
-    If compiler.parser.File(subElement,.fileElement) {
+    Set parser=compiler.parser
+    If parser.File(subElement,.fileElement) {
         Set sc=compiler.compile(fileElement,DestinationClass,elementtype,KeywordPattern) 
         If $$$ISOK(sc) {
             Set sc=$SYSTEM.OBJ.Compile(DestinationClass,"ckb")
@@ -5324,7 +5355,7 @@ Element=Definition PXW.DEV.BNF.Element @216
 
     ; this will return the puntuation in the list of values
     ; $lb("{","}")
-    Set summary=..summariseRules(Element,.listOfValues)
+    Do ..summariseRules(Element,.listOfValues)
    
     set start=$lg(listOfValues,1)
     set end=$lg(listOfValues,2)
@@ -7279,7 +7310,7 @@ This method is invoked when a class is compiled</Description>
 
 <Class name="PXW.DEV.BNF.DEF.COS">
 <Super>PXW.DEV.BNF.Compilers.loader</Super>
-<TimeChanged>67825,60449.81911289</TimeChanged>
+<TimeChanged>67836,62853.143183624</TimeChanged>
 <TimeCreated>67812,67238.538281585</TimeCreated>
 
 <Projection name="GEN">
@@ -8088,7 +8119,7 @@ order_function_call                ::= ('order' | 'o') open_bracket expression [
 
 
 get_function_call                 ::= ('get' | 'g') open_bracket get_expression [ ',' expression ] close_bracket
-get_expression                    ::= expression
+get_expression                    ::= data_expression
 
 data_function_call                ::= ('data' | 'd') open_bracket data_expression [ ',' variable_set ] close_bracket
 data_expression                   ::= this_object
@@ -10471,7 +10502,7 @@ func_type_comment:
 
 <Class name="PXW.DEV.BNF.DEF.SQL">
 <Super>PXW.DEV.BNF.Compilers.loader</Super>
-<TimeChanged>67821,61892.000921129</TimeChanged>
+<TimeChanged>67831,62424.005262275</TimeChanged>
 <TimeCreated>67812,67238.658113367</TimeCreated>
 
 <Projection name="GEN">
@@ -10545,11 +10576,18 @@ join_on						::= 'ON' sql_expression
 
 bracket_table				::= '(' ( (bracket_table join*) | (table_reference join*) ) ')'
 
-table_reference             ::= stored_proc_table | direct_table | derived_table
+table_reference             ::= json_table | stored_proc_table | direct_table | derived_table
 direct_table				::= table_name [ table_as_clause ]
 
 table_reference_noalias     ::= direct_table_noalias | derived_table_noalias
 direct_table_noalias		::= table_name 
+
+json_table					::= 'JSON_TABLE' '(' json_table_value ',' json_table_path 'COLUMNS' json_table_col_map_list ')' table_as_clause?
+json_table_value			::= sql_expression
+json_table_path				::= sql_string
+json_table_col_map_list		::= '(' ','.json_table_col_map+ ')'
+json_table_col_map			::= column_name column_type 'PATH' sql_string
+
 
 index_reference				::= [ table_reference_noalias '.' ] identifier
 index_reference_list		::= index_reference ( ',' index_reference )*
@@ -10625,7 +10663,10 @@ create_table_command 		::= 'CREATE' 'TABLE' direct_table
 
 create_table_field			::= column_name column_type
 
-column_type					::= ('CHAR' '(' number ')' )
+column_type					::= ('CHAR' '(' number ')')
+								| ('VARCHAR' ['(' number ')'] )
+								| 'TIMESTAMP'
+								| 'INT'
 								
 
 insert_command				::= 'INSERT' (update_keyword)* ['INTO'] direct_table insert_method
@@ -12323,8 +12364,8 @@ summary=P&C&P]]></Description>
 <Class name="PXW.DEV.BNF.GEN.COS">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67826,68367.5708272</TimeChanged>
-<TimeCreated>67826,68367.27088176</TimeCreated>
+<TimeChanged>67844,28571.39399304</TimeChanged>
+<TimeCreated>67844,28571.028761909</TimeCreated>
 
 <Method name="AmpOp">
 <Description><![CDATA[
@@ -18523,7 +18564,7 @@ summary=C&C&?4OptionalSingle4?]]></Description>
 
 <Method name="GetExpression">
 <Description>
- get_expression ::= expression
+ get_expression ::= data_expression
 summary=C</Description>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <ReturnType>%Boolean</ReturnType>
@@ -18533,7 +18574,7 @@ summary=C</Description>
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Expression(.subElement,.addedElement)  {
+	if ..DataExpression(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -33522,16 +33563,8 @@ summary=K&?4OptionalSingle4?&C]]></Description>
 <Class name="PXW.DEV.BNF.GEN.CSP">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67826,68385.928987943</TimeChanged>
-<TimeCreated>67826,68368.685579064</TimeCreated>
-
-<Parameter name="KeywordPattern">
-<Default>1.A</Default>
-</Parameter>
-
-<Parameter name="Keywords">
-<Default>JAVASCRIPT,LANGUAGE,PUBLIC,SCRIPT,STYLESHEET,TYPE</Default>
-</Parameter>
+<TimeChanged>67844,28572.885409059</TimeChanged>
+<TimeCreated>67844,28572.853823583</TimeCreated>
 
 <Method name="CosExpression">
 <Description>
@@ -35651,14 +35684,22 @@ summary=P</Description>
 <Implementation><![CDATA[	quit ##class(PXW.DEV.BNF.Element).%New(Type)
 ]]></Implementation>
 </Method>
+
+<Parameter name="KeywordPattern">
+<Default>1.A</Default>
+</Parameter>
+
+<Parameter name="Keywords">
+<Default>JAVASCRIPT,LANGUAGE,PUBLIC,SCRIPT,STYLESHEET,TYPE</Default>
+</Parameter>
 </Class>
 
 
 <Class name="PXW.DEV.BNF.GEN.ClassDefinition">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67826,68370.465104175</TimeChanged>
-<TimeCreated>67826,68370.294697992</TimeCreated>
+<TimeChanged>67844,28574.902777467</TimeChanged>
+<TimeCreated>67844,28574.702798815</TimeCreated>
 
 <Method name="AliasIdentifier">
 <Description>
@@ -48637,8 +48678,8 @@ summary=C</Description>
 <Class name="PXW.DEV.BNF.GEN.JS">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67826,68372.56224179</TimeChanged>
-<TimeCreated>67826,68372.397715061</TimeCreated>
+<TimeChanged>67844,28577.164252809</TimeChanged>
+<TimeCreated>67844,28576.985553616</TimeCreated>
 
 <Method name="AliasName">
 <Description><![CDATA[
@@ -60180,8 +60221,8 @@ summary=K&[C]&C]]></Description>
 <Class name="PXW.DEV.BNF.GEN.Python">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67826,68373.687455484</TimeChanged>
-<TimeCreated>67826,68373.479145423</TimeCreated>
+<TimeChanged>67844,28578.361700213</TimeChanged>
+<TimeCreated>67844,28578.145340011</TimeCreated>
 
 <Method name="AnnotatedRhs">
 <Description><![CDATA[
@@ -78794,8 +78835,8 @@ summary=C</Description>
 <Class name="PXW.DEV.BNF.GEN.SQL">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67826,68377.137372073</TimeChanged>
-<TimeCreated>67826,68376.974490727</TimeCreated>
+<TimeChanged>67844,28582.252560355</TimeChanged>
+<TimeCreated>67844,28582.079226191</TimeCreated>
 
 <Method name="AliasName">
 <Description>
@@ -79632,17 +79673,23 @@ summary=P&C]]></Description>
 
 <Method name="ColumnType">
 <Description><![CDATA[
- column_type ::= ('CHAR' '(' number ')' )
-summary=(K&P&C&P)]]></Description>
+ column_type ::= ('CHAR' '(' number ')') | ('VARCHAR' ['(' number ')'] ) | 'TIMESTAMP' | 'INT'
+summary=(K&P&C&P)|(K&[P&C&P])|K|K]]></Description>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-	; rules summary (K&P&C&P)
+	; rules summary (K&P&C&P)|(K&[P&C&P])|K|K
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..ColumnType1Sub(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..ColumnType2Sub(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"TIMESTAMP")  {
+		set done=1 ; or
+	} elseif ..addKeyword(.subElement,"INT")  {
 		set done=1 ; end compileRules
 	}
 
@@ -79685,6 +79732,70 @@ summary=K&P&C&P]]></Description>
 	} else {
 		$$$BNFROLLBACK(subElement)
 		set ok=0
+	}
+	quit ok
+]]></Implementation>
+</Method>
+
+<Method name="ColumnType2Sub">
+<Description><![CDATA[
+'VARCHAR' ['(' number ')']
+summary values:VARCHAR
+summary=K&[P&C&P]]]></Description>
+<Final>1</Final>
+<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
+<Private>1</Private>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	; rules summary K&[P&C&P]
+	if '(..isKeyword("VARCHAR")) { quit 0 /* normal */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"VARCHAR")  {
+		if ..ColumnType3OptGrp(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+]]></Implementation>
+</Method>
+
+<Method name="ColumnType3OptGrp">
+<Description><![CDATA[
+
+summary values:(
+summary=P&C&P]]></Description>
+<Final>1</Final>
+<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
+<Private>1</Private>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	; rules summary P&C&P
+	if '..isPunctuation("(",1) { quit 1 /* not found is OK */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"(")  {
+		if ..Number(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,")")  {
+				set done=1 ; end compileRules
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
 	}
 	quit ok
 ]]></Implementation>
@@ -81736,6 +81847,211 @@ summary=P&C&P]]></Description>
 		$$$BNFROLLBACK(subElement)
 		set ok=0
 	}
+	quit ok
+]]></Implementation>
+</Method>
+
+<Method name="JsonTable">
+<Description><![CDATA[
+ json_table ::= 'JSON_TABLE' '(' json_table_value ',' json_table_path 'COLUMNS' json_table_col_map_list ')' table_as_clause?
+summary values:JSON_TABLE
+summary=P&P&C&P&C&K&C&P&?4OptionalSingle4?]]></Description>
+<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	; rules summary P&P&C&P&C&K&C&P&?4OptionalSingle4?
+	if '..isStringSingle("JSON_TABLE",10) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"JSON_TABLE")  {
+		if ..addPunctuation(.subElement,"(")  {
+			if ..JsonTableValue(.subElement,.addedElement)  {
+				if ..addPunctuation(.subElement,",")  {
+					if ..JsonTablePath(.subElement,.addedElement)  {
+						if ..addKeyword(.subElement,"COLUMNS")  {
+							if ..JsonTableColMapList(.subElement,.addedElement)  {
+								if ..addPunctuation(.subElement,")")  {
+									if $s(..TableAsClause(.subElement,.addedElement) :1,1:1)  {
+										set done=1 ; end compileRules
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+]]></Implementation>
+</Method>
+
+<Method name="JsonTableColMap">
+<Description><![CDATA[
+ json_table_col_map ::= column_name column_type 'PATH' sql_string
+summary=C&C&K&C]]></Description>
+<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	; rules summary C&C&K&C
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..ColumnName(.subElement,.addedElement)  {
+		if ..ColumnType(.subElement,.addedElement)  {
+			if ..addKeyword(.subElement,"PATH")  {
+				if ..SqlString(.subElement,.addedElement)  {
+					set done=1 ; end compileRules
+				}
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+]]></Implementation>
+</Method>
+
+<Method name="JsonTableColMapList">
+<Description><![CDATA[
+ json_table_col_map_list ::= '(' ','.json_table_col_map+ ')'
+summary values:(
+summary=P&.C.&P]]></Description>
+<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	; rules summary P&.C.&P
+	if '..isPunctuation("(",1) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"(")  {
+		if ..JsonTableColMapList1RepSep(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,")")  {
+				set done=1 ; end compileRules
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+]]></Implementation>
+</Method>
+
+<Method name="JsonTableColMapList1RepSep">
+<Description>
+ ','.json_table_col_map+</Description>
+<Final>1</Final>
+<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
+<Private>1</Private>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	; rules summary ?4String:4?
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	set done=0 ; must be at least 1
+	if ..JsonTableColMap(.subElement,.addedElement) {
+		set done=1,ok=1 ; found 1
+		do {
+			$$$BNFSTART(repElement)
+			set ok=(..addPunctuation(.repElement,",")  && ..JsonTableColMap(.repElement,.addedElement) )
+			if ok {
+				$$$BNFCOMMITCOPY(repElement,subElement)
+			} else {
+				$$$BNFROLLBACK(repElement)
+			}
+		} while ok
+	}
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+]]></Implementation>
+</Method>
+
+<Method name="JsonTablePath">
+<Description>
+ json_table_path ::= sql_string
+summary=C</Description>
+<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	; rules summary C
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..SqlString(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+]]></Implementation>
+</Method>
+
+<Method name="JsonTableValue">
+<Description>
+ json_table_value ::= sql_expression
+summary=C</Description>
+<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	; rules summary C
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..SqlExpression(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
 	quit ok
 ]]></Implementation>
 </Method>
@@ -88120,17 +88436,19 @@ summary=C&P]]></Description>
 
 <Method name="TableReference">
 <Description>
- table_reference ::= stored_proc_table | direct_table | derived_table
-summary=C|C|C</Description>
+ table_reference ::= json_table | stored_proc_table | direct_table | derived_table
+summary=C|C|C|C</Description>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-	; rules summary C|C|C
+	; rules summary C|C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..StoredProcTable(.subElement,.addedElement)  {
+	if ..JsonTable(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..StoredProcTable(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..DirectTable(.subElement,.addedElement)  {
 		set done=1 ; or
@@ -89031,7 +89349,7 @@ summary=P&C]]></Description>
 </Parameter>
 
 <Parameter name="Keywords">
-<Default>ABS,ACOS,ALL,AND,AS,ASC,ASCII,ASIN,ATAN,AVG,BETWEEN,BOTH,BY,CALL,CASE,CAST,CEILING,CHAR,CHARINDEX,CLOSE,COALESCE,CONCAT,CONVERT,COS,COT,COUNT,CREATE,CROSS,CURDATE,CURRENT,CURSOR,CURTIME,D,DATABASE,DATALENGTH,DATE,DATEADD,DATEDIFF,DATENAME,DATEPART,DAY,DAYNAME,DAYOFMONTH,DAYOFWEEK,DAYOFYEAR,DD,DECLARE,DECODE,DEGREES,DELETE,DESC,DISTINCT,DROP,DW,DY,E,ELSE,EMBEDDING,END,ESCAPE,EXECUTE,EXISTS,EXP,FETCH,FLOOR,FN,FOLLOWING,FOR,FROM,FULL,GETDATE,GETUTCDATE,GREATEST,GROUP,H,HASHBYTES,HAVING,HH,HOUR,IFNULL,IN,INNER,INSERT,INSTR,INTO,IS,ISNULL,ISNUMERIC,JOIN,LCASE,LEADING,LEAST,LEFT,LEN,LENGTH,LIKE,LIST,LOG,LOWER,LPAD,LTRIM,M,MAX,MI,MILLISECOND,MIN,MINUTE,MM,MOD,MONTH,MONTHNAME,MS,N,NATURAL,NOT,NOW,NULL,NULLIF,NVL,ON,ONLY,OPEN,OR,ORDER,OUTER,OVER,PARTITION,PI,POSITION,POWER,PRECEDING,PREDICT,PROBABILITY,Q,QQ,QUARTER,RADIANS,READ,REFERENCES,REPEAT,REPLACE,REPLICATE,REVERSE,RIGHT,ROUND,ROW,ROWS,RPAD,RTRIM,S,SECOND,SELECT,SET,SIGN,SIN,SIZE,SOME,SPACE,SQLTIMESTAMP,SQRT,SQUARE,SS,STR,STRING,STS,STUFF,SUBSTR,SUBSTRING,SUM,SYSDATE,TABLE,TAN,THEN,TIMESTAMPADD,TIMESTAMPDIFF,TOP,TRAILING,TRIM,TRUNCATE,UCASE,UNBOUNDED,UNION,UPDATE,UPPER,USER,USING,VALUES,VIEW,W,WEEK,WEEKDAY,WHEN,WHERE,WITH,WK,WW,XMLCONCAT,XMLELEMENT,XMLFOREST,Y,YEAR,YY,YYYY</Default>
+<Default>ABS,ACOS,ALL,AND,AS,ASC,ASCII,ASIN,ATAN,AVG,BETWEEN,BOTH,BY,CALL,CASE,CAST,CEILING,CHAR,CHARINDEX,CLOSE,COALESCE,COLUMNS,CONCAT,CONVERT,COS,COT,COUNT,CREATE,CROSS,CURDATE,CURRENT,CURSOR,CURTIME,D,DATABASE,DATALENGTH,DATE,DATEADD,DATEDIFF,DATENAME,DATEPART,DAY,DAYNAME,DAYOFMONTH,DAYOFWEEK,DAYOFYEAR,DD,DECLARE,DECODE,DEGREES,DELETE,DESC,DISTINCT,DROP,DW,DY,E,ELSE,EMBEDDING,END,ESCAPE,EXECUTE,EXISTS,EXP,FETCH,FLOOR,FN,FOLLOWING,FOR,FROM,FULL,GETDATE,GETUTCDATE,GREATEST,GROUP,H,HASHBYTES,HAVING,HH,HOUR,IFNULL,IN,INNER,INSERT,INSTR,INT,INTO,IS,ISNULL,ISNUMERIC,JOIN,LCASE,LEADING,LEAST,LEFT,LEN,LENGTH,LIKE,LIST,LOG,LOWER,LPAD,LTRIM,M,MAX,MI,MILLISECOND,MIN,MINUTE,MM,MOD,MONTH,MONTHNAME,MS,N,NATURAL,NOT,NOW,NULL,NULLIF,NVL,ON,ONLY,OPEN,OR,ORDER,OUTER,OVER,PARTITION,PATH,PI,POSITION,POWER,PRECEDING,PREDICT,PROBABILITY,Q,QQ,QUARTER,RADIANS,READ,REFERENCES,REPEAT,REPLACE,REPLICATE,REVERSE,RIGHT,ROUND,ROW,ROWS,RPAD,RTRIM,S,SECOND,SELECT,SET,SIGN,SIN,SIZE,SOME,SPACE,SQLTIMESTAMP,SQRT,SQUARE,SS,STR,STRING,STS,STUFF,SUBSTR,SUBSTRING,SUM,SYSDATE,TABLE,TAN,THEN,TIMESTAMP,TIMESTAMPADD,TIMESTAMPDIFF,TOP,TRAILING,TRIM,TRUNCATE,UCASE,UNBOUNDED,UNION,UPDATE,UPPER,USER,USING,VALUES,VARCHAR,VIEW,W,WEEK,WEEKDAY,WHEN,WHERE,WITH,WK,WW,XMLCONCAT,XMLELEMENT,XMLFOREST,Y,YEAR,YY,YYYY</Default>
 </Parameter>
 </Class>
 
@@ -89039,16 +89357,8 @@ summary=P&C]]></Description>
 <Class name="PXW.DEV.BNF.GEN.SQLShowPlan">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67826,68387.894607561</TimeChanged>
-<TimeCreated>67826,68377.635720235</TimeCreated>
-
-<Parameter name="KeywordPattern">
-<Default>1.A</Default>
-</Parameter>
-
-<Parameter name="Keywords">
-<Default>AND,BITMAP,EACH,EXTENT,FOR,GETTING,GIVEN,ID,INDEX,LOOPING,MAP,MASTER,MODULE,MODULES,ON,READ,SUBQUERIES,SUBQUERY,TABLE,THE,USING</Default>
-</Parameter>
+<TimeChanged>67844,28582.820723562</TimeChanged>
+<TimeCreated>67844,28582.778473725</TimeCreated>
 
 <Method name="AliasName">
 <Description>
@@ -91858,6 +92168,14 @@ summary=R</Description>
 <Implementation><![CDATA[	quit ##class(PXW.DEV.BNF.Element).%New(Type)
 ]]></Implementation>
 </Method>
+
+<Parameter name="KeywordPattern">
+<Default>1.A</Default>
+</Parameter>
+
+<Parameter name="Keywords">
+<Default>AND,BITMAP,EACH,EXTENT,FOR,GETTING,GIVEN,ID,INDEX,LOOPING,MAP,MASTER,MODULE,MODULES,ON,READ,SUBQUERIES,SUBQUERY,TABLE,THE,USING</Default>
+</Parameter>
 </Class>
 
 
@@ -97135,7 +97453,7 @@ summary=P</Description>
 <Class name="PXW.DEV.BNF.processor">
 <IncludeCode>PXW.Debuggers.Macros,PXW.DEV.BNF.macros</IncludeCode>
 <Super>%RegisteredObject</Super>
-<TimeChanged>67826,46787.826439606</TimeChanged>
+<TimeChanged>67831,66280.872087883</TimeChanged>
 <TimeCreated>67812,67237.985997628</TimeCreated>
 
 <Property name="processNotRequired">
@@ -97157,6 +97475,7 @@ It could be used directly or used as a template for more specific processing.</D
 <FormalSpec>element:PXW.DEV.Element</FormalSpec>
 <Implementation><![CDATA[
 	$$$DEBUGMethodBegin
+	do ..processSpecificElement(element,"PRE")
 	set partkey=""
 	For  {
 		Set part=element.partsGetNext(.partkey)
@@ -97168,6 +97487,7 @@ It could be used directly or used as a template for more specific processing.</D
 			Do ..processAtom(part)
 		}
 	}
+	do ..processSpecificElement(element,"POST")
 	$$$DEBUGMethodEnd
 ]]></Implementation>
 </Method>
@@ -97185,7 +97505,7 @@ Build a set of ifs to process any based on the type of element currently being p
 The first parameter on the formal spect is the type of element that the method handles.
 eg. Method writeCOSThing(element As PXW.DEV.BNF.Elements.COS) AS  As PXW.DEV.BNF.Compilers.elementHandler(Type="Thing")</Description>
 <CodeMode>objectgenerator</CodeMode>
-<FormalSpec>element:PXW.DEV.Element,When:%String=""</FormalSpec>
+<FormalSpec>element:PXW.DEV.Element,When:%String="PRE"</FormalSpec>
 <Implementation><![CDATA[
     #dim meth as %Dictionary.CompiledMethod
     Set opencurly="{",closecurly="}"
@@ -97202,15 +97522,18 @@ eg. Method writeCOSThing(element As PXW.DEV.BNF.Elements.COS) AS  As PXW.DEV.BNF
 				Set param=meth.ReturnTypeParams
 				;Set seq=meth.SequenceNumber
 				If param'="" {
-
-					Set etypes=$TRANSLATE($PIECE(param,"=",2),"""","")
+					; very simple parsing of
+					; Type="list,of,type",When="POST"
+					Set etypes=$p($p($PIECE(param,"Type=",2),"""",2),"""",1)
+					set when=$p($p($PIECE(param,"When=",2),"""",2),"""",1)
+					set when=$s(when="":"PRE",1:when)
 					If etypes'="" {
 						For i=1:1:$LENGTH(etypes,",") {
 							Set etype=$PIECE(etypes,",",i)
 							; key by sequence for potential time saving - not implemented properly
 							;Set defseq=##class(%Dictionary.MethodDefinition).%OpenId(meth.Origin_"||"_meth.Name).SequenceNumber
 							;Set methodseq(class,(10000+defseq)_(10000+seq),etype,meth.Name)=meth
-							Set methods(class,etype,meth.Name)=meth
+							Set methods(when,class,etype,meth.Name)=meth
 						}
 					}
 				}
@@ -97220,37 +97543,50 @@ eg. Method writeCOSThing(element As PXW.DEV.BNF.Elements.COS) AS  As PXW.DEV.BNF
     Do %code.WriteLine($CHAR(9)_"Set class=$ZCONVERT($classname(element),""U"") q:class=""""")
     Do %code.WriteLine($CHAR(9)_"Set etype=$ZCONVERT(element.type,""U"") q:etype=""""")
     Do %code.WriteLine($CHAR(9)_"$$$DEBUGMethodBegin")
-	Do %code.WriteLine($CHAR(9)_"i '$d(..processNotRequired(class,etype)) {")
-	Set (class,etype,name)="",cif="If"
-	For  {
-		Set class=$ORDER(methods(class))
-		Quit:class=""
+	Do %code.WriteLine($CHAR(9)_"i '$d(..processNotRequired(When,class,etype)) {")
+	Set when="",wif="If"
+	for  {
+		Set when=$o(methods(when))
+		quit:when=""
 
-		Do %code.WriteLine($CHAR(9,9)_cif_" class="""_$$$UPPER(class)_""" "_opencurly)
-		
-		Set ifcommand="If"
+		Do %code.WriteLine($CHAR(9,9)_wif_" When="""_$$$UPPER(when)_""" "_opencurly)
+
+
+		Set (class,etype,name)="",cif="If"
 		For  {
-			Set etype=$ORDER(methods(class,etype))
-			Quit:etype=""
+			Set class=$ORDER(methods(when,class))
+			Quit:class=""
 
-			; etype will contain the quotes
-			Do %code.WriteLine($CHAR(9,9,9)_ifcommand_" etype="""_$$$UPPER(etype)_""" "_opencurly)
+			Do %code.WriteLine($CHAR(9,9,9)_cif_" class="""_$$$UPPER(class)_""" "_opencurly)
 			
+			Set ifcommand="If"
 			For  {
-				Set name=$ORDER(methods(class,etype,name),1,meth)
-				Quit:name=""
+				Set etype=$ORDER(methods(when,class,etype))
+				Quit:etype=""
+
+				; etype will contain the quotes
+				Do %code.WriteLine($CHAR(9,9,9,9)_ifcommand_" etype="""_$$$UPPER(etype)_""" "_opencurly)
 				
-				Do %code.WriteLine($CHAR(9,9,9,9)_"do .."_meth.Name_"(.element)")
-			}
+				For  {
+					Set name=$ORDER(methods(when,class,etype,name),1,meth)
+					Quit:name=""
+					
+					Do %code.WriteLine($CHAR(9,9,9,9,9)_"do .."_meth.Name_"(.element)")
+				} ; method loop
+				Do %code.WriteLine($CHAR(9,9,9,9)_closecurly)
+				Set ifcommand="Elseif"
+			} ; element type loop
+			; set flag to say that this type of thing does NOT have a redirect
+			Do %code.WriteLine($CHAR(9,9,9,9)_" else { s ..processNotRequired(When,class,etype)=1 }")
 			Do %code.WriteLine($CHAR(9,9,9)_closecurly)
-			Set ifcommand="Elseif"
-		}
-		; set flag to say that this type of thing does NOT have a redirect
-		Do %code.WriteLine($CHAR(9,9,9)_" else { s ..processNotRequired(class,etype)=1 }")
+			Set cif="Elseif"
+		} ; class loop
 		Do %code.WriteLine($CHAR(9,9)_closecurly)
-		Set cif="Elseif"
-    }
-	Do %code.WriteLine($CHAR(9)_"}")
+		Set wif="ElseIf"	
+
+	} ; when loop
+
+	Do %code.WriteLine($CHAR(9)_closecurly)
     Do %code.WriteLine($CHAR(9)_"$$$DEBUGMethodEnd")
 	
     Quit $$$OK
@@ -98348,7 +98684,7 @@ Crazy caching in here, it all started so simple and then got a bit out of
 control!</Description>
 <IncludeCode>PXW.Debuggers.Macros</IncludeCode>
 <Super>PXW.DEV.Dictionary.CodeInterface</Super>
-<TimeChanged>67830,63854.036099639</TimeChanged>
+<TimeChanged>67840,46029.145152529</TimeChanged>
 <TimeCreated>67812,67240.494793826</TimeCreated>
 
 <Parameter name="CodeType">
@@ -98569,10 +98905,11 @@ ClassName must be in the same case as is it stored on oddDEF (eg PXW.DEV.Data.Xr
         Set docache=0
         Set timechanged=$GET(^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD"))
         If timechanged="" Set docache=1
+        If timechanged="no kill" set docache=2,timechanged=""
         If TimeStamp'="",TimeStamp]timechanged Set docache=1
         If docache {
             $$$DEBUG("Fetching from GMD DB_"_ClassName_" timechanged="_timechanged_" TimeStamp="_TimeStamp)
-            Kill ^PXW.Cache("CDEF",NS,fcn,"GMD")
+            Kill:docache=1 ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD")
             Do ..CacheListMethodDetails(fcn)
             Set ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD")=$SELECT(TimeStamp'="":TimeStamp,1:1)
         }
@@ -98583,7 +98920,7 @@ ClassName must be in the same case as is it stored on oddDEF (eg PXW.DEV.Data.Xr
         If timechanged="" Set docache=1
         If TimeStamp'="",TimeStamp]timechanged Set docache=1
         If docache {
-            Kill ^PXW.Cache("CDEF",NS,fcn,"GPD")
+            Kill ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GPD")
             $$$DEBUG("Fetching from GPD DB_"_ClassName_" timechanged="_timechanged_" TimeStamp="_TimeStamp)
             Do ..CacheListProperyDetails(fcn)
             Set ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GPD")=$SELECT(TimeStamp'="":TimeStamp,1:1)
@@ -98595,7 +98932,7 @@ ClassName must be in the same case as is it stored on oddDEF (eg PXW.DEV.Data.Xr
         If timechanged="" Set docache=1
         If TimeStamp'="",TimeStamp]timechanged Set docache=1
         If docache {
-            Kill ^PXW.Cache("CDEF",NS,fcn,"GAD")
+            Kill ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GAD")
             $$$DEBUG("Fetching from GAD DB_"_ClassName_" timechanged="_timechanged_" TimeStamp="_TimeStamp)
             Do ..CacheListParameterDetails(fcn)
             Set ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GAD")=$SELECT(TimeStamp'="":TimeStamp,1:1)
@@ -98608,7 +98945,7 @@ ClassName must be in the same case as is it stored on oddDEF (eg PXW.DEV.Data.Xr
         If TimeStamp'="",TimeStamp]timechanged Set docache=1
         If docache {
             $$$DEBUG("Fetching from GID DB_"_ClassName_" timechanged="_timechanged_" TimeStamp="_TimeStamp)
-            Kill ^PXW.Cache("CDEF",NS,fcn,"GID")
+            Kill ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GID")
             Do ..CacheListIndexDetails(fcn)
             Set ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GID")=$SELECT(TimeStamp'="":TimeStamp,1:1)
         }
@@ -98620,7 +98957,7 @@ ClassName must be in the same case as is it stored on oddDEF (eg PXW.DEV.Data.Xr
         If TimeStamp'="",TimeStamp]timechanged Set docache=1
         If docache {
             $$$DEBUG("Fetching from GQD DB_"_ClassName_" timechanged="_timechanged_" TimeStamp="_TimeStamp)
-            Kill ^PXW.Cache("CDEF",NS,fcn,"GQD")
+            Kill ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GQD")
             Do ..CacheListQueryDetails(fcn)
             Set ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GQD")=$SELECT(TimeStamp'="":TimeStamp,1:1)
         }
@@ -98692,10 +99029,13 @@ that its overriding</Description>
     ;Set sql=sql_"SELECT parent,Name,RuntimeType,SQLFieldName,Collection,Type,Origin "
     ;Set sql=sql_"FROM %Dictionary.CompiledProperty "
     ;Set sql=sql_"WHERE parent=?"
+    ; this fetches the type from the origin class definition, this means that we know if the programmer
+    ; left the type unspecified rather than the default by iris (%string)
     Set sql=sql_"SELECT * FROM("
-    Set sql=sql_"    SELECT parent,Name,RuntimeType,SQLFieldName,Collection,Type,Origin "
-    Set sql=sql_"    FROM %Dictionary.CompiledProperty "
-    Set sql=sql_"    WHERE COALESCE(Parent->ClassType,'')!='view'"
+    Set sql=sql_"    SELECT cp.parent,cp.Name,cp.RuntimeType,cp.SQLFieldName,cp.Collection,pd.Type,cp.Origin "
+    Set sql=sql_"    FROM %Dictionary.CompiledProperty as cp"
+    Set sql=sql_"    LEFT OUTER JOIN %Dictionary.PropertyDefinition as pd on pd.parent=cp.origin and pd.name=cp.name"
+    Set sql=sql_"    WHERE COALESCE(cp.Parent->ClassType,'')!='view'"
     Set sql=sql_"    UNION"
     Set sql=sql_"    SELECT c.Name as parent, p.column_name as name, null as runtimetype, column_name as sqlfieldname, null as collection,null as type, null as Origin"
     Set sql=sql_"    FROM %Dictionary.CompiledClass as c"
@@ -98721,8 +99061,9 @@ that its overriding</Description>
         Set cn=rs.%Get("parent")
         Set psqlname=rs.%Get("SqlFieldName")
         Set pname=rs.%Get("Name")
+        Set type=..FullClassName(rs.%Get("Type"),$p(ClassName,".",1,*-1))
         Set data=$LISTBUILD(pname,rs.%Get("RuntimeType"),psqlname,
-                    rs.%Get("Collection"),rs.%Get("Type"),rs.%Get("Origin"))            
+                    rs.%Get("Collection"),type,rs.%Get("Origin"))            
         If psqlname'="" Set ^PXW.Cache("CDEF",NS,$$$UPPER(cn),"GPD","sqlname",$$$UPPER(psqlname))=data
         Set ^PXW.Cache("CDEF",NS,$$$UPPER(cn),"GPD","propertyname",$$$UPPER(pname))=data
     }
@@ -98772,7 +99113,7 @@ that its overriding</Description>
  	Set server=..AtelierSettings.ServerName
 	Set sql=""
     Set sql=sql_"SELECT parent,Name,ReturnType,Origin,Stub, FormalSpec, ' ' || FormalSpecParsed as fsp, CodeMode" ; stub is undocumented but it seems to be "source name.method name.source type (i=index,a=property)
-    Set sql=sql_" ,parent->SqlSchemaName,SqlName "
+    Set sql=sql_" ,parent->SqlSchemaName,SqlName,Abstract "
     Set sql=sql_" FROM %Dictionary.CompiledMethod "
     Set sql=sql_" WHERE parent=?"
     Set parameters($INCREMENT(parameters))=ClassName
@@ -98795,12 +99136,13 @@ that its overriding</Description>
         Set mname=rs.%Get("Name")
         Set stub=rs.%Get("Stub")
         Set rt=rs.%Get("ReturnType")
-        Set fs=..MyFormalSpecParse(rs.%Get("FormalSpec"))
+        Set fs=..MyFormalSpecParse(rs.%Get("FormalSpec"),ClassName)
         Set fsp=$EXTRACT(rs.%Get("fsp"),2,*) ; remove leading " " because atelier does not like the encoded list (in v2)
         Set codemode=rs.%Get("CodeMode")
         Set sqlschema=rs.%Get("SqlSchemaName")
         Set sqlname=rs.%Get("SqlName")
-        Set data=$LISTBUILD(mname,rt,rs.%Get("Origin"),stub,fsp,codemode,sqlschema,sqlname,fs)
+        Set abstract=rs.%Get("Abstract")
+        Set data=$LISTBUILD(mname,rt,rs.%Get("Origin"),stub,fsp,codemode,sqlschema,sqlname,fs,abstract)
         Set ^PXW.Cache("CDEF",NS,$$$UPPER(cn),"GMD",$$$UPPER(mname))=data
         If sqlschema'="",sqlname'="" Set ^PXW.Cache("CDEFPROC",NS,$$$UPPER(sqlschema),$$$UPPER(sqlname))=$LISTBUILD(cn,mname)
     }
@@ -98809,7 +99151,7 @@ that its overriding</Description>
 
 <Method name="MyFormalSpecParse">
 <ClassMethod>1</ClassMethod>
-<FormalSpec>FormalSpec:%String</FormalSpec>
+<FormalSpec>FormalSpec:%String,ThisClass:%String</FormalSpec>
 <ReturnType>%List</ReturnType>
 <Implementation><![CDATA[
     Set fslist=""
@@ -98840,6 +99182,7 @@ that its overriding</Description>
                 Set pos=pos+1 
             }
             Set type=$EXTRACT(FormalSpec,start,pos-1)
+            Set type=..FullClassName(type,$p(ThisClass,".",1,*-1))
             If $EXTRACT(FormalSpec,pos)="(" {
                 Set pos=pos+1
                 ; type parameters
@@ -99001,9 +99344,10 @@ that its overriding</Description>
 <FormalSpec>ClassName:%String,SQLName:%String</FormalSpec>
 <ReturnType>%String</ReturnType>
 <Implementation><![CDATA[
+    If ClassName="" Quit ""
+    If SQLName="" Quit ""
     ;New %NS Set %NS=..Namespace.Name
     Set NS=..Namespace.Name
-    If ClassName="" Quit ""
 
     Set fcn=..FullClassName(ClassName)
     
@@ -99028,12 +99372,11 @@ that its overriding</Description>
 <FormalSpec>ClassName:%String,SQLName:%String</FormalSpec>
 <ReturnType>%String</ReturnType>
 <Implementation><![CDATA[
-    ;New %NS Set %NS=..Namespace.Name
-    Set NS=..Namespace.Name
     If ClassName="" Quit ""
+    If SQLName="" Quit ""
 
+    Set NS=..Namespace.Name
     Set fcn=..FullClassName(ClassName)
-
  	Set ufield=$$$UPPER(SQLName)
 	; sometimes fields have quotes around
 	If $EXTRACT(ufield,1)="""",$EXTRACT(ufield,*)="""" Set ufield=$EXTRACT(ufield,2,*-1)
@@ -99052,9 +99395,11 @@ Returns 1 if details were found</Description>
 <FormalSpec>ClassName:%String,Name:%String,*RuntimeType:%String,*Collection:%String,*Type:%String,*Origin:%String</FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
+    If ClassName="" Quit 0
+    If Name="" Quit 0
+
     ;New %NS Set %NS=..Namespace.Name
     Set NS=..Namespace.Name
-    If ClassName="" Quit 0
     Set fcn=..FullClassName(ClassName)
 
  	Set ufield=$$$UPPER(Name)
@@ -99084,6 +99429,7 @@ Returns 1 if the details were found()</Description>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
     If ClassName="" Quit 0
+    If PropertyName="" Quit 0
     
     Set found=0
     ; find the type of the property
@@ -99117,15 +99463,41 @@ FormalSpec is parsed by me from the original FS which might not have
 <FormalSpec>ClassName:%String,Name:%String,*ReturnType:%String,*Origin:%String,*Stub:%String,*FormalSpecParsed:%List,*CodeMode:%String,FormalSpec:%List</FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-    ;New %NS Set %NS=..Namespace.Name
-    Set NS=..Namespace.Name
     If ClassName="" Quit 0
+    If Name="" Quit 0
 
+    Set NS=..Namespace.Name
     Set fcn=..FullClassName(ClassName)
-
- 	Set ufield=$$$UPPER(Name)
+	Set ufield=$$$UPPER(Name)
 	; sometimes fields have quotes around
 	If $EXTRACT(ufield,1)="""",$EXTRACT(ufield,*)="""" Set ufield=$EXTRACT(ufield,2,*-1)
+
+    ; some classes do not have all the inherited members, so work out here
+    ; eg %BigData.ECPMsgConnection
+    if '$d(^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD")) {
+        if ..GetClassDetails(ClassName,,.super) {
+            for i=1:1:$l(super,",") {
+                s superclass=$p(super,",",i)
+                i superclass'="" {
+                    s fullsuper=..FullClassName(superclass)
+                    do ..GetMethodDetails(superclass,Name)
+                    s mname=""
+                    ; do not copy in the abstract methods, they are not inherited
+                    f  {
+                        s mname=$o(^PXW.Cache("CDEF",NS,$$$UPPER(fullsuper),"GMD",mname),1,mdata)
+                        q:mname=""
+                        i +$lg(mdata,10)=0 {
+                            s ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD",mname)=mdata
+                        }
+                    }
+                    ;m ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD")=^PXW.Cache("CDEF",NS,$$$UPPER(fullsuper),"GMD")
+                }
+            }
+            ; reset so that it will cache
+            s ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD")="no kill"
+        }
+    }
+
 
     Do ..CacheIfNecessary(fcn,"GMD")
 	  
@@ -99139,6 +99511,7 @@ FormalSpec is parsed by me from the original FS which might not have
     ;Set SQLSchemaName=$LISTGET(data,7)
     ;Set SQLName=$LISTGET(data,8)
     Set FormalSpec=$LISTGET(data,9)
+    Set Abstract=$LISTGET(data,10)
 
     $$$DEBUG(("GetMethodDetails "_ClassName_"||"_Name_" data="_$SELECT(data="":"null",1:"ok")))
 
@@ -99152,8 +99525,7 @@ FormalSpec is parsed by me from the original FS which might not have
 <ReturnType>%String</ReturnType>
 <Implementation><![CDATA[
     If ClassName="" Quit ""
-
-    ;s fcn=..FullClassName(ClassName)
+    If Name="" Quit ""
 
 	Set ufield=$$$UPPER(Name)
 	; sometimes fields have quotes around
@@ -99205,12 +99577,11 @@ Returns 1 if details were found</Description>
 <FormalSpec>ClassName:%String,Name:%String,*TypeClass:%String,*Origin:%String,*Properties:%String</FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-    ;New %NS Set %NS=..Namespace.Name
-    Set NS=..Namespace.Name
     If ClassName="" Quit 0
+    If Name="" Quit 0
 
+    Set NS=..Namespace.Name
     Set fcn=..FullClassName(ClassName)
-
     Set ufield=$$$UPPER(Name)
 	; sometimes fields have quotes around
 	If $EXTRACT(ufield,1)="""",$EXTRACT(ufield,*)="""" Set ufield=$EXTRACT(ufield,2,*-1)
@@ -99232,12 +99603,11 @@ Returns 1 if details were found</Description>
 <FormalSpec>ClassName:%String,Name:%String,*Type:%String,*Origin:%String</FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-    ;New %NS Set %NS=..Namespace.Name
-    Set NS=..Namespace.Name
     If ClassName="" Quit 0
+    If Name="" Quit 0
 
+    Set NS=..Namespace.Name
     Set fcn=..FullClassName(ClassName)
-
  	Set ufield=$$$UPPER(Name)
 	; sometimes fields have quotes around
 	If $EXTRACT(ufield,1)="""",$EXTRACT(ufield,*)="""" Set ufield=$EXTRACT(ufield,2,*-1)
@@ -99344,11 +99714,10 @@ Pass in a ClassName in any case (eg PXW.dev.dictionary.classdefinition) and Name
 <FormalSpec>ClassName:%String,*classtype:%String,*Super:%String,*PrimarySuper:%String,*Name:%String,*IncludeAll:%String,*IncludeGenAll:%String,*PropertyClass:%String</FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-    ;New %NS Set %NS=..Namespace.Name
-    Set NS=..Namespace.Name
-    ; this should not need to be here but I have not sorted out subqueries properly
     If ClassName="" Quit 0
-  
+
+    Set NS=..Namespace.Name
+    ; this should not need to be here but I have not sorted out subqueries properly  
     Set fcn=..FullClassName(ClassName)
 	; converts a classname to the right case by selecting it in a query
    
@@ -99493,10 +99862,10 @@ pass in "race", "f1.data.queryclass" to get back "f1_data.race", its taking the 
 <FormalSpec>ClassName:%String,Name:%String,*Type:%String,*Origin:%String,*Default:%String</FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-   
-    ;New %NS Set %NS=..Namespace.Name
-    Set NS=..Namespace.Name
     If ClassName="" Quit 0
+    If Name="" Quit 0
+
+    Set NS=..Namespace.Name
     Set fcn=..FullClassName(ClassName) 
 
  	Set ufield=$$$UPPER(Name)
@@ -99963,7 +100332,7 @@ The default behaviour of this is to treat ResultSet as a result set. If your Lis
 <Description>
 Use this class for linking code types to various classes for doing specific things</Description>
 <Super>%Library.Persistent</Super>
-<TimeChanged>67812,67240.605443476</TimeChanged>
+<TimeChanged>67836,61686.016793848</TimeChanged>
 <TimeCreated>67812,67240.605443476</TimeCreated>
 
 <Property name="Usage">
@@ -100008,7 +100377,7 @@ Use this class for linking code types to various classes for doing specific thin
     If cti.Class=Class {
         Set sc=cti.%Save()
     } Else {
-        Set sc=$$$ERROR(5001,"CodeType ("_Usage_","_CodeType_") is already linked to "_cti.DisplayPageClass)
+        Set sc=$$$ERROR(5001,"CodeType ("_Usage_","_CodeType_") is already linked to "_cti.Class)
     }
     Quit sc
 ]]></Implementation>
@@ -102649,7 +103018,7 @@ returned by <b>GetInfo</b>. It is used by the various <b>ResultSet</b> objects.]
 
 <Class name="PXW.Tools.DEV.Analyse">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67830,63744.194230619</TimeChanged>
+<TimeChanged>67843,70002.715626875</TimeChanged>
 <TimeCreated>67812,67241.279479615</TimeCreated>
 
 <Parameter name="ToolType">
@@ -102675,7 +103044,7 @@ If the tool does not have a name then it does not appear on the index page by de
 <ClassMethod>1</ClassMethod>
 <Implementation><![CDATA[
 	Do ..HREFFrom(.itemtype,.itemk1,.itemk2,.type,.lastupdate)
-	If itemk1="",itemk2="",lastupdate="" {
+	If itemk1="",itemk2="",type="",lastupdate="" {
 		Write "Showing what has been updated recently"
 		Set lastupdate="T-1"
 	} 
@@ -102696,8 +103065,11 @@ If the tool does not have a name then it does not appear on the index page by de
 			Set starttime=$HOROLOG+($EXTRACT(LastUpdate,3,*)*mult)
 			Set starttime=$ZDATE(starttime,3)
 		}
+		;zw %NS,itemtype,itemk1,itemk2,type,starttime,LastUpdate
 		Set rs=##class(PXW.Xref.AnalysisQueries).GetByDateFunc(%NS,itemtype,itemk1,itemk2,type,starttime)
 	} Else {
+		;s starttime="dddd"
+		;zw %NS,itemtype,itemk1,itemk2,type,starttime
 		Set rs=##class(PXW.Xref.AnalysisQueries).GetFunc(%NS,itemtype,itemk1,itemk2,type)
 	}
 	;s newflags=flags
@@ -102740,35 +103112,7 @@ If the tool does not have a name then it does not appear on the index page by de
 <Implementation><![CDATA[
 	Write "<a href="""_##class(PXW.Tools.DEV.XrefBuild).HREFTo()_""">Build Xref/Analysis</a>"
 	
-	Do ..HREFFrom(.itemtype,.itemk1,.itemk2,.type,.lastupdated)
-	&html<
-		<form action='PXW.Tools.DEV.Analyse.cls'>
-			<fieldset>
-				<legend id=PXWToolsDEVAnalyselegend>Code Analysis Results</legend>
-				<input type=hidden name=IFRAME value='0'>
-				<input type=hidden name='%NS' value='LOCAL_USER'>
-				<table>					
-					<tr><td width=25% class=prompt>ItemType</td>
-						<td width=50%><input accesskey=A type=text name=IT value='#(itemtype)#'></td>
-					</tr>
-					<tr><td width=25% class=prompt>ItemKey1</td>
-						<td width=50%><input type=text name=IK1 value='#(itemk1)#'></td>
-					</tr>
-					<tr><td width=25% class=prompt>ItemKey2</td>
-						<td width=50%><input type=text name=IK2 value='#(itemk2)#'></td>
-					</tr>
-					<tr><td width=25% class=prompt>Type</td>
-						<td width=50%><input type=text name=T value='#(type)#'></td>
-					</tr>
-					<tr><td width=25% class=prompt>Last Updated</td>
-						<td width=50%><input type=text name=LU value='#(lastupdated)#'></td>
-					</tr>
-					<tr><td>&nbsp;</td><td><input type=submit></td>
-					</tr>
-					</table>
-			</fieldset>
-		</form>
-	>
+	d ##class(PXW.Tools.Index).WriteForm(..%ClassName(1),..#ToolType,..#ToolName)
 ]]></Implementation>
 </Method>
 
@@ -102787,8 +103131,17 @@ This shoud output some variables, getting the data from %request</Description>
 </Method>
 
 <Method name="HREFTo">
-<Description>
-This should return a string of the href to this page based on the input parameters</Description>
+<Description><![CDATA[
+<p>
+Show the analysis warnings found during analysis of the code. The analysis happens during the Xref Build.
+</p>
+<dl>
+	<dt>ItemType</dt>	<dd>What type of items to view (CLS, GBL, INT etc).</dd>
+	<dt>ItemKey1</dt>	<dd>Name of items to view, eg classname (wildcard *).</dd>
+	<dt>ItemKey2</dt>	<dd>Name of sub item to look for, eg method name (wildcard *).</dd>
+	<dt>Type</dt>		<dd>Type of analysis warnings to display (VTYPE etc) (wildcard *).</dd>
+	<dt>LastUpdate</dt>	<dd>Show only recent items updated by entering a date. T-n allowed.</dd>
+</dl>]]></Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>ItemType:%String="",ItemKey1:%String="",ItemKey2:%String="",Type:%String="",LastUpdate:%String=""</FormalSpec>
 <ReturnType>%String</ReturnType>
@@ -102821,7 +103174,7 @@ This should return a string of the href to this page based on the input paramete
 
 <Class name="PXW.Tools.DEV.ChangeNS">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67812,67241.306899685</TimeChanged>
+<TimeChanged>67843,70510.420703354</TimeChanged>
 <TimeCreated>67812,67241.306899685</TimeCreated>
 
 <Parameter name="ToolName">
@@ -102882,8 +103235,16 @@ Use the scratch variable for anything you want to get from BODY.</Description>
 </Method>
 
 <Method name="HREFTo">
+<Description><![CDATA[
+<p>
+Switch to another NameSpace.
+</p>
+<dl>
+    <dt>NameSpace</dt>
+    <dd>The new namespace to switch to.</dd>
+</dl>]]></Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>NewServer:%String</FormalSpec>
+<FormalSpec>NameSpace:%String</FormalSpec>
 <ReturnType>%String</ReturnType>
 <Implementation><![CDATA[
     Set:$DATA(%NS) ons=%NS
@@ -102901,7 +103262,7 @@ Use the scratch variable for anything you want to get from BODY.</Description>
 
 <Class name="PXW.Tools.DEV.ChangeStyle">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67812,67241.339919335</TimeChanged>
+<TimeChanged>67843,72198.444637619</TimeChanged>
 <TimeCreated>67812,67241.339919335</TimeCreated>
 
 <Parameter name="ToolName">
@@ -102936,7 +103297,8 @@ Use the scratch variable for anything you want to get from BODY.</Description>
 				</details>
 				<details open>
 					<summary id="MainForm">Main Form</summary>
-					<form>
+					#($s(##class(PXW.Tools.Index).WriteFormInSection(..%ClassName(1),..#ToolType,"Example form"):"",1:"FAILED TO WRITE FORM"))#
+					<!--form>
 						<fieldset>
 							<legend>Main form</legend>
 							<table>
@@ -102947,7 +103309,7 @@ Use the scratch variable for anything you want to get from BODY.</Description>
 								</tr>
 							</table>
 						</fieldset>
-					</form>
+					</form-->
 				</details>
 		<!-- /*</div> -->
 		
@@ -102974,20 +103336,8 @@ Output 1 Anchor tag for each option in the navigation. Use the scratch variable 
 		<a href="#">Nav 2 (no style)</a>
 		<a href="#">These are simple links</a>
 		<hr>
-		<form>
-			<fieldset>
-				<legend>Nav form</legend>
-				<table>
-					<tr><td class=prompt>Prompt</td>
-						<td><input accesskey=A type=text value='default'></td>
-					</tr>
-					<tr><td>&nbsp;</td><td><input type=submit></td>
-					</tr>
-				</table>
-			</fieldset>
-		</form>
-
 	>
+	d ##class(PXW.Tools.Index).WriteForm(..%ClassName(1),..#ToolType,..#ToolName)
 ]]></Implementation>
 </Method>
 
@@ -103281,6 +103631,16 @@ Output 1 Anchor tag for each option in the navigation. Use the scratch variable 
 </Method>
 
 <Method name="HREFTo">
+<Description><![CDATA[
+<p>
+Switch to a new style.
+</p>
+<dl>
+    <dt>NewStyle</dt>
+    <dd>The name of the new style to use.</dd>
+</dl>
+<p>
+Styles can be created by extending <class>PXW.Tools.Styles.super</class>]]></Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>NewStyle:%String</FormalSpec>
 <ReturnType>%String</ReturnType>
@@ -104868,7 +105228,7 @@ OVERRIDING StoredFunction </Description>
 <Class name="PXW.Tools.DEV.HTML.bnf">
 <IncludeCode>PXW.Tools.Styles.macros</IncludeCode>
 <Super>PXW.Tools.DEV.HTML.output</Super>
-<TimeChanged>67830,29339.298717142</TimeChanged>
+<TimeChanged>67836,60784.464431797</TimeChanged>
 <TimeCreated>67812,67241.836204596</TimeCreated>
 
 <Property name="Analyser">
@@ -106885,10 +107245,16 @@ method writePY(element As PXW.DEV.BNF.Elements.Python) AS PXW.DEV.BNF.Compilers.
                 Set propertyatom=atom
             }
         }
-
-        Set path=path_"."_propertyatom.value
-		Do ..wrapAtomHTML(propertyatom,"<a class="""_$$$classObjectMember_""" href="""_..HREFToClass(toclass,propertyatom.value)_""">","</a>")
-        Set toclass=$GET(..Analyser.VariablesTypesElement(+objectchain))
+        ; If we have an analyser then use it's results otherwise work it out the old way:
+        ; The old way is to build a "path" and put that into the href and work out the
+        ; final class when the link is clicked.
+        if $ISOBJECT(..Analyser) {
+            Do ..wrapAtomHTML(propertyatom,"<a class="""_$$$classObjectMember_""" href="""_..HREFToClass(toclass,propertyatom.value)_""">","</a>")
+            Set toclass=$GET(..Analyser.VariablesTypesElement(+objectchain))
+        } else {
+            Set path=path_"."_propertyatom.value
+            Do ..wrapAtomHTML(propertyatom,"<a class="""_$$$classObjectMember_""" href="""_..HREFToClass(toclass,path)_""">","</a>")
+        }
         Do ..writeCOSParameterChecks(StartClassName,path,objectchain)
 
         Set objectchain=objectchain.findFirstElementByType("ObjectChain",0) 
@@ -107869,7 +108235,7 @@ the layout information can go here.
 
 <Class name="PXW.Tools.DEV.ParserTest">
 <Super>PXW.Tools.PageTLR</Super>
-<TimeChanged>67829,68766.753259032</TimeChanged>
+<TimeChanged>67843,70458.726274792</TimeChanged>
 <TimeCreated>67812,67241.562909376</TimeCreated>
 
 <Parameter name="ToolName">
@@ -107981,6 +108347,20 @@ the layout information can go here.
 </Method>
 
 <Method name="HREFTo">
+<Description><![CDATA[
+<p>
+Use this to test any parser.
+</p>
+<dl>
+    <dt>Text</dt>
+    <dd>The text to be parsed.</dd>
+    <dt>Class</dt>
+    <dd>The name of the parser class to be tested.</dd>
+    <dt>Method</dt>
+    <dd>The name of the parser method to be tested.</dd>
+    <dt>WriteFull</dt>
+    <dd>Use this to get more detailed output.</dd>
+</dl>]]></Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>Text:%String,Class:%String,Method:%String,WriteFull:%String</FormalSpec>
 <ReturnType>%String</ReturnType>
@@ -108136,7 +108516,7 @@ This shoud output some variables, getting the data from %request</Description>
 
 <Class name="PXW.Tools.DEV.PythonModule">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67812,67241.59386272</TimeChanged>
+<TimeChanged>67836,61870.380313435</TimeChanged>
 <TimeCreated>67812,67241.59386272</TimeCreated>
 
 <Parameter name="ToolType">
@@ -108276,7 +108656,7 @@ This shoud output some variables, getting the data from %request</Description>
 		Set s="" For  Set s=$ORDER(%pxwstrings(s),1,n) Quit:s=""  Set %pxwstringsX(n,s)=""
 		Write "<pre>" ZWrite %pxwstrings,%pxwstringsX,%pxw1,%RBCOUNT Write "</pre>"
 		Set totaltime=0,totalcalls=0
-		Set rs=##clasS(%Library.ResultSet).%New("PXW.Debuggers.Timing:SelectResults")
+		Set rs=##clasS(%Library.ResultSet).%New("PXW.Tools.DebugTiming:SelectResults")
 		$$$THROWONERROR(sc,rs.%Execute())
 		&html<<table filename="Timings.csv">
 			<tr><th>ClassName</th><th>MethodName</th><th>TotalTime</th><th>CountOfCalls</th><th>AverageTime</th><th>PercentageOfTime</th></tr>>
@@ -108725,7 +109105,7 @@ Write out extra javascript here, the SCRIPT tags are already in place</Descripti
 
 <Class name="PXW.Tools.DEV.SQLShowPlan">
 <Super>PXW.Tools.PageTLR</Super>
-<TimeChanged>67821,60432.432563181</TimeChanged>
+<TimeChanged>67843,70546.275171163</TimeChanged>
 <TimeCreated>67812,67241.687705964</TimeCreated>
 
 <Parameter name="ToolName">
@@ -108941,6 +109321,19 @@ Write out extra styles here, the STYLE tags are already in place</Description>
 </Method>
 
 <Method name="HREFTo">
+<Description><![CDATA[
+<p>
+Show a query plan for the given query.
+</p>
+<p>
+The SQL is parsed and expanded to show any views as embedded SQL.
+</p>
+<dl>
+    <dt>SQL</dt>
+    <dd>The SQL to be tested.</dd>
+    <dt>Routine</dt>
+    <dd>If provided the INT code of the given routine is displayed in place of the parsed SQL.</dd>
+</dl>]]></Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>SQL:%String,Routine:%String</FormalSpec>
 <ReturnType>%String</ReturnType>
@@ -108979,7 +109372,7 @@ This shoud output some variables, getting the data from %request</Description>
 
 <Class name="PXW.Tools.DEV.Settings">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67812,67241.653410511</TimeChanged>
+<TimeChanged>67843,70589.715517011</TimeChanged>
 <TimeCreated>67812,67241.653410511</TimeCreated>
 
 <Parameter name="ToolName">
@@ -109020,8 +109413,14 @@ use scratch to get anything you want to pass to the nav</Description>
 </Method>
 
 <Method name="HREFTo">
-<Description>
-This should return a string of the href to this page based on the input parameters</Description>
+<Description><![CDATA[
+<p>
+Used to SHOW the settings only. There is no update yet.
+</p>
+<dl>
+    <dt></dt>
+    <dd></dd>
+</dl>]]></Description>
 <ClassMethod>1</ClassMethod>
 <ReturnType>%String</ReturnType>
 <Implementation><![CDATA[    Quit ##super()
@@ -109041,7 +109440,7 @@ This should return a string of the href to this page based on the input paramete
 
 <Class name="PXW.Tools.DEV.Xref">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67812,67241.719174931</TimeChanged>
+<TimeChanged>67842,67768.311769653</TimeChanged>
 <TimeCreated>67812,67241.719174931</TimeCreated>
 
 <Parameter name="ToolName">
@@ -109081,7 +109480,7 @@ This should return a string of the href to this page based on the input paramete
 	Set newflags=$REPLACE(newflags,",BY CALLED","")
 	Write "<table filename='XREF_"_itemk1_"'>"
 	Write "		<thead>",!
-	Write "			<tr>",!
+	Write "			<p>",!
 	Write "				<th><a href="""_(..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,newflags_",BY ITEM"))_""">Item Key1</a></th>",!
 	Write "				<th><a href="""_(..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,newflags_",BY ITEM"))_""">Item Key2</a></th>",!
 	Write "				<th>Mode</th>",!
@@ -109091,7 +109490,7 @@ This should return a string of the href to this page based on the input paramete
 	Write:showk3 "				<th><a href="""_(..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,newflags_",BY CALLED"))_""">Called By Key3</a></th>",!
 	Write:showln "				<th><a href="""_(..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,newflags_",BY CALLED"))_""">Line</a></th>",!
 	Write "				<th>Code</th>",!
-	Write "			</tr>",!
+	Write "			</p>",!
 	Write "		</thead>",!
 	Write "		<tbody>",!
 	Write "		",! 
@@ -109152,47 +109551,49 @@ This should return a string of the href to this page based on the input paramete
 	If flags'["SUPER" Write "<a href="""_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,flags_",SUPER",codeSearch)_""">Include Super</a>"
 	If flags["SUPER" Write "<a href="""_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,$REPLACE(flags,",SUPER",""),codeSearch)_""">Exclude Super</a>"
 
+	d ##class(PXW.Tools.Index).WriteForm(..%ClassName(1),..#ToolType,..#ToolName)
+
+	/*
 	&html<
 		<form action='PXW.Tools.DEV.Xref.cls'>
 			<fieldset>
 				<legend id=PXWToolsDEVXreflegend>PXW.Tools.DEV.Xref</legend>
 				<input type=hidden name=IFRAME value='0'>
 				<input type=hidden name='%NS' value='#($GET(%NS))#'>
-				<table>
 				
-				<tr><td class=prompt>ItemType</td>
-				<td><input type=text accesskey=A name=IT value='#(itemtype)#'></td>
-				</tr>
-				<tr><td class=prompt>ItemKey1</td>
-				<td><input type=text name=IK1 value='#(itemk1)#'></td>
-				</tr>
-				<tr><td class=prompt>ItemKey2</td>
-				<td><input type=text name=IK2 value='#(itemk2)#'></td>
-				</tr>
-				<tr><td class=prompt>Mode</td>
-				<td><input type=text name=CBC value='#(calledByCommand)#'></td>
-				</tr>
-				<tr><td class=prompt>CalledByKey1</td>
-				<td><input type=text name=CBK1 value='#(calledByKey1)#'></td>
-				</tr>
-				<tr><td class=prompt>CalledByKey2</td>
-				<td><input type=text name=CBK2 value='#(calledByKey2)#'></td>
-				</tr>
-				<tr><td class=prompt>CodeSearch</td>
-				<td><input type=text name=CS value='#(codeSearch)#'></td>
-				</tr>
-				<tr><td class=prompt>WindowSize</td>
-				<td><input type=text name=WS value='#(windowSize)#'></td>
-				</tr>
-				<tr><td class=prompt>Flags</td>
-				<td><input type=text name=F value='#(flags)#'></td>
-				</tr>
-				<tr><td>&nbsp;</td><td><input type=submit></td>
-				</tr>
-				</table>
+				<p><label for=IT>ItemType</label>
+				<input id=IT type=text accesskey=A name=IT value='#(itemtype)#'>
+				</p>
+				<p><label for=IK1>ItemKey1</label>
+				<input id=IK1 type=text name=IK1 value='#(itemk1)#'>
+				</p>
+				<p><label for=IK2>ItemKey2</label>
+				<input id=IK2 type=text name=IK2 value='#(itemk2)#'>
+				</p>
+				<p><label for=CBC>Mode</label>
+				<input id=CBC type=text name=CBC value='#(calledByCommand)#'>
+				</p>
+				<p><label for=CBK1>CalledByKey1</label>
+				<input id=CBK1 type=text name=CBK1 value='#(calledByKey1)#'>
+				</p>
+				<p><label for=CBK2>CalledByKey2</label>
+				<input id=CBK2 type=text name=CBK2 value='#(calledByKey2)#'>
+				</p>
+				<p><label for=CS>CodeSearch</label>
+				<input id=CS type=text name=CS value='#(codeSearch)#'>
+				</p>
+				<p><label for=WS>WindowSize</label>
+				<input id=WS type=text name=WS value='#(windowSize)#'>
+				</p>
+				<p><label for=F>Flags</label>
+				<input id=F type=text name=F value='#(flags)#'>
+				</p>
+				<p><input id=SUB type=submit>
+				</p>
 			</fieldset>
 		</form>
 	>
+	*/
 	Set ons=%NS,%NS="LOCAL_USER"
 	Write "<a target=_blank title='To get an idea of what the parameters can do' href="""_##class(PXW.Tools.DEV.Class).HREFTo("PXW.Xref.Queries","Get")_""">Show query</a>",!
 	Set %NS=ons
@@ -109252,7 +109653,7 @@ This should return a string of the href to this page based on the input paramete
 
 <Class name="PXW.Tools.DEV.XrefBuild">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67826,67824.196207222</TimeChanged>
+<TimeChanged>67843,70906.108506164</TimeChanged>
 <TimeCreated>67812,67241.7496372</TimeCreated>
 
 <Parameter name="ToolName">
@@ -109379,8 +109780,22 @@ This shoud output some variables, getting the data from %request</Description>
 </Method>
 
 <Method name="HREFTo">
-<Description>
-This should return a string of the href to this page based on the input parameters</Description>
+<Description><![CDATA[
+<p>
+Build the given package's Xref.
+</p>
+<dl>
+    <dt>Package</dt>
+    <dd>The name of the Package to build. * means build all.</dd>
+    <dt>Force</dt>
+    <dd><ul>
+			<li>0 means just rebuild anything that has been updated since the last build.</li>
+				<li>1 means rebuild anything.</li>
+		</ul>
+		</dd>
+    <dt>DeleteOld</dt>
+    <dd>Delete the history of previous runs.</dd>
+</dl>]]></Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>Package:%String="",Force:%Boolean=0,DeleteOld:%Boolean=0</FormalSpec>
 <ReturnType>%String</ReturnType>
@@ -109406,22 +109821,22 @@ Output 1 Anchor tag for each option in the navigation. Use the scratch variable 
 	Write "<a href="""_##class(PXW.Tools.DEV.Analyse).HREFTo("")_""">Analysis results</a>"
 	
 	write "<a href="""_##class(PXW.Tools.DEV.Xref).HREFTo("")_""">Xref Search</a>"
+
+	; DO NOT use the default, we are doing a special thing here, making all the defaults null.
+	;d ##class(PXW.Tools.Index).WriteForm(..%ClassName(1),..#ToolType,..#ToolName)
 	&HTML<
 	<form action="PXW.Tools.DEV.XrefBuild.cls">
 		<fieldset>
 			<legend id="PXWToolsDEVXrefBuildlegend">Xref Build</legend>
 			<input type="hidden" name="IFRAME" value="0">
 			<input type="hidden" name="%NS" value="#($G(%NS))#">
-			<table>			
-				<tbody>
-				<tr><td width="25%" class="prompt">Package</td>
-				<td width="50%"><input type="text" accesskey="A" name="P" value=""></td>
-				</tr>
-				<tr><td width="25%" class="prompt">Force</td>
-				<td width="50%"><input type="checkbox" name="F" value="1"></td>
-				</tr>
-				<tr><td> </td><td><input type="submit"></td></tr>
-			</tbody></table>
+			<p><label for=xrefP>Package</label>
+			<input id=xrefP type="text" accesskey="A" name="P" value="">
+			</p>
+			<p><label for=xrefF>Force</label>
+			<input id=xrefF type="checkbox" name="F" value="1">
+			</p>
+			<p><input type="submit"></p>
 		</fieldset>
 	</form>
 	<!-- Enter the name of the package to build or * for all. 
@@ -109461,7 +109876,7 @@ Calling page is passed in so you can decide what to display on the form/if anyth
 
 <Class name="PXW.Tools.DEV.XrefBuildProblems">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67812,67241.777757121</TimeChanged>
+<TimeChanged>67843,71365.580581688</TimeChanged>
 <TimeCreated>67812,67241.777757121</TimeCreated>
 
 <Parameter name="ToolName">
@@ -109521,8 +109936,22 @@ Output 1 Anchor tag for each option in the navigation. Use the scratch variable 
 </Method>
 
 <Method name="HREFTo">
-<Description>
-This should return a string of the href to this page based on the input parameters</Description>
+<Description><![CDATA[
+<p>
+Show all the problems found during Xref build.
+</p>
+<p>
+The problems could be either: 
+<ul><li>Errors in the build process i.e. a bug.</a>
+	<li>Problems found during the parsing. This could be a bug in the parser
+		or an actual problem in the code being parsed.
+	</li>
+	</ul>
+</p>
+<dl>
+    <dt>NameSpace</dt>
+    <dd>Namespace to display the for.</dd>
+</dl>]]></Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>NameSpace:%String</FormalSpec>
 <ReturnType>%String</ReturnType>
@@ -109717,7 +110146,7 @@ Tends to be called more often with all sorts of data passed in</Description>
 
 <Class name="PXW.Tools.Index">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67812,67241.161298851</TimeChanged>
+<TimeChanged>67843,68969.323442596</TimeChanged>
 <TimeCreated>67812,67241.161298851</TimeCreated>
 
 <Method name="WriteStyles">
@@ -109743,7 +110172,6 @@ the layout information can go here.
 <Method name="WriteMainBody">
 <ClassMethod>1</ClassMethod>
 <Implementation><![CDATA[
-
 	Set rs=##class(PXW.Tools.Queries).SelectToolsForNamespaceFunc(%NS)
 	
 	;Write "<div class='grid-container'>"
@@ -109752,13 +110180,66 @@ the layout information can go here.
 		set name=rs.%Get("ClassName")
 		Set type=rs.%Get("ToolType")
 		Set toolname=rs.%Get("ToolName")
-		Do ..WriteForm(name,type,toolname)
+		Do ..WriteFormInSection(name,type,toolname)
 	}
 	Write "</div>"
 ]]></Implementation>
 </Method>
 
 <Method name="WriteForm">
+<Description>
+This will write out the form based on the ClassName HREFTo method.
+It pulls the defaults directly from the %request data.</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>ClassName:%String,Type:%String,ToolName:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	Set HREFto=##class(%Dictionary.MethodDefinition).%OpenId(ClassName_"||HREFTo")
+	Set legname=$TRANSLATE(ClassName,".","")_"legend"
+	Set aname=$TRANSLATE(ClassName,".","")_"anchor"
+	If HREFto="" Quit 1
+	&html<
+		<form action='#(ClassName)#.cls'>
+			<fieldset>
+				<legend id=#(legname)#>#(ToolName)#</legend>
+				<input type=hidden name=IFRAME value='0'>
+				<input type=hidden name='%NS' value='#($GET(%NS))#'>
+				>
+				Set FS=HREFto.FormalSpec
+				Set accesskey="accesskey=A "
+				For i=1:1:$LENGTH(FS,",") {
+					Set VAR=$PIECE($PIECE(FS,",",i),":",1)
+					Set TYP=$PIECE($PIECE(FS,",",i),":",2)
+					Set DEF=$PIECE(TYP,"=",2),TYP=$PIECE(TYP,"=",1)
+					; if this is not a default parameter name output it (this might be left over from a previous thing)
+					If VAR'="",VAR'?1"P"1N {
+						; the url code is normally the capital letters/numbers of the variable name,
+						; if I find one thats not I will deal with this later
+						Set VNAME=$TRANSLATE(VAR,"abcdefghijklmnopqrstuvwxyz")
+						Set DEF=$TRANSLATE(DEF,"""")
+						set DEF=%request.Get(VNAME,DEF)
+						Set iid=aname_VNAME
+						&html<<p><label for=#(iid)#>#(VAR)#</label>>
+						If TYP="%Boolean" {
+							&html<<input id=#(iid)# type=checkbox name=#(VNAME)# value=1 #($SELECT(DEF=1:"checked",1:""))#>>
+						} Else {
+							&html<<input id=#(iid)# type=text #(accesskey)# name=#(VNAME)# value='#(DEF)#'>>
+						}
+						&html<</p>>
+						Set accesskey=""
+					} else {
+						;WRITE "else VAR="_VAR
+					}
+				}
+				&html<<input type=submit>
+			</fieldset>
+		</form>
+	>
+	Quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="WriteFormInSection">
 <Description>
 This is a quick way of dumping out a form from the spec of the method HREFTo.
 Its following the convention that Capital letters of the parameter will
@@ -109780,46 +110261,15 @@ Doing it this way for speed of development.</Description>
 		&html<
 		<details id="#(aname)#" class=#(css)#>
 			<summary>#(ToolName)#</summary>
-			<form action='#(ClassName)#.cls'>
-				<fieldset>
-					<legend id=#(legname)#>#(ToolName)#</legend>
-					<input type=hidden name=IFRAME value='0'>
-					<input type=hidden name='%NS' value='#($GET(%NS))#'>
-					<table>
-					>
-					Set FS=HREFto.FormalSpec
-					Set accesskey="accesskey=A "
-					For i=1:1:$LENGTH(FS,",") {
-						Set VAR=$PIECE($PIECE(FS,",",i),":",1)
-						Set TYP=$PIECE($PIECE(FS,",",i),":",2)
-						Set DEF=$PIECE(TYP,"=",2),TYP=$PIECE(TYP,"=",1)
-						; if this is not a default parameter name output it
-						If VAR'?1"P"1N {
-							; the url code is normally the capital letters/numbers of the variable name,
-							; if I find one thats not I will deal with this later
-							Set VNAME=$TRANSLATE(VAR,"abcdefghijklmnopqrstuvwxyz")
-							Set DEF=$TRANSLATE(DEF,"""")
-							&html<<tr><td width=25% class=prompt>#(VAR)#</td>>
-							If TYP="%Boolean" {
-								&html<<td width=50%><input type=checkbox name=#(VNAME)# value=1 #($SELECT(DEF=1:"checked",1:""))#></td>>
-							} Else {
-								&html<<td width=50%><input type=text #(accesskey)# name=#(VNAME)# value='#(DEF)#'></td>>
-							}
-							&html<<td width=25%>#(TYP)#</td>
-								</tr>>
-							Set accesskey=""
-						}
-					}
-					Set DESC=HREFto.Description
-					; get the stuff between <dl> and </dl>
-					Set DESC=$PIECE($PIECE(DESC,"<dl>",2),"</dl>",1)
-					
-					&html<<tr><td>&nbsp;</td><td><input type=submit></td><td>&nbsp;</td></tr>
-						</table>
-				</fieldset>
-			</form>
-		</details>
 		>
+		w "<span style=""display:inline-block"">" 
+			d ..WriteForm(ClassName,Type,ToolName) 
+		w "</span>"
+		w "<span style=""valign:top; display:inline-block"">" 
+			if HREFto.Description'="" write HREFto.Description
+		w "</span>"
+		
+		&html<</details>>
 	}
 	Quit 1
 ]]></Implementation>
@@ -109872,7 +110322,7 @@ Override the HREFTo method so that tools can get a HREF TO a page:
 </p>]]></Description>
 <IncludeCode>PXW.Debuggers.Macros,PXW.Tools.Styles.macros</IncludeCode>
 <Super>%CSP.Page</Super>
-<TimeChanged>67812,67241.19484692</TimeChanged>
+<TimeChanged>67843,71912.881369238</TimeChanged>
 <TimeCreated>67812,67241.19484692</TimeCreated>
 
 <Parameter name="ToolType">
@@ -109967,7 +110417,15 @@ ClassMethod HREFTo(ClassName as %String,Method as %String) as %String
   set href=href_"&M="_..EscapeURL(Method)
   quit href
 }
-</example>]]></Description>
+</example>
+
+<p>
+Use This as a template for the comments of all the override methods.
+</p>
+<dl>
+    <dt>p1</dt>
+    <dd></dd>
+</dl>]]></Description>
 <ClassMethod>1</ClassMethod>
 <ReturnType>%String</ReturnType>
 <Implementation><![CDATA[
@@ -110221,7 +110679,8 @@ ClassMethod HREFTo(ClassName as %String,Method as %String) as %String
 <Method name="PageStyle">
 <Description>
 This controls the layout of the whole page, setting up the main grid etc based on PageBody and PageMain divs.
-Not much in the way of colour defined here, its just about the shape of the page.
+Not much in the way of colour defined here, its just about the shape of the page and some simple spacing 
+to make the page usable even if there is no other style applied.
 Change colours using %STYLE.</Description>
 <ClassMethod>1</ClassMethod>
 <ReturnType>%String</ReturnType>
@@ -110240,7 +110699,7 @@ Change colours using %STYLE.</Description>
 				'toolsTitle toolsTitle'
 				'toolsMainBodyNav toolsMainBodyContent'
 				'toolsFooter toolsFooter';
-			grid-template-columns: #(" minmax(15%, auto) ")# #("1fr")#;
+			grid-template-columns: #(" minmax(20ch, auto) ")# #("1fr")#;
 			grid-template-rows: auto auto #("1fr")# auto;
 			grid-column-gap: 0;
 			grid-row-gap: 0;			
@@ -110304,6 +110763,12 @@ Change colours using %STYLE.</Description>
 			grid-area: toolsMainFoot;
 			overflow:auto;
 		}
+
+		/* It is expected that all fields in a fieldset will be in a <p> with a label and an input */		
+		fieldset p label { display: block; font-weight: bold; }
+
+		/* definition lists used for help on HREFTo methods */
+		dl dt { font-weight: bold; margin-top: 0.5em;}
 
 		.nocopy	{
 			-webkit-user-select: none;
@@ -111379,7 +111844,7 @@ Base class for pages that have a Top, Left, and Right content:
 
 <Class name="PXW.Tools.Styles.LightDark">
 <Super>PXW.Tools.Styles.super</Super>
-<TimeChanged>67829,63700.847531563</TimeChanged>
+<TimeChanged>67843,69145.061391944</TimeChanged>
 <TimeCreated>67812,67242.027290465</TimeCreated>
 
 <Method name="WriteStyles">
@@ -111396,7 +111861,7 @@ Base class for pages that have a Top, Left, and Right content:
 
 
 		/* background colours: ;*/
-		--bgNormal: light-dark( #ffffff, #0E0E0E);;
+		--bgNormal: light-dark( #ffffff, #0E0E0E);
 		--bgAlternate1: light-dark( #EEEEEE, #2E2E2E);
 		--bgAlternate2: light-dark( #DDDDDD, #3E3E3E);
 		--bgAlternate3: light-dark( #FFFFFF,black);
@@ -111443,7 +111908,7 @@ Base class for pages that have a Top, Left, and Right content:
 	a:active { text-decoration:none;  color: inherit; }
 	pre { margin:0px; tab-size:4; font-size: medium;}
     fieldset { border-color: var(--borderNormal); border-radius:10px 0 5px 0;}
-    
+    fieldset p label { display: block; font-weight: bold; }
     /*
         +----------------------------------------------+
         |header #toolsHead                             |
@@ -111489,6 +111954,9 @@ Base class for pages that have a Top, Left, and Right content:
 		padding-bottom:0.2em;
 	}
 
+	dl { margin:20px; }
+	dt { font-weight: bold;}
+
 	/* END of style of the app */
 	/* Start of nav */
 	#toolsMainBodyNav .CDEFPropertyName::after  { white-space: nowrap;  content: " property"; color:silver;}
@@ -111499,7 +111967,9 @@ Base class for pages that have a Top, Left, and Right content:
 	#toolsMainBodyNav .CDEFIndexName::after  { white-space: nowrap; content: " index"; color:silver;}
 	#toolsMainBodyNav .CDEFXdataName::after  { white-space: nowrap; content: " xdata"; color:silver;}
 	
-    nav a { margin-top: 0.25em;}
+	#toolsMainBodyNav { resize: horizontal;}
+	nav { background-color: var(--bgAlternate1); height:100%; overflow:auto; }
+    nav a { margin-top: 0.25em; }
 	
 	nav details::details-content {
 		padding-left:2em;
@@ -112847,7 +113317,7 @@ Short Type of the warning (eg UNDEF)</Description>
 
 <Class name="PXW.Xref.AnalysisQueries">
 <Super>%RegisteredObject</Super>
-<TimeChanged>67830,63120.393002644</TimeChanged>
+<TimeChanged>67831,63101.973440569</TimeChanged>
 <TimeCreated>67812,67242.262653406</TimeCreated>
 
 <Query name="Get">
@@ -112928,9 +113398,9 @@ Short Type of the warning (eg UNDEF)</Description>
 	--ENDIF
 	--IF Type'="" 
 		--IF $E(Type,*)="*" 
-			AND Type %STARTSWITH $PIECE(:Type,'*',1)
+			AND ad.Type %STARTSWITH $PIECE(:Type,'*',1)
 		--ELSE
-			AND Type %INLIST $LISTFROMSTRING(:Type)
+			AND ad.Type %INLIST $LISTFROMSTRING(:Type)
 		--ENDIF
 	--ENDIF
 	ORDER BY 
@@ -113653,7 +114123,7 @@ A list of namespaces where there has not been a build today</Description>
 <Class name="PXW.Xref.Builders.Class">
 <IncludeCode>PXW.Debuggers.Macros</IncludeCode>
 <Super>PXW.Xref.Builder</Super>
-<TimeChanged>67831,28855.025069855</TimeChanged>
+<TimeChanged>67840,44858.145640344</TimeChanged>
 <TimeCreated>67812,67242.526606818</TimeCreated>
 
 <Parameter name="CodeType">
@@ -113864,9 +114334,12 @@ d ##class(PXW.Xref.Builders.Class).test()</Description>
 	
 	; for xref to classes set the full spec of the class - maybe a new method needed for CLS and others
 	; * is a special case where we know the method but not the class (eg $classmethod)
-	Set ik1=ItemKey1
+	Set ik1=ItemKey1,save=1
 	If ik1="*" {
-
+		; star is special case
+	} ElseIf ik1?1"%Exception."1.E {
+		; %Exception package does not seem to pull inherited methods into compiled class definition
+		; so allow these through without check
 	} ElseIf ItemType="CLS" {
 		Set ik1=..ClassServer.FullClassName(ItemKey1,$PIECE(..CalledByClassName,".",1,*-1))
 		If '..ClassServer.GetPropertyDetails(ik1,ItemKey2)
@@ -113874,75 +114347,85 @@ d ##class(PXW.Xref.Builders.Class).test()</Description>
 		, '..ClassServer.GetParameterDetails(ik1,ItemKey2)
 		, '..ClassServer.GetIndexDetails(ik1,ItemKey2)
 		, '..ClassServer.GetQueryDetails(ik1,ItemKey2)
+		, '..ClassServer.GetMethodDetails(ik1,"%DispatchGetProperty")
+		, '..ClassServer.GetMethodDetails(ik1,"%DispatchMethod")
 		{
+			;If ik1="%SQL.StatementResult" {
+			;	; probably a dispacth property, don't bother with indexing these
+			;	; possibly we could link to the query?
+			;	Set save=0
+			;
+			;}
 			$$$DEBUG("ItemKey1 set to UNKNOWN: "_ItemKey1_":"_ItemKey2)
 			Set ik1="UNKNOWN ("_ik1_")"
 		}
-	} 
-	Set xref=##class(PXW.Xref.Data).%New()
-	Set xref.CalledByType=..#CodeType
-	Set xref.CalledByKey1=..CalledByClassName
-	Set xref.CalledByKey2=..CalledByItemName
-	Set xref.CalledByCommand=CalledByCommand
-	Set xref.ItemType=ItemType
-	;Set xref.ItemKey1=$SELECT(ItemKey1="*":ItemKey1,ItemType="CLS":..ClassServer.FullClassName(ItemKey1,$PIECE(..CalledByClassName,".",1,*-1)),1:ItemKey1)
-	Set xref.ItemKey1=ik1
-	Set xref.ItemKey2=ItemKey2
-	If $ISOBJECT(Atom) {
-		Set xref.CalledByKey3=$SELECT(..FixedLineNumber:..FixedLineNumber,1:Atom.line)-..ClassElementLineNumber
-		Set xref.LineNumber=$SELECT(..FixedLineNumber:..FixedLineNumber,1:Atom.line)
-	} Else {
-		Set xref.LineNumber=0
 	}
-
-	Set sc=$$$OK
-	If 'xref.AlreadyExists() {
-		Set sc=xref.%Save()
-		If $$$ISERR(sc) {
-			$$$DEBUG($EXTRACT($SYSTEM.Status.GetErrorText(sc),1,100))
+	If save {
+		Set xref=##class(PXW.Xref.Data).%New()
+		Set xref.CalledByType=..#CodeType
+		Set xref.CalledByKey1=..CalledByClassName
+		Set xref.CalledByKey2=..CalledByItemName
+		Set xref.CalledByCommand=CalledByCommand
+		Set xref.ItemType=ItemType
+		;Set xref.ItemKey1=$SELECT(ItemKey1="*":ItemKey1,ItemType="CLS":..ClassServer.FullClassName(ItemKey1,$PIECE(..CalledByClassName,".",1,*-1)),1:ItemKey1)
+		Set xref.ItemKey1=ik1
+		Set xref.ItemKey2=ItemKey2
+		If $ISOBJECT(Atom) {
+			Set xref.CalledByKey3=$SELECT(..FixedLineNumber:..FixedLineNumber,1:Atom.line)-..ClassElementLineNumber
+			Set xref.LineNumber=$SELECT(..FixedLineNumber:..FixedLineNumber,1:Atom.line)
 		} Else {
-			$$$DEBUG("Saved "_xref.%Id())
+			Set xref.LineNumber=0
 		}
-	}
-	If $$$ISOK(sc),ItemType="CLS" {
-		Set origin="",stub=""
-		If ..ClassServer.GetMethodDetails(ItemKey1,ItemKey2,,.origin,.stub),origin'=ItemKey1 {
-			; also xref the origin class
-			If origin'="" {
-				$$$DEBUG("Calling save(method) "_origin_":"_ItemKey2)
-				Do ..SaveCOSXref(ItemType,origin,ItemKey2,CalledByCommand,Atom)
-			}
-		} ElseIf ..ClassServer.GetPropertyDetails(ItemKey1,ItemKey2,,,,.origin),origin'=ItemKey1 {
-			; also xref the origin class
-			If origin'="" {
-				$$$DEBUG("Calling save(property) "_origin_":"_ItemKey2)
-				Do:origin'="" ..SaveCOSXref(ItemType,origin,ItemKey2,CalledByCommand,Atom)
-			}
-		}
-		If (stub'="") {
-			If ($PIECE(stub,".",*)="q") {
-				; if the item is a function based on a query (eg GetFunc) then xref the query
-				Set query=$PIECE(stub,".",1)
-				If query'="" {
-					$$$DEBUG("Calling save(query) "_ItemKey1_":"_query)
-					Do ..SaveCOSXref(ItemType,ItemKey1,query,CalledByCommand,Atom)
-				}
-			} ElseIf $PIECE(stub,".",*)="a" {
-				; if the item is a function based on a property (eg ThingGetLogicalToDisplay) then xref the property
-				Set prop=$PIECE(stub,".",1)
-				If prop'="" {
-					$$$DEBUG("Calling save(prop) "_ItemKey1_":"_prop)
-					Do ..SaveCOSXref(ItemType,ItemKey1,prop,CalledByCommand,Atom)
-				}
-			} ElseIf $PIECE(stub,".",*)="i" {
-				; if the item is a function based on an index (eg PKOpen) then xref the property
-				Set index=$PIECE(stub,".",1)
-				If index'="" {
-					$$$DEBUG("Calling save(index) "_ItemKey1_":"_index)
-					Do ..SaveCOSXref(ItemType,ItemKey1,index,CalledByCommand,Atom)
-				}
-			}
 
+		Set sc=$$$OK
+		If 'xref.AlreadyExists() {
+			Set sc=xref.%Save()
+			If $$$ISERR(sc) {
+				$$$DEBUG($EXTRACT($SYSTEM.Status.GetErrorText(sc),1,100))
+			} Else {
+				$$$DEBUG("Saved "_xref.%Id())
+			}
+		}
+		If $$$ISOK(sc),ItemType="CLS" {
+			Set origin="",stub=""
+			If ..ClassServer.GetMethodDetails(ItemKey1,ItemKey2,,.origin,.stub),origin'=ItemKey1 {
+				; also xref the origin class
+				If origin'="" {
+					$$$DEBUG("Calling save(method) "_origin_":"_ItemKey2)
+					Do ..SaveCOSXref(ItemType,origin,ItemKey2,CalledByCommand,Atom)
+				}
+			} ElseIf ..ClassServer.GetPropertyDetails(ItemKey1,ItemKey2,,,,.origin),origin'=ItemKey1 {
+				; also xref the origin class
+				If origin'="" {
+					$$$DEBUG("Calling save(property) "_origin_":"_ItemKey2)
+					Do:origin'="" ..SaveCOSXref(ItemType,origin,ItemKey2,CalledByCommand,Atom)
+				}
+			}
+			If (stub'="") {
+				If ($PIECE(stub,".",*)="q") {
+					; if the item is a function based on a query (eg GetFunc) then xref the query
+					Set query=$PIECE(stub,".",1)
+					If query'="" {
+						$$$DEBUG("Calling save(query) "_ItemKey1_":"_query)
+						Do ..SaveCOSXref(ItemType,ItemKey1,query,CalledByCommand,Atom)
+					}
+				} ElseIf $PIECE(stub,".",*)="a" {
+					; if the item is a function based on a property (eg ThingGetLogicalToDisplay) then xref the property
+					Set prop=$PIECE(stub,".",1)
+					If prop'="" {
+						$$$DEBUG("Calling save(prop) "_ItemKey1_":"_prop)
+						Do ..SaveCOSXref(ItemType,ItemKey1,prop,CalledByCommand,Atom)
+					}
+				} ElseIf $PIECE(stub,".",*)="i" {
+					; if the item is a function based on an index (eg PKOpen) then xref the property
+					Set index=$PIECE(stub,".",1)
+					If index'="" {
+						$$$DEBUG("Calling save(index) "_ItemKey1_":"_index)
+						Do ..SaveCOSXref(ItemType,ItemKey1,index,CalledByCommand,Atom)
+					}
+				}
+
+			}
 		}
 	}
 ]]></Implementation>
@@ -117369,13 +117852,15 @@ class to use to test various things for speed</Description>
 
 
 <Class name="PXW.samples.cclass">
-<Super>PXW.samples.pclass</Super>
-<System>3</System>
-<TimeChanged>67829,62174.04854713</TimeChanged>
+<Final>1</Final>
+<Super>%Exception.AbstractException</Super>
+<TimeChanged>67831,71209.588454534</TimeChanged>
 <TimeCreated>67828,69127.121444231</TimeCreated>
 
 <Method name="mInCClass">
-<Implementation><![CDATA[    q 1
+<Implementation><![CDATA[
+    #dim e as %Exception.SystemException
+    s x=e.AsStatus()
 ]]></Implementation>
 </Method>
 </Class>
@@ -117608,65 +118093,12 @@ FileName: /home/irisowner/dev/debug/MON.csv
 <Abstract>1</Abstract>
 <Super>%Library.RegisteredObject</Super>
 <System>3</System>
-<TimeChanged>67829,62337.902352599</TimeChanged>
+<TimeChanged>67831,70308.004382496</TimeChanged>
 <TimeCreated>67828,69103.642895387</TimeCreated>
 
 <Method name="mInPclass">
+<Final>1</Final>
 <Implementation><![CDATA[    q 1
-]]></Implementation>
-</Method>
-</Class>
-
-
-<Class name="PXW.samples.test">
-<Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67830,28430.347889682</TimeChanged>
-<TimeCreated>67815,60432.676733085</TimeCreated>
-
-<Property name="Analyser">
-<Type>PXW.DEV.BNF.Analyse.COS</Type>
-</Property>
-
-<Method name="go">
-<FormalSpec>element:PXW.DEV.BNF.Elements.COS</FormalSpec>
-<Implementation><![CDATA[
-    #dim x as PXW.DEV.Atom
-    ;set x=##class(PXW.Tools.DEV.HTML.bnf).flattenlist(ele,.atoms)
-    ;s y=atoms.GetAt(1)
-    ;w atoms.GetAt(1).type
-
-    ;Set list=""
-    ;Do element.findElementsXPath("IndexKeys/IndexKeysGiven/IndexKey/IndexKeyName/PropertyName",.list)
-    ;s x=list.%GetAt(1)
-    ;w x.value
-    
-    ;Set parser=##class(PXW.DEV.BNF.Run.COS).%New()
-    ;Set parser.stream=##class(PXW.DEV.InputStream).NewString(text)
-    ;If 'parser.stream.EOF() {}
-
-    ;Set ..Analyser=##class(PXW.DEV.BNF.Analyse.analyser).NewForLanguage(..#CodeType,"COS")
-	;Set ..Analyser.ClassServer=..ClassServer
-
-    ;Set rs=##class(PXW.Xref.AnalysisQueries).GetByDateFunc(%NS,itemtype,itemk1,itemk2,flags,starttime)
-	;If element.type="QuitCommand" {
-	;	Set quitexpE=element.findFirstElementByType("QuitExpression",1)	
-	;} ElseIf element.type="ReturnCommand" {
-	;	Set quitexpE=element.findFirstElementByType("ReturnExpression",1)
-	;} Else {
-	;	Set quitexpE=""
-	;}
-	;If $ISOBJECT(quitexpE) {
-	;		w quitexpE.ToString(0)
-    ;}
-
-    ;s x=##class(PXW.DEV.Atom).%New()
-    ;try {
-    ;    w x.value/0
-    ;} catch e {
-    ;    w e.AsStatus()
-    ;}
-
-    s x=##class(PXW.DEV.Element).%New()
 ]]></Implementation>
 </Method>
 </Class>
