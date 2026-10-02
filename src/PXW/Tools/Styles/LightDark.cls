@@ -159,7 +159,7 @@ Method WriteStyles()
 	.codeProgramLabel, a.codeProgramLabel, a.codeProgramLabel:visited {color: var(--fgProgramLabel);}
 	.codeProgramKeyword { color: var(--fgProgramKeyword);}
     .codeKeyword { color: var(--fgCodeKeyword);}
-	.codeFormalSpecList { display: inline-block; white-space: wrap; max-width: 75%;  vertical-align:top;}
+	.codeFormalSpecList { display: inline-block; white-space: wrap; max-width: 75ch;  vertical-align:top;}
     .codeFormalSpecItem {  white-space:nowrap; background-color: var(--bgAlternate1); }
 	.codeGlobal, a.codeGlobal, a.codeGlobal:Visited {color: var(--fgCodeVariableGlobal);}
 	.codeGlobalSet, a.codeGlobalSet, a.codeGlobalSet:visited {color: var(--fgCodeVariableGlobal); font-weight:bold;}
@@ -178,7 +178,18 @@ Method WriteStyles()
 	.CDEFOneClassMember { display:block; 
 							/* 20px indent to make it not on the left side,
 							   but because this is a block we are effectively inserting an unwanted new line so move the whole thing up 1 line (-1em)*/
-							margin:-1em 0px 0px 20px;  }
+							margin:-1em 0px 0px 4ch;  }
+	.DOCBOOK {
+		background-color: var(--bgAlternate3); /*color: var(--fgComment); */
+		margin-left:4ch; margin-right: 8ch;
+		white-space: normal;
+		font-family: Arial, Helvetica, sans-serif; font-size: medium;
+	}
+
+	/*.DOCBOOK * {
+		border:0; margin:0; padding:0; 
+	}
+	*/
 
 	.XMLTag { color: var(--fgProgramKeyword); }
 	.XMLAttribute { color:var(--fgCodeVariable); }

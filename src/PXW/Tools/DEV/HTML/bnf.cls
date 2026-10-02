@@ -40,40 +40,34 @@ Property xrefCounts As %Integer [ MultiDimensional ];
 
 property classIsAbstract as %Boolean;
 
+property ClassCommentsAsDocumentation as %Boolean [ InitialExpression =0];
 
-Method OutputKeywordCommentAsDocumentation(Element As PXW.DEV.Element, Output commentid As %String)
+Method OutputKeywordCommentAsDocumentation(SourceElement As PXW.DEV.Element, Output commentid As %String,CommentDestinationElement as PXW.DEV.Element="")
 {
-    #dim x as %Api.InteropEditors.v3.spec
-    Set commentid=""
-    /* This does not work how I want yet, it needs to do all the stuff that documatic does, can I just call that or do I need to write my own? */
-    Set keywordatom=Element.FirstAtom()
-    Set textA=keywordatom.getComment()
-    If textA'="" {
-        Set text=textA.ToString()
-        Set text=$REPLACE(text,"///","")
-        Set ..commentid=..commentid+1
-        Set commentid="comment"_..commentid
-        ;do ..output("<div style='position:relative;' class='CDEFdocHTML nocopy' id="""_commentid_"HTML'>")
-        ;do ..output("<span style='position:absolute;  top:0px; left:0px;' onmouseover='flipComments("""_commentid_""");'>X</span>")
-        Do ..output("<div style='position:relative; display:none;' class='CDEFdocHTML nocopy' id="""_commentid_"HTML'>")
-        Do ..output(text)
-        ;do ##class(%CSP.Documatic).RenderDescription(..This,text,"","")
-        Do ..output("</div>")
-
-        ;do ..output("<div style='position:relative; display:none;' class='CDEFdocText' id="""_commentid_"Text'>")
-        ;do ..output("<span style='position:absolute; top:0px; left:0px;' onmouseout='flipComments("""_commentid_""");'>X</span>")
-        Do ..output("<div style='position:relative;' class='CDEFdocText'  id="""_commentid_"Text'>")
-        If $ISOBJECT(keywordatom.whitespace) {
-            Do ..writeAtom(keywordatom.whitespace,"<span class=whitespace>","</span>")
-        }
-        If $ISOBJECT(keywordatom.comment) {
-            Do ..writeAtom(keywordatom.comment,"<span class="""_$$$classComment_""">","</span>")
-        }
-        Do ..output("</div>")
-        Do keywordatom.clearComment()
-        Set keywordatom.whitespace=""
-    } Else {
+    
+    if ..ClassCommentsAsDocumentation {
         Set commentid=""
+        if CommentDestinationElement="" set CommentDestinationElement=SourceElement
+        /* This does not work how I want yet, it needs to do all the stuff that documatic does, can I just call that or do I need to write my own? */
+        Set keywordatom=SourceElement.FirstAtom()
+        Set textA=keywordatom.getComment()
+        If textA'="" {
+            Set text=textA.ToString()
+            Set text=$REPLACE(text,"///","")
+            Set ..commentid=..commentid+1
+            Set commentid="comment"_..commentid
+            do ..wrapElementHTML(CommentDestinationElement,"<div class=""DOCBOOK"">"_text_"</div>","")
+
+            Do keywordatom.clearComment()
+            Set keywordatom.whitespace=""
+            ; The BR is there because we have cleared all the comments and whitespace, but we still need to go onto the next line.
+            do ..wrapElementHTML(SourceElement,"<br><hr>","")
+        } Else {
+            Set commentid=""
+            Do keywordatom.clearComment()
+            Set keywordatom.whitespace=""
+             do ..wrapElementHTML(SourceElement,"<br><hr>","")
+        }
     }
     ;*/
 }
@@ -210,6 +204,7 @@ Method writeCDEFOneClassMember(element As PXW.DEV.BNF.Elements.ClassDefinition) 
     Set typeA=itemE.partsGetAt(1)
     Set ..ThisItemType=typeA.ToString(0)
     Set nameE=itemE.partsGetAt(2)
+    ;do element.write()
     If $LISTFIND($LISTBUILD("PropertyName","MethodName","ClassParameterName","IndexName","TriggerName","ForeignkeyName","StorageName","QueryName","XdataName"),nameE.type) {
         Set name=nameE.ToString(0)
         Set anchor="anchor"_name_nameE.type
@@ -223,7 +218,6 @@ Method writeCDEFOneClassMember(element As PXW.DEV.BNF.Elements.ClassDefinition) 
         
         Do ..AddToIndex(name,nameE.type,anchor)
         
-        ; not compatible with OutputKeywordComment, which forces output so the anchor ends up going after the comment
         Do ..wrapElementHTML(element,"<a name="""_anchor_"""></a>","") ; anchor goes before the member (ie before the comment)
         ;do ..OutputKeywordCommentAsDocumentation(element,.commentid)
 
@@ -257,7 +251,7 @@ Method writeCDEFClassDefinition(element As PXW.DEV.BNF.Elements.ClassDefinition)
 {
     $$$DEBUGMethodBegin
     Set keywordatom=element.FirstAtom()
-    ;Do ..OutputKeywordCommentAsDocumentation(element,.commentid)
+    Do ..OutputKeywordCommentAsDocumentation(element,.commentid)
     ;Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This)
     Set count=..GetXrefCount("","")
     Set menu="<div class="""_$$$classLensMenu_" nocopy"">"
@@ -290,6 +284,11 @@ Method writeCDEFAttributeViewQuery(element As PXW.DEV.BNF.Elements.ClassDefiniti
 Method writeCDEFClassProperty(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassProperty,ClassRelationship")
 {
     $$$DEBUGMethodBegin
+    if ..ClassCommentsAsDocumentation {
+        set dummy=##class(PXW.DEV.Element).%New("dummy")
+        do element.AddPart(dummy)
+        do ..OutputKeywordCommentAsDocumentation(element,,dummy)
+    }
     Set keywordatom=element.FirstAtom()
     Set nameelement=element.findFirstElementByType("PropertyName")
     If $ISOBJECT(nameelement) {
@@ -316,6 +315,14 @@ Method writeCDEFClassProperty(element As PXW.DEV.BNF.Elements.ClassDefinition) A
 Method writeCDEFClassParameter(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassParameter")
 {
     $$$DEBUGMethodBegin
+    
+    if ..ClassCommentsAsDocumentation {
+        set dummy=##class(PXW.DEV.Element).%New("dummy")
+        do element.AddPart(dummy)
+        do ..OutputKeywordCommentAsDocumentation(element,,dummy)
+    }
+
+
     Set keywordatom=element.FirstAtom()
     Set nameelement=element.findFirstElementByType("ClassParameterName")
     If $ISOBJECT(nameelement) {
@@ -342,6 +349,8 @@ Method writeCDEFClassParameter(element As PXW.DEV.BNF.Elements.ClassDefinition) 
 Method writeCDEFClassMethod(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassClassMethod")
 {
     $$$DEBUGMethodBegin
+    set body=element.findFirstElementByType("MethodBody")
+    do ..OutputKeywordCommentAsDocumentation(element,.commentid,body)
     Set keywordatom=element.FirstAtom()
     Set nameelement=element.findFirstElementByType("MethodName")
     If $ISOBJECT(nameelement) {
@@ -384,6 +393,9 @@ Method writeCDEFJavascriptCodeBlock(element As PXW.DEV.BNF.Elements.ClassDefinit
 Method writeCDEFClassQuery(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassQuery")
 {
     $$$DEBUGMethodBegin
+    set body=element.findFirstElementByType("ClassQueryBody")
+    do ..OutputKeywordCommentAsDocumentation(element,.commentid,body)
+
     Set ..SqlProgramAnalyser=""
     Set keywordatom=element.FirstAtom()
     Set nameelement=element.findFirstElementByType("QueryName")
@@ -469,6 +481,11 @@ Method writeCDEFXdataSql(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW
 Method writeCDEFIndex(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassIndex")
 {
     $$$DEBUGMethodBegin
+    if ..ClassCommentsAsDocumentation {
+        set dummy=##class(PXW.DEV.Element).%New("dummy")
+        do element.AddPart(dummy)
+        do ..OutputKeywordCommentAsDocumentation(element,,dummy)
+    }
     Set keywordatom=element.FirstAtom()
     Set nameelement=element.findFirstElementByType("IndexName")
     If $ISOBJECT(nameelement) {

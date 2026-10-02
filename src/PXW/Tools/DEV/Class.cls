@@ -113,7 +113,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 	#dim ele,element as PXW.DEV.Element
 	Set zh=$ZHOROLOG
 	Set showPaths=0,forceXref=0
-    Write "<pre>"
+    ;Write "<pre>"
 	; Debug is only for the DISPLAY of the page, if you want to debug the parsing use the ParserTest page.
 	If +Debug=1 $$$DEBUGNew(##class(PXW.Tools.Debugger).%ClassName(1))
 	If Debug["$FILE" $$$DEBUGNew(##class(PXW.Debuggers.BasicToFile).%ClassName(1)) 
@@ -124,6 +124,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
     Set output=##class(PXW.Tools.DEV.HTML.bnf).%New()
 	Set output.ThisType=..#CodeType
 	Set output.FormatEmbeddedSQl=$SELECT($$$UPPER(FormatOptions)["NOSQLFORMATTING":0,1:1)
+	set output.ClassCommentsAsDocumentation=$s($$$UPPER(FormatOptions)["DOCBOOKMODE":1,1:0)
 	Set output.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)
 	Set sc=output.ClassServer.GetClassStudioText(ClassName,.text,.linesOfCode,.timestamp)
 	Set zh(1,"load")=$ZHOROLOG-zh,zh=$ZHOROLOG
@@ -169,7 +170,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 			Set pzh=$ZHOROLOG
 
 			If Debug["$WRITE" {
-				ZWrite output.Analyser
+				;ZWrite output.Analyser
 				Do element.write()
 			}
 
@@ -255,7 +256,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 	;zw %atoms
 	;d %session.EndSession()
 	;zw zh,%RBCOUNT
-    Write "</pre>"
+    ;Write "</pre>"
 }
 
 ClassMethod WriteNav(ByRef scratch)
@@ -279,6 +280,12 @@ ClassMethod WriteNav(ByRef scratch)
 	} Else {
 		Set off=$REPLACE(formatoptions,"NOSQLFORMATTING","")
 		Write "<a href="""_..HREFTo(class,path,linenumber,%NS,instanceclass,propertyparam,off)_""">Embedded SQL Formatting</a>"
+	}
+    If formatoptions'["DOCBOOKMODE" {
+		Write "<a href="""_..HREFTo(class,path,linenumber,%NS,instanceclass,propertyparam,formatoptions_"DOCBOOKMODE")_""">DocBook Mode</a>"
+	} Else {
+		Set off=$REPLACE(formatoptions,"DOCBOOKMODE","")
+		Write "<a href="""_..HREFTo(class,path,linenumber,%NS,instanceclass,propertyparam,off)_""">Raw Comment Mode</a>"
 	}
 }
 

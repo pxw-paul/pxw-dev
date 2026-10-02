@@ -464,7 +464,7 @@ Method WriteStyles()
 	.codeProgramLabel, a.codeProgramLabel, a.codeProgramLabel:visited {color: var(--fgProgramLabel);}
 	.codeProgramKeyword { color: var(--fgProgramKeyword);}
     .codeKeyword { color: var(--fgCodeKeyword);}
-	.codeFormalSpecList { display: inline-block; white-space: wrap; max-width: 75%;  vertical-align:top;}
+	.codeFormalSpecList { display: inline-block; white-space: wrap; max-width: 80ch;  vertical-align:top;}
     .codeFormalSpecItem {  white-space:nowrap; background-color: var(--bgAlternate1); }
 	.codeGlobal, a.codeGlobal, a.codeGlobal:Visited {color: var(--fgCodeVariableGlobal);}
 	.codeGlobalSet, a.codeGlobalSet, a.codeGlobalSet:visited {color: var(--fgCodeVariableGlobal); font-weight:bold;}

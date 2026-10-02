@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="IRIS" version="26" zv="IRIS for UNIX (Ubuntu Server LTS for x86-64 Containers) 2026.1 (Build 234U)" ts="2026-10-01 07:56:33">
+<Export generator="IRIS" version="26" zv="IRIS for UNIX (Ubuntu Server LTS for x86-64 Containers) 2026.1 (Build 234U)" ts="2026-10-02 08:08:12">
 <Class name="PXW.DEV.Atom">
 <Super>PXW.DEV.Particle</Super>
 <TimeChanged>67830,28950.607042217</TimeChanged>
@@ -103711,7 +103711,7 @@ XData xmlstuff
 
 <Class name="PXW.Tools.DEV.Class">
 <Super>PXW.Tools.DEV.CodeDisplayPage</Super>
-<TimeChanged>67831,28830.362253882</TimeChanged>
+<TimeChanged>67844,68333.64732081</TimeChanged>
 <TimeCreated>67812,67241.373285922</TimeCreated>
 
 <Parameter name="CodeType">
@@ -103839,7 +103839,7 @@ s %NS="LOCAL_USER" d ##class(PXW.Tools.DEV.Class).WriteClass("%iKnow.Classificat
 	#dim ele,element as PXW.DEV.Element
 	Set zh=$ZHOROLOG
 	Set showPaths=0,forceXref=0
-    Write "<pre>"
+    ;Write "<pre>"
 	; Debug is only for the DISPLAY of the page, if you want to debug the parsing use the ParserTest page.
 	If +Debug=1 $$$DEBUGNew(##class(PXW.Tools.Debugger).%ClassName(1))
 	If Debug["$FILE" $$$DEBUGNew(##class(PXW.Debuggers.BasicToFile).%ClassName(1)) 
@@ -103850,6 +103850,7 @@ s %NS="LOCAL_USER" d ##class(PXW.Tools.DEV.Class).WriteClass("%iKnow.Classificat
     Set output=##class(PXW.Tools.DEV.HTML.bnf).%New()
 	Set output.ThisType=..#CodeType
 	Set output.FormatEmbeddedSQl=$SELECT($$$UPPER(FormatOptions)["NOSQLFORMATTING":0,1:1)
+	set output.ClassCommentsAsDocumentation=$s($$$UPPER(FormatOptions)["DOCBOOKMODE":1,1:0)
 	Set output.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)
 	Set sc=output.ClassServer.GetClassStudioText(ClassName,.text,.linesOfCode,.timestamp)
 	Set zh(1,"load")=$ZHOROLOG-zh,zh=$ZHOROLOG
@@ -103895,7 +103896,7 @@ s %NS="LOCAL_USER" d ##class(PXW.Tools.DEV.Class).WriteClass("%iKnow.Classificat
 			Set pzh=$ZHOROLOG
 
 			If Debug["$WRITE" {
-				ZWrite output.Analyser
+				;ZWrite output.Analyser
 				Do element.write()
 			}
 
@@ -103981,7 +103982,7 @@ s %NS="LOCAL_USER" d ##class(PXW.Tools.DEV.Class).WriteClass("%iKnow.Classificat
 	;zw %atoms
 	;d %session.EndSession()
 	;zw zh,%RBCOUNT
-    Write "</pre>"
+    ;Write "</pre>"
 ]]></Implementation>
 </Method>
 
@@ -104008,6 +104009,12 @@ s %NS="LOCAL_USER" d ##class(PXW.Tools.DEV.Class).WriteClass("%iKnow.Classificat
 	} Else {
 		Set off=$REPLACE(formatoptions,"NOSQLFORMATTING","")
 		Write "<a href="""_..HREFTo(class,path,linenumber,%NS,instanceclass,propertyparam,off)_""">Embedded SQL Formatting</a>"
+	}
+    If formatoptions'["DOCBOOKMODE" {
+		Write "<a href="""_..HREFTo(class,path,linenumber,%NS,instanceclass,propertyparam,formatoptions_"DOCBOOKMODE")_""">DocBook Mode</a>"
+	} Else {
+		Set off=$REPLACE(formatoptions,"DOCBOOKMODE","")
+		Write "<a href="""_..HREFTo(class,path,linenumber,%NS,instanceclass,propertyparam,off)_""">Raw Comment Mode</a>"
 	}
 ]]></Implementation>
 </Method>
@@ -105228,7 +105235,7 @@ OVERRIDING StoredFunction </Description>
 <Class name="PXW.Tools.DEV.HTML.bnf">
 <IncludeCode>PXW.Tools.Styles.macros</IncludeCode>
 <Super>PXW.Tools.DEV.HTML.output</Super>
-<TimeChanged>67836,60784.464431797</TimeChanged>
+<TimeChanged>67844,71925.78747136</TimeChanged>
 <TimeCreated>67812,67241.836204596</TimeCreated>
 
 <Property name="Analyser">
@@ -105306,40 +105313,38 @@ It will end up containing all the analysis of the sql, including sub-queries and
 <Type>%Boolean</Type>
 </Property>
 
-<Method name="OutputKeywordCommentAsDocumentation">
-<FormalSpec>Element:PXW.DEV.Element,*commentid:%String</FormalSpec>
-<Implementation><![CDATA[
-    #dim x as %Api.InteropEditors.v3.spec
-    Set commentid=""
-    /* This does not work how I want yet, it needs to do all the stuff that documatic does, can I just call that or do I need to write my own? */
-    Set keywordatom=Element.FirstAtom()
-    Set textA=keywordatom.getComment()
-    If textA'="" {
-        Set text=textA.ToString()
-        Set text=$REPLACE(text,"///","")
-        Set ..commentid=..commentid+1
-        Set commentid="comment"_..commentid
-        ;do ..output("<div style='position:relative;' class='CDEFdocHTML nocopy' id="""_commentid_"HTML'>")
-        ;do ..output("<span style='position:absolute;  top:0px; left:0px;' onmouseover='flipComments("""_commentid_""");'>X</span>")
-        Do ..output("<div style='position:relative; display:none;' class='CDEFdocHTML nocopy' id="""_commentid_"HTML'>")
-        Do ..output(text)
-        ;do ##class(%CSP.Documatic).RenderDescription(..This,text,"","")
-        Do ..output("</div>")
+<Property name="ClassCommentsAsDocumentation">
+<Type>%Boolean</Type>
+<InitialExpression>0</InitialExpression>
+</Property>
 
-        ;do ..output("<div style='position:relative; display:none;' class='CDEFdocText' id="""_commentid_"Text'>")
-        ;do ..output("<span style='position:absolute; top:0px; left:0px;' onmouseout='flipComments("""_commentid_""");'>X</span>")
-        Do ..output("<div style='position:relative;' class='CDEFdocText'  id="""_commentid_"Text'>")
-        If $ISOBJECT(keywordatom.whitespace) {
-            Do ..writeAtom(keywordatom.whitespace,"<span class=whitespace>","</span>")
-        }
-        If $ISOBJECT(keywordatom.comment) {
-            Do ..writeAtom(keywordatom.comment,"<span class="""_$$$classComment_""">","</span>")
-        }
-        Do ..output("</div>")
-        Do keywordatom.clearComment()
-        Set keywordatom.whitespace=""
-    } Else {
+<Method name="OutputKeywordCommentAsDocumentation">
+<FormalSpec>SourceElement:PXW.DEV.Element,*commentid:%String,CommentDestinationElement:PXW.DEV.Element=""</FormalSpec>
+<Implementation><![CDATA[
+    
+    if ..ClassCommentsAsDocumentation {
         Set commentid=""
+        if CommentDestinationElement="" set CommentDestinationElement=SourceElement
+        /* This does not work how I want yet, it needs to do all the stuff that documatic does, can I just call that or do I need to write my own? */
+        Set keywordatom=SourceElement.FirstAtom()
+        Set textA=keywordatom.getComment()
+        If textA'="" {
+            Set text=textA.ToString()
+            Set text=$REPLACE(text,"///","")
+            Set ..commentid=..commentid+1
+            Set commentid="comment"_..commentid
+            do ..wrapElementHTML(CommentDestinationElement,"<div class=""DOCBOOK"">"_text_"</div>","")
+
+            Do keywordatom.clearComment()
+            Set keywordatom.whitespace=""
+            ; The BR is there because we have cleared all the comments and whitespace, but we still need to go onto the next line.
+            do ..wrapElementHTML(SourceElement,"<br><hr>","")
+        } Else {
+            Set commentid=""
+            Do keywordatom.clearComment()
+            Set keywordatom.whitespace=""
+             do ..wrapElementHTML(SourceElement,"<br><hr>","")
+        }
     }
     ;*/
 ]]></Implementation>
@@ -105496,6 +105501,7 @@ It will end up containing all the analysis of the sql, including sub-queries and
     Set typeA=itemE.partsGetAt(1)
     Set ..ThisItemType=typeA.ToString(0)
     Set nameE=itemE.partsGetAt(2)
+    ;do element.write()
     If $LISTFIND($LISTBUILD("PropertyName","MethodName","ClassParameterName","IndexName","TriggerName","ForeignkeyName","StorageName","QueryName","XdataName"),nameE.type) {
         Set name=nameE.ToString(0)
         Set anchor="anchor"_name_nameE.type
@@ -105509,7 +105515,6 @@ It will end up containing all the analysis of the sql, including sub-queries and
         
         Do ..AddToIndex(name,nameE.type,anchor)
         
-        ; not compatible with OutputKeywordComment, which forces output so the anchor ends up going after the comment
         Do ..wrapElementHTML(element,"<a name="""_anchor_"""></a>","") ; anchor goes before the member (ie before the comment)
         ;do ..OutputKeywordCommentAsDocumentation(element,.commentid)
 
@@ -105555,7 +105560,7 @@ It will end up containing all the analysis of the sql, including sub-queries and
 <Implementation><![CDATA[
     $$$DEBUGMethodBegin
     Set keywordatom=element.FirstAtom()
-    ;Do ..OutputKeywordCommentAsDocumentation(element,.commentid)
+    Do ..OutputKeywordCommentAsDocumentation(element,.commentid)
     ;Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This)
     Set count=..GetXrefCount("","")
     Set menu="<div class="""_$$$classLensMenu_" nocopy"">"
@@ -105596,6 +105601,11 @@ It will end up containing all the analysis of the sql, including sub-queries and
 <ReturnTypeParams>Type="ClassProperty,ClassRelationship"</ReturnTypeParams>
 <Implementation><![CDATA[
     $$$DEBUGMethodBegin
+    if ..ClassCommentsAsDocumentation {
+        set dummy=##class(PXW.DEV.Element).%New("dummy")
+        do element.AddPart(dummy)
+        do ..OutputKeywordCommentAsDocumentation(element,,dummy)
+    }
     Set keywordatom=element.FirstAtom()
     Set nameelement=element.findFirstElementByType("PropertyName")
     If $ISOBJECT(nameelement) {
@@ -105626,6 +105636,14 @@ It will end up containing all the analysis of the sql, including sub-queries and
 <ReturnTypeParams>Type="ClassParameter"</ReturnTypeParams>
 <Implementation><![CDATA[
     $$$DEBUGMethodBegin
+    
+    if ..ClassCommentsAsDocumentation {
+        set dummy=##class(PXW.DEV.Element).%New("dummy")
+        do element.AddPart(dummy)
+        do ..OutputKeywordCommentAsDocumentation(element,,dummy)
+    }
+
+
     Set keywordatom=element.FirstAtom()
     Set nameelement=element.findFirstElementByType("ClassParameterName")
     If $ISOBJECT(nameelement) {
@@ -105656,6 +105674,8 @@ It will end up containing all the analysis of the sql, including sub-queries and
 <ReturnTypeParams>Type="ClassClassMethod"</ReturnTypeParams>
 <Implementation><![CDATA[
     $$$DEBUGMethodBegin
+    set body=element.findFirstElementByType("MethodBody")
+    do ..OutputKeywordCommentAsDocumentation(element,.commentid,body)
     Set keywordatom=element.FirstAtom()
     Set nameelement=element.findFirstElementByType("MethodName")
     If $ISOBJECT(nameelement) {
@@ -105710,6 +105730,9 @@ It will end up containing all the analysis of the sql, including sub-queries and
 <ReturnTypeParams>Type="ClassQuery"</ReturnTypeParams>
 <Implementation><![CDATA[
     $$$DEBUGMethodBegin
+    set body=element.findFirstElementByType("ClassQueryBody")
+    do ..OutputKeywordCommentAsDocumentation(element,.commentid,body)
+
     Set ..SqlProgramAnalyser=""
     Set keywordatom=element.FirstAtom()
     Set nameelement=element.findFirstElementByType("QueryName")
@@ -105821,6 +105844,11 @@ NOTE: this is a special hand coded type of Xdata (see Run.ClassDefinition)</Desc
 <ReturnTypeParams>Type="ClassIndex"</ReturnTypeParams>
 <Implementation><![CDATA[
     $$$DEBUGMethodBegin
+    if ..ClassCommentsAsDocumentation {
+        set dummy=##class(PXW.DEV.Element).%New("dummy")
+        do element.AddPart(dummy)
+        do ..OutputKeywordCommentAsDocumentation(element,,dummy)
+    }
     Set keywordatom=element.FirstAtom()
     Set nameelement=element.findFirstElementByType("IndexName")
     If $ISOBJECT(nameelement) {
@@ -111844,7 +111872,7 @@ Base class for pages that have a Top, Left, and Right content:
 
 <Class name="PXW.Tools.Styles.LightDark">
 <Super>PXW.Tools.Styles.super</Super>
-<TimeChanged>67843,69145.061391944</TimeChanged>
+<TimeChanged>67845,29157.981416984</TimeChanged>
 <TimeCreated>67812,67242.027290465</TimeCreated>
 
 <Method name="WriteStyles">
@@ -112005,7 +112033,7 @@ Base class for pages that have a Top, Left, and Right content:
 	.codeProgramLabel, a.codeProgramLabel, a.codeProgramLabel:visited {color: var(--fgProgramLabel);}
 	.codeProgramKeyword { color: var(--fgProgramKeyword);}
     .codeKeyword { color: var(--fgCodeKeyword);}
-	.codeFormalSpecList { display: inline-block; white-space: wrap; max-width: 75%;  vertical-align:top;}
+	.codeFormalSpecList { display: inline-block; white-space: wrap; max-width: 75ch;  vertical-align:top;}
     .codeFormalSpecItem {  white-space:nowrap; background-color: var(--bgAlternate1); }
 	.codeGlobal, a.codeGlobal, a.codeGlobal:Visited {color: var(--fgCodeVariableGlobal);}
 	.codeGlobalSet, a.codeGlobalSet, a.codeGlobalSet:visited {color: var(--fgCodeVariableGlobal); font-weight:bold;}
@@ -112024,7 +112052,18 @@ Base class for pages that have a Top, Left, and Right content:
 	.CDEFOneClassMember { display:block; 
 							/* 20px indent to make it not on the left side,
 							   but because this is a block we are effectively inserting an unwanted new line so move the whole thing up 1 line (-1em)*/
-							margin:-1em 0px 0px 20px;  }
+							margin:-1em 0px 0px 4ch;  }
+	.DOCBOOK {
+		background-color: var(--bgAlternate3); /*color: var(--fgComment); */
+		margin-left:4ch; margin-right: 8ch;
+		white-space: normal;
+		font-family: Arial, Helvetica, sans-serif; font-size: medium;
+	}
+
+	/*.DOCBOOK * {
+		border:0; margin:0; padding:0; 
+	}
+	*/
 
 	.XMLTag { color: var(--fgProgramKeyword); }
 	.XMLAttribute { color:var(--fgCodeVariable); }
@@ -112359,7 +112398,7 @@ Base class for pages that have a Top, Left, and Right content:
 
 <Class name="PXW.Tools.Styles.StarTrek">
 <Super>PXW.Tools.Styles.super</Super>
-<TimeChanged>67812,67242.08643356</TimeChanged>
+<TimeChanged>67844,60146.867496916</TimeChanged>
 <TimeCreated>67812,67242.08643356</TimeCreated>
 
 <Property name="CDEFDescriptionsAsText">
@@ -112836,7 +112875,7 @@ Here are the main named holders
 	.codeProgramLabel, a.codeProgramLabel, a.codeProgramLabel:visited {color: var(--fgProgramLabel);}
 	.codeProgramKeyword { color: var(--fgProgramKeyword);}
     .codeKeyword { color: var(--fgCodeKeyword);}
-	.codeFormalSpecList { display: inline-block; white-space: wrap; max-width: 75%;  vertical-align:top;}
+	.codeFormalSpecList { display: inline-block; white-space: wrap; max-width: 80ch;  vertical-align:top;}
     .codeFormalSpecItem {  white-space:nowrap; background-color: var(--bgAlternate1); }
 	.codeGlobal, a.codeGlobal, a.codeGlobal:Visited {color: var(--fgCodeVariableGlobal);}
 	.codeGlobalSet, a.codeGlobalSet, a.codeGlobalSet:visited {color: var(--fgCodeVariableGlobal); font-weight:bold;}
