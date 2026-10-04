@@ -182,13 +182,30 @@ Method writePlanFrozen(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.
     Quit ""
 }
 
+
+Method writePlanModuleName(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="ModuleName")
+{
+    Do ..wrapElementHTML(element,"","<button onclick=""flipModule('module_"_element.ToString(0)_"',this);"">-</button>")
+    Do ..wrapElementHTML(element,"<a class='"_$$$classLabel_"' href=""#module_"_element.ToString(0)_""">","</a>")
+    Quit ""
+}
+
+Method writePlanSubqueryName(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="SubqueryName")
+{
+    Do ..wrapElementHTML(element,"","<button onclick=""flipModule('subquery_"_element.ToString(0)_"',this);"">-</button>")
+    Do ..wrapElementHTML(element,"<a class='"_$$$classLabelDef_"' href=""#subquery_"_element.ToString(0)_""">","</a>")
+    Quit ""
+}
+
+
 Method writePlanModule(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="ModuleSection")
 {
     #dim attE,nameE as PXW.DEV.BNF.Element
     Set modname=..GetAttributeValue(element,"name")
     If modname'="" {
         Set aname="module_"_modname
-        Do ..wrapElementHTML(element,"<hr><h3 id='"_aname_"'>Module "_modname_"</h3>","")
+        ;Do ..wrapElementHTML(element,"<hr><h3 id='"_aname_"'>Module "_modname_"</h3>","")
+        Do ..wrapElementHTML(element,"<div id='"_aname_"' class=planModule><h3>Module "_modname_"</h3>","</div>")
         Set ..modules(aname)=""
         Do ..ClearAllButContent(element)
     } Else {
@@ -204,11 +221,31 @@ Method writePlanSubquery(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compiler
     If modname'="" {
         ;do element.write()
         Set aname="subquery_"_modname
-        Do ..wrapElementHTML(element,"<hr><h3 id='"_aname_"'>Subquery "_modname_"</h3>","")
+        ;Do ..wrapElementHTML(element,"<hr><h3 id='"_aname_"'>Subquery "_modname_"</h3>","")
+        Do ..wrapElementHTML(element,"<div id='"_aname_"' class=planModule><h3>Subquery "_modname_"</h3>","</div>")
         Set ..modules(aname)=""
         Do ..ClearAllButContent(element)
     } Else {
         Do ..wrapElementHTML(element,"<hr><pre>","</pre>")
+    }
+    Quit ""
+}
+
+
+Method writePlanAliasName(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="AliasName")
+{
+    Set aliasname="alias"_element.ToString(0)
+    Do ..wrapElementHTML(element,"<span class='SQLTableAlias' title='show alias usage' fetchid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
+    Quit ""
+}
+
+Method writePlanTable(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="Table")
+{
+    Set schemaE=element.findFirstElementByType("SchemaName")
+    Set tableE=element.findFirstElementByType("TableName")
+    If $ISOBJECT(schemaE),$ISOBJECT(tableE) {
+                Do ..wrapElementHTML(schemaE,"<a class="_$$$classProgramName_" href="""_..HREFToClass(schemaE.ToString(0)_"."_tableE.ToString(0))_""">","</a>")
+                Do ..wrapElementHTML(tableE,"<a class="_$$$classProgramName_" href="""_..HREFToClass(schemaE.ToString(0)_"."_tableE.ToString(0))_""">","</a>")
     }
     Quit ""
 }
@@ -342,36 +379,6 @@ Method writeSQLPlanTableIndex(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Com
     }
 
     $$$DEBUGMethodEnd
-    Quit ""
-}
-
-Method writeSQLPlanAliasName(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="AliasName")
-{
-    Set aliasname="alias"_element.ToString(0)
-    Do ..wrapElementHTML(element,"<span class='SQLTableAlias' title='show alias usage' fetchid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
-    Quit ""
-}
-
-Method writeSQLPlanTable(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="Table")
-{
-    Set schemaE=element.findFirstElementByType("SchemaName")
-    Set tableE=element.findFirstElementByType("TableName")
-    If $ISOBJECT(schemaE),$ISOBJECT(tableE) {
-                Do ..wrapElementHTML(schemaE,"<a class="_$$$classProgramName_" href="""_..HREFToClass(schemaE.ToString(0)_"."_tableE.ToString(0))_""">","</a>")
-                Do ..wrapElementHTML(tableE,"<a class="_$$$classProgramName_" href="""_..HREFToClass(schemaE.ToString(0)_"."_tableE.ToString(0))_""">","</a>")
-    }
-    Quit ""
-}
-
-Method writeSQLPlanModuleName(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="ModuleName")
-{
-    Do ..wrapElementHTML(element,"<a class='"_$$$classLabel_"' href=""#module_"_element.ToString(0)_""">","</a>")
-    Quit ""
-}
-
-Method writeSQLPlanSubqueryName(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="SubqueryName")
-{
-    Do ..wrapElementHTML(element,"<a class='"_$$$classLabelDef_"' href=""#subquery_"_element.ToString(0)_""">","</a>")
     Quit ""
 }
 

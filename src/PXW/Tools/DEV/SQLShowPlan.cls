@@ -80,8 +80,7 @@ ClassMethod WriteSQLPlan(sql As %String, Output modules)
         Do ..WriteStatus(qsc)
         Quit
     }
-	;w "<pre>"
-	;zw obj
+	;w "<pre>" w obj.toJson() w "</pre>"
 	Set rs=##class(PXW.DEV.Dictionary.AtelierRS).%New(obj)
 	;zw rs
 	While rs.%Next() {
@@ -95,6 +94,8 @@ ClassMethod WriteSQLPlan(sql As %String, Output modules)
 		New %path Set %path=""
 		If parser.Plans(element) {
 			;d element.write()
+            set formatter=##class(PXW.DEV.BNF.Format.SQLShowPlan).%New()
+            do formatter.FormatElement(element)
 			Set output=##class(PXW.Tools.DEV.HTML.SQLShowPlan).%New()
 			Set output.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)	
 			If $DATA(%path) Set output.showPaths=1
@@ -167,7 +168,7 @@ ClassMethod WriteStyles()
     Write "p.newline { padding-left:20px; text-indent: -20px; }",!
     Write "pre.PlanSQL { background-color:var(--bgAlternate1); overflow-wrap: break-word;  white-space: normal; }",!
     Write "pre.PlanSQL p.newline { margin:0; }",!
-
+    Write "div.planModule { position:relative; margin-left: 20px;  border:1px solid var(--borderNormal); background-color: color-mix(in srgb, var(--bgAlternate1) 70%, transparent);}"
     ; not working
     ;w "p.newline:nth-child(odd) { background-color: var(--bgAlternate1); color: var(--fgNormal); }",!
 }
@@ -175,6 +176,19 @@ ClassMethod WriteStyles()
 ClassMethod WriteScripts()
 {
 	Do ##class(PXW.Tools.DEV.Class).WriteScripts()
+    &js<
+
+    function flipModule(moduleid,button) {
+        var mod=document.getElementById(moduleid);
+        if (mod.style.display=='none') {
+            mod.style.display='block';
+            button.innerText='-';
+        } else {
+            mod.style.display='none';
+            button.innerText='+';
+        }
+}
+    >
 }
 
 /// <p>

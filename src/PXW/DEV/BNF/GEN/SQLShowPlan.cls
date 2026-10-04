@@ -3,7 +3,7 @@ Class PXW.DEV.BNF.GEN.SQLShowPlan Extends PXW.DEV.BNF.super [ ProcedureBlock ]
 
 Parameter KeywordPattern = "1.A";
 
-Parameter Keywords = "AND,BITMAP,EACH,EXTENT,FOR,GETTING,GIVEN,ID,INDEX,LOOPING,MAP,MASTER,MODULE,MODULES,ON,READ,SUBQUERIES,SUBQUERY,TABLE,THE,USING";
+Parameter Keywords = "AND,BITMAP,DIVIDE,EACH,EXTENT,FOR,GETTING,GIVEN,ID,INDEX,LOOPING,MAP,MASTER,MODULE,MODULES,ON,READ,SUBQUERIES,SUBQUERY,TABLE,THE,USING";
 
 ///  alias_name ::= IDENTIFIER
 /// summary=C
@@ -89,12 +89,12 @@ Method Attribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	quit ok
 }
 
-///  call_module ::= 'module' module_name
+///  call_module ::= 'module' module_name text_to_eol
 /// summary values:MODULE
-/// summary=K&C
+/// summary=K&C&C
 Method CallModule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&C
+	; rules summary K&C&C
 	if '(..isKeyword("MODULE")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -102,7 +102,9 @@ Method CallModule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"MODULE")  {
 		if ..ModuleName(.subElement,.addedElement)  {
-			set done=1 ; end compileRules
+			if ..TextToEol(.subElement,.addedElement)  {
+				set done=1 ; end compileRules
+			}
 		}
 	}
 
@@ -117,12 +119,12 @@ Method CallModule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	quit ok
 }
 
-///  call_modules ::= 'modules' module_name ( ',' ['and'] module_name )* ['and' module_name]
+///  call_modules ::= 'modules' module_name ( ',' ['and'] module_name )* ['and' module_name] text_to_eol
 /// summary values:MODULES
-/// summary=K&C&(?4punctuation:4?)*&[K&C]
+/// summary=K&C&(?4punctuation:4?)*&[K&C]&C
 Method CallModules(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&C&(?4punctuation:4?)*&[K&C]
+	; rules summary K&C&(?4punctuation:4?)*&[K&C]&C
 	if '(..isKeyword("MODULES")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -132,7 +134,9 @@ Method CallModules(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		if ..ModuleName(.subElement,.addedElement)  {
 			if ..CallModules1RepZero(.subElement,.addedElement)  {
 				if ..CallModules3OptGrp(.subElement,.addedElement)  {
-					set done=1 ; end compileRules
+					if ..TextToEol(.subElement,.addedElement)  {
+						set done=1 ; end compileRules
+					}
 				}
 			}
 		}
@@ -214,12 +218,12 @@ Method CallModules3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	quit ok
 }
 
-///  call_subqueries ::= 'subqueries' subquery_name ( ',' ['and'] subquery_name )* ['and' subquery_name]
+///  call_subqueries ::= 'subqueries' subquery_name ( ',' ['and'] subquery_name )* ['and' subquery_name] text_to_eol
 /// summary values:SUBQUERIES
-/// summary=K&C&(?4punctuation:4?)*&[K&C]
+/// summary=K&C&(?4punctuation:4?)*&[K&C]&C
 Method CallSubqueries(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&C&(?4punctuation:4?)*&[K&C]
+	; rules summary K&C&(?4punctuation:4?)*&[K&C]&C
 	if '(..isKeyword("SUBQUERIES")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -229,7 +233,9 @@ Method CallSubqueries(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		if ..SubqueryName(.subElement,.addedElement)  {
 			if ..CallSubqueries1RepZero(.subElement,.addedElement)  {
 				if ..CallSubqueries3OptGrp(.subElement,.addedElement)  {
-					set done=1 ; end compileRules
+					if ..TextToEol(.subElement,.addedElement)  {
+						set done=1 ; end compileRules
+					}
 				}
 			}
 		}
@@ -311,12 +317,12 @@ Method CallSubqueries3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	quit ok
 }
 
-///  call_subquery ::= 'subquery' subquery_name
+///  call_subquery ::= 'subquery' subquery_name text_to_eol
 /// summary values:SUBQUERY
-/// summary=K&C
+/// summary=K&C&C
 Method CallSubquery(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&C
+	; rules summary K&C&C
 	if '(..isKeyword("SUBQUERY")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -324,7 +330,9 @@ Method CallSubquery(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"SUBQUERY")  {
 		if ..SubqueryName(.subElement,.addedElement)  {
-			set done=1 ; end compileRules
+			if ..TextToEol(.subElement,.addedElement)  {
+				set done=1 ; end compileRules
+			}
 		}
 	}
 
@@ -339,11 +347,11 @@ Method CallSubquery(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	quit ok
 }
 
-///  content ::= newline | plan | sql_section | warning_section | cost_section | frozen_section | info_section | for_each | table | subquery_section | module_section | read_index | read_bitmap_index | read_extent_bitmap | read_master_scan | read_master | call_modules | call_module | call_subqueries | call_subquery | alias_property | word | punctuation
-/// summary=C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
+///  content ::= newline | plan | sql_section | warning_section | cost_section | frozen_section | info_section | for_each | table | subquery_section | module_section | read_index | read_bitmap_index | read_extent_bitmap | read_master_scan | read_master | divide_master | call_modules | call_module | call_subqueries | call_subquery | alias_property | word | punctuation
+/// summary=C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
 Method Content(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
+	; rules summary C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -379,6 +387,8 @@ Method Content(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 	} elseif ..ReadMasterScan(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..ReadMaster(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..DivideMaster(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..CallModules(.subElement,.addedElement)  {
 		set done=1 ; or
@@ -423,6 +433,38 @@ Method CostSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 			Set done=1
 		}
 	}
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  divide_master ::= 'divide' 'master' 'map' table_index
+/// summary values:DIVIDE
+/// summary=K&K&K&C
+Method DivideMaster(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary K&K&K&C
+	if '(..isKeyword("DIVIDE")) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"DIVIDE")  {
+		if ..addKeyword(.subElement,"MASTER")  {
+			if ..addKeyword(.subElement,"MAP")  {
+				if ..TableIndex(.subElement,.addedElement)  {
+					set done=1 ; end compileRules
+				}
+			}
+		}
+	}
+
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
 		set ok=1
@@ -751,12 +793,12 @@ Method IndexKeyWithRange1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	quit ok
 }
 
-///  index_keys ::= ',' 'using' 'the' index_keys_given ',' 'and' index_keys_looping
+///  index_keys ::= ',' 'using' 'the' index_keys_given ',' 'and' (index_keys_looping | index_keys_getting)
 /// summary values:,
-/// summary=P&K&K&C&P&K&C
+/// summary=P&K&K&C&P&K&(C|C)
 Method IndexKeys(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&K&K&C&P&K&C
+	; rules summary P&K&K&C&P&K&(C|C)
 	if '..isPunctuation(",",1) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -768,7 +810,7 @@ Method IndexKeys(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 				if ..IndexKeysGiven(.subElement,.addedElement)  {
 					if ..addPunctuation(.subElement,",")  {
 						if ..addKeyword(.subElement,"AND")  {
-							if ..IndexKeysLooping(.subElement,.addedElement)  {
+							if ..IndexKeys1Sub(.subElement,.addedElement)  {
 								set done=1 ; end compileRules
 							}
 						}
@@ -789,12 +831,57 @@ Method IndexKeys(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	quit ok
 }
 
-///  index_keys_given ::= 'given' index_key (',' ['and'] !'looping' index_key)* ['and' !'looping' index_key]
+/// index_keys_looping | index_keys_getting
+/// summary=C|C
+Method IndexKeys1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary C|C
+	set subElement=ParentElement
+	set done=0 ; method start
+	if ..IndexKeysLooping(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..IndexKeysGetting(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	set ok=$s(done:1,1:0)
+	quit ok
+}
+
+///  index_keys_getting ::= 'getting' index_key_name
+/// summary values:GETTING
+/// summary=K&C
+Method IndexKeysGetting(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary K&C
+	if '(..isKeyword("GETTING")) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"GETTING")  {
+		if ..IndexKeyName(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  index_keys_given ::= 'given' index_key (',' ['and'] !'looping' !'getting' index_key)* ['and' !'looping' !'getting' index_key]
 /// summary values:GIVEN
-/// summary=K&C&(?4punctuation:4?)*&[K&?4NotRule4?&C]
+/// summary=K&C&(?4punctuation:4?)*&[K&?4NotRule4?&?4NotRule4?&C]
 Method IndexKeysGiven(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&C&(?4punctuation:4?)*&[K&?4NotRule4?&C]
+	; rules summary K&C&(?4punctuation:4?)*&[K&?4NotRule4?&?4NotRule4?&C]
 	if '(..isKeyword("GIVEN")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -821,7 +908,7 @@ Method IndexKeysGiven(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	quit ok
 }
 
-///  (',' ['and'] !'looping' index_key)*
+///  (',' ['and'] !'looping' !'getting' index_key)*
 Method IndexKeysGiven1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
@@ -834,20 +921,22 @@ Method IndexKeysGiven1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	quit ok
 }
 
-/// ',' ['and'] !'looping' index_key
+/// ',' ['and'] !'looping' !'getting' index_key
 /// summary values:,
-/// summary=P&[K]&?4NotRule4?&C
+/// summary=P&[K]&?4NotRule4?&?4NotRule4?&C
 Method IndexKeysGiven2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary P&[K]&?4NotRule4?&C
+	; rules summary P&[K]&?4NotRule4?&?4NotRule4?&C
 	if '..isPunctuation(",",1) { quit 0 /* normal */ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,",")  {
 		if $S(..addKeyword(.subElement,"AND") :1,1:1) {
 			if '..addKeyword(.subElement,"LOOPING")  {
-				if ..IndexKey(.subElement,.addedElement)  {
-					set done=1 ; end compileRules
+				if '..addKeyword(.subElement,"GETTING")  {
+					if ..IndexKey(.subElement,.addedElement)  {
+						set done=1 ; end compileRules
+					}
 				}
 			}
 		}
@@ -865,17 +954,19 @@ Method IndexKeysGiven2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 /// 
 /// summary values:AND
-/// summary=K&?4NotRule4?&C
+/// summary=K&?4NotRule4?&?4NotRule4?&C
 Method IndexKeysGiven3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary K&?4NotRule4?&C
+	; rules summary K&?4NotRule4?&?4NotRule4?&C
 	if '(..isKeyword("AND")) { quit 1 /* not found is OK */ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"AND")  {
 		if '..addKeyword(.subElement,"LOOPING")  {
-			if ..IndexKey(.subElement,.addedElement)  {
-				set done=1 ; end compileRules
+			if '..addKeyword(.subElement,"GETTING")  {
+				if ..IndexKey(.subElement,.addedElement)  {
+					set done=1 ; end compileRules
+				}
 			}
 		}
 	}
@@ -2208,6 +2299,83 @@ Method TableSubscriptImply2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 		$$$BNFROLLBACK(subElement)
 		set ok=0
 	}
+	quit ok
+}
+
+///  text_to_eol ::= (!newline (word | punctuation))*
+/// summary=(?4punctuation:4?)*
+Method TextToEol(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary (?4punctuation:4?)*
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..TextToEol1RepZero(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  (!newline (word | punctuation))*
+Method TextToEol1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary ?4punctuation:4?
+	set subElement=ParentElement
+	; method start
+	while ..TextToEol2Sub(.subElement,.addedElement)  {
+		;
+	}
+	set ok=1
+	quit ok
+}
+
+/// !newline (word | punctuation)
+/// summary=?4NotRule4?&(C|C)
+Method TextToEol2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary ?4NotRule4?&(C|C)
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if '..Newline(.subElement,.addedElement)  {
+		if ..TextToEol3Sub(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+}
+
+/// word | punctuation
+/// summary=C|C
+Method TextToEol3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+{
+	; rules summary C|C
+	set subElement=ParentElement
+	set done=0 ; method start
+	if ..Word(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..Punctuation(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	set ok=$s(done:1,1:0)
 	quit ok
 }
 

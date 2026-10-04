@@ -397,7 +397,7 @@ ClassMethod PageStyle() As %String
 			grid-row-gap: 1em;
 		}
 
-		#toolsMainTLR div { width:100%; }
+		#toolsMainTLR { width:100%; }
 
 		#toolsMainTop {
 			grid-area: toolsMainTop; 
@@ -411,13 +411,13 @@ ClassMethod PageStyle() As %String
 			overflow:auto;
 			resize:horizontal;
 		}
-		#toolsMainLeft div { width:100%; }
+		#toolsMainLeft { width:100%; }
 
 		#toolsMainRight {
 			grid-area: toolsMainRight; 
 			overflow:auto;
 		}
-		#toolsMainRight div { width:100%; }
+		#toolsMainRight { width:100%; }
 
 		#toolsMainFoot {
 			grid-area: toolsMainFoot;

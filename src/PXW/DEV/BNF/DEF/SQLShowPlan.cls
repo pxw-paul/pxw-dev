@@ -45,6 +45,7 @@ content ::= newline
             | read_extent_bitmap
             | read_master_scan
             | read_master 
+            | divide_master
             | call_modules
             | call_module
             | call_subqueries
@@ -74,11 +75,15 @@ read_extent_bitmap  ::= 'extent' 'bitmap' table_index
 read_master         ::= 'read' 'master' 'map' table_index
 read_master_scan    ::= 'read' 'master' 'map' table_index ',' 'looping' 'on' 'ID'
 
-call_module         ::= 'module' module_name
-call_modules        ::= 'modules' module_name ( ',' ['and'] module_name )* ['and' module_name]
+divide_master       ::= 'divide' 'master' 'map' table_index
 
-call_subquery       ::= 'subquery' subquery_name
-call_subqueries     ::= 'subqueries' subquery_name ( ',' ['and'] subquery_name )* ['and' subquery_name]
+text_to_eol         ::= (!newline (word | punctuation))*
+
+call_module         ::= 'module' module_name text_to_eol
+call_modules        ::= 'modules' module_name ( ',' ['and'] module_name )* ['and' module_name] text_to_eol
+
+call_subquery       ::= 'subquery' subquery_name text_to_eol
+call_subqueries     ::= 'subqueries' subquery_name ( ',' ['and'] subquery_name )* ['and' subquery_name] text_to_eol
 
 table                 ::= 'table' schema_name '.' table_name
 table_index           ::=  schema_name '.'  table_name [ table_subscript_imply | table_subscript_alias ] '.' index_name [index_keys]
@@ -87,9 +92,15 @@ table_subscript_alias ::= '(' alias_name ['.' ( property_name '->')* ] ')'
 
 alias_property      ::= alias_name NOSPACE '.' NOSPACE property_name
 
-index_keys          ::= ',' 'using' 'the' index_keys_given ',' 'and' index_keys_looping
-index_keys_given    ::= 'given' index_key (',' ['and'] !'looping' index_key)* ['and' !'looping' index_key]
-index_keys_looping  ::= 'looping' 'on' ( index_key_with_range | index_key ) (',' ['and'] !'getting' ( index_key_with_range | index_key))* ['and' !'given' (index_key_with_range | index_key) ]
+index_keys          ::= ',' 'using' 'the' index_keys_given ',' 'and' (index_keys_looping | index_keys_getting)
+index_keys_given    ::= 'given' index_key 
+                        (',' ['and'] !'looping' !'getting' index_key)* 
+                        ['and' !'looping' !'getting' index_key]
+index_keys_looping  ::= 'looping' 'on' 
+                            ( index_key_with_range | index_key ) 
+                            (',' ['and'] !'getting' ( index_key_with_range | index_key))* 
+                            ['and' !'given' (index_key_with_range | index_key) ]
+index_keys_getting  ::= 'getting' index_key_name
 index_key           ::= ('%SQLUPPER(' index_key_name ')') | index_key_name
 index_key_with_range ::= index_key ( '(with a given set of values)' | '(with a range condition)' )
 index_key_name      ::= alias_property | property_name

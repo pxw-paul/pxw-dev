@@ -59,10 +59,8 @@ ClassMethod HREFTo(NameSpace As %String) As %String
     Set:$DATA(%NS) ons=%NS
     Set:$DATA(%NSORIGINAL) onso=%NSORIGINAL
     New %NS,%NSORIGINAL
-    Set %NS=$SELECT($GET(NewServer)'="":NewServer,$DATA(ons):ons,1:"")
+    Set %NS=$SELECT($GET(NameSpace)'="":NameSpace,$DATA(ons):ons,1:"")
     Set %NSORIGINAL=$SELECT($DATA(ons):ons,1:onso)
-    ;set NewServer=$G(NewServer,$G(%NS))
-	;Quit ..%ClassName(1)_".cls?%NS="_..EscapeURL(NewServer)
     Quit ##super()
 }
 

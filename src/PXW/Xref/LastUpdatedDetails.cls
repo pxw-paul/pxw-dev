@@ -19,7 +19,7 @@ Class PXW.Xref.LastUpdatedDetails [ ClassType = view, Owner = {_PUBLIC}, ViewQue
 		lu.LastUpdate as LastUpdateOnServer ,
 		atel.ServerAddress,
 		atel."Namespace" as ServerNamespace,
-		lastupdateddetails_myformat(atel."Namespace") as formattedNs,
+		pxw_xref.lastupdateddetails_myformat(atel."Namespace") as formattedNs,
 		xd.XrefCount as CallsCount,
 		yd.XrefCount as UsedCount,
 		(

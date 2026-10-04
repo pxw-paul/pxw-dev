@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="IRIS" version="26" zv="IRIS for UNIX (Ubuntu Server LTS for x86-64 Containers) 2026.1 (Build 234U)" ts="2026-10-02 08:08:12">
+<Export generator="IRIS" version="26" zv="IRIS for UNIX (Ubuntu Server LTS for x86-64 Containers) 2026.1 (Build 234U)" ts="2026-10-04 11:58:52">
 <Class name="PXW.DEV.Atom">
 <Super>PXW.DEV.Particle</Super>
 <TimeChanged>67830,28950.607042217</TimeChanged>
@@ -10982,7 +10982,7 @@ identifier                    ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z
 
 <Class name="PXW.DEV.BNF.DEF.SQLShowPlan">
 <Super>PXW.DEV.BNF.Compilers.loader</Super>
-<TimeChanged>67812,67238.686191904</TimeChanged>
+<TimeChanged>67847,42069.675651579</TimeChanged>
 <TimeCreated>67812,67238.686191904</TimeCreated>
 
 <Projection name="GEN">
@@ -11038,6 +11038,7 @@ content ::= newline
             | read_extent_bitmap
             | read_master_scan
             | read_master 
+            | divide_master
             | call_modules
             | call_module
             | call_subqueries
@@ -11067,11 +11068,15 @@ read_extent_bitmap  ::= 'extent' 'bitmap' table_index
 read_master         ::= 'read' 'master' 'map' table_index
 read_master_scan    ::= 'read' 'master' 'map' table_index ',' 'looping' 'on' 'ID'
 
-call_module         ::= 'module' module_name
-call_modules        ::= 'modules' module_name ( ',' ['and'] module_name )* ['and' module_name]
+divide_master       ::= 'divide' 'master' 'map' table_index
 
-call_subquery       ::= 'subquery' subquery_name
-call_subqueries     ::= 'subqueries' subquery_name ( ',' ['and'] subquery_name )* ['and' subquery_name]
+text_to_eol         ::= (!newline (word | punctuation))*
+
+call_module         ::= 'module' module_name text_to_eol
+call_modules        ::= 'modules' module_name ( ',' ['and'] module_name )* ['and' module_name] text_to_eol
+
+call_subquery       ::= 'subquery' subquery_name text_to_eol
+call_subqueries     ::= 'subqueries' subquery_name ( ',' ['and'] subquery_name )* ['and' subquery_name] text_to_eol
 
 table                 ::= 'table' schema_name '.' table_name
 table_index           ::=  schema_name '.'  table_name [ table_subscript_imply | table_subscript_alias ] '.' index_name [index_keys]
@@ -11080,9 +11085,15 @@ table_subscript_alias ::= '(' alias_name ['.' ( property_name '->')* ] ')'
 
 alias_property      ::= alias_name NOSPACE '.' NOSPACE property_name
 
-index_keys          ::= ',' 'using' 'the' index_keys_given ',' 'and' index_keys_looping
-index_keys_given    ::= 'given' index_key (',' ['and'] !'looping' index_key)* ['and' !'looping' index_key]
-index_keys_looping  ::= 'looping' 'on' ( index_key_with_range | index_key ) (',' ['and'] !'getting' ( index_key_with_range | index_key))* ['and' !'given' (index_key_with_range | index_key) ]
+index_keys          ::= ',' 'using' 'the' index_keys_given ',' 'and' (index_keys_looping | index_keys_getting)
+index_keys_given    ::= 'given' index_key 
+                        (',' ['and'] !'looping' !'getting' index_key)* 
+                        ['and' !'looping' !'getting' index_key]
+index_keys_looping  ::= 'looping' 'on' 
+                            ( index_key_with_range | index_key ) 
+                            (',' ['and'] !'getting' ( index_key_with_range | index_key))* 
+                            ['and' !'given' (index_key_with_range | index_key) ]
+index_keys_getting  ::= 'getting' index_key_name
 index_key           ::= ('%SQLUPPER(' index_key_name ')') | index_key_name
 index_key_with_range ::= index_key ( '(with a given set of values)' | '(with a range condition)' )
 index_key_name      ::= alias_property | property_name
@@ -11509,6 +11520,182 @@ Whitespace on Comments is untouched. - WHICH IS NOT QUITE RIGHT FOR LINECOMMENTS
     }
     Set Atom.whitespace.value=cr_$EXTRACT(tabs,1,indent)
     ;Set Atom.line=..currentLine
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="PXW.DEV.BNF.Format.SQLShowPlan">
+<Super>PXW.DEV.BNF.processor</Super>
+<TimeChanged>67847,42233.963922011</TimeChanged>
+<TimeCreated>67846,55194.329264872</TimeCreated>
+
+<Property name="placeHolder">
+<Type>PXW.DEV.Element</Type>
+<MultiDimensional>1</MultiDimensional>
+</Property>
+
+<Property name="relocated">
+<Description>
+keyed by +element</Description>
+<Type>%Boolean</Type>
+<MultiDimensional>1</MultiDimensional>
+</Property>
+
+<Method name="FormatElement">
+<FormalSpec>element:PXW.DEV.Element</FormalSpec>
+<Implementation><![CDATA[
+    ; find all Call Module and Module definitions and copy the module to the end of the call
+    do ..formatProcess(element,"PASS1")
+    ; now disconnect all the original modules from their content containers
+    do ..formatProcess(element,"PASS2")
+]]></Implementation>
+</Method>
+
+<Method name="formatProcess">
+<FormalSpec>element:PXW.DEV.Element,When:%String</FormalSpec>
+<Implementation><![CDATA[
+	$$$DEBUGMethodBegin
+	do ..processSpecificElement(element,When)
+	set partkey=""
+	For  {
+		Set part=element.partsGetNext(.partkey)
+		Quit:partkey=""
+		
+		If part.IsElement {
+			Do ..formatProcess(part,When)
+		} 
+	}
+	$$$DEBUGMethodEnd
+]]></Implementation>
+</Method>
+
+<Method name="format1CallModules">
+<Description>
+For each call module X, rememeber this is calling X</Description>
+<FormalSpec>element:PXW.DEV.BNF.Element</FormalSpec>
+<ReturnType>PXW.DEV.BNF.Compilers.elementHandler</ReturnType>
+<ReturnTypeParams>Type="CallModule,CallModules",When="PASS1"</ReturnTypeParams>
+<Implementation><![CDATA[
+    do element.findElementsByType("ModuleName",.list,0)
+    if $isobject(list) {
+        for i=1:1:list.Count() {
+            s nameE=list.GetAt(i)
+            if $isobject(nameE) {
+                set name=nameE.ToString(0)
+                if name'="" {
+                    set ..placeHolder(name)=element
+                }
+            }
+        }
+    }
+    Quit ""
+]]></Implementation>
+</Method>
+
+<Method name="format1CallSubqueries">
+<FormalSpec>element:PXW.DEV.BNF.Element</FormalSpec>
+<ReturnType>PXW.DEV.BNF.Compilers.elementHandler</ReturnType>
+<ReturnTypeParams>Type="CallSubquery,CallSubqueies",When="PASS1"</ReturnTypeParams>
+<Implementation><![CDATA[
+    do element.findElementsByType("SubqueryName",.list,0)
+    if $isobject(list) {
+        for i=1:1:list.Count() {
+            s nameE=list.GetAt(i)
+            if $isobject(nameE) {
+                set name=nameE.ToString(0)
+                if name'="" {
+                    set ..placeHolder(name)=element
+                }
+            }
+        }
+    }
+    Quit ""
+]]></Implementation>
+</Method>
+
+<Method name="format1Module">
+<Description>
+When module X is reached, move it to the end of the place holder</Description>
+<FormalSpec>element:PXW.DEV.BNF.Element</FormalSpec>
+<ReturnType>PXW.DEV.BNF.Compilers.elementHandler</ReturnType>
+<ReturnTypeParams>Type="ModuleSection",When="PASS1"</ReturnTypeParams>
+<Implementation><![CDATA[
+    #dim attE,nameE,locationE as PXW.DEV.BNF.Element
+    Set modname=..GetAttributeValue(element,"name")
+    If modname'="" {
+        set locationE=$g(..placeHolder(modname))
+        if $ISOBJECT(locationE) {
+            do locationE.AddPart(element)
+            set ..relocated(+element)=1
+        }
+    } Else {
+    }
+    Quit ""
+]]></Implementation>
+</Method>
+
+<Method name="format1Subquery">
+<Description>
+When module X is reached, move it to the end of the place holder</Description>
+<FormalSpec>element:PXW.DEV.BNF.Element</FormalSpec>
+<ReturnType>PXW.DEV.BNF.Compilers.elementHandler</ReturnType>
+<ReturnTypeParams>Type="SubquerySection",When="PASS1"</ReturnTypeParams>
+<Implementation><![CDATA[
+    #dim attE,nameE,locationE as PXW.DEV.BNF.Element
+    Set modname=..GetAttributeValue(element,"name")
+    If modname'="" {
+        set locationE=$g(..placeHolder(modname))
+        if $ISOBJECT(locationE) {
+            do locationE.AddPart(element)
+            set ..relocated(+element)=1
+        }
+    } Else {
+    }
+    Quit ""
+]]></Implementation>
+</Method>
+
+<Method name="format2Content">
+<FormalSpec>element:PXW.DEV.BNF.Element</FormalSpec>
+<ReturnType>PXW.DEV.BNF.Compilers.elementHandler</ReturnType>
+<ReturnTypeParams>Type="Content",When="PASS2"</ReturnTypeParams>
+<Implementation><![CDATA[
+    set key=""
+    for {
+        set modele=element.partsGetNext(.key)
+        q:key=""
+        if $isobject(modele), $g(..relocated(+modele)) {
+            if modele.type="ModuleSection" {
+                 do element.partsRemove(key)
+            } elseif modele.type="SubquerySection" {
+               do element.partsRemove(key)
+            }
+        }
+    }
+    Quit ""
+]]></Implementation>
+</Method>
+
+<Method name="GetAttributeValue">
+<FormalSpec>element:PXW.DEV.BNF.Element,name:%String</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+    Set key="",val=""
+    For {
+        Set attE=element.findNextElement(.key)
+        Quit:key=""
+
+        If attE.IsElement,$PIECE(attE.type,":",1)="Attribute" {
+            Set nameE=attE.partsGetAt(1)
+            Set valueE=attE.partsGetAt(3)
+            If nameE.ToString(0)=name {
+                Set val=valueE.ToString(0)
+            }
+        }
+    }
+    Set val=$TRANSLATE(val,"'""","") ; attribute values are wrapped in quotes
+    Quit val
 ]]></Implementation>
 </Method>
 </Class>
@@ -12364,8 +12551,8 @@ summary=P&C&P]]></Description>
 <Class name="PXW.DEV.BNF.GEN.COS">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67844,28571.39399304</TimeChanged>
-<TimeCreated>67844,28571.028761909</TimeCreated>
+<TimeChanged>67847,43113.058614685</TimeChanged>
+<TimeCreated>67847,43112.769987011</TimeCreated>
 
 <Method name="AmpOp">
 <Description><![CDATA[
@@ -33563,8 +33750,8 @@ summary=K&?4OptionalSingle4?&C]]></Description>
 <Class name="PXW.DEV.BNF.GEN.CSP">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67844,28572.885409059</TimeChanged>
-<TimeCreated>67844,28572.853823583</TimeCreated>
+<TimeChanged>67847,43114.233505431</TimeChanged>
+<TimeCreated>67847,43114.204495335</TimeCreated>
 
 <Method name="CosExpression">
 <Description>
@@ -35698,8 +35885,8 @@ summary=P</Description>
 <Class name="PXW.DEV.BNF.GEN.ClassDefinition">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67844,28574.902777467</TimeChanged>
-<TimeCreated>67844,28574.702798815</TimeCreated>
+<TimeChanged>67847,43115.899906068</TimeChanged>
+<TimeCreated>67847,43115.734939859</TimeCreated>
 
 <Method name="AliasIdentifier">
 <Description>
@@ -48678,8 +48865,8 @@ summary=C</Description>
 <Class name="PXW.DEV.BNF.GEN.JS">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67844,28577.164252809</TimeChanged>
-<TimeCreated>67844,28576.985553616</TimeCreated>
+<TimeChanged>67847,43117.896222791</TimeChanged>
+<TimeCreated>67847,43117.740201838</TimeCreated>
 
 <Method name="AliasName">
 <Description><![CDATA[
@@ -60221,8 +60408,8 @@ summary=K&[C]&C]]></Description>
 <Class name="PXW.DEV.BNF.GEN.Python">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67844,28578.361700213</TimeChanged>
-<TimeCreated>67844,28578.145340011</TimeCreated>
+<TimeChanged>67847,43118.970868998</TimeChanged>
+<TimeCreated>67847,43118.767712317</TimeCreated>
 
 <Method name="AnnotatedRhs">
 <Description><![CDATA[
@@ -78835,8 +79022,8 @@ summary=C</Description>
 <Class name="PXW.DEV.BNF.GEN.SQL">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67844,28582.252560355</TimeChanged>
-<TimeCreated>67844,28582.079226191</TimeCreated>
+<TimeChanged>67847,43122.345887897</TimeChanged>
+<TimeCreated>67847,43122.185922927</TimeCreated>
 
 <Method name="AliasName">
 <Description>
@@ -89357,8 +89544,8 @@ summary=P&C]]></Description>
 <Class name="PXW.DEV.BNF.GEN.SQLShowPlan">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67844,28582.820723562</TimeChanged>
-<TimeCreated>67844,28582.778473725</TimeCreated>
+<TimeChanged>67847,43122.82368502</TimeChanged>
+<TimeCreated>67847,43122.786228884</TimeCreated>
 
 <Method name="AliasName">
 <Description>
@@ -89458,13 +89645,13 @@ summary=C&P&C]]></Description>
 
 <Method name="CallModule">
 <Description><![CDATA[
- call_module ::= 'module' module_name
+ call_module ::= 'module' module_name text_to_eol
 summary values:MODULE
-summary=K&C]]></Description>
+summary=K&C&C]]></Description>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-	; rules summary K&C
+	; rules summary K&C&C
 	if '(..isKeyword("MODULE")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -89472,7 +89659,9 @@ summary=K&C]]></Description>
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"MODULE")  {
 		if ..ModuleName(.subElement,.addedElement)  {
-			set done=1 ; end compileRules
+			if ..TextToEol(.subElement,.addedElement)  {
+				set done=1 ; end compileRules
+			}
 		}
 	}
 
@@ -89490,13 +89679,13 @@ summary=K&C]]></Description>
 
 <Method name="CallModules">
 <Description><![CDATA[
- call_modules ::= 'modules' module_name ( ',' ['and'] module_name )* ['and' module_name]
+ call_modules ::= 'modules' module_name ( ',' ['and'] module_name )* ['and' module_name] text_to_eol
 summary values:MODULES
-summary=K&C&(?4punctuation:4?)*&[K&C]]]></Description>
+summary=K&C&(?4punctuation:4?)*&[K&C]&C]]></Description>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-	; rules summary K&C&(?4punctuation:4?)*&[K&C]
+	; rules summary K&C&(?4punctuation:4?)*&[K&C]&C
 	if '(..isKeyword("MODULES")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -89506,7 +89695,9 @@ summary=K&C&(?4punctuation:4?)*&[K&C]]]></Description>
 		if ..ModuleName(.subElement,.addedElement)  {
 			if ..CallModules1RepZero(.subElement,.addedElement)  {
 				if ..CallModules3OptGrp(.subElement,.addedElement)  {
-					set done=1 ; end compileRules
+					if ..TextToEol(.subElement,.addedElement)  {
+						set done=1 ; end compileRules
+					}
 				}
 			}
 		}
@@ -89609,13 +89800,13 @@ summary=K&C]]></Description>
 
 <Method name="CallSubqueries">
 <Description><![CDATA[
- call_subqueries ::= 'subqueries' subquery_name ( ',' ['and'] subquery_name )* ['and' subquery_name]
+ call_subqueries ::= 'subqueries' subquery_name ( ',' ['and'] subquery_name )* ['and' subquery_name] text_to_eol
 summary values:SUBQUERIES
-summary=K&C&(?4punctuation:4?)*&[K&C]]]></Description>
+summary=K&C&(?4punctuation:4?)*&[K&C]&C]]></Description>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-	; rules summary K&C&(?4punctuation:4?)*&[K&C]
+	; rules summary K&C&(?4punctuation:4?)*&[K&C]&C
 	if '(..isKeyword("SUBQUERIES")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -89625,7 +89816,9 @@ summary=K&C&(?4punctuation:4?)*&[K&C]]]></Description>
 		if ..SubqueryName(.subElement,.addedElement)  {
 			if ..CallSubqueries1RepZero(.subElement,.addedElement)  {
 				if ..CallSubqueries3OptGrp(.subElement,.addedElement)  {
-					set done=1 ; end compileRules
+					if ..TextToEol(.subElement,.addedElement)  {
+						set done=1 ; end compileRules
+					}
 				}
 			}
 		}
@@ -89728,13 +89921,13 @@ summary=K&C]]></Description>
 
 <Method name="CallSubquery">
 <Description><![CDATA[
- call_subquery ::= 'subquery' subquery_name
+ call_subquery ::= 'subquery' subquery_name text_to_eol
 summary values:SUBQUERY
-summary=K&C]]></Description>
+summary=K&C&C]]></Description>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-	; rules summary K&C
+	; rules summary K&C&C
 	if '(..isKeyword("SUBQUERY")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -89742,7 +89935,9 @@ summary=K&C]]></Description>
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"SUBQUERY")  {
 		if ..SubqueryName(.subElement,.addedElement)  {
-			set done=1 ; end compileRules
+			if ..TextToEol(.subElement,.addedElement)  {
+				set done=1 ; end compileRules
+			}
 		}
 	}
 
@@ -89760,12 +89955,12 @@ summary=K&C]]></Description>
 
 <Method name="Content">
 <Description>
- content ::= newline | plan | sql_section | warning_section | cost_section | frozen_section | info_section | for_each | table | subquery_section | module_section | read_index | read_bitmap_index | read_extent_bitmap | read_master_scan | read_master | call_modules | call_module | call_subqueries | call_subquery | alias_property | word | punctuation
-summary=C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C</Description>
+ content ::= newline | plan | sql_section | warning_section | cost_section | frozen_section | info_section | for_each | table | subquery_section | module_section | read_index | read_bitmap_index | read_extent_bitmap | read_master_scan | read_master | divide_master | call_modules | call_module | call_subqueries | call_subquery | alias_property | word | punctuation
+summary=C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C</Description>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-	; rules summary C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
+	; rules summary C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -89801,6 +89996,8 @@ summary=C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C</Description>
 	} elseif ..ReadMasterScan(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..ReadMaster(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..DivideMaster(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..CallModules(.subElement,.addedElement)  {
 		set done=1 ; or
@@ -89849,6 +90046,42 @@ summary values:<COST]]></Description>
 			Set done=1
 		}
 	}
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+]]></Implementation>
+</Method>
+
+<Method name="DivideMaster">
+<Description><![CDATA[
+ divide_master ::= 'divide' 'master' 'map' table_index
+summary values:DIVIDE
+summary=K&K&K&C]]></Description>
+<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	; rules summary K&K&K&C
+	if '(..isKeyword("DIVIDE")) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"DIVIDE")  {
+		if ..addKeyword(.subElement,"MASTER")  {
+			if ..addKeyword(.subElement,"MAP")  {
+				if ..TableIndex(.subElement,.addedElement)  {
+					set done=1 ; end compileRules
+				}
+			}
+		}
+	}
+
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
 		set ok=1
@@ -90248,13 +90481,13 @@ summary=P|P</Description>
 
 <Method name="IndexKeys">
 <Description><![CDATA[
- index_keys ::= ',' 'using' 'the' index_keys_given ',' 'and' index_keys_looping
+ index_keys ::= ',' 'using' 'the' index_keys_given ',' 'and' (index_keys_looping | index_keys_getting)
 summary values:,
-summary=P&K&K&C&P&K&C]]></Description>
+summary=P&K&K&C&P&K&(C|C)]]></Description>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-	; rules summary P&K&K&C&P&K&C
+	; rules summary P&K&K&C&P&K&(C|C)
 	if '..isPunctuation(",",1) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -90266,7 +90499,7 @@ summary=P&K&K&C&P&K&C]]></Description>
 				if ..IndexKeysGiven(.subElement,.addedElement)  {
 					if ..addPunctuation(.subElement,",")  {
 						if ..addKeyword(.subElement,"AND")  {
-							if ..IndexKeysLooping(.subElement,.addedElement)  {
+							if ..IndexKeys1Sub(.subElement,.addedElement)  {
 								set done=1 ; end compileRules
 							}
 						}
@@ -90288,15 +90521,70 @@ summary=P&K&K&C&P&K&C]]></Description>
 ]]></Implementation>
 </Method>
 
-<Method name="IndexKeysGiven">
+<Method name="IndexKeys1Sub">
+<Description>
+index_keys_looping | index_keys_getting
+summary=C|C</Description>
+<Final>1</Final>
+<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
+<Private>1</Private>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	; rules summary C|C
+	set subElement=ParentElement
+	set done=0 ; method start
+	if ..IndexKeysLooping(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..IndexKeysGetting(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	set ok=$s(done:1,1:0)
+	quit ok
+]]></Implementation>
+</Method>
+
+<Method name="IndexKeysGetting">
 <Description><![CDATA[
- index_keys_given ::= 'given' index_key (',' ['and'] !'looping' index_key)* ['and' !'looping' index_key]
-summary values:GIVEN
-summary=K&C&(?4punctuation:4?)*&[K&?4NotRule4?&C]]]></Description>
+ index_keys_getting ::= 'getting' index_key_name
+summary values:GETTING
+summary=K&C]]></Description>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-	; rules summary K&C&(?4punctuation:4?)*&[K&?4NotRule4?&C]
+	; rules summary K&C
+	if '(..isKeyword("GETTING")) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"GETTING")  {
+		if ..IndexKeyName(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+]]></Implementation>
+</Method>
+
+<Method name="IndexKeysGiven">
+<Description><![CDATA[
+ index_keys_given ::= 'given' index_key (',' ['and'] !'looping' !'getting' index_key)* ['and' !'looping' !'getting' index_key]
+summary values:GIVEN
+summary=K&C&(?4punctuation:4?)*&[K&?4NotRule4?&?4NotRule4?&C]]]></Description>
+<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	; rules summary K&C&(?4punctuation:4?)*&[K&?4NotRule4?&?4NotRule4?&C]
 	if '(..isKeyword("GIVEN")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -90326,7 +90614,7 @@ summary=K&C&(?4punctuation:4?)*&[K&?4NotRule4?&C]]]></Description>
 
 <Method name="IndexKeysGiven1RepZero">
 <Description>
- (',' ['and'] !'looping' index_key)*</Description>
+ (',' ['and'] !'looping' !'getting' index_key)*</Description>
 <Final>1</Final>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <Private>1</Private>
@@ -90345,23 +90633,25 @@ summary=K&C&(?4punctuation:4?)*&[K&?4NotRule4?&C]]]></Description>
 
 <Method name="IndexKeysGiven2Sub">
 <Description><![CDATA[
-',' ['and'] !'looping' index_key
+',' ['and'] !'looping' !'getting' index_key
 summary values:,
-summary=P&[K]&?4NotRule4?&C]]></Description>
+summary=P&[K]&?4NotRule4?&?4NotRule4?&C]]></Description>
 <Final>1</Final>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <Private>1</Private>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-	; rules summary P&[K]&?4NotRule4?&C
+	; rules summary P&[K]&?4NotRule4?&?4NotRule4?&C
 	if '..isPunctuation(",",1) { quit 0 /* normal */ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,",")  {
 		if $S(..addKeyword(.subElement,"AND") :1,1:1) {
 			if '..addKeyword(.subElement,"LOOPING")  {
-				if ..IndexKey(.subElement,.addedElement)  {
-					set done=1 ; end compileRules
+				if '..addKeyword(.subElement,"GETTING")  {
+					if ..IndexKey(.subElement,.addedElement)  {
+						set done=1 ; end compileRules
+					}
 				}
 			}
 		}
@@ -90382,20 +90672,22 @@ summary=P&[K]&?4NotRule4?&C]]></Description>
 <Description><![CDATA[
 
 summary values:AND
-summary=K&?4NotRule4?&C]]></Description>
+summary=K&?4NotRule4?&?4NotRule4?&C]]></Description>
 <Final>1</Final>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <Private>1</Private>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-	; rules summary K&?4NotRule4?&C
+	; rules summary K&?4NotRule4?&?4NotRule4?&C
 	if '(..isKeyword("AND")) { quit 1 /* not found is OK */ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"AND")  {
 		if '..addKeyword(.subElement,"LOOPING")  {
-			if ..IndexKey(.subElement,.addedElement)  {
-				set done=1 ; end compileRules
+			if '..addKeyword(.subElement,"GETTING")  {
+				if ..IndexKey(.subElement,.addedElement)  {
+					set done=1 ; end compileRules
+				}
 			}
 		}
 	}
@@ -92010,6 +92302,105 @@ summary=C&P]]></Description>
 ]]></Implementation>
 </Method>
 
+<Method name="TextToEol">
+<Description>
+ text_to_eol ::= (!newline (word | punctuation))*
+summary=(?4punctuation:4?)*</Description>
+<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	; rules summary (?4punctuation:4?)*
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..TextToEol1RepZero(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+]]></Implementation>
+</Method>
+
+<Method name="TextToEol1RepZero">
+<Description>
+ (!newline (word | punctuation))*</Description>
+<Final>1</Final>
+<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
+<Private>1</Private>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	; rules summary ?4punctuation:4?
+	set subElement=ParentElement
+	; method start
+	while ..TextToEol2Sub(.subElement,.addedElement)  {
+		;
+	}
+	set ok=1
+	quit ok
+]]></Implementation>
+</Method>
+
+<Method name="TextToEol2Sub">
+<Description><![CDATA[
+!newline (word | punctuation)
+summary=?4NotRule4?&(C|C)]]></Description>
+<Final>1</Final>
+<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
+<Private>1</Private>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	; rules summary ?4NotRule4?&(C|C)
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if '..Newline(.subElement,.addedElement)  {
+		if ..TextToEol3Sub(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	quit ok
+]]></Implementation>
+</Method>
+
+<Method name="TextToEol3Sub">
+<Description>
+word | punctuation
+summary=C|C</Description>
+<Final>1</Final>
+<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
+<Private>1</Private>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	; rules summary C|C
+	set subElement=ParentElement
+	set done=0 ; method start
+	if ..Word(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..Punctuation(.subElement,.addedElement)  {
+		set done=1 ; end compileRules
+	}
+
+	set ok=$s(done:1,1:0)
+	quit ok
+]]></Implementation>
+</Method>
+
 <Method name="WarningSection">
 <Description><![CDATA[
  warning_section ::= '<warning>' (!'</warning>' content)* '</warning>'
@@ -92174,7 +92565,7 @@ summary=R</Description>
 </Parameter>
 
 <Parameter name="Keywords">
-<Default>AND,BITMAP,EACH,EXTENT,FOR,GETTING,GIVEN,ID,INDEX,LOOPING,MAP,MASTER,MODULE,MODULES,ON,READ,SUBQUERIES,SUBQUERY,TABLE,THE,USING</Default>
+<Default>AND,BITMAP,DIVIDE,EACH,EXTENT,FOR,GETTING,GIVEN,ID,INDEX,LOOPING,MAP,MASTER,MODULE,MODULES,ON,READ,SUBQUERIES,SUBQUERY,TABLE,THE,USING</Default>
 </Parameter>
 </Class>
 
@@ -101244,7 +101635,7 @@ The base class for groups of atoms that make up an element.
 Elements can be subclassed to store extra data. </Description>
 <IncludeCode>PXW.DEV.BNF.ElementMacros</IncludeCode>
 <Super>PXW.DEV.Particle</Super>
-<TimeChanged>67830,64513.610689488</TimeChanged>
+<TimeChanged>67845,61115.408560381</TimeChanged>
 <TimeCreated>67812,67237.873167392</TimeCreated>
 
 <Property name="type">
@@ -101628,7 +102019,7 @@ This is relatively slow. Might be better to go for findElementByType for simpler
 		For i=1:1:list1.Count() { 
 			Do OutputList.Insert(list1.GetAt(i))
 		}
-	} Else {
+	} Elseif list1 {
 		Set OutputList=list1
 	}
 	$$$DEBUG("OuputList.Count()="_$SELECT(OutputList:OutputList.Count(),1:"UNDEFINDED"))
@@ -103174,7 +103565,7 @@ Show the analysis warnings found during analysis of the code. The analysis happe
 
 <Class name="PXW.Tools.DEV.ChangeNS">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67843,70510.420703354</TimeChanged>
+<TimeChanged>67845,60841.67295368</TimeChanged>
 <TimeCreated>67812,67241.306899685</TimeCreated>
 
 <Parameter name="ToolName">
@@ -103250,10 +103641,8 @@ Switch to another NameSpace.
     Set:$DATA(%NS) ons=%NS
     Set:$DATA(%NSORIGINAL) onso=%NSORIGINAL
     New %NS,%NSORIGINAL
-    Set %NS=$SELECT($GET(NewServer)'="":NewServer,$DATA(ons):ons,1:"")
+    Set %NS=$SELECT($GET(NameSpace)'="":NameSpace,$DATA(ons):ons,1:"")
     Set %NSORIGINAL=$SELECT($DATA(ons):ons,1:onso)
-    ;set NewServer=$G(NewServer,$G(%NS))
-	;Quit ..%ClassName(1)_".cls?%NS="_..EscapeURL(NewServer)
     Quit ##super()
 ]]></Implementation>
 </Method>
@@ -104746,7 +105135,7 @@ This is the description of the method.</Description>
 
 <Class name="PXW.Tools.DEV.HTML.SQLShowPlan">
 <Super>PXW.Tools.DEV.HTML.bnf</Super>
-<TimeChanged>67812,67241.912725188</TimeChanged>
+<TimeChanged>67846,71012.39644146</TimeChanged>
 <TimeCreated>67812,67241.912725188</TimeCreated>
 
 <Property name="modules">
@@ -105000,6 +105389,28 @@ OVERRIDING StoredFunction </Description>
 ]]></Implementation>
 </Method>
 
+<Method name="writePlanModuleName">
+<FormalSpec>element:PXW.DEV.BNF.Element</FormalSpec>
+<ReturnType>PXW.DEV.BNF.Compilers.elementHandler</ReturnType>
+<ReturnTypeParams>Type="ModuleName"</ReturnTypeParams>
+<Implementation><![CDATA[
+    Do ..wrapElementHTML(element,"","<button onclick=""flipModule('module_"_element.ToString(0)_"',this);"">-</button>")
+    Do ..wrapElementHTML(element,"<a class='"_$$$classLabel_"' href=""#module_"_element.ToString(0)_""">","</a>")
+    Quit ""
+]]></Implementation>
+</Method>
+
+<Method name="writePlanSubqueryName">
+<FormalSpec>element:PXW.DEV.BNF.Element</FormalSpec>
+<ReturnType>PXW.DEV.BNF.Compilers.elementHandler</ReturnType>
+<ReturnTypeParams>Type="SubqueryName"</ReturnTypeParams>
+<Implementation><![CDATA[
+    Do ..wrapElementHTML(element,"","<button onclick=""flipModule('subquery_"_element.ToString(0)_"',this);"">-</button>")
+    Do ..wrapElementHTML(element,"<a class='"_$$$classLabelDef_"' href=""#subquery_"_element.ToString(0)_""">","</a>")
+    Quit ""
+]]></Implementation>
+</Method>
+
 <Method name="writePlanModule">
 <FormalSpec>element:PXW.DEV.BNF.Element</FormalSpec>
 <ReturnType>PXW.DEV.BNF.Compilers.elementHandler</ReturnType>
@@ -105009,7 +105420,8 @@ OVERRIDING StoredFunction </Description>
     Set modname=..GetAttributeValue(element,"name")
     If modname'="" {
         Set aname="module_"_modname
-        Do ..wrapElementHTML(element,"<hr><h3 id='"_aname_"'>Module "_modname_"</h3>","")
+        ;Do ..wrapElementHTML(element,"<hr><h3 id='"_aname_"'>Module "_modname_"</h3>","")
+        Do ..wrapElementHTML(element,"<div id='"_aname_"' class=planModule><h3>Module "_modname_"</h3>","</div>")
         Set ..modules(aname)=""
         Do ..ClearAllButContent(element)
     } Else {
@@ -105029,11 +105441,38 @@ OVERRIDING StoredFunction </Description>
     If modname'="" {
         ;do element.write()
         Set aname="subquery_"_modname
-        Do ..wrapElementHTML(element,"<hr><h3 id='"_aname_"'>Subquery "_modname_"</h3>","")
+        ;Do ..wrapElementHTML(element,"<hr><h3 id='"_aname_"'>Subquery "_modname_"</h3>","")
+        Do ..wrapElementHTML(element,"<div id='"_aname_"' class=planModule><h3>Subquery "_modname_"</h3>","</div>")
         Set ..modules(aname)=""
         Do ..ClearAllButContent(element)
     } Else {
         Do ..wrapElementHTML(element,"<hr><pre>","</pre>")
+    }
+    Quit ""
+]]></Implementation>
+</Method>
+
+<Method name="writePlanAliasName">
+<FormalSpec>element:PXW.DEV.BNF.Element</FormalSpec>
+<ReturnType>PXW.DEV.BNF.Compilers.elementHandler</ReturnType>
+<ReturnTypeParams>Type="AliasName"</ReturnTypeParams>
+<Implementation><![CDATA[
+    Set aliasname="alias"_element.ToString(0)
+    Do ..wrapElementHTML(element,"<span class='SQLTableAlias' title='show alias usage' fetchid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
+    Quit ""
+]]></Implementation>
+</Method>
+
+<Method name="writePlanTable">
+<FormalSpec>element:PXW.DEV.BNF.Element</FormalSpec>
+<ReturnType>PXW.DEV.BNF.Compilers.elementHandler</ReturnType>
+<ReturnTypeParams>Type="Table"</ReturnTypeParams>
+<Implementation><![CDATA[
+    Set schemaE=element.findFirstElementByType("SchemaName")
+    Set tableE=element.findFirstElementByType("TableName")
+    If $ISOBJECT(schemaE),$ISOBJECT(tableE) {
+                Do ..wrapElementHTML(schemaE,"<a class="_$$$classProgramName_" href="""_..HREFToClass(schemaE.ToString(0)_"."_tableE.ToString(0))_""">","</a>")
+                Do ..wrapElementHTML(tableE,"<a class="_$$$classProgramName_" href="""_..HREFToClass(schemaE.ToString(0)_"."_tableE.ToString(0))_""">","</a>")
     }
     Quit ""
 ]]></Implementation>
@@ -105180,52 +105619,6 @@ OVERRIDING StoredFunction </Description>
     }
 
     $$$DEBUGMethodEnd
-    Quit ""
-]]></Implementation>
-</Method>
-
-<Method name="writeSQLPlanAliasName">
-<FormalSpec>element:PXW.DEV.BNF.Element</FormalSpec>
-<ReturnType>PXW.DEV.BNF.Compilers.elementHandler</ReturnType>
-<ReturnTypeParams>Type="AliasName"</ReturnTypeParams>
-<Implementation><![CDATA[
-    Set aliasname="alias"_element.ToString(0)
-    Do ..wrapElementHTML(element,"<span class='SQLTableAlias' title='show alias usage' fetchid='"_$$$UPPER(aliasname)_"' onclick=""HiliteSets('"_$$$UPPER(aliasname)_"');"">","</span>")
-    Quit ""
-]]></Implementation>
-</Method>
-
-<Method name="writeSQLPlanTable">
-<FormalSpec>element:PXW.DEV.BNF.Element</FormalSpec>
-<ReturnType>PXW.DEV.BNF.Compilers.elementHandler</ReturnType>
-<ReturnTypeParams>Type="Table"</ReturnTypeParams>
-<Implementation><![CDATA[
-    Set schemaE=element.findFirstElementByType("SchemaName")
-    Set tableE=element.findFirstElementByType("TableName")
-    If $ISOBJECT(schemaE),$ISOBJECT(tableE) {
-                Do ..wrapElementHTML(schemaE,"<a class="_$$$classProgramName_" href="""_..HREFToClass(schemaE.ToString(0)_"."_tableE.ToString(0))_""">","</a>")
-                Do ..wrapElementHTML(tableE,"<a class="_$$$classProgramName_" href="""_..HREFToClass(schemaE.ToString(0)_"."_tableE.ToString(0))_""">","</a>")
-    }
-    Quit ""
-]]></Implementation>
-</Method>
-
-<Method name="writeSQLPlanModuleName">
-<FormalSpec>element:PXW.DEV.BNF.Element</FormalSpec>
-<ReturnType>PXW.DEV.BNF.Compilers.elementHandler</ReturnType>
-<ReturnTypeParams>Type="ModuleName"</ReturnTypeParams>
-<Implementation><![CDATA[
-    Do ..wrapElementHTML(element,"<a class='"_$$$classLabel_"' href=""#module_"_element.ToString(0)_""">","</a>")
-    Quit ""
-]]></Implementation>
-</Method>
-
-<Method name="writeSQLPlanSubqueryName">
-<FormalSpec>element:PXW.DEV.BNF.Element</FormalSpec>
-<ReturnType>PXW.DEV.BNF.Compilers.elementHandler</ReturnType>
-<ReturnTypeParams>Type="SubqueryName"</ReturnTypeParams>
-<Implementation><![CDATA[
-    Do ..wrapElementHTML(element,"<a class='"_$$$classLabelDef_"' href=""#subquery_"_element.ToString(0)_""">","</a>")
     Quit ""
 ]]></Implementation>
 </Method>
@@ -109133,7 +109526,7 @@ Write out extra javascript here, the SCRIPT tags are already in place</Descripti
 
 <Class name="PXW.Tools.DEV.SQLShowPlan">
 <Super>PXW.Tools.PageTLR</Super>
-<TimeChanged>67843,70546.275171163</TimeChanged>
+<TimeChanged>67846,70950.356359191</TimeChanged>
 <TimeCreated>67812,67241.687705964</TimeCreated>
 
 <Parameter name="ToolName">
@@ -109235,8 +109628,7 @@ Write out extra javascript here, the SCRIPT tags are already in place</Descripti
         Do ..WriteStatus(qsc)
         Quit
     }
-	;w "<pre>"
-	;zw obj
+	;w "<pre>" w obj.toJson() w "</pre>"
 	Set rs=##class(PXW.DEV.Dictionary.AtelierRS).%New(obj)
 	;zw rs
 	While rs.%Next() {
@@ -109250,6 +109642,8 @@ Write out extra javascript here, the SCRIPT tags are already in place</Descripti
 		New %path Set %path=""
 		If parser.Plans(element) {
 			;d element.write()
+            set formatter=##class(PXW.DEV.BNF.Format.SQLShowPlan).%New()
+            do formatter.FormatElement(element)
 			Set output=##class(PXW.Tools.DEV.HTML.SQLShowPlan).%New()
 			Set output.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)	
 			If $DATA(%path) Set output.showPaths=1
@@ -109336,7 +109730,7 @@ Write out extra styles here, the STYLE tags are already in place</Description>
     Write "p.newline { padding-left:20px; text-indent: -20px; }",!
     Write "pre.PlanSQL { background-color:var(--bgAlternate1); overflow-wrap: break-word;  white-space: normal; }",!
     Write "pre.PlanSQL p.newline { margin:0; }",!
-
+    Write "div.planModule { position:relative; margin-left: 20px;  border:1px solid var(--borderNormal); background-color: color-mix(in srgb, var(--bgAlternate1) 70%, transparent);}"
     ; not working
     ;w "p.newline:nth-child(odd) { background-color: var(--bgAlternate1); color: var(--fgNormal); }",!
 ]]></Implementation>
@@ -109344,7 +109738,21 @@ Write out extra styles here, the STYLE tags are already in place</Description>
 
 <Method name="WriteScripts">
 <ClassMethod>1</ClassMethod>
-<Implementation><![CDATA[	Do ##class(PXW.Tools.DEV.Class).WriteScripts()
+<Implementation><![CDATA[
+	Do ##class(PXW.Tools.DEV.Class).WriteScripts()
+    &js<
+
+    function flipModule(moduleid,button) {
+        var mod=document.getElementById(moduleid);
+        if (mod.style.display=='none') {
+            mod.style.display='block';
+            button.innerText='-';
+        } else {
+            mod.style.display='none';
+            button.innerText='+';
+        }
+}
+    >
 ]]></Implementation>
 </Method>
 
@@ -110350,7 +110758,7 @@ Override the HREFTo method so that tools can get a HREF TO a page:
 </p>]]></Description>
 <IncludeCode>PXW.Debuggers.Macros,PXW.Tools.Styles.macros</IncludeCode>
 <Super>%CSP.Page</Super>
-<TimeChanged>67843,71912.881369238</TimeChanged>
+<TimeChanged>67846,70311.601727153</TimeChanged>
 <TimeCreated>67812,67241.19484692</TimeCreated>
 
 <Parameter name="ToolType">
@@ -110765,7 +111173,7 @@ Change colours using %STYLE.</Description>
 			grid-row-gap: 1em;
 		}
 
-		#toolsMainTLR div { width:100%; }
+		#toolsMainTLR { width:100%; }
 
 		#toolsMainTop {
 			grid-area: toolsMainTop; 
@@ -110779,13 +111187,13 @@ Change colours using %STYLE.</Description>
 			overflow:auto;
 			resize:horizontal;
 		}
-		#toolsMainLeft div { width:100%; }
+		#toolsMainLeft { width:100%; }
 
 		#toolsMainRight {
 			grid-area: toolsMainRight; 
 			overflow:auto;
 		}
-		#toolsMainRight div { width:100%; }
+		#toolsMainRight { width:100%; }
 
 		#toolsMainFoot {
 			grid-area: toolsMainFoot;
@@ -116570,7 +116978,7 @@ A S X=1
 <Class name="PXW.Xref.LastUpdatedDetails">
 <ClassType>view</ClassType>
 <Owner>_PUBLIC</Owner>
-<TimeChanged>67812,67242.452457376</TimeChanged>
+<TimeChanged>67846,68756.027571162</TimeChanged>
 <TimeCreated>67812,67242.452457376</TimeCreated>
 <ViewQuery> 
 	--- This might not be the most efficient query for this job, but good for testing parsing of sql
@@ -116593,7 +117001,7 @@ A S X=1
 		lu.LastUpdate as LastUpdateOnServer ,
 		atel.ServerAddress,
 		atel."Namespace" as ServerNamespace,
-		lastupdateddetails_myformat(atel."Namespace") as formattedNs,
+		pxw_xref.lastupdateddetails_myformat(atel."Namespace") as formattedNs,
 		xd.XrefCount as CallsCount,
 		yd.XrefCount as UsedCount,
 		(

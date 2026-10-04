@@ -328,7 +328,7 @@ Method findElementsXPath(Path As %String, ByRef OutputList As %Library.ListOfObj
 		For i=1:1:list1.Count() { 
 			Do OutputList.Insert(list1.GetAt(i))
 		}
-	} Else {
+	} Elseif list1 {
 		Set OutputList=list1
 	}
 	$$$DEBUG("OuputList.Count()="_$SELECT(OutputList:OutputList.Count(),1:"UNDEFINDED"))
