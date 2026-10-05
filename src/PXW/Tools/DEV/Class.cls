@@ -262,17 +262,6 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 ClassMethod WriteNav(ByRef scratch)
 {
 	#dim output as PXW.Tools.DEV.HTML.bnf
-	If $ISOBJECT($GET(scratch)) {
-		Set output=scratch
-		While output.NextIndexItemByName(.name,.type,.anchor,.error) {
-				If error="" {
-					Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_"CDEF"_type_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
-				} Else {
-					Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_$$$classError_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
-				}
-		}
-		Write "<hr>"
-	}
 	Do ..HREFFrom(.class,.path,.instanceclass,.linenumber,,.propertyparam,.formatoptions)
     Write "<a href=# onclick='MakeStringsInteresting(); '>Strings</a>"
     If formatoptions'["NOSQLFORMATTING" {
@@ -287,6 +276,47 @@ ClassMethod WriteNav(ByRef scratch)
 		Set off=$REPLACE(formatoptions,"DOCBOOKMODE","")
 		Write "<a href="""_..HREFTo(class,path,linenumber,%NS,instanceclass,propertyparam,off)_""">Raw Comment Mode</a>"
 	}
+
+	If $ISOBJECT($GET(scratch)) {
+		Set output=scratch
+		Write "<hr>"
+		if formatoptions["DOCBOOKMODE" {
+			While output.NextIndexItemByName(.name,.type,.anchor,.error,.typename) {
+				if typename'="" {
+					set bytype(typename,name)=$lb(anchor,error)
+				}
+			}
+			s type=""
+			f  {
+				s type=$o(bytype(type))
+				q:type=""
+
+				w "<details>"
+				w "<summary>"_..EscapeHTML(type)_"</summary>"
+				s name=""
+				f  {
+					s name=$o(bytype(type,name),1,data)
+					q:name=""
+					s $lb(anchor,error)=data
+					If error="" {
+						Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_"CDEF"_type_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
+					} Else {
+						Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_$$$classError_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
+					}
+				}
+				w "</details>"
+			}
+		} else {
+			While output.NextIndexItemByName(.name,.type,.anchor,.error) {
+					If error="" {
+						Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_"CDEF"_type_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
+					} Else {
+						Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_$$$classError_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
+					}
+			}
+		}
+	}
+
 }
 
 ClassMethod methodAName(Name As %String) As %String

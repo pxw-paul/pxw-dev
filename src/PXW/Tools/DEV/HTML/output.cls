@@ -44,9 +44,9 @@ Property IndexError As %String [ MultiDimensional, Private ];
 /// Set this to put the paths in the tooltip (useful for debugging)
 Property showPaths As %Boolean [ InitialExpression = 0 ];
 
-Method AddToIndex(Name As %String, Type As %String, Anchor As %String) As %Status
+Method AddToIndex(Name As %String, Type As %String, Anchor As %String, TypeName as %String="") As %Status
 {
-    Set data=$LISTBUILD(Name,Type,Anchor)
+    Set data=$LISTBUILD(Name,Type,Anchor,TypeName)
     Set ..Index("Name",$$$UPPER(Name)_"||"_Type)=data
     Set ..Index("Type",Type_"||"_$$$UPPER(Name))=data
     Set ..Index("Seq",$INCREMENT(..Index("Seq")))=data
@@ -66,12 +66,12 @@ Method AddToIndexError(Name As %String, Error As %String) As %Status
 /// while x.NextIndexItem(.name,.type) {
 /// 
 /// }
-Method NextIndexItemByName(ByRef Name As %String = "", ByRef Type As %String = "", ByRef Anchor As %String = "", ByRef Error As %String = "") As %Boolean
+Method NextIndexItemByName(ByRef Name As %String = "", ByRef Type As %String = "", ByRef Anchor As %String = "", ByRef Error As %String = "",byref TypeName as %String="") As %Boolean
 {
     Set key=$GET(..Index("NameKey"))
     Set key=$ORDER(..Index("Name",key),1,data)
     If key'="" {
-        Set Name=$LISTGET(data,1),Type=$LISTGET(data,2),Anchor=$LISTGET(data,3)
+        Set Name=$LISTGET(data,1),Type=$LISTGET(data,2),Anchor=$LISTGET(data,3),TypeName=$LISTGET(data,4)
         Set Error=$GET(..IndexError("Name",Name))
     }
     Set ..Index("NameKey")=key

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="IRIS" version="26" zv="IRIS for UNIX (Ubuntu Server LTS for x86-64 Containers) 2026.1 (Build 234U)" ts="2026-10-04 11:58:52">
+<Export generator="IRIS" version="26" zv="IRIS for UNIX (Ubuntu Server LTS for x86-64 Containers) 2026.1 (Build 234U)" ts="2026-10-05 17:41:35">
 <Class name="PXW.DEV.Atom">
 <Super>PXW.DEV.Particle</Super>
 <TimeChanged>67830,28950.607042217</TimeChanged>
@@ -8255,7 +8255,7 @@ text_no_space                       ::= 'NEEDS TEXT'
 
 <Class name="PXW.DEV.BNF.DEF.ClassDefinition">
 <Super>PXW.DEV.BNF.Compilers.loader</Super>
-<TimeChanged>67812,67238.502834751</TimeChanged>
+<TimeChanged>67848,59158.899907927</TimeChanged>
 <TimeCreated>67812,67238.502834751</TimeCreated>
 
 <Projection name="GEN">
@@ -8433,8 +8433,8 @@ attribute_Not                       ::= 'not' ( attribute_Abstract
                                         | attribute_SQLRowidPrivate
                                         )
 
-class_class_method                  ::= 'classmethod' method_name '(' [ formal_spec_list ] ')' [ 'as' return_type_class_reference ] [ method_attribute_list ] '{' method_body '}'
-class_method                        ::= 'method' method_name '(' [ formal_spec_list ] ')' [ 'as' return_type_class_reference ] [ method_attribute_list ] '{' method_body '}'
+class_class_method                  ::= 'classmethod' method_name '(' [ formal_spec_list ] ')' [ 'as' return_type_class_reference ] [ method_attribute_list ] method_body_curly 
+class_method                        ::= 'method' method_name '(' [ formal_spec_list ] ')' [ 'as' return_type_class_reference ] [ method_attribute_list ] method_body_curly
 method_name                         ::= class_item_identifier
 method_reference                    ::= class_item_identifier
 formal_spec_list                    ::= formal_spec_item( ',' formal_spec_item )*
@@ -8444,6 +8444,8 @@ as_type_class_reference             ::= 'as' type_class_reference
 
 variable_set                        ::= variable_identifier
 
+method_body_curly                   ::= '{' method_body '}'
+method_body                         ::= cos_code_block
 
 method_attribute_list               ::= '[' method_attribute ( ',' method_attribute )* ']'
 method_attribute                    ::= attribute_Abstract
@@ -8477,13 +8479,12 @@ method_attribute                    ::= attribute_Abstract
                                         | attribute_ZenMethod
                                         | attribute_requires
 
-class_client_method                  ::= 'clientmethod' method_name '(' [ formal_spec_list ] ')' [ 'as' type_class_reference ] [ method_attribute_list ] '{' javascript_code_block '}'
+class_client_method                 ::= 'clientmethod' method_name '(' [ formal_spec_list ] ')' [ 'as' type_class_reference ] [ method_attribute_list ] javascript_code_block_curly
+javascript_code_block_curly         ::='{' javascript_code_block '}'
 
 parameter_default_value             ::= '=' ( 'NULL' | parameter_default_simple | parameter_default_expression )
 parameter_default_simple            ::= [ '+' ] number | string
 parameter_default_expression        ::= '{' expression '}'
-
-method_body                         ::= cos_code_block
 
 class_ForeignKey                    ::= 'foreignkey' foreignkey_name [ '(' key_props ')' ] 'references' class_reference [ '(' [ref_props] ')' ] [ foreignKey_attribute_list ] ';' 
 foreignkey_name                     ::= class_item_identifier
@@ -8628,7 +8629,8 @@ xml_tag_e_b                         ::= '>'
 
 text_brace_block                    ::= '{' text '}'
 
-class_query                         ::= 'query' query_name '(' [ formal_spec_list ] ')' [ 'as' type_class_reference ] [ class_query_attributes ] '{' class_query_body '}'
+class_query                         ::= 'query' query_name '(' [ formal_spec_list ] ')' [ 'as' type_class_reference ] [ class_query_attributes ] class_query_body_curly
+class_query_body_curly              ::= '{' class_query_body '}'
 query_name                          ::= class_item_identifier
 class_query_body                    ::= text_brace_block
 class_query_attributes              ::= '[' class_query_attribute ( ',' class_query_attribute )* ']'
@@ -8683,7 +8685,8 @@ xdata_json_array_items              ::= xdata_json (',' xdata_json)*
 
 json_string                         ::= 'NEED JSON STRING'
 
-class_trigger                       ::= 'trigger' trigger_name [ trigger_attribute_list ] '{' [ trigger_code_block ] '}'
+class_trigger                       ::= 'trigger' trigger_name [ trigger_attribute_list ] trigger_code_block_curly
+trigger_code_block_curly            ::= '{' [ trigger_code_block ] '}'
 trigger_name                        ::= class_item_identifier
 trigger_attribute_list              ::= '[' trigger_attribute ( ',' trigger_attribute )* ']'
 trigger_attribute                   ::= attribute_CodeMode
@@ -12551,8 +12554,8 @@ summary=P&C&P]]></Description>
 <Class name="PXW.DEV.BNF.GEN.COS">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67847,43113.058614685</TimeChanged>
-<TimeCreated>67847,43112.769987011</TimeCreated>
+<TimeChanged>67848,63681.405593507</TimeChanged>
+<TimeCreated>67848,63681.116061875</TimeCreated>
 
 <Method name="AmpOp">
 <Description><![CDATA[
@@ -33750,8 +33753,8 @@ summary=K&?4OptionalSingle4?&C]]></Description>
 <Class name="PXW.DEV.BNF.GEN.CSP">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67847,43114.233505431</TimeChanged>
-<TimeCreated>67847,43114.204495335</TimeCreated>
+<TimeChanged>67848,63682.572271496</TimeChanged>
+<TimeCreated>67848,63682.54195624</TimeCreated>
 
 <Method name="CosExpression">
 <Description>
@@ -35885,8 +35888,8 @@ summary=P</Description>
 <Class name="PXW.DEV.BNF.GEN.ClassDefinition">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67847,43115.899906068</TimeChanged>
-<TimeCreated>67847,43115.734939859</TimeCreated>
+<TimeChanged>67848,63684.2845761</TimeChanged>
+<TimeCreated>67848,63684.109906359</TimeCreated>
 
 <Method name="AliasIdentifier">
 <Description>
@@ -41185,13 +41188,13 @@ summary=P&C&P]]></Description>
 
 <Method name="ClassClassMethod">
 <Description><![CDATA[
- class_class_method ::= 'classmethod' method_name '(' [ formal_spec_list ] ')' [ 'as' return_type_class_reference ] [ method_attribute_list ] '{' method_body '}'
+ class_class_method ::= 'classmethod' method_name '(' [ formal_spec_list ] ')' [ 'as' return_type_class_reference ] [ method_attribute_list ] method_body_curly
 summary values:CLASSMETHOD
-summary=K&C&P&[C]&P&[K&C]&[C]&P&C&P]]></Description>
+summary=K&C&P&[C]&P&[K&C]&[C]&C]]></Description>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-	; rules summary K&C&P&[C]&P&[K&C]&[C]&P&C&P
+	; rules summary K&C&P&[C]&P&[K&C]&[C]&C
 	if '(..isKeyword("CLASSMETHOD")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -41204,12 +41207,8 @@ summary=K&C&P&[C]&P&[K&C]&[C]&P&C&P]]></Description>
 					if ..addPunctuation(.subElement,")")  {
 						if ..ClassClassMethod1OptGrp(.subElement,.addedElement)  {
 							if $S(..MethodAttributeList(.subElement,.addedElement) :1,1:1) {
-								if ..addPunctuation(.subElement,"{")  {
-									if ..MethodBody(.subElement,.addedElement)  {
-										if ..addPunctuation(.subElement,"}")  {
-											set done=1 ; end compileRules
-										}
-									}
+								if ..MethodBodyCurly(.subElement,.addedElement)  {
+									set done=1 ; end compileRules
 								}
 							}
 						}
@@ -41264,13 +41263,13 @@ summary=K&C]]></Description>
 
 <Method name="ClassClientMethod">
 <Description><![CDATA[
- class_client_method ::= 'clientmethod' method_name '(' [ formal_spec_list ] ')' [ 'as' type_class_reference ] [ method_attribute_list ] '{' javascript_code_block '}'
+ class_client_method ::= 'clientmethod' method_name '(' [ formal_spec_list ] ')' [ 'as' type_class_reference ] [ method_attribute_list ] javascript_code_block_curly
 summary values:CLIENTMETHOD
-summary=K&C&P&[C]&P&[K&C]&[C]&P&C&P]]></Description>
+summary=K&C&P&[C]&P&[K&C]&[C]&C]]></Description>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-	; rules summary K&C&P&[C]&P&[K&C]&[C]&P&C&P
+	; rules summary K&C&P&[C]&P&[K&C]&[C]&C
 	if '(..isKeyword("CLIENTMETHOD")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -41283,12 +41282,8 @@ summary=K&C&P&[C]&P&[K&C]&[C]&P&C&P]]></Description>
 					if ..addPunctuation(.subElement,")")  {
 						if ..ClassClientMethod1OptGrp(.subElement,.addedElement)  {
 							if $S(..MethodAttributeList(.subElement,.addedElement) :1,1:1) {
-								if ..addPunctuation(.subElement,"{")  {
-									if ..JavascriptCodeBlock(.subElement,.addedElement)  {
-										if ..addPunctuation(.subElement,"}")  {
-											set done=1 ; end compileRules
-										}
-									}
+								if ..JavascriptCodeBlockCurly(.subElement,.addedElement)  {
+									set done=1 ; end compileRules
 								}
 							}
 						}
@@ -41848,13 +41843,13 @@ summary=P&?4OptionalSingle4?&P]]></Description>
 
 <Method name="ClassMethod">
 <Description><![CDATA[
- class_method ::= 'method' method_name '(' [ formal_spec_list ] ')' [ 'as' return_type_class_reference ] [ method_attribute_list ] '{' method_body '}'
+ class_method ::= 'method' method_name '(' [ formal_spec_list ] ')' [ 'as' return_type_class_reference ] [ method_attribute_list ] method_body_curly
 summary values:METHOD
-summary=K&C&P&[C]&P&[K&C]&[C]&P&C&P]]></Description>
+summary=K&C&P&[C]&P&[K&C]&[C]&C]]></Description>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-	; rules summary K&C&P&[C]&P&[K&C]&[C]&P&C&P
+	; rules summary K&C&P&[C]&P&[K&C]&[C]&C
 	if '(..isKeyword("METHOD")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -41867,12 +41862,8 @@ summary=K&C&P&[C]&P&[K&C]&[C]&P&C&P]]></Description>
 					if ..addPunctuation(.subElement,")")  {
 						if ..ClassMethod1OptGrp(.subElement,.addedElement)  {
 							if $S(..MethodAttributeList(.subElement,.addedElement) :1,1:1) {
-								if ..addPunctuation(.subElement,"{")  {
-									if ..MethodBody(.subElement,.addedElement)  {
-										if ..addPunctuation(.subElement,"}")  {
-											set done=1 ; end compileRules
-										}
-									}
+								if ..MethodBodyCurly(.subElement,.addedElement)  {
+									set done=1 ; end compileRules
 								}
 							}
 						}
@@ -42728,13 +42719,13 @@ summary=K|K</Description>
 
 <Method name="ClassQuery">
 <Description><![CDATA[
- class_query ::= 'query' query_name '(' [ formal_spec_list ] ')' [ 'as' type_class_reference ] [ class_query_attributes ] '{' class_query_body '}'
+ class_query ::= 'query' query_name '(' [ formal_spec_list ] ')' [ 'as' type_class_reference ] [ class_query_attributes ] class_query_body_curly
 summary values:QUERY
-summary=K&C&P&[C]&P&[K&C]&[C]&P&C&P]]></Description>
+summary=K&C&P&[C]&P&[K&C]&[C]&C]]></Description>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-	; rules summary K&C&P&[C]&P&[K&C]&[C]&P&C&P
+	; rules summary K&C&P&[C]&P&[K&C]&[C]&C
 	if '(..isKeyword("QUERY")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -42747,12 +42738,8 @@ summary=K&C&P&[C]&P&[K&C]&[C]&P&C&P]]></Description>
 					if ..addPunctuation(.subElement,")")  {
 						if ..ClassQuery1OptGrp(.subElement,.addedElement)  {
 							if $S(..ClassQueryAttributes(.subElement,.addedElement) :1,1:1) {
-								if ..addPunctuation(.subElement,"{")  {
-									if ..ClassQueryBody(.subElement,.addedElement)  {
-										if ..addPunctuation(.subElement,"}")  {
-											set done=1 ; end compileRules
-										}
-									}
+								if ..ClassQueryBodyCurly(.subElement,.addedElement)  {
+									set done=1 ; end compileRules
 								}
 							}
 						}
@@ -42971,6 +42958,40 @@ summary=C</Description>
 ]]></Implementation>
 </Method>
 
+<Method name="ClassQueryBodyCurly">
+<Description><![CDATA[
+ class_query_body_curly ::= '{' class_query_body '}'
+summary values:{
+summary=P&C&P]]></Description>
+<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	; rules summary P&C&P
+	if '..isPunctuation("{",1) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"{")  {
+		if ..ClassQueryBody(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,"}")  {
+				set done=1 ; end compileRules
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+]]></Implementation>
+</Method>
+
 <Method name="ClassReference">
 <Description>
  class_reference ::= class_identifier
@@ -43163,13 +43184,13 @@ summary=K&C&P&C&P]]></Description>
 
 <Method name="ClassTrigger">
 <Description><![CDATA[
- class_trigger ::= 'trigger' trigger_name [ trigger_attribute_list ] '{' [ trigger_code_block ] '}'
+ class_trigger ::= 'trigger' trigger_name [ trigger_attribute_list ] trigger_code_block_curly
 summary values:TRIGGER
-summary=K&C&[C]&P&[C]&P]]></Description>
+summary=K&C&[C]&C]]></Description>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-	; rules summary K&C&[C]&P&[C]&P
+	; rules summary K&C&[C]&C
 	if '(..isKeyword("TRIGGER")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -43178,12 +43199,8 @@ summary=K&C&[C]&P&[C]&P]]></Description>
 	if ..addKeyword(.subElement,"TRIGGER")  {
 		if ..TriggerName(.subElement,.addedElement)  {
 			if $S(..TriggerAttributeList(.subElement,.addedElement) :1,1:1) {
-				if ..addPunctuation(.subElement,"{")  {
-					if $S(..TriggerCodeBlock(.subElement,.addedElement) :1,1:1) {
-						if ..addPunctuation(.subElement,"}")  {
-							set done=1 ; end compileRules
-						}
-					}
+				if ..TriggerCodeBlockCurly(.subElement,.addedElement)  {
+					set done=1 ; end compileRules
 				}
 			}
 		}
@@ -45106,6 +45123,40 @@ summary=P</Description>
 ]]></Implementation>
 </Method>
 
+<Method name="JavascriptCodeBlockCurly">
+<Description><![CDATA[
+ javascript_code_block_curly ::='{' javascript_code_block '}'
+summary values:{
+summary=P&C&P]]></Description>
+<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	; rules summary P&C&P
+	if '..isPunctuation("{",1) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"{")  {
+		if ..JavascriptCodeBlock(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,"}")  {
+				set done=1 ; end compileRules
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+]]></Implementation>
+</Method>
+
 <Method name="JsonString">
 <Description>
  json_string ::= 'NEED JSON STRING'
@@ -45350,6 +45401,40 @@ summary=C</Description>
 	set done=0 ; method start
 	if ..CosCodeBlock(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+]]></Implementation>
+</Method>
+
+<Method name="MethodBodyCurly">
+<Description><![CDATA[
+ method_body_curly ::= '{' method_body '}'
+summary values:{
+summary=P&C&P]]></Description>
+<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	; rules summary P&C&P
+	if '..isPunctuation("{",1) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"{")  {
+		if ..MethodBody(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,"}")  {
+				set done=1 ; end compileRules
+			}
+		}
 	}
 
 	if done {
@@ -47026,6 +47111,40 @@ summary=C</Description>
 	set done=0 ; method start
 	if ..CosCodeBlockTrigger(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+]]></Implementation>
+</Method>
+
+<Method name="TriggerCodeBlockCurly">
+<Description><![CDATA[
+ trigger_code_block_curly ::= '{' [ trigger_code_block ] '}'
+summary values:{
+summary=P&[C]&P]]></Description>
+<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	; rules summary P&[C]&P
+	if '..isPunctuation("{",1) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"{")  {
+		if $S(..TriggerCodeBlock(.subElement,.addedElement) :1,1:1) {
+			if ..addPunctuation(.subElement,"}")  {
+				set done=1 ; end compileRules
+			}
+		}
 	}
 
 	if done {
@@ -48865,8 +48984,8 @@ summary=C</Description>
 <Class name="PXW.DEV.BNF.GEN.JS">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67847,43117.896222791</TimeChanged>
-<TimeCreated>67847,43117.740201838</TimeCreated>
+<TimeChanged>67848,63686.276949534</TimeChanged>
+<TimeCreated>67848,63686.121092974</TimeCreated>
 
 <Method name="AliasName">
 <Description><![CDATA[
@@ -60408,8 +60527,8 @@ summary=K&[C]&C]]></Description>
 <Class name="PXW.DEV.BNF.GEN.Python">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67847,43118.970868998</TimeChanged>
-<TimeCreated>67847,43118.767712317</TimeCreated>
+<TimeChanged>67848,63687.335505412</TimeChanged>
+<TimeCreated>67848,63687.135837202</TimeCreated>
 
 <Method name="AnnotatedRhs">
 <Description><![CDATA[
@@ -79022,8 +79141,8 @@ summary=C</Description>
 <Class name="PXW.DEV.BNF.GEN.SQL">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67847,43122.345887897</TimeChanged>
-<TimeCreated>67847,43122.185922927</TimeCreated>
+<TimeChanged>67848,63690.761337751</TimeChanged>
+<TimeCreated>67848,63690.595750253</TimeCreated>
 
 <Method name="AliasName">
 <Description>
@@ -89544,8 +89663,8 @@ summary=P&C]]></Description>
 <Class name="PXW.DEV.BNF.GEN.SQLShowPlan">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67847,43122.82368502</TimeChanged>
-<TimeCreated>67847,43122.786228884</TimeCreated>
+<TimeChanged>67848,63691.259181045</TimeChanged>
+<TimeCreated>67848,63691.219561916</TimeCreated>
 
 <Method name="AliasName">
 <Description>
@@ -104100,7 +104219,7 @@ XData xmlstuff
 
 <Class name="PXW.Tools.DEV.Class">
 <Super>PXW.Tools.DEV.CodeDisplayPage</Super>
-<TimeChanged>67844,68333.64732081</TimeChanged>
+<TimeChanged>67848,62171.320815666</TimeChanged>
 <TimeCreated>67812,67241.373285922</TimeCreated>
 
 <Parameter name="CodeType">
@@ -104380,17 +104499,6 @@ s %NS="LOCAL_USER" d ##class(PXW.Tools.DEV.Class).WriteClass("%iKnow.Classificat
 <FormalSpec><![CDATA[&scratch]]></FormalSpec>
 <Implementation><![CDATA[
 	#dim output as PXW.Tools.DEV.HTML.bnf
-	If $ISOBJECT($GET(scratch)) {
-		Set output=scratch
-		While output.NextIndexItemByName(.name,.type,.anchor,.error) {
-				If error="" {
-					Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_"CDEF"_type_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
-				} Else {
-					Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_$$$classError_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
-				}
-		}
-		Write "<hr>"
-	}
 	Do ..HREFFrom(.class,.path,.instanceclass,.linenumber,,.propertyparam,.formatoptions)
     Write "<a href=# onclick='MakeStringsInteresting(); '>Strings</a>"
     If formatoptions'["NOSQLFORMATTING" {
@@ -104404,6 +104512,46 @@ s %NS="LOCAL_USER" d ##class(PXW.Tools.DEV.Class).WriteClass("%iKnow.Classificat
 	} Else {
 		Set off=$REPLACE(formatoptions,"DOCBOOKMODE","")
 		Write "<a href="""_..HREFTo(class,path,linenumber,%NS,instanceclass,propertyparam,off)_""">Raw Comment Mode</a>"
+	}
+
+	If $ISOBJECT($GET(scratch)) {
+		Set output=scratch
+		Write "<hr>"
+		if formatoptions["DOCBOOKMODE" {
+			While output.NextIndexItemByName(.name,.type,.anchor,.error,.typename) {
+				if typename'="" {
+					set bytype(typename,name)=$lb(anchor,error)
+				}
+			}
+			s type=""
+			f  {
+				s type=$o(bytype(type))
+				q:type=""
+
+				w "<details>"
+				w "<summary>"_..EscapeHTML(type)_"</summary>"
+				s name=""
+				f  {
+					s name=$o(bytype(type,name),1,data)
+					q:name=""
+					s $lb(anchor,error)=data
+					If error="" {
+						Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_"CDEF"_type_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
+					} Else {
+						Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_$$$classError_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
+					}
+				}
+				w "</details>"
+			}
+		} else {
+			While output.NextIndexItemByName(.name,.type,.anchor,.error) {
+					If error="" {
+						Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_"CDEF"_type_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
+					} Else {
+						Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_$$$classError_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
+					}
+			}
+		}
 	}
 ]]></Implementation>
 </Method>
@@ -105628,7 +105776,7 @@ OVERRIDING StoredFunction </Description>
 <Class name="PXW.Tools.DEV.HTML.bnf">
 <IncludeCode>PXW.Tools.Styles.macros</IncludeCode>
 <Super>PXW.Tools.DEV.HTML.output</Super>
-<TimeChanged>67844,71925.78747136</TimeChanged>
+<TimeChanged>67848,62209.520087131</TimeChanged>
 <TimeCreated>67812,67241.836204596</TimeCreated>
 
 <Property name="Analyser">
@@ -105906,7 +106054,7 @@ It will end up containing all the analysis of the sql, including sub-queries and
             Do ..wrapElementHTML(nameE,"<span id="""_anchor_"SPAN"">","</span>")
         }
         
-        Do ..AddToIndex(name,nameE.type,anchor)
+        Do ..AddToIndex(name,nameE.type,anchor,..ThisItemType)
         
         Do ..wrapElementHTML(element,"<a name="""_anchor_"""></a>","") ; anchor goes before the member (ie before the comment)
         ;do ..OutputKeywordCommentAsDocumentation(element,.commentid)
@@ -106067,7 +106215,7 @@ It will end up containing all the analysis of the sql, including sub-queries and
 <ReturnTypeParams>Type="ClassClassMethod"</ReturnTypeParams>
 <Implementation><![CDATA[
     $$$DEBUGMethodBegin
-    set body=element.findFirstElementByType("MethodBody")
+    set body=element.findFirstElementByType("MethodBodyCurly")
     do ..OutputKeywordCommentAsDocumentation(element,.commentid,body)
     Set keywordatom=element.FirstAtom()
     Set nameelement=element.findFirstElementByType("MethodName")
@@ -106093,6 +106241,38 @@ It will end up containing all the analysis of the sql, including sub-queries and
 ]]></Implementation>
 </Method>
 
+<Method name="writeCDEFClassClientMethod">
+<FormalSpec>element:PXW.DEV.BNF.Elements.ClassDefinition</FormalSpec>
+<ReturnType>PXW.DEV.BNF.Compilers.elementHandler</ReturnType>
+<ReturnTypeParams>Type="ClassClientMethod"</ReturnTypeParams>
+<Implementation><![CDATA[
+    $$$DEBUGMethodBegin
+    set body=element.findFirstElementByType("JavascriptCodeBlockCurly")
+    do ..OutputKeywordCommentAsDocumentation(element,.commentid,body)
+    /*Set keywordatom=element.FirstAtom()
+    Set nameelement=element.findFirstElementByType("MethodName")
+    If $ISOBJECT(nameelement) {
+        Set name=nameelement.ToString(0)
+        ;Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
+        Set count=..GetXrefCount(name,"")
+        Set menu="<div class="""_$$$classLensMenu_"  nocopy"">"
+        Set overrides=..ClassServer.GetMethodOverrides(..This_"||"_name)
+        If overrides'="" {
+            Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_..HREFToClass(overrides,name)_""">Override </a>"
+        }
+        Set overriddenby=..GetXrefCount(name,"_Override")
+        If overriddenby>0 {
+            Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_""">Overridden ("_overriddenby_") </a>"
+        }
+        Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_""">Xref ("_count_") </a>"
+        Set menu=menu_"</div>"
+        Do ..wrapAtomHTML(keywordatom,menu,"")
+    }*/
+    $$$DEBUGMethodEnd
+    Quit ""
+]]></Implementation>
+</Method>
+
 <Method name="writeCDEFMethod">
 <FormalSpec>element:PXW.DEV.BNF.Elements.ClassDefinition</FormalSpec>
 <ReturnType>PXW.DEV.BNF.Compilers.elementHandler</ReturnType>
@@ -106100,6 +106280,38 @@ It will end up containing all the analysis of the sql, including sub-queries and
 <Implementation><![CDATA[
     $$$DEBUGMethodBegin
     Do ..writeCDEFClassMethod(element)
+    $$$DEBUGMethodEnd
+    Quit ""
+]]></Implementation>
+</Method>
+
+<Method name="writeCDEFClassTrigger">
+<FormalSpec>element:PXW.DEV.BNF.Elements.ClassDefinition</FormalSpec>
+<ReturnType>PXW.DEV.BNF.Compilers.elementHandler</ReturnType>
+<ReturnTypeParams>Type="ClassTrigger"</ReturnTypeParams>
+<Implementation><![CDATA[
+    $$$DEBUGMethodBegin
+    set body=element.findFirstElementByType("TriggerCodeBlockCurly")
+    do ..OutputKeywordCommentAsDocumentation(element,.commentid,body)
+    /*Set keywordatom=element.FirstAtom()
+    Set nameelement=element.findFirstElementByType("MethodName")
+    If $ISOBJECT(nameelement) {
+        Set name=nameelement.ToString(0)
+        ;Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
+        Set count=..GetXrefCount(name,"")
+        Set menu="<div class="""_$$$classLensMenu_"  nocopy"">"
+        Set overrides=..ClassServer.GetMethodOverrides(..This_"||"_name)
+        If overrides'="" {
+            Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_..HREFToClass(overrides,name)_""">Override </a>"
+        }
+        Set overriddenby=..GetXrefCount(name,"_Override")
+        If overriddenby>0 {
+            Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_""">Overridden ("_overriddenby_") </a>"
+        }
+        Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_""">Xref ("_count_") </a>"
+        Set menu=menu_"</div>"
+        Do ..wrapAtomHTML(keywordatom,menu,"")
+    }*/
     $$$DEBUGMethodEnd
     Quit ""
 ]]></Implementation>
@@ -106123,7 +106335,7 @@ It will end up containing all the analysis of the sql, including sub-queries and
 <ReturnTypeParams>Type="ClassQuery"</ReturnTypeParams>
 <Implementation><![CDATA[
     $$$DEBUGMethodBegin
-    set body=element.findFirstElementByType("ClassQueryBody")
+    set body=element.findFirstElementByType("ClassQueryBodyCurly")
     do ..OutputKeywordCommentAsDocumentation(element,.commentid,body)
 
     Set ..SqlProgramAnalyser=""
@@ -107983,7 +108195,7 @@ Method wrapCommentBlock(Element As PXW.DEV.Element, preValue As %String = "", po
 <Class name="PXW.Tools.DEV.HTML.output">
 <IncludeCode>PXW.Debuggers.Macros,PXW.Tools.Styles.macros</IncludeCode>
 <Super>PXW.DEV.BNF.processor</Super>
-<TimeChanged>67820,59359.184730374</TimeChanged>
+<TimeChanged>67848,62131.633431479</TimeChanged>
 <TimeCreated>67812,67241.874251789</TimeCreated>
 
 <Property name="This">
@@ -108079,10 +108291,10 @@ Set this to put the paths in the tooltip (useful for debugging)</Description>
 </Property>
 
 <Method name="AddToIndex">
-<FormalSpec>Name:%String,Type:%String,Anchor:%String</FormalSpec>
+<FormalSpec>Name:%String,Type:%String,Anchor:%String,TypeName:%String=""</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-    Set data=$LISTBUILD(Name,Type,Anchor)
+    Set data=$LISTBUILD(Name,Type,Anchor,TypeName)
     Set ..Index("Name",$$$UPPER(Name)_"||"_Type)=data
     Set ..Index("Type",Type_"||"_$$$UPPER(Name))=data
     Set ..Index("Seq",$INCREMENT(..Index("Seq")))=data
@@ -108108,13 +108320,13 @@ Call in a loop using byref parameters to get the index out
 while x.NextIndexItem(.name,.type) {
 
 }</Description>
-<FormalSpec><![CDATA[&Name:%String="",&Type:%String="",&Anchor:%String="",&Error:%String=""]]></FormalSpec>
+<FormalSpec><![CDATA[&Name:%String="",&Type:%String="",&Anchor:%String="",&Error:%String="",&TypeName:%String=""]]></FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
     Set key=$GET(..Index("NameKey"))
     Set key=$ORDER(..Index("Name",key),1,data)
     If key'="" {
-        Set Name=$LISTGET(data,1),Type=$LISTGET(data,2),Anchor=$LISTGET(data,3)
+        Set Name=$LISTGET(data,1),Type=$LISTGET(data,2),Anchor=$LISTGET(data,3),TypeName=$LISTGET(data,4)
         Set Error=$GET(..IndexError("Name",Name))
     }
     Set ..Index("NameKey")=key
@@ -112280,7 +112492,7 @@ Base class for pages that have a Top, Left, and Right content:
 
 <Class name="PXW.Tools.Styles.LightDark">
 <Super>PXW.Tools.Styles.super</Super>
-<TimeChanged>67845,29157.981416984</TimeChanged>
+<TimeChanged>67848,59691.027239005</TimeChanged>
 <TimeCreated>67812,67242.027290465</TimeCreated>
 
 <Method name="WriteStyles">
@@ -112463,15 +112675,11 @@ Base class for pages that have a Top, Left, and Right content:
 							margin:-1em 0px 0px 4ch;  }
 	.DOCBOOK {
 		background-color: var(--bgAlternate3); /*color: var(--fgComment); */
-		margin-left:4ch; margin-right: 8ch;
+		margin-left:4ch; margin-top:0.5em; width:80ch;
 		white-space: normal;
 		font-family: Arial, Helvetica, sans-serif; font-size: medium;
 	}
 
-	/*.DOCBOOK * {
-		border:0; margin:0; padding:0; 
-	}
-	*/
 
 	.XMLTag { color: var(--fgProgramKeyword); }
 	.XMLAttribute { color:var(--fgCodeVariable); }

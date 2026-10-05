@@ -216,7 +216,7 @@ Method writeCDEFOneClassMember(element As PXW.DEV.BNF.Elements.ClassDefinition) 
             Do ..wrapElementHTML(nameE,"<span id="""_anchor_"SPAN"">","</span>")
         }
         
-        Do ..AddToIndex(name,nameE.type,anchor)
+        Do ..AddToIndex(name,nameE.type,anchor,..ThisItemType)
         
         Do ..wrapElementHTML(element,"<a name="""_anchor_"""></a>","") ; anchor goes before the member (ie before the comment)
         ;do ..OutputKeywordCommentAsDocumentation(element,.commentid)
@@ -349,7 +349,7 @@ Method writeCDEFClassParameter(element As PXW.DEV.BNF.Elements.ClassDefinition) 
 Method writeCDEFClassMethod(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassClassMethod")
 {
     $$$DEBUGMethodBegin
-    set body=element.findFirstElementByType("MethodBody")
+    set body=element.findFirstElementByType("MethodBodyCurly")
     do ..OutputKeywordCommentAsDocumentation(element,.commentid,body)
     Set keywordatom=element.FirstAtom()
     Set nameelement=element.findFirstElementByType("MethodName")
@@ -374,6 +374,34 @@ Method writeCDEFClassMethod(element As PXW.DEV.BNF.Elements.ClassDefinition) As 
     Quit ""
 }
 
+Method writeCDEFClassClientMethod(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassClientMethod")
+{
+    $$$DEBUGMethodBegin
+    set body=element.findFirstElementByType("JavascriptCodeBlockCurly")
+    do ..OutputKeywordCommentAsDocumentation(element,.commentid,body)
+    /*Set keywordatom=element.FirstAtom()
+    Set nameelement=element.findFirstElementByType("MethodName")
+    If $ISOBJECT(nameelement) {
+        Set name=nameelement.ToString(0)
+        ;Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
+        Set count=..GetXrefCount(name,"")
+        Set menu="<div class="""_$$$classLensMenu_"  nocopy"">"
+        Set overrides=..ClassServer.GetMethodOverrides(..This_"||"_name)
+        If overrides'="" {
+            Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_..HREFToClass(overrides,name)_""">Override </a>"
+        }
+        Set overriddenby=..GetXrefCount(name,"_Override")
+        If overriddenby>0 {
+            Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_""">Overridden ("_overriddenby_") </a>"
+        }
+        Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_""">Xref ("_count_") </a>"
+        Set menu=menu_"</div>"
+        Do ..wrapAtomHTML(keywordatom,menu,"")
+    }*/
+    $$$DEBUGMethodEnd
+    Quit ""
+}
+
 Method writeCDEFMethod(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassMethod")
 {
     $$$DEBUGMethodBegin
@@ -381,6 +409,35 @@ Method writeCDEFMethod(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.D
     $$$DEBUGMethodEnd
     Quit ""
 }
+
+Method writeCDEFClassTrigger(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassTrigger")
+{
+    $$$DEBUGMethodBegin
+    set body=element.findFirstElementByType("TriggerCodeBlockCurly")
+    do ..OutputKeywordCommentAsDocumentation(element,.commentid,body)
+    /*Set keywordatom=element.FirstAtom()
+    Set nameelement=element.findFirstElementByType("MethodName")
+    If $ISOBJECT(nameelement) {
+        Set name=nameelement.ToString(0)
+        ;Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This,name)
+        Set count=..GetXrefCount(name,"")
+        Set menu="<div class="""_$$$classLensMenu_"  nocopy"">"
+        Set overrides=..ClassServer.GetMethodOverrides(..This_"||"_name)
+        If overrides'="" {
+            Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_..HREFToClass(overrides,name)_""">Override </a>"
+        }
+        Set overriddenby=..GetXrefCount(name,"_Override")
+        If overriddenby>0 {
+            Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name,"_Override")_""">Overridden ("_overriddenby_") </a>"
+        }
+        Set menu=menu_"<a class="""_$$$classLensOption_""" href="""_##class(PXW.Tools.DEV.Xref).HREFTo("CLS",..This,name)_""">Xref ("_count_") </a>"
+        Set menu=menu_"</div>"
+        Do ..wrapAtomHTML(keywordatom,menu,"")
+    }*/
+    $$$DEBUGMethodEnd
+    Quit ""
+}
+
 
 Method writeCDEFJavascriptCodeBlock(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="JavascriptCodeBlock")
 {
@@ -393,7 +450,7 @@ Method writeCDEFJavascriptCodeBlock(element As PXW.DEV.BNF.Elements.ClassDefinit
 Method writeCDEFClassQuery(element As PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.Compilers.elementHandler(Type="ClassQuery")
 {
     $$$DEBUGMethodBegin
-    set body=element.findFirstElementByType("ClassQueryBody")
+    set body=element.findFirstElementByType("ClassQueryBodyCurly")
     do ..OutputKeywordCommentAsDocumentation(element,.commentid,body)
 
     Set ..SqlProgramAnalyser=""

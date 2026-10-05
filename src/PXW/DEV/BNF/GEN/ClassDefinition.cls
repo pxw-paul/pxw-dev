@@ -4506,12 +4506,12 @@ Method ClassAttributes(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	quit ok
 }
 
-///  class_class_method ::= 'classmethod' method_name '(' [ formal_spec_list ] ')' [ 'as' return_type_class_reference ] [ method_attribute_list ] '{' method_body '}'
+///  class_class_method ::= 'classmethod' method_name '(' [ formal_spec_list ] ')' [ 'as' return_type_class_reference ] [ method_attribute_list ] method_body_curly
 /// summary values:CLASSMETHOD
-/// summary=K&C&P&[C]&P&[K&C]&[C]&P&C&P
+/// summary=K&C&P&[C]&P&[K&C]&[C]&C
 Method ClassClassMethod(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&C&P&[C]&P&[K&C]&[C]&P&C&P
+	; rules summary K&C&P&[C]&P&[K&C]&[C]&C
 	if '(..isKeyword("CLASSMETHOD")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -4524,12 +4524,8 @@ Method ClassClassMethod(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 					if ..addPunctuation(.subElement,")")  {
 						if ..ClassClassMethod1OptGrp(.subElement,.addedElement)  {
 							if $S(..MethodAttributeList(.subElement,.addedElement) :1,1:1) {
-								if ..addPunctuation(.subElement,"{")  {
-									if ..MethodBody(.subElement,.addedElement)  {
-										if ..addPunctuation(.subElement,"}")  {
-											set done=1 ; end compileRules
-										}
-									}
+								if ..MethodBodyCurly(.subElement,.addedElement)  {
+									set done=1 ; end compileRules
 								}
 							}
 						}
@@ -4575,12 +4571,12 @@ Method ClassClassMethod1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	quit ok
 }
 
-///  class_client_method ::= 'clientmethod' method_name '(' [ formal_spec_list ] ')' [ 'as' type_class_reference ] [ method_attribute_list ] '{' javascript_code_block '}'
+///  class_client_method ::= 'clientmethod' method_name '(' [ formal_spec_list ] ')' [ 'as' type_class_reference ] [ method_attribute_list ] javascript_code_block_curly
 /// summary values:CLIENTMETHOD
-/// summary=K&C&P&[C]&P&[K&C]&[C]&P&C&P
+/// summary=K&C&P&[C]&P&[K&C]&[C]&C
 Method ClassClientMethod(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&C&P&[C]&P&[K&C]&[C]&P&C&P
+	; rules summary K&C&P&[C]&P&[K&C]&[C]&C
 	if '(..isKeyword("CLIENTMETHOD")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -4593,12 +4589,8 @@ Method ClassClientMethod(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 					if ..addPunctuation(.subElement,")")  {
 						if ..ClassClientMethod1OptGrp(.subElement,.addedElement)  {
 							if $S(..MethodAttributeList(.subElement,.addedElement) :1,1:1) {
-								if ..addPunctuation(.subElement,"{")  {
-									if ..JavascriptCodeBlock(.subElement,.addedElement)  {
-										if ..addPunctuation(.subElement,"}")  {
-											set done=1 ; end compileRules
-										}
-									}
+								if ..JavascriptCodeBlockCurly(.subElement,.addedElement)  {
+									set done=1 ; end compileRules
 								}
 							}
 						}
@@ -5069,12 +5061,12 @@ Method ClassMemberSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	quit ok
 }
 
-///  class_method ::= 'method' method_name '(' [ formal_spec_list ] ')' [ 'as' return_type_class_reference ] [ method_attribute_list ] '{' method_body '}'
+///  class_method ::= 'method' method_name '(' [ formal_spec_list ] ')' [ 'as' return_type_class_reference ] [ method_attribute_list ] method_body_curly
 /// summary values:METHOD
-/// summary=K&C&P&[C]&P&[K&C]&[C]&P&C&P
+/// summary=K&C&P&[C]&P&[K&C]&[C]&C
 Method ClassMethod(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&C&P&[C]&P&[K&C]&[C]&P&C&P
+	; rules summary K&C&P&[C]&P&[K&C]&[C]&C
 	if '(..isKeyword("METHOD")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -5087,12 +5079,8 @@ Method ClassMethod(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 					if ..addPunctuation(.subElement,")")  {
 						if ..ClassMethod1OptGrp(.subElement,.addedElement)  {
 							if $S(..MethodAttributeList(.subElement,.addedElement) :1,1:1) {
-								if ..addPunctuation(.subElement,"{")  {
-									if ..MethodBody(.subElement,.addedElement)  {
-										if ..addPunctuation(.subElement,"}")  {
-											set done=1 ; end compileRules
-										}
-									}
+								if ..MethodBodyCurly(.subElement,.addedElement)  {
+									set done=1 ; end compileRules
 								}
 							}
 						}
@@ -5823,12 +5811,12 @@ Method ClassPropertyType3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	quit ok
 }
 
-///  class_query ::= 'query' query_name '(' [ formal_spec_list ] ')' [ 'as' type_class_reference ] [ class_query_attributes ] '{' class_query_body '}'
+///  class_query ::= 'query' query_name '(' [ formal_spec_list ] ')' [ 'as' type_class_reference ] [ class_query_attributes ] class_query_body_curly
 /// summary values:QUERY
-/// summary=K&C&P&[C]&P&[K&C]&[C]&P&C&P
+/// summary=K&C&P&[C]&P&[K&C]&[C]&C
 Method ClassQuery(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&C&P&[C]&P&[K&C]&[C]&P&C&P
+	; rules summary K&C&P&[C]&P&[K&C]&[C]&C
 	if '(..isKeyword("QUERY")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -5841,12 +5829,8 @@ Method ClassQuery(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 					if ..addPunctuation(.subElement,")")  {
 						if ..ClassQuery1OptGrp(.subElement,.addedElement)  {
 							if $S(..ClassQueryAttributes(.subElement,.addedElement) :1,1:1) {
-								if ..addPunctuation(.subElement,"{")  {
-									if ..ClassQueryBody(.subElement,.addedElement)  {
-										if ..addPunctuation(.subElement,"}")  {
-											set done=1 ; end compileRules
-										}
-									}
+								if ..ClassQueryBodyCurly(.subElement,.addedElement)  {
+									set done=1 ; end compileRules
 								}
 							}
 						}
@@ -6034,6 +6018,36 @@ Method ClassQueryBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	quit ok
 }
 
+///  class_query_body_curly ::= '{' class_query_body '}'
+/// summary values:{
+/// summary=P&C&P
+Method ClassQueryBodyCurly(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary P&C&P
+	if '..isPunctuation("{",1) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"{")  {
+		if ..ClassQueryBody(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,"}")  {
+				set done=1 ; end compileRules
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
 ///  class_reference ::= class_identifier
 /// summary=C
 Method ClassReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
@@ -6196,12 +6210,12 @@ Method ClassStorage(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	quit ok
 }
 
-///  class_trigger ::= 'trigger' trigger_name [ trigger_attribute_list ] '{' [ trigger_code_block ] '}'
+///  class_trigger ::= 'trigger' trigger_name [ trigger_attribute_list ] trigger_code_block_curly
 /// summary values:TRIGGER
-/// summary=K&C&[C]&P&[C]&P
+/// summary=K&C&[C]&C
 Method ClassTrigger(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&C&[C]&P&[C]&P
+	; rules summary K&C&[C]&C
 	if '(..isKeyword("TRIGGER")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -6210,12 +6224,8 @@ Method ClassTrigger(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	if ..addKeyword(.subElement,"TRIGGER")  {
 		if ..TriggerName(.subElement,.addedElement)  {
 			if $S(..TriggerAttributeList(.subElement,.addedElement) :1,1:1) {
-				if ..addPunctuation(.subElement,"{")  {
-					if $S(..TriggerCodeBlock(.subElement,.addedElement) :1,1:1) {
-						if ..addPunctuation(.subElement,"}")  {
-							set done=1 ; end compileRules
-						}
-					}
+				if ..TriggerCodeBlockCurly(.subElement,.addedElement)  {
+					set done=1 ; end compileRules
 				}
 			}
 		}
@@ -7851,6 +7861,36 @@ Method JavascriptCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	quit ok
 }
 
+///  javascript_code_block_curly ::='{' javascript_code_block '}'
+/// summary values:{
+/// summary=P&C&P
+Method JavascriptCodeBlockCurly(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary P&C&P
+	if '..isPunctuation("{",1) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"{")  {
+		if ..JavascriptCodeBlock(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,"}")  {
+				set done=1 ; end compileRules
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
 ///  json_string ::= 'NEED JSON STRING'
 /// summary values:NEED JSON STRING
 /// summary=P
@@ -8064,6 +8104,36 @@ Method MethodBody(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	set done=0 ; method start
 	if ..CosCodeBlock(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  method_body_curly ::= '{' method_body '}'
+/// summary values:{
+/// summary=P&C&P
+Method MethodBodyCurly(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary P&C&P
+	if '..isPunctuation("{",1) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"{")  {
+		if ..MethodBody(.subElement,.addedElement)  {
+			if ..addPunctuation(.subElement,"}")  {
+				set done=1 ; end compileRules
+			}
+		}
 	}
 
 	if done {
@@ -9478,6 +9548,36 @@ Method TriggerCodeBlock(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	set done=0 ; method start
 	if ..CosCodeBlockTrigger(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  trigger_code_block_curly ::= '{' [ trigger_code_block ] '}'
+/// summary values:{
+/// summary=P&[C]&P
+Method TriggerCodeBlockCurly(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary P&[C]&P
+	if '..isPunctuation("{",1) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"{")  {
+		if $S(..TriggerCodeBlock(.subElement,.addedElement) :1,1:1) {
+			if ..addPunctuation(.subElement,"}")  {
+				set done=1 ; end compileRules
+			}
+		}
 	}
 
 	if done {

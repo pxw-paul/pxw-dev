@@ -167,8 +167,8 @@ attribute_Not                       ::= 'not' ( attribute_Abstract
                                         | attribute_SQLRowidPrivate
                                         )
 
-class_class_method                  ::= 'classmethod' method_name '(' [ formal_spec_list ] ')' [ 'as' return_type_class_reference ] [ method_attribute_list ] '{' method_body '}'
-class_method                        ::= 'method' method_name '(' [ formal_spec_list ] ')' [ 'as' return_type_class_reference ] [ method_attribute_list ] '{' method_body '}'
+class_class_method                  ::= 'classmethod' method_name '(' [ formal_spec_list ] ')' [ 'as' return_type_class_reference ] [ method_attribute_list ] method_body_curly 
+class_method                        ::= 'method' method_name '(' [ formal_spec_list ] ')' [ 'as' return_type_class_reference ] [ method_attribute_list ] method_body_curly
 method_name                         ::= class_item_identifier
 method_reference                    ::= class_item_identifier
 formal_spec_list                    ::= formal_spec_item( ',' formal_spec_item )*
@@ -178,6 +178,8 @@ as_type_class_reference             ::= 'as' type_class_reference
 
 variable_set                        ::= variable_identifier
 
+method_body_curly                   ::= '{' method_body '}'
+method_body                         ::= cos_code_block
 
 method_attribute_list               ::= '[' method_attribute ( ',' method_attribute )* ']'
 method_attribute                    ::= attribute_Abstract
@@ -211,13 +213,12 @@ method_attribute                    ::= attribute_Abstract
                                         | attribute_ZenMethod
                                         | attribute_requires
 
-class_client_method                  ::= 'clientmethod' method_name '(' [ formal_spec_list ] ')' [ 'as' type_class_reference ] [ method_attribute_list ] '{' javascript_code_block '}'
+class_client_method                 ::= 'clientmethod' method_name '(' [ formal_spec_list ] ')' [ 'as' type_class_reference ] [ method_attribute_list ] javascript_code_block_curly
+javascript_code_block_curly         ::='{' javascript_code_block '}'
 
 parameter_default_value             ::= '=' ( 'NULL' | parameter_default_simple | parameter_default_expression )
 parameter_default_simple            ::= [ '+' ] number | string
 parameter_default_expression        ::= '{' expression '}'
-
-method_body                         ::= cos_code_block
 
 class_ForeignKey                    ::= 'foreignkey' foreignkey_name [ '(' key_props ')' ] 'references' class_reference [ '(' [ref_props] ')' ] [ foreignKey_attribute_list ] ';' 
 foreignkey_name                     ::= class_item_identifier
@@ -362,7 +363,8 @@ xml_tag_e_b                         ::= '>'
 
 text_brace_block                    ::= '{' text '}'
 
-class_query                         ::= 'query' query_name '(' [ formal_spec_list ] ')' [ 'as' type_class_reference ] [ class_query_attributes ] '{' class_query_body '}'
+class_query                         ::= 'query' query_name '(' [ formal_spec_list ] ')' [ 'as' type_class_reference ] [ class_query_attributes ] class_query_body_curly
+class_query_body_curly              ::= '{' class_query_body '}'
 query_name                          ::= class_item_identifier
 class_query_body                    ::= text_brace_block
 class_query_attributes              ::= '[' class_query_attribute ( ',' class_query_attribute )* ']'
@@ -417,7 +419,8 @@ xdata_json_array_items              ::= xdata_json (',' xdata_json)*
 
 json_string                         ::= 'NEED JSON STRING'
 
-class_trigger                       ::= 'trigger' trigger_name [ trigger_attribute_list ] '{' [ trigger_code_block ] '}'
+class_trigger                       ::= 'trigger' trigger_name [ trigger_attribute_list ] trigger_code_block_curly
+trigger_code_block_curly            ::= '{' [ trigger_code_block ] '}'
 trigger_name                        ::= class_item_identifier
 trigger_attribute_list              ::= '[' trigger_attribute ( ',' trigger_attribute )* ']'
 trigger_attribute                   ::= attribute_CodeMode

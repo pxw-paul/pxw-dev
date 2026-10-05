@@ -181,15 +181,11 @@ Method WriteStyles()
 							margin:-1em 0px 0px 4ch;  }
 	.DOCBOOK {
 		background-color: var(--bgAlternate3); /*color: var(--fgComment); */
-		margin-left:4ch; margin-right: 8ch;
+		margin-left:4ch; margin-top:0.5em; width:80ch;
 		white-space: normal;
 		font-family: Arial, Helvetica, sans-serif; font-size: medium;
 	}
 
-	/*.DOCBOOK * {
-		border:0; margin:0; padding:0; 
-	}
-	*/
 
 	.XMLTag { color: var(--fgProgramKeyword); }
 	.XMLAttribute { color:var(--fgCodeVariable); }
