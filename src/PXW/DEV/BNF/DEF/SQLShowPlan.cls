@@ -46,6 +46,7 @@ content ::= newline
             | read_master_scan
             | read_master 
             | divide_master
+            | determine_subquery
             | call_modules
             | call_module
             | call_subqueries
@@ -76,6 +77,9 @@ read_master         ::= 'read' 'master' 'map' table_index
 read_master_scan    ::= 'read' 'master' 'map' table_index ',' 'looping' 'on' 'ID'
 
 divide_master       ::= 'divide' 'master' 'map' table_index
+
+-- Make sure we do not pick up "subquery result" as a call to a subquery called result
+determine_subquery  ::= 'determine' 'subquery' 'result'
 
 text_to_eol         ::= (!newline (word | punctuation))*
 

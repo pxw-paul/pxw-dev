@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="IRIS" version="26" zv="IRIS for UNIX (Ubuntu Server LTS for x86-64 Containers) 2026.1 (Build 234U)" ts="2026-10-05 17:41:35">
+<Export generator="IRIS" version="26" zv="IRIS for UNIX (Ubuntu Server LTS for x86-64 Containers) 2026.1 (Build 234U)" ts="2026-10-06 08:18:38">
 <Class name="PXW.DEV.Atom">
 <Super>PXW.DEV.Particle</Super>
 <TimeChanged>67830,28950.607042217</TimeChanged>
@@ -10985,7 +10985,7 @@ identifier                    ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z
 
 <Class name="PXW.DEV.BNF.DEF.SQLShowPlan">
 <Super>PXW.DEV.BNF.Compilers.loader</Super>
-<TimeChanged>67847,42069.675651579</TimeChanged>
+<TimeChanged>67849,29730.736401296</TimeChanged>
 <TimeCreated>67812,67238.686191904</TimeCreated>
 
 <Projection name="GEN">
@@ -11042,6 +11042,7 @@ content ::= newline
             | read_master_scan
             | read_master 
             | divide_master
+            | determine_subquery
             | call_modules
             | call_module
             | call_subqueries
@@ -11072,6 +11073,9 @@ read_master         ::= 'read' 'master' 'map' table_index
 read_master_scan    ::= 'read' 'master' 'map' table_index ',' 'looping' 'on' 'ID'
 
 divide_master       ::= 'divide' 'master' 'map' table_index
+
+-- Make sure we do not pick up "subquery result" as a call to a subquery called result
+determine_subquery  ::= 'determine' 'subquery' 'result'
 
 text_to_eol         ::= (!newline (word | punctuation))*
 
@@ -12554,8 +12558,8 @@ summary=P&C&P]]></Description>
 <Class name="PXW.DEV.BNF.GEN.COS">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67848,63681.405593507</TimeChanged>
-<TimeCreated>67848,63681.116061875</TimeCreated>
+<TimeChanged>67849,29891.839799093</TimeChanged>
+<TimeCreated>67849,29891.539937464</TimeCreated>
 
 <Method name="AmpOp">
 <Description><![CDATA[
@@ -33753,8 +33757,8 @@ summary=K&?4OptionalSingle4?&C]]></Description>
 <Class name="PXW.DEV.BNF.GEN.CSP">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67848,63682.572271496</TimeChanged>
-<TimeCreated>67848,63682.54195624</TimeCreated>
+<TimeChanged>67849,29893.008640579</TimeChanged>
+<TimeCreated>67849,29892.974956634</TimeCreated>
 
 <Method name="CosExpression">
 <Description>
@@ -35888,8 +35892,8 @@ summary=P</Description>
 <Class name="PXW.DEV.BNF.GEN.ClassDefinition">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67848,63684.2845761</TimeChanged>
-<TimeCreated>67848,63684.109906359</TimeCreated>
+<TimeChanged>67849,29894.660479784</TimeChanged>
+<TimeCreated>67849,29894.490601978</TimeCreated>
 
 <Method name="AliasIdentifier">
 <Description>
@@ -48984,8 +48988,8 @@ summary=C</Description>
 <Class name="PXW.DEV.BNF.GEN.JS">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67848,63686.276949534</TimeChanged>
-<TimeCreated>67848,63686.121092974</TimeCreated>
+<TimeChanged>67849,29896.616091857</TimeChanged>
+<TimeCreated>67849,29896.459396872</TimeCreated>
 
 <Method name="AliasName">
 <Description><![CDATA[
@@ -60527,8 +60531,8 @@ summary=K&[C]&C]]></Description>
 <Class name="PXW.DEV.BNF.GEN.Python">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67848,63687.335505412</TimeChanged>
-<TimeCreated>67848,63687.135837202</TimeCreated>
+<TimeChanged>67849,29897.649633677</TimeChanged>
+<TimeCreated>67849,29897.454251312</TimeCreated>
 
 <Method name="AnnotatedRhs">
 <Description><![CDATA[
@@ -79141,8 +79145,8 @@ summary=C</Description>
 <Class name="PXW.DEV.BNF.GEN.SQL">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67848,63690.761337751</TimeChanged>
-<TimeCreated>67848,63690.595750253</TimeCreated>
+<TimeChanged>67849,29901.003403045</TimeChanged>
+<TimeCreated>67849,29900.84220479</TimeCreated>
 
 <Method name="AliasName">
 <Description>
@@ -89663,8 +89667,8 @@ summary=P&C]]></Description>
 <Class name="PXW.DEV.BNF.GEN.SQLShowPlan">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67848,63691.259181045</TimeChanged>
-<TimeCreated>67848,63691.219561916</TimeCreated>
+<TimeChanged>67849,29901.525299367</TimeChanged>
+<TimeCreated>67849,29901.484936595</TimeCreated>
 
 <Method name="AliasName">
 <Description>
@@ -90074,12 +90078,12 @@ summary=K&C&C]]></Description>
 
 <Method name="Content">
 <Description>
- content ::= newline | plan | sql_section | warning_section | cost_section | frozen_section | info_section | for_each | table | subquery_section | module_section | read_index | read_bitmap_index | read_extent_bitmap | read_master_scan | read_master | divide_master | call_modules | call_module | call_subqueries | call_subquery | alias_property | word | punctuation
-summary=C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C</Description>
+ content ::= newline | plan | sql_section | warning_section | cost_section | frozen_section | info_section | for_each | table | subquery_section | module_section | read_index | read_bitmap_index | read_extent_bitmap | read_master_scan | read_master | divide_master | determine_subquery | call_modules | call_module | call_subqueries | call_subquery | alias_property | word | punctuation
+summary=C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C</Description>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-	; rules summary C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
+	; rules summary C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -90117,6 +90121,8 @@ summary=C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C</Description>
 	} elseif ..ReadMaster(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..DivideMaster(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..DetermineSubquery(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..CallModules(.subElement,.addedElement)  {
 		set done=1 ; or
@@ -90165,6 +90171,40 @@ summary values:<COST]]></Description>
 			Set done=1
 		}
 	}
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+]]></Implementation>
+</Method>
+
+<Method name="DetermineSubquery">
+<Description><![CDATA[
+ determine_subquery ::= 'determine' 'subquery' 'result'
+summary values:DETERMINE
+summary=K&K&K]]></Description>
+<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	; rules summary K&K&K
+	if '(..isKeyword("DETERMINE")) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"DETERMINE")  {
+		if ..addKeyword(.subElement,"SUBQUERY")  {
+			if ..addKeyword(.subElement,"RESULT")  {
+				set done=1 ; end compileRules
+			}
+		}
+	}
+
 	if done {
 		$$$BNFCOMMIT(subElement,ParentElement)
 		set ok=1
@@ -92684,7 +92724,7 @@ summary=R</Description>
 </Parameter>
 
 <Parameter name="Keywords">
-<Default>AND,BITMAP,DIVIDE,EACH,EXTENT,FOR,GETTING,GIVEN,ID,INDEX,LOOPING,MAP,MASTER,MODULE,MODULES,ON,READ,SUBQUERIES,SUBQUERY,TABLE,THE,USING</Default>
+<Default>AND,BITMAP,DETERMINE,DIVIDE,EACH,EXTENT,FOR,GETTING,GIVEN,ID,INDEX,LOOPING,MAP,MASTER,MODULE,MODULES,ON,READ,RESULT,SUBQUERIES,SUBQUERY,TABLE,THE,USING</Default>
 </Parameter>
 </Class>
 
