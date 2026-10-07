@@ -535,6 +535,14 @@ ClassMethod WriteStatus(sc As %Status)
 			}
         } 
         Write "<pre style='color:red;'>" Write txt Write "</pre>"	
+		Write "<pre>"
+		set stack=err(1,"stack")
+		f i=1:1:$ll(stack) {
+			s stackd=$li(stack,i)
+			s type=$p(stackd,"^",1),caller=$p(stackd,"^",2,3)
+			i type'="",caller'="^" w !,type_" <a class='"_$$$classLabel_"' href="""_##class(PXW.Tools.DEV.Routine).HREFTo(caller)_""">"_..EscapeHTML(caller)_"</a>"
+		}
+		write "</pre>"
     }
 }
 

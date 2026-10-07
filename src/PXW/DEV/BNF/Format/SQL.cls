@@ -56,84 +56,98 @@ Method resetWhitespace(Atom As PXW.DEV.Atom)
 
 Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %String = "")
 {
-    If element.type="SelectCommand" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-        ; need to do the froms and joins to the same indent?
-        Set indent=indent+1 
-    }
+    #define BriefLimit 100
+    #define IsBrief(%e) $l(%e.ToString())<$$$BriefLimit
+    set brief=(flags["BRIEF")
+    if 'brief {
+        If element.type="SelectCommand" {
+            if $$$IsBrief(element) {
+                set flags="BRIEF"
+            } else {
+                Do ..setWhitespaceNewLineElement(element,indent)
+            }
+            ;Set indent=indent+1 
+        }
 
-   If element.type="SelectInto" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-    }
+        if element.type="SelectList" {
+            set indent=indent+1
+        }
 
-    If element.type="SqlCaseExpression" {
-        Set indent=indent+1
-    }
+        If element.type="SelectInto" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+        }
 
-    If element.type="SqlCaseWhen" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-    }
-    If element.type="SqlCaseElse" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-    }
-    If element.type="SqlCaseEnd" {
-        Do ..setWhitespaceNewLineElement(element,indent-1)
-    }
+        If element.type="SqlCaseExpression" {
+            if $$$IsBrief(element) {
+                set flags="BRIEF"
+            }
+            Set indent=indent+1
+        }
 
-    If element.type="FromClause" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-    }
-    If element.type="TableSubquery" {
-        Set indent=indent+1
-    }
+        If element.type="SqlCaseWhen" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+        }
+        If element.type="SqlCaseElse" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+        }
+        If element.type="SqlCaseEnd" {
+            Do ..setWhitespaceNewLineElement(element,indent-1)
+        }
 
-    If element.type="Join" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-        Set indent=indent+1
-    }
-    If element.type="JoinOn" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-        Set flags="CONDITION"
-    }
+        If element.type="FromClause" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+        }
+        If element.type="TableSubquery" {
+            Set indent=indent+1
+        }
 
-    If element.type="WhereClause" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-        Set flags="CONDITION"
-        Set indent=indent+1
-    }
+        If element.type="Join" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+            Set indent=indent+1
+        }
+        If element.type="JoinOn" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+            Set flags="CONDITION"
+        }
 
-    ; put each AND on a new line, only applies to certain types of conditions (eg JOIN ON, WHERE)
-    If flags["CONDITION" {
-        If element.type="SqlDyadicop",$$$UPPER(element.ToString(0))="AND" {
+        If element.type="WhereClause" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+            Set flags="CONDITION"
+            Set indent=indent+1
+        }
+
+        ; put each AND on a new line, only applies to certain types of conditions (eg JOIN ON, WHERE)
+        If flags["CONDITION" {
+            If element.type="SqlDyadicop",$$$UPPER(element.ToString(0))="AND" {
+                Do ..setWhitespaceNewLineElement(element,indent)
+            }
+        }
+
+        If element.type="WithCommand" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+            Set indent=indent+1
+        }
+
+        If element.type="WithClause" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+            Set indent=indent+1
+        }
+
+        If element.type="SelectSublist" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+        }
+
+        If element.type="Union" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+        }
+
+        If element.type="GroupByClause" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+        }
+        If element.type="OrderByClause" {
             Do ..setWhitespaceNewLineElement(element,indent)
         }
     }
-
-    If element.type="WithCommand" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-        Set indent=indent+1
-    }
-
-    If element.type="WithClause" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-        Set indent=indent+1
-    }
-
-    If element.type="SelectSublist" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-    }
-
-    If element.type="Union" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-    }
-
-    If element.type="GroupByClause" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-    }
-    If element.type="OrderByClause" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-    }
-
     set akey=""
    	For  {
 		Set a=element.partsGetNext(.akey)

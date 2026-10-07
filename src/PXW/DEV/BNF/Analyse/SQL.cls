@@ -425,6 +425,8 @@ Method FindTableSub(cref As PXW.DEV.Element, ByRef tables) As %String [ private,
                 Set:$ISOBJECT(..ClassServer) fulltable=..ClassServer.GetFullTableName(fulltable,..This)
             }
          }
+    } else {
+        set fulltable=$get(table)
     }
     Quit fulltable
 }

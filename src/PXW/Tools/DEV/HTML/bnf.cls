@@ -1426,7 +1426,7 @@ Method writeSQLInsertCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF
     Kill values
     Do element.findElementsXPath("InsertMethod/InsertValuesList/UpdateValues/SqlExpression",.values)
     Do element.findElementsXPath("InsertMethod/InsertMultirow/SelectCommand/SelectList/SelectSublist/DerivedColumn/SqlExpression",.values)
-    If $ISOBJECT(values) {
+    If $ISOBJECT($Get(values)) {
         For i=1:1:values.Count() {
             Set valueE=values.GetAt(i)
             Do ..wrapElementHTML(valueE,"<span class=""SQLSection"" title=""Col "_i_" ("_$GET(colidx(i))_")"">","</span>")
