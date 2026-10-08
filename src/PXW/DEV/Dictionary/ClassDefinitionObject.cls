@@ -181,7 +181,7 @@ Method CacheIfNecessary(ClassName As %String, Parts As %String = "", TimeStamp A
         Set docache=0
         Set timechanged=$GET(^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD"))
         If timechanged="" Set docache=1
-        If timechanged="no kill" set docache=2,timechanged=""
+        If timechanged="no kill" Set docache=2,timechanged=""
         If TimeStamp'="",TimeStamp]timechanged Set docache=1
         If docache {
             $$$DEBUG("Fetching from GMD DB_"_ClassName_" timechanged="_timechanged_" TimeStamp="_TimeStamp)
@@ -324,7 +324,7 @@ Method CacheListProperyDetails(ClassName As %String, TimeStamp As %TimeStamp = "
         Set cn=rs.%Get("parent")
         Set psqlname=rs.%Get("SqlFieldName")
         Set pname=rs.%Get("Name")
-        Set type=..FullClassName(rs.%Get("Type"),$p(ClassName,".",1,*-1))
+        Set type=..FullClassName(rs.%Get("Type"),$PIECE(ClassName,".",1,*-1))
         Set data=$LISTBUILD(pname,rs.%Get("RuntimeType"),psqlname,
                     rs.%Get("Collection"),type,rs.%Get("Origin"))            
         If psqlname'="" Set ^PXW.Cache("CDEF",NS,$$$UPPER(cn),"GPD","sqlname",$$$UPPER(psqlname))=data
@@ -431,7 +431,7 @@ classmethod MyFormalSpecParse(FormalSpec as %String,ThisClass as %String) as %Li
                 Set pos=pos+1 
             }
             Set type=$EXTRACT(FormalSpec,start,pos-1)
-            Set type=..FullClassName(type,$p(ThisClass,".",1,*-1))
+            Set type=..FullClassName(type,$PIECE(ThisClass,".",1,*-1))
             If $EXTRACT(FormalSpec,pos)="(" {
                 Set pos=pos+1
                 ; type parameters
@@ -695,27 +695,27 @@ Method GetMethodDetails(ClassName As %String, Name As %String, Output ReturnType
 
     ; some classes do not have all the inherited members, so work out here
     ; eg %BigData.ECPMsgConnection
-    if '$d(^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD")) {
-        if ..GetClassDetails(ClassName,,.super) {
-            for i=1:1:$l(super,",") {
-                s superclass=$p(super,",",i)
-                i superclass'="" {
-                    s fullsuper=..FullClassName(superclass)
-                    do ..GetMethodDetails(superclass,Name)
-                    s mname=""
+    If '$DATA(^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD")) {
+        If ..GetClassDetails(ClassName,,.super) {
+            For i=1:1:$LENGTH(super,",") {
+                Set superclass=$PIECE(super,",",i)
+                If superclass'="" {
+                    Set fullsuper=..FullClassName(superclass)
+                    Do ..GetMethodDetails(superclass,Name)
+                    Set mname=""
                     ; do not copy in the abstract methods, they are not inherited
-                    f  {
-                        s mname=$o(^PXW.Cache("CDEF",NS,$$$UPPER(fullsuper),"GMD",mname),1,mdata)
-                        q:mname=""
-                        i +$lg(mdata,10)=0 {
-                            s ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD",mname)=mdata
+                    For  {
+                        Set mname=$ORDER(^PXW.Cache("CDEF",NS,$$$UPPER(fullsuper),"GMD",mname),1,mdata)
+                        Quit:mname=""
+                        If +$LISTGET(mdata,10)=0 {
+                            Set ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD",mname)=mdata
                         }
                     }
                     ;m ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD")=^PXW.Cache("CDEF",NS,$$$UPPER(fullsuper),"GMD")
                 }
             }
             ; reset so that it will cache
-            s ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD")="no kill"
+            Set ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD")="no kill"
         }
     }
 
@@ -732,7 +732,7 @@ Method GetMethodDetails(ClassName As %String, Name As %String, Output ReturnType
     ;Set SQLSchemaName=$LISTGET(data,7)
     ;Set SQLName=$LISTGET(data,8)
     Set FormalSpec=$LISTGET(data,9)
-    Set Abstract=$LISTGET(data,10)
+    ;Set Abstract=$LISTGET(data,10)
 
     $$$DEBUG(("GetMethodDetails "_ClassName_"||"_Name_" data="_$SELECT(data="":"null",1:"ok")))
 
@@ -957,7 +957,7 @@ Method GetClassNameFromTableName(SQLTableName As %String, OwningClassName As %St
     ;New %NS Set %NS=..Namespace.Name
     Set NS=..Namespace.Name
     Set table=SQLTableName
-    ;i table'[".",'$d(OwningClassName) break
+    ;i table'[".",'$d(OwningClassName) $$$DEBUG("table="_table)
     If table'[".",OwningClassName'="" {
         Set schema=$PIECE(OwningClassName,".",1,*-1)
         Set schema=$TRANSLATE(schema,".","_")
@@ -1149,10 +1149,10 @@ Method GetClassPath(ClassName As %String, PropertyPath As %String, Output PathAr
 /// a(2)=$lb("f1.data.race","Circuit","f1.data.circuit")
 /// a(3)=$lb("f1.data.circuit","Name","data.model.string")
 /// if some step on the path cannot be found then the array will have blanks
-Method GetClassPathFromTable(TableName As %String, FieldPath As %String, Output PathArray As %List)
+Method GetClassPathFromTable(TableName As %String, FieldPath As %String, Output PathArray As %List,OwningClassName as %String)
 {
 	
-    Set classname=..GetClassNameFromTableName(TableName)
+    Set classname=..GetClassNameFromTableName(TableName,OwningClassName)
     For i=1:1:$LENGTH(FieldPath,"->") {
         ; the objectchain has the "." and the name
         Set fieldname=$PIECE(FieldPath,"->",i)

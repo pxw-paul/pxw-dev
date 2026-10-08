@@ -25,7 +25,7 @@ ClassMethod WriteMainBody()
 	;Write "<div class='grid-container'>"
 	Write "<div>"
 	While rs.%Next() {
-		set name=rs.%Get("ClassName")
+		Set name=rs.%Get("ClassName")
 		Set type=rs.%Get("ToolType")
 		Set toolname=rs.%Get("ToolName")
 		Do ..WriteFormInSection(name,type,toolname)
@@ -60,7 +60,7 @@ ClassMethod WriteForm(ClassName As %String, Type As %String, ToolName As %String
 						; if I find one thats not I will deal with this later
 						Set VNAME=$TRANSLATE(VAR,"abcdefghijklmnopqrstuvwxyz")
 						Set DEF=$TRANSLATE(DEF,"""")
-						set DEF=%request.Get(VNAME,DEF)
+						Set DEF=%request.Get(VNAME,DEF)
 						Set iid=aname_VNAME
 						&html<<p><label for=#(iid)#>#(VAR)#</label>>
 						If TYP="%Boolean" {
@@ -70,7 +70,7 @@ ClassMethod WriteForm(ClassName As %String, Type As %String, ToolName As %String
 						}
 						&html<</p>>
 						Set accesskey=""
-					} else {
+					} Else {
 						;WRITE "else VAR="_VAR
 					}
 				}
@@ -99,12 +99,12 @@ ClassMethod WriteFormInSection(ClassName As %String, Type As %String, ToolName A
 		<details id="#(aname)#" class=#(css)#>
 			<summary>#(ToolName)#</summary>
 		>
-		w "<span style=""display:inline-block"">" 
-			d ..WriteForm(ClassName,Type,ToolName) 
-		w "</span>"
-		w "<span style=""valign:top; display:inline-block"">" 
-			if HREFto.Description'="" write HREFto.Description
-		w "</span>"
+		Write "<span style=""display:inline-block"">" 
+			Do ..WriteForm(ClassName,Type,ToolName) 
+		Write "</span>"
+		Write "<span style=""valign:top; display:inline-block"">" 
+			If HREFto.Description'="" Write HREFto.Description
+		Write "</span>"
 		
 		&html<</details>>
 	}
@@ -118,11 +118,11 @@ ClassMethod WriteNav()
 	Set rs=##class(PXW.Tools.Queries).SelectToolsForNamespaceFunc(%NS)
 	
 	While rs.%Next() {
-		set name=rs.%Get("ClassName")
+		Set name=rs.%Get("ClassName")
 		;Set type=rs.%Get("ToolType")
 		Set toolname=rs.%Get("ToolName")
 		
-		if toolname'="" {
+		If toolname'="" {
 			Write "<a href="""_$CLASSMETHOD(name,"HREFTo")_""">"_..EscapeHTML(toolname)_"</a>"
 		}
 	}

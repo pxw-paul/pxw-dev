@@ -8,16 +8,16 @@ property relocated as %Boolean [multidimensional];
 
 method FormatElement(element as PXW.DEV.Element) {
     ; find all Call Module and Module definitions and copy the module to the end of the call
-    do ..formatProcess(element,"PASS1")
+    Do ..formatProcess(element,"PASS1")
     ; now disconnect all the original modules from their content containers
-    do ..formatProcess(element,"PASS2")
+    Do ..formatProcess(element,"PASS2")
 }
 
 Method formatProcess(element As PXW.DEV.Element,When as %String)
 {
 	$$$DEBUGMethodBegin
-	do ..processSpecificElement(element,When)
-	set partkey=""
+	Do ..processSpecificElement(element,When)
+	Set partkey=""
 	For  {
 		Set part=element.partsGetNext(.partkey)
 		Quit:partkey=""
@@ -34,14 +34,14 @@ Method formatProcess(element As PXW.DEV.Element,When as %String)
 /// For each call module X, rememeber this is calling X
 Method format1CallModules(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="CallModule,CallModules",When="PASS1")
 {
-    do element.findElementsByType("ModuleName",.list,0)
-    if $isobject(list) {
-        for i=1:1:list.Count() {
-            s nameE=list.GetAt(i)
-            if $isobject(nameE) {
-                set name=nameE.ToString(0)
-                if name'="" {
-                    set ..placeHolder(name)=element
+    Do element.findElementsByType("ModuleName",.list,0)
+    If $ISOBJECT(list) {
+        For i=1:1:list.Count() {
+            Set nameE=list.GetAt(i)
+            If $ISOBJECT(nameE) {
+                Set name=nameE.ToString(0)
+                If name'="" {
+                    Set ..placeHolder(name)=element
                 }
             }
         }
@@ -51,14 +51,14 @@ Method format1CallModules(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compile
 
 Method format1CallSubqueries(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="CallSubquery,CallSubqueies",When="PASS1")
 {
-    do element.findElementsByType("SubqueryName",.list,0)
-    if $isobject(list) {
-        for i=1:1:list.Count() {
-            s nameE=list.GetAt(i)
-            if $isobject(nameE) {
-                set name=nameE.ToString(0)
-                if name'="" {
-                    set ..placeHolder(name)=element
+    Do element.findElementsByType("SubqueryName",.list,0)
+    If $ISOBJECT(list) {
+        For i=1:1:list.Count() {
+            Set nameE=list.GetAt(i)
+            If $ISOBJECT(nameE) {
+                Set name=nameE.ToString(0)
+                If name'="" {
+                    Set ..placeHolder(name)=element
                 }
             }
         }
@@ -72,10 +72,10 @@ Method format1Module(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.el
     #dim attE,nameE,locationE as PXW.DEV.BNF.Element
     Set modname=..GetAttributeValue(element,"name")
     If modname'="" {
-        set locationE=$g(..placeHolder(modname))
-        if $ISOBJECT(locationE) {
-            do locationE.AddPart(element)
-            set ..relocated(+element)=1
+        Set locationE=$GET(..placeHolder(modname))
+        If $ISOBJECT(locationE) {
+            Do locationE.AddPart(element)
+            Set ..relocated(+element)=1
         }
     } Else {
     }
@@ -88,10 +88,10 @@ Method format1Subquery(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.
     #dim attE,nameE,locationE as PXW.DEV.BNF.Element
     Set modname=..GetAttributeValue(element,"name")
     If modname'="" {
-        set locationE=$g(..placeHolder(modname))
-        if $ISOBJECT(locationE) {
-            do locationE.AddPart(element)
-            set ..relocated(+element)=1
+        Set locationE=$GET(..placeHolder(modname))
+        If $ISOBJECT(locationE) {
+            Do locationE.AddPart(element)
+            Set ..relocated(+element)=1
         }
     } Else {
     }
@@ -102,15 +102,15 @@ Method format1Subquery(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.
 
 Method format2Content(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="Content",When="PASS2")
 {
-    set key=""
-    for {
-        set modele=element.partsGetNext(.key)
-        q:key=""
-        if $isobject(modele), $g(..relocated(+modele)) {
-            if modele.type="ModuleSection" {
-                 do element.partsRemove(key)
-            } elseif modele.type="SubquerySection" {
-               do element.partsRemove(key)
+    Set key=""
+    For {
+        Set modele=element.partsGetNext(.key)
+        Quit:key=""
+        If $ISOBJECT(modele), $GET(..relocated(+modele)) {
+            If modele.type="ModuleSection" {
+                 Do element.partsRemove(key)
+            } ElseIf modele.type="SubquerySection" {
+               Do element.partsRemove(key)
             }
         }
     }

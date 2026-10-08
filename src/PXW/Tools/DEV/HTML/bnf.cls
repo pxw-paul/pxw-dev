@@ -1318,7 +1318,7 @@ Method writeSQLJoin(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Compiler
     Quit ""
 }
 
-ClassMethod findElementsSkipSub(Object As PXW.DEV.Element, Type As %String, ByRef OutputList As %ListOfObjects(ELEMENTTYPE = "PXW.DEV.Element"))
+ClassMethod findElementsSkipSub(Object As PXW.DEV.Element, Type As %String, ByRef OutputList As %ListOfObjects(ELEMENTTYPE = "PXW.DEV.Element")="")
 {
     #dim ele as PXW.DEV.Element
     If Object.type=Type {

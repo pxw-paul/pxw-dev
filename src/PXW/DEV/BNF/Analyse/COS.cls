@@ -184,6 +184,8 @@ method IsCompatible(Classname1 as %String, Classname2 as %String, output commonC
 	If Classname2="-null-" Quit 1 ; 
 	If Classname1="%Library.Any" Quit 1 ; %Library.Any is compatible with everything
 	If Classname2="%Library.Any" Quit 1 ; 
+	if Classname1="%Library.ObjectHandle" Quit 1
+	if Classname2="%Library.ObjectHandle" Quit 1
 
 	Set cn1=..FullClassName(Classname1)
 	Set cn2=..FullClassName(Classname2)

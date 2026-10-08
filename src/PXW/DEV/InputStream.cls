@@ -21,7 +21,7 @@ Property eolChar As %String [ InitialExpression = {$CHAR(13)} ];
 Property nextCount As %Integer [ InitialExpression = 0 ];
 
 /// crazy limit on count, there must be some problem somewhere (probably with recursive rules)
-Parameter nextCountLimit = 100000;
+Property nextCountLimit as %Integer [ InitialExpression = 100000];
 
 ClassMethod NewString(Code As %String) As PXW.DEV.InputStream
 {
@@ -35,6 +35,7 @@ ClassMethod NewString(Code As %String) As PXW.DEV.InputStream
 	Set reader.line=1
 	Set reader.col=0
 	Set reader.length=$LENGTH(Code)
+	set reader.nextCountLimit=reader.length*4 
 	Quit reader
 }
 
@@ -52,7 +53,7 @@ Method Next() As %String
 		Set ..lastPos=..pos,..nextCount=0
 	} Else {
 		Set ..nextCount=..nextCount+1
-		If ..nextCount>..#nextCountLimit {
+		If ..nextCount>..nextCountLimit {
 			$$$ThrowStatus($$$ERROR(5001,"Next Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
 		}
 	}
@@ -91,7 +92,7 @@ Method NextMany(number As %Integer = 1) As %String
 		Set ..lastPos=..pos,..nextCount=0
 	} Else {
 		Set ..nextCount=..nextCount+1
-		If ..nextCount>..#nextCountLimit {
+		If ..nextCount>..nextCountLimit {
 			$$$ThrowStatus($$$ERROR(5001,"NextMany Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
 		}
 	}
@@ -108,7 +109,7 @@ Method NextNOTEol(number As %Integer) As %String
 		Set ..lastPos=..pos,..nextCount=0
 	} Else {
 		Set ..nextCount=..nextCount+1
-		If ..nextCount>..#nextCountLimit {
+		If ..nextCount>..nextCountLimit {
 			$$$ThrowStatus($$$ERROR(5001,"NextNOTEol Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
 		}
 	}
@@ -135,7 +136,7 @@ Method NextToEol() As %String
 		Set ..lastPos=..pos,..nextCount=0
 	} Else {
 		Set ..nextCount=..nextCount+1
-		If ..nextCount>..#nextCountLimit {
+		If ..nextCount>..nextCountLimit {
 			$$$ThrowStatus($$$ERROR(5001,"NextToEol Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
 		}
 	}
@@ -159,7 +160,7 @@ Method NextToString(EndString As %String) As %String
 		Set ..lastPos=..pos,..nextCount=0
 	} Else {
 		Set ..nextCount=..nextCount+1
-		If ..nextCount>..#nextCountLimit {
+		If ..nextCount>..nextCountLimit {
 			$$$ThrowStatus($$$ERROR(5001,"NextToString Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
 		}
 	}

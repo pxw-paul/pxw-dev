@@ -99,6 +99,8 @@ Method WriteStyles()
 	
 	td input { width: 100%;}
 
+	td details summary { font-size: medium;}
+
 	details {
 		margin:0.5em;
 	}

@@ -66,7 +66,6 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %Stri
             } else {
                 Do ..setWhitespaceNewLineElement(element,indent)
             }
-            ;Set indent=indent+1 
         }
 
         if element.type="SelectList" {

@@ -79,7 +79,7 @@ ClassMethod WriteNav()
 {
 	Write "<a href="""_##class(PXW.Tools.DEV.XrefBuild).HREFTo()_""">Build Xref/Analysis</a>"
 	
-	d ##class(PXW.Tools.Index).WriteForm(..%ClassName(1),..#ToolType,..#ToolName)
+	Do ##class(PXW.Tools.Index).WriteForm(..%ClassName(1),..#ToolType,..#ToolName)
 }
 
 /// This shoud output some variables, getting the data from %request
@@ -117,9 +117,9 @@ ClassMethod HREFTo(ItemType As %String = "", ItemKey1 As %String = "", ItemKey2 
 ClassMethod GetTitle() As %String
 {
 	Do ..HREFFrom(.itemtype,.itemk1,.itemk2,,.lastupdate)
-	set title="Analysis of "_itemtype_" "_itemk1_":"_itemk2
+	Set title="Analysis of "_itemtype_" "_itemk1_":"_itemk2
 	If itemk1="",itemk2="",lastupdate="" {
-		set title="Showing recently updated"
+		Set title="Showing recently updated"
 	}
 	Quit title
 }

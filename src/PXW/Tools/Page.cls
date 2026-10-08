@@ -42,6 +42,7 @@ ClassMethod OnPreHTTP() As %Boolean [ ServerOnly = 1 ]
 	#dim %request as %CSP.Request
 	#dim %session as %CSP.Session
 	#dim %response as %CSP.Response
+	#dim %STYLE as PXW.Tools.Styles.super
 	
 	; A login page may set up a original_user session variable that we can use to sign in here 
 	If $GET(%session.Data("original user"))]"" {
@@ -536,13 +537,13 @@ ClassMethod WriteStatus(sc As %Status)
         } 
         Write "<pre style='color:red;'>" Write txt Write "</pre>"	
 		Write "<pre>"
-		set stack=err(1,"stack")
-		f i=1:1:$ll(stack) {
-			s stackd=$li(stack,i)
-			s type=$p(stackd,"^",1),caller=$p(stackd,"^",2,3)
-			i type'="",caller'="^" w !,type_" <a class='"_$$$classLabel_"' href="""_##class(PXW.Tools.DEV.Routine).HREFTo(caller)_""">"_..EscapeHTML(caller)_"</a>"
+		Set stack=err(1,"stack")
+		For i=1:1:$LISTLENGTH(stack) {
+			Set stackd=$LIST(stack,i)
+			Set type=$PIECE(stackd,"^",1),caller=$PIECE(stackd,"^",2,3)
+			If type'="",caller'="^" Write !,type_" <a class='"_$$$classLabel_"' href="""_##class(PXW.Tools.DEV.Routine).HREFTo(caller)_""">"_..EscapeHTML(caller)_"</a>"
 		}
-		write "</pre>"
+		Write "</pre>"
     }
 }
 

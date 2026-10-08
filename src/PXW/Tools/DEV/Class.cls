@@ -124,7 +124,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
     Set output=##class(PXW.Tools.DEV.HTML.bnf).%New()
 	Set output.ThisType=..#CodeType
 	Set output.FormatEmbeddedSQl=$SELECT($$$UPPER(FormatOptions)["NOSQLFORMATTING":0,1:1)
-	set output.ClassCommentsAsDocumentation=$s($$$UPPER(FormatOptions)["DOCBOOKMODE":1,1:0)
+	Set output.ClassCommentsAsDocumentation=$SELECT($$$UPPER(FormatOptions)["DOCBOOKMODE":1,1:0)
 	Set output.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)
 	Set sc=output.ClassServer.GetClassStudioText(ClassName,.text,.linesOfCode,.timestamp)
 	Set zh(1,"load")=$ZHOROLOG-zh,zh=$ZHOROLOG
@@ -196,10 +196,13 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 		Set zh(5,"render end")=$ZHOROLOG-zh,zh=$ZHOROLOG
 
 		If forceXref {
+			Write "<pre>"
 			$$$DEBUGNew(##class(PXW.Tools.Debugger).%New())
 			$$$DEBUG("Xref build")
-			Do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName,1,1)
+			Set sc=##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName,1,1)
+			If $$$ISERR(sc) Do ..WriteStatus(sc)
 			$$$DEBUGStop
+			Write "</pre>"
 		} Else {
 			Do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName,0)
 		}
@@ -280,33 +283,33 @@ ClassMethod WriteNav(ByRef scratch)
 	If $ISOBJECT($GET(scratch)) {
 		Set output=scratch
 		Write "<hr>"
-		if formatoptions["DOCBOOKMODE" {
+		If formatoptions["DOCBOOKMODE" {
 			While output.NextIndexItemByName(.name,.type,.anchor,.error,.typename) {
-				if typename'="" {
-					set bytype(typename,name)=$lb(anchor,error)
+				If typename'="" {
+					Set bytype(typename,name)=$LISTBUILD(anchor,error)
 				}
 			}
-			s type=""
-			f  {
-				s type=$o(bytype(type))
-				q:type=""
+			Set type=""
+			For  {
+				Set type=$ORDER(bytype(type))
+				Quit:type=""
 
-				w "<details>"
-				w "<summary>"_..EscapeHTML(type)_"</summary>"
-				s name=""
-				f  {
-					s name=$o(bytype(type,name),1,data)
-					q:name=""
-					s $lb(anchor,error)=data
+				Write "<details>"
+				Write "<summary>"_..EscapeHTML(type)_"</summary>"
+				Set name=""
+				For  {
+					Set name=$ORDER(bytype(type,name),1,data)
+					Quit:name=""
+					Set $LISTBUILD(anchor,error)=data
 					If error="" {
 						Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_"CDEF"_type_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
 					} Else {
 						Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_$$$classError_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
 					}
 				}
-				w "</details>"
+				Write "</details>"
 			}
-		} else {
+		} Else {
 			While output.NextIndexItemByName(.name,.type,.anchor,.error) {
 					If error="" {
 						Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_"CDEF"_type_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"

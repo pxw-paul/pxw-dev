@@ -37,7 +37,10 @@ ClassMethod WriteMainBody()
 		Write "</td>"
 		Write "<td>"_..EscapeHTML(rs.LastUpdate)_"</td>"
 		Set txt=$SYSTEM.Status.GetErrorText(rs.BuildStatus)
-        Write "<td>"_..EscapeHTML(txt)_"</td>"
+		write "<td><details>"
+        Write "<summary>"_..EscapeHTML(txt)_"</summary>"
+		do ..WriteStatus(rs.BuildStatus)
+		write "</details></td>"
 		Write "</tr>",!
 	}
 	Write "</tbody></table>"

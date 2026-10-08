@@ -30,7 +30,7 @@ ClassMethod WriteMainBody()
 				</details>
 				<details open>
 					<summary id="MainForm">Main Form</summary>
-					#($s(##class(PXW.Tools.Index).WriteFormInSection(..%ClassName(1),..#ToolType,"Example form"):"",1:"FAILED TO WRITE FORM"))#
+					#($SELECT(##class(PXW.Tools.Index).WriteFormInSection(..%ClassName(1),..#ToolType,"Example form"):"",1:"FAILED TO WRITE FORM"))#
 					<!--form>
 						<fieldset>
 							<legend>Main form</legend>
@@ -66,22 +66,22 @@ ClassMethod WriteNav(ByRef scratch)
 		<a href="#">These are simple links</a>
 		<hr>
 	>
-	d ##class(PXW.Tools.Index).WriteForm(..%ClassName(1),..#ToolType,..#ToolName)
+	Do ##class(PXW.Tools.Index).WriteForm(..%ClassName(1),..#ToolType,..#ToolName)
 }
 
 ClassMethod WriteHilite() As %String
 {
 
 	Write "<table>"
-	write "<tr>"
-	write "    <th>No.</th>"
-	write "    <th>hilightSET / varid</th>"
-	write "    <th>hilightGET / fetchid</th>"
-	write "    <th>hilightDEF / defid</th>"
-	write "</tr>"
+	Write "<tr>"
+	Write "    <th>No.</th>"
+	Write "    <th>hilightSET / varid</th>"
+	Write "    <th>hilightGET / fetchid</th>"
+	Write "    <th>hilightDEF / defid</th>"
+	Write "</tr>"
 	For i=1:1:9 {
 		Write "<tr>"
-		write "<td>"_i_"</td>"
+		Write "<td>"_i_"</td>"
 		Write "<td><span class=hiliteSET"_i_">variable</span></td>"
 		Write "<td><span class=hiliteGET"_i_">variable</span></td>"
 		Write "<td><span class=hiliteDEF"_i_">&nbsp;&nbsp;&nbsp;&nbsp; block of code &nbsp;&nbsp;&nbsp;&nbsp;</span></td>"
@@ -354,7 +354,7 @@ ClassMethod WriteStyleChangeSelection() As %String
 /// Styles can be created by extending <class>PXW.Tools.Styles.super</class>
 ClassMethod HREFTo(NewStyle As %String) As %String
 {
-	set NewStyle=$G(NewStyle,$G(%STYLENAME))
+	Set NewStyle=$GET(NewStyle,$GET(%STYLENAME))
 	If NewStyle["PXW.Tools.Styles" Set NewStyle=$PIECE(NewStyle,"PXW.Tools.Styles.",2)
     Quit ##super()_"&%STYLE="_..EscapeURL(NewStyle)
 }

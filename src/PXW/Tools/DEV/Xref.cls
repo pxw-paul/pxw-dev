@@ -24,7 +24,7 @@ ClassMethod WriteXRef(itemtype As %String, itemk1 As %String, itemk2 As %String,
 	}
 	;w "<pre>" zw rs w "</pre>"
 	Set showk3=$SELECT(flags[",SHOWK3":1,1:"")
-	Set showln=$S(flags["BY CALLED":1,1:0)
+	Set showln=$SELECT(flags["BY CALLED":1,1:0)
 	Set newflags=flags
 	Set newflags=$REPLACE(newflags,",BY ITEM","")
 	Set newflags=$REPLACE(newflags,",BY CALLED","")
@@ -99,7 +99,7 @@ ClassMethod WriteNav()
 	If flags'["SUPER" Write "<a href="""_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,flags_",SUPER",codeSearch)_""">Include Super</a>"
 	If flags["SUPER" Write "<a href="""_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,$REPLACE(flags,",SUPER",""),codeSearch)_""">Exclude Super</a>"
 
-	d ##class(PXW.Tools.Index).WriteForm(..%ClassName(1),..#ToolType,..#ToolName)
+	Do ##class(PXW.Tools.Index).WriteForm(..%ClassName(1),..#ToolType,..#ToolName)
 
 	/*
 	&html<

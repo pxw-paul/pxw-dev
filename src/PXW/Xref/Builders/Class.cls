@@ -5,7 +5,7 @@ Class PXW.Xref.Builders.Class Extends PXW.Xref.Builder
 
 Parameter CodeType = "CLS";
 
-/// The thing that $THIS or ..THIS means.
+/// The thing that $THIS or ..This means.
 Property This As %String;
 
 /// The command used for the call (set/kill)
@@ -751,7 +751,7 @@ Method xrefJSCosMethodReference(element As PXW.DEV.BNF.Elements.JS) As PXW.DEV.B
 {
     Set method=element.ToString(0)
 	Set atom=element.FirstAtom()
-    ; method in ..this class
+    ; method in ..This class
     If method?1".."1.E {
 		Do ..SaveCOSXref("CLS",..CalledByClassName,$PIECE(method,"..",2),"JScall",atom)
     } Else {
@@ -858,7 +858,7 @@ Method xrefSQLSelectCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.
 					Do ..SaveSQLXref("CLS",..CalledByClassName,fulltable_"."_fieldname,command,atom,.CalledByItem)
 				}
 			} Else {
-				Do ..ClassServer.GetClassPathFromTable(fulltable,fieldname,.patharray)			
+				Do ..ClassServer.GetClassPathFromTable(fulltable,fieldname,.patharray,..This)			
 				Set atom=cref.FirstAtom()
 				Set command=element.type
 				For i=1:1:$GET(patharray) {
@@ -897,7 +897,7 @@ Method xrefSQLInsertCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.
 	Set columnNameE=""
 	While sqlanalyse.NextColumnReference(.columnNameE,.fulltable,.fieldname) {
 		Kill patharray
-		Do ..ClassServer.GetClassPathFromTable(fulltable,fieldname,.patharray)
+		Do ..ClassServer.GetClassPathFromTable(fulltable,fieldname,.patharray,..This)
 		Set atom=columnNameE.FirstAtom()
 		Set command=element.type
 		For i=1:1:$GET(patharray) {
@@ -921,7 +921,7 @@ Method xrefSQLUpdateCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.
 	Set columnNameE=""
 	While sqlanalyse.NextColumnReference(.columnNameE,.fulltable,.fieldname) {
 		Kill patharray
-		Do ..ClassServer.GetClassPathFromTable(fulltable,fieldname,.patharray)
+		Do ..ClassServer.GetClassPathFromTable(fulltable,fieldname,.patharray,..This)
 		Set atom=columnNameE.FirstAtom()
 		Set command=element.type
 		For i=1:1:$GET(patharray) {
@@ -946,7 +946,7 @@ Method xrefSQLDeleteCommand(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.
 	Kill tables
 	While sqlanalyse.NextColumnReference(.columnNameE,.fulltable,.fieldname) {
 		Kill patharray
-		Do ..ClassServer.GetClassPathFromTable(fulltable,fieldname,.patharray)
+		Do ..ClassServer.GetClassPathFromTable(fulltable,fieldname,.patharray,..This)
 		Set atom=columnNameE.FirstAtom()
 		Set command=element.type
 		For i=1:1:$GET(patharray) {
