@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="IRIS" version="26" zv="IRIS for UNIX (Ubuntu Server LTS for x86-64 Containers) 2026.1 (Build 234U)" ts="2026-10-06 08:18:38">
+<Export generator="IRIS" version="26" zv="IRIS for UNIX (Ubuntu Server LTS for x86-64 Containers) 2026.1 (Build 234U)" ts="2026-10-09 08:09:59">
 <Class name="PXW.DEV.Atom">
 <Super>PXW.DEV.Particle</Super>
 <TimeChanged>67830,28950.607042217</TimeChanged>
@@ -161,7 +161,7 @@ Find the left-most comment which could be before some whitespace.</Description>
 <Class name="PXW.DEV.BNF.Analyse.COS">
 <IncludeCode>PXW.Debuggers.Macros</IncludeCode>
 <Super>PXW.DEV.BNF.Analyse.analyser</Super>
-<TimeChanged>67837,30165.375795021</TimeChanged>
+<TimeChanged>67851,69899.078418587</TimeChanged>
 <TimeCreated>67812,67238.099286582</TimeCreated>
 
 <Parameter name="CodeType">
@@ -440,6 +440,8 @@ Check to see if Classname is a subclass of the given superclass</Description>
 	If Classname2="-null-" Quit 1 ; 
 	If Classname1="%Library.Any" Quit 1 ; %Library.Any is compatible with everything
 	If Classname2="%Library.Any" Quit 1 ; 
+	if Classname1="%Library.ObjectHandle" Quit 1
+	if Classname2="%Library.ObjectHandle" Quit 1
 
 	Set cn1=..FullClassName(Classname1)
 	Set cn2=..FullClassName(Classname2)
@@ -1914,7 +1916,7 @@ best to analyse the entire codeblock all at once.</Description>
 
 <Class name="PXW.DEV.BNF.Analyse.SQL">
 <Super>PXW.DEV.BNF.Analyse.analyser</Super>
-<TimeChanged>67826,38397.168215971</TimeChanged>
+<TimeChanged>67849,61858.185696855</TimeChanged>
 <TimeCreated>67812,67238.164736006</TimeCreated>
 
 <Parameter name="CodeType">
@@ -2423,6 +2425,8 @@ returns the full table name of the column</Description>
                 Set:$ISOBJECT(..ClassServer) fulltable=..ClassServer.GetFullTableName(fulltable,..This)
             }
          }
+    } else {
+        set fulltable=$get(table)
     }
     Quit fulltable
 ]]></Implementation>
@@ -11333,7 +11337,7 @@ If there is NO whitespace leave alone, otherwise make it a single space.</Descri
 
 <Class name="PXW.DEV.BNF.Format.SQL">
 <Super>%RegisteredObject</Super>
-<TimeChanged>67812,67238.881772481</TimeChanged>
+<TimeChanged>67851,29549.645066663</TimeChanged>
 <TimeCreated>67812,67238.881772481</TimeCreated>
 
 <Property name="indent">
@@ -11410,84 +11414,97 @@ Whitespace on Comments is untouched. - WHICH IS NOT QUITE RIGHT FOR LINECOMMENTS
 <Method name="setAll">
 <FormalSpec>element:PXW.DEV.Element,indent:%Integer=0,flags:%String=""</FormalSpec>
 <Implementation><![CDATA[
-    If element.type="SelectCommand" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-        ; need to do the froms and joins to the same indent?
-        Set indent=indent+1 
-    }
+    #define BriefLimit 100
+    #define IsBrief(%e) $l(%e.ToString())<$$$BriefLimit
+    set brief=(flags["BRIEF")
+    if 'brief {
+        If element.type="SelectCommand" {
+            if $$$IsBrief(element) {
+                set flags="BRIEF"
+            } else {
+                Do ..setWhitespaceNewLineElement(element,indent)
+            }
+        }
 
-   If element.type="SelectInto" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-    }
+        if element.type="SelectList" {
+            set indent=indent+1
+        }
 
-    If element.type="SqlCaseExpression" {
-        Set indent=indent+1
-    }
+        If element.type="SelectInto" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+        }
 
-    If element.type="SqlCaseWhen" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-    }
-    If element.type="SqlCaseElse" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-    }
-    If element.type="SqlCaseEnd" {
-        Do ..setWhitespaceNewLineElement(element,indent-1)
-    }
+        If element.type="SqlCaseExpression" {
+            if $$$IsBrief(element) {
+                set flags="BRIEF"
+            }
+            Set indent=indent+1
+        }
 
-    If element.type="FromClause" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-    }
-    If element.type="TableSubquery" {
-        Set indent=indent+1
-    }
+        If element.type="SqlCaseWhen" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+        }
+        If element.type="SqlCaseElse" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+        }
+        If element.type="SqlCaseEnd" {
+            Do ..setWhitespaceNewLineElement(element,indent-1)
+        }
 
-    If element.type="Join" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-        Set indent=indent+1
-    }
-    If element.type="JoinOn" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-        Set flags="CONDITION"
-    }
+        If element.type="FromClause" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+        }
+        If element.type="TableSubquery" {
+            Set indent=indent+1
+        }
 
-    If element.type="WhereClause" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-        Set flags="CONDITION"
-        Set indent=indent+1
-    }
+        If element.type="Join" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+            Set indent=indent+1
+        }
+        If element.type="JoinOn" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+            Set flags="CONDITION"
+        }
 
-    ; put each AND on a new line, only applies to certain types of conditions (eg JOIN ON, WHERE)
-    If flags["CONDITION" {
-        If element.type="SqlDyadicop",$$$UPPER(element.ToString(0))="AND" {
+        If element.type="WhereClause" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+            Set flags="CONDITION"
+            Set indent=indent+1
+        }
+
+        ; put each AND on a new line, only applies to certain types of conditions (eg JOIN ON, WHERE)
+        If flags["CONDITION" {
+            If element.type="SqlDyadicop",$$$UPPER(element.ToString(0))="AND" {
+                Do ..setWhitespaceNewLineElement(element,indent)
+            }
+        }
+
+        If element.type="WithCommand" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+            Set indent=indent+1
+        }
+
+        If element.type="WithClause" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+            Set indent=indent+1
+        }
+
+        If element.type="SelectSublist" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+        }
+
+        If element.type="Union" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+        }
+
+        If element.type="GroupByClause" {
+            Do ..setWhitespaceNewLineElement(element,indent)
+        }
+        If element.type="OrderByClause" {
             Do ..setWhitespaceNewLineElement(element,indent)
         }
     }
-
-    If element.type="WithCommand" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-        Set indent=indent+1
-    }
-
-    If element.type="WithClause" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-        Set indent=indent+1
-    }
-
-    If element.type="SelectSublist" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-    }
-
-    If element.type="Union" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-    }
-
-    If element.type="GroupByClause" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-    }
-    If element.type="OrderByClause" {
-        Do ..setWhitespaceNewLineElement(element,indent)
-    }
-
     set akey=""
    	For  {
 		Set a=element.partsGetNext(.akey)
@@ -11534,7 +11551,7 @@ Whitespace on Comments is untouched. - WHICH IS NOT QUITE RIGHT FOR LINECOMMENTS
 
 <Class name="PXW.DEV.BNF.Format.SQLShowPlan">
 <Super>PXW.DEV.BNF.processor</Super>
-<TimeChanged>67847,42233.963922011</TimeChanged>
+<TimeChanged>67851,69599.208086557</TimeChanged>
 <TimeCreated>67846,55194.329264872</TimeCreated>
 
 <Property name="placeHolder">
@@ -11553,9 +11570,9 @@ keyed by +element</Description>
 <FormalSpec>element:PXW.DEV.Element</FormalSpec>
 <Implementation><![CDATA[
     ; find all Call Module and Module definitions and copy the module to the end of the call
-    do ..formatProcess(element,"PASS1")
+    Do ..formatProcess(element,"PASS1")
     ; now disconnect all the original modules from their content containers
-    do ..formatProcess(element,"PASS2")
+    Do ..formatProcess(element,"PASS2")
 ]]></Implementation>
 </Method>
 
@@ -11563,8 +11580,8 @@ keyed by +element</Description>
 <FormalSpec>element:PXW.DEV.Element,When:%String</FormalSpec>
 <Implementation><![CDATA[
 	$$$DEBUGMethodBegin
-	do ..processSpecificElement(element,When)
-	set partkey=""
+	Do ..processSpecificElement(element,When)
+	Set partkey=""
 	For  {
 		Set part=element.partsGetNext(.partkey)
 		Quit:partkey=""
@@ -11584,14 +11601,14 @@ For each call module X, rememeber this is calling X</Description>
 <ReturnType>PXW.DEV.BNF.Compilers.elementHandler</ReturnType>
 <ReturnTypeParams>Type="CallModule,CallModules",When="PASS1"</ReturnTypeParams>
 <Implementation><![CDATA[
-    do element.findElementsByType("ModuleName",.list,0)
-    if $isobject(list) {
-        for i=1:1:list.Count() {
-            s nameE=list.GetAt(i)
-            if $isobject(nameE) {
-                set name=nameE.ToString(0)
-                if name'="" {
-                    set ..placeHolder(name)=element
+    Do element.findElementsByType("ModuleName",.list,0)
+    If $ISOBJECT(list) {
+        For i=1:1:list.Count() {
+            Set nameE=list.GetAt(i)
+            If $ISOBJECT(nameE) {
+                Set name=nameE.ToString(0)
+                If name'="" {
+                    Set ..placeHolder(name)=element
                 }
             }
         }
@@ -11605,14 +11622,14 @@ For each call module X, rememeber this is calling X</Description>
 <ReturnType>PXW.DEV.BNF.Compilers.elementHandler</ReturnType>
 <ReturnTypeParams>Type="CallSubquery,CallSubqueies",When="PASS1"</ReturnTypeParams>
 <Implementation><![CDATA[
-    do element.findElementsByType("SubqueryName",.list,0)
-    if $isobject(list) {
-        for i=1:1:list.Count() {
-            s nameE=list.GetAt(i)
-            if $isobject(nameE) {
-                set name=nameE.ToString(0)
-                if name'="" {
-                    set ..placeHolder(name)=element
+    Do element.findElementsByType("SubqueryName",.list,0)
+    If $ISOBJECT(list) {
+        For i=1:1:list.Count() {
+            Set nameE=list.GetAt(i)
+            If $ISOBJECT(nameE) {
+                Set name=nameE.ToString(0)
+                If name'="" {
+                    Set ..placeHolder(name)=element
                 }
             }
         }
@@ -11631,10 +11648,10 @@ When module X is reached, move it to the end of the place holder</Description>
     #dim attE,nameE,locationE as PXW.DEV.BNF.Element
     Set modname=..GetAttributeValue(element,"name")
     If modname'="" {
-        set locationE=$g(..placeHolder(modname))
-        if $ISOBJECT(locationE) {
-            do locationE.AddPart(element)
-            set ..relocated(+element)=1
+        Set locationE=$GET(..placeHolder(modname))
+        If $ISOBJECT(locationE) {
+            Do locationE.AddPart(element)
+            Set ..relocated(+element)=1
         }
     } Else {
     }
@@ -11652,10 +11669,10 @@ When module X is reached, move it to the end of the place holder</Description>
     #dim attE,nameE,locationE as PXW.DEV.BNF.Element
     Set modname=..GetAttributeValue(element,"name")
     If modname'="" {
-        set locationE=$g(..placeHolder(modname))
-        if $ISOBJECT(locationE) {
-            do locationE.AddPart(element)
-            set ..relocated(+element)=1
+        Set locationE=$GET(..placeHolder(modname))
+        If $ISOBJECT(locationE) {
+            Do locationE.AddPart(element)
+            Set ..relocated(+element)=1
         }
     } Else {
     }
@@ -11668,15 +11685,15 @@ When module X is reached, move it to the end of the place holder</Description>
 <ReturnType>PXW.DEV.BNF.Compilers.elementHandler</ReturnType>
 <ReturnTypeParams>Type="Content",When="PASS2"</ReturnTypeParams>
 <Implementation><![CDATA[
-    set key=""
-    for {
-        set modele=element.partsGetNext(.key)
-        q:key=""
-        if $isobject(modele), $g(..relocated(+modele)) {
-            if modele.type="ModuleSection" {
-                 do element.partsRemove(key)
-            } elseif modele.type="SubquerySection" {
-               do element.partsRemove(key)
+    Set key=""
+    For {
+        Set modele=element.partsGetNext(.key)
+        Quit:key=""
+        If $ISOBJECT(modele), $GET(..relocated(+modele)) {
+            If modele.type="ModuleSection" {
+                 Do element.partsRemove(key)
+            } ElseIf modele.type="SubquerySection" {
+               Do element.partsRemove(key)
             }
         }
     }
@@ -99234,7 +99251,7 @@ Crazy caching in here, it all started so simple and then got a bit out of
 control!</Description>
 <IncludeCode>PXW.Debuggers.Macros</IncludeCode>
 <Super>PXW.DEV.Dictionary.CodeInterface</Super>
-<TimeChanged>67840,46029.145152529</TimeChanged>
+<TimeChanged>67851,69045.467328954</TimeChanged>
 <TimeCreated>67812,67240.494793826</TimeCreated>
 
 <Parameter name="CodeType">
@@ -99455,7 +99472,7 @@ ClassName must be in the same case as is it stored on oddDEF (eg PXW.DEV.Data.Xr
         Set docache=0
         Set timechanged=$GET(^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD"))
         If timechanged="" Set docache=1
-        If timechanged="no kill" set docache=2,timechanged=""
+        If timechanged="no kill" Set docache=2,timechanged=""
         If TimeStamp'="",TimeStamp]timechanged Set docache=1
         If docache {
             $$$DEBUG("Fetching from GMD DB_"_ClassName_" timechanged="_timechanged_" TimeStamp="_TimeStamp)
@@ -99611,7 +99628,7 @@ that its overriding</Description>
         Set cn=rs.%Get("parent")
         Set psqlname=rs.%Get("SqlFieldName")
         Set pname=rs.%Get("Name")
-        Set type=..FullClassName(rs.%Get("Type"),$p(ClassName,".",1,*-1))
+        Set type=..FullClassName(rs.%Get("Type"),$PIECE(ClassName,".",1,*-1))
         Set data=$LISTBUILD(pname,rs.%Get("RuntimeType"),psqlname,
                     rs.%Get("Collection"),type,rs.%Get("Origin"))            
         If psqlname'="" Set ^PXW.Cache("CDEF",NS,$$$UPPER(cn),"GPD","sqlname",$$$UPPER(psqlname))=data
@@ -99732,7 +99749,7 @@ that its overriding</Description>
                 Set pos=pos+1 
             }
             Set type=$EXTRACT(FormalSpec,start,pos-1)
-            Set type=..FullClassName(type,$p(ThisClass,".",1,*-1))
+            Set type=..FullClassName(type,$PIECE(ThisClass,".",1,*-1))
             If $EXTRACT(FormalSpec,pos)="(" {
                 Set pos=pos+1
                 ; type parameters
@@ -100024,27 +100041,27 @@ FormalSpec is parsed by me from the original FS which might not have
 
     ; some classes do not have all the inherited members, so work out here
     ; eg %BigData.ECPMsgConnection
-    if '$d(^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD")) {
-        if ..GetClassDetails(ClassName,,.super) {
-            for i=1:1:$l(super,",") {
-                s superclass=$p(super,",",i)
-                i superclass'="" {
-                    s fullsuper=..FullClassName(superclass)
-                    do ..GetMethodDetails(superclass,Name)
-                    s mname=""
+    If '$DATA(^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD")) {
+        If ..GetClassDetails(ClassName,,.super) {
+            For i=1:1:$LENGTH(super,",") {
+                Set superclass=$PIECE(super,",",i)
+                If superclass'="" {
+                    Set fullsuper=..FullClassName(superclass)
+                    Do ..GetMethodDetails(superclass,Name)
+                    Set mname=""
                     ; do not copy in the abstract methods, they are not inherited
-                    f  {
-                        s mname=$o(^PXW.Cache("CDEF",NS,$$$UPPER(fullsuper),"GMD",mname),1,mdata)
-                        q:mname=""
-                        i +$lg(mdata,10)=0 {
-                            s ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD",mname)=mdata
+                    For  {
+                        Set mname=$ORDER(^PXW.Cache("CDEF",NS,$$$UPPER(fullsuper),"GMD",mname),1,mdata)
+                        Quit:mname=""
+                        If +$LISTGET(mdata,10)=0 {
+                            Set ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD",mname)=mdata
                         }
                     }
                     ;m ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD")=^PXW.Cache("CDEF",NS,$$$UPPER(fullsuper),"GMD")
                 }
             }
             ; reset so that it will cache
-            s ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD")="no kill"
+            Set ^PXW.Cache("CDEF",NS,$$$UPPER(fcn),"GMD")="no kill"
         }
     }
 
@@ -100061,7 +100078,7 @@ FormalSpec is parsed by me from the original FS which might not have
     ;Set SQLSchemaName=$LISTGET(data,7)
     ;Set SQLName=$LISTGET(data,8)
     Set FormalSpec=$LISTGET(data,9)
-    Set Abstract=$LISTGET(data,10)
+    ;Set Abstract=$LISTGET(data,10)
 
     $$$DEBUG(("GetMethodDetails "_ClassName_"||"_Name_" data="_$SELECT(data="":"null",1:"ok")))
 
@@ -100324,7 +100341,7 @@ OwningClassName is the name of the class that the query belongs to. Used when no
     ;New %NS Set %NS=..Namespace.Name
     Set NS=..Namespace.Name
     Set table=SQLTableName
-    ;i table'[".",'$d(OwningClassName) break
+    ;i table'[".",'$d(OwningClassName) $$$DEBUG("table="_table)
     If table'[".",OwningClassName'="" {
         Set schema=$PIECE(OwningClassName,".",1,*-1)
         Set schema=$TRANSLATE(schema,".","_")
@@ -100537,10 +100554,10 @@ a(1)=$lb("f1.data.result","Race","f1.data.race")
 a(2)=$lb("f1.data.race","Circuit","f1.data.circuit")
 a(3)=$lb("f1.data.circuit","Name","data.model.string")
 if some step on the path cannot be found then the array will have blanks]]></Description>
-<FormalSpec>TableName:%String,FieldPath:%String,*PathArray:%List</FormalSpec>
+<FormalSpec>TableName:%String,FieldPath:%String,*PathArray:%List,OwningClassName:%String</FormalSpec>
 <Implementation><![CDATA[
 	
-    Set classname=..GetClassNameFromTableName(TableName)
+    Set classname=..GetClassNameFromTableName(TableName,OwningClassName)
     For i=1:1:$LENGTH(FieldPath,"->") {
         ; the objectchain has the "." and the name
         Set fieldname=$PIECE(FieldPath,"->",i)
@@ -101794,7 +101811,7 @@ The base class for groups of atoms that make up an element.
 Elements can be subclassed to store extra data. </Description>
 <IncludeCode>PXW.DEV.BNF.ElementMacros</IncludeCode>
 <Super>PXW.DEV.Particle</Super>
-<TimeChanged>67845,61115.408560381</TimeChanged>
+<TimeChanged>67851,66716.01540489</TimeChanged>
 <TimeCreated>67812,67237.873167392</TimeCreated>
 
 <Property name="type">
@@ -102178,10 +102195,10 @@ This is relatively slow. Might be better to go for findElementByType for simpler
 		For i=1:1:list1.Count() { 
 			Do OutputList.Insert(list1.GetAt(i))
 		}
-	} Elseif list1 {
+	} Elseif $g(list1) {
 		Set OutputList=list1
 	}
-	$$$DEBUG("OuputList.Count()="_$SELECT(OutputList:OutputList.Count(),1:"UNDEFINDED"))
+	$$$DEBUG("OuputList.Count()="_$SELECT($g(OutputList):OutputList.Count(),1:"UNDEFINDED"))
 	$$$DEBUGMethodEnd
 ]]></Implementation>
 </Method>
@@ -102243,7 +102260,7 @@ Condition only supports = at the moment</Description>
 <Description>
 based on https://lisperator.net/pltut/parser/input-stream</Description>
 <Super>%RegisteredObject</Super>
-<TimeChanged>67812,67237.902650032</TimeChanged>
+<TimeChanged>67851,62177.208987956</TimeChanged>
 <TimeCreated>67812,67237.902650032</TimeCreated>
 
 <Property name="input">
@@ -102285,11 +102302,12 @@ see if we are stuck</Description>
 <InitialExpression>0</InitialExpression>
 </Property>
 
-<Parameter name="nextCountLimit">
+<Property name="nextCountLimit">
 <Description>
 crazy limit on count, there must be some problem somewhere (probably with recursive rules)</Description>
-<Default>100000</Default>
-</Parameter>
+<Type>%Integer</Type>
+<InitialExpression>100000</InitialExpression>
+</Property>
 
 <Method name="NewString">
 <ClassMethod>1</ClassMethod>
@@ -102306,6 +102324,7 @@ crazy limit on count, there must be some problem somewhere (probably with recurs
 	Set reader.line=1
 	Set reader.col=0
 	Set reader.length=$LENGTH(Code)
+	set reader.nextCountLimit=reader.length*4 
 	Quit reader
 ]]></Implementation>
 </Method>
@@ -102326,7 +102345,7 @@ Get the next character, taking into account it might be the EOL</Description>
 		Set ..lastPos=..pos,..nextCount=0
 	} Else {
 		Set ..nextCount=..nextCount+1
-		If ..nextCount>..#nextCountLimit {
+		If ..nextCount>..nextCountLimit {
 			$$$ThrowStatus($$$ERROR(5001,"Next Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
 		}
 	}
@@ -102372,7 +102391,7 @@ returns the string that contains only the given characters</Description>
 		Set ..lastPos=..pos,..nextCount=0
 	} Else {
 		Set ..nextCount=..nextCount+1
-		If ..nextCount>..#nextCountLimit {
+		If ..nextCount>..nextCountLimit {
 			$$$ThrowStatus($$$ERROR(5001,"NextMany Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
 		}
 	}
@@ -102393,7 +102412,7 @@ Read some char, the next chars are NOT checked to see if it is an EOL, saves tim
 		Set ..lastPos=..pos,..nextCount=0
 	} Else {
 		Set ..nextCount=..nextCount+1
-		If ..nextCount>..#nextCountLimit {
+		If ..nextCount>..nextCountLimit {
 			$$$ThrowStatus($$$ERROR(5001,"NextNOTEol Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
 		}
 	}
@@ -102423,7 +102442,7 @@ returns the string to the EOL but NOT the eol char itself</Description>
 		Set ..lastPos=..pos,..nextCount=0
 	} Else {
 		Set ..nextCount=..nextCount+1
-		If ..nextCount>..#nextCountLimit {
+		If ..nextCount>..nextCountLimit {
 			$$$ThrowStatus($$$ERROR(5001,"NextToEol Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
 		}
 	}
@@ -102450,7 +102469,7 @@ returns the string to the EOL but NOT the eol char itself</Description>
 		Set ..lastPos=..pos,..nextCount=0
 	} Else {
 		Set ..nextCount=..nextCount+1
-		If ..nextCount>..#nextCountLimit {
+		If ..nextCount>..nextCountLimit {
 			$$$ThrowStatus($$$ERROR(5001,"NextToString Reached NextCountLimit. line="_..line_", ..Peek(0,50)="_..Peek(0,50)))
 		}
 	}
@@ -103568,7 +103587,7 @@ returned by <b>GetInfo</b>. It is used by the various <b>ResultSet</b> objects.]
 
 <Class name="PXW.Tools.DEV.Analyse">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67843,70002.715626875</TimeChanged>
+<TimeChanged>67851,69432.321273238</TimeChanged>
 <TimeCreated>67812,67241.279479615</TimeCreated>
 
 <Parameter name="ToolType">
@@ -103662,7 +103681,7 @@ If the tool does not have a name then it does not appear on the index page by de
 <Implementation><![CDATA[
 	Write "<a href="""_##class(PXW.Tools.DEV.XrefBuild).HREFTo()_""">Build Xref/Analysis</a>"
 	
-	d ##class(PXW.Tools.Index).WriteForm(..%ClassName(1),..#ToolType,..#ToolName)
+	Do ##class(PXW.Tools.Index).WriteForm(..%ClassName(1),..#ToolType,..#ToolName)
 ]]></Implementation>
 </Method>
 
@@ -103712,9 +103731,9 @@ Show the analysis warnings found during analysis of the code. The analysis happe
 <ReturnType>%String</ReturnType>
 <Implementation><![CDATA[
 	Do ..HREFFrom(.itemtype,.itemk1,.itemk2,,.lastupdate)
-	set title="Analysis of "_itemtype_" "_itemk1_":"_itemk2
+	Set title="Analysis of "_itemtype_" "_itemk1_":"_itemk2
 	If itemk1="",itemk2="",lastupdate="" {
-		set title="Showing recently updated"
+		Set title="Showing recently updated"
 	}
 	Quit title
 ]]></Implementation>
@@ -103810,7 +103829,7 @@ Switch to another NameSpace.
 
 <Class name="PXW.Tools.DEV.ChangeStyle">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67843,72198.444637619</TimeChanged>
+<TimeChanged>67851,69419.18483086</TimeChanged>
 <TimeCreated>67812,67241.339919335</TimeCreated>
 
 <Parameter name="ToolName">
@@ -103845,7 +103864,7 @@ Switch to another NameSpace.
 				</details>
 				<details open>
 					<summary id="MainForm">Main Form</summary>
-					#($s(##class(PXW.Tools.Index).WriteFormInSection(..%ClassName(1),..#ToolType,"Example form"):"",1:"FAILED TO WRITE FORM"))#
+					#($SELECT(##class(PXW.Tools.Index).WriteFormInSection(..%ClassName(1),..#ToolType,"Example form"):"",1:"FAILED TO WRITE FORM"))#
 					<!--form>
 						<fieldset>
 							<legend>Main form</legend>
@@ -103885,7 +103904,7 @@ Output 1 Anchor tag for each option in the navigation. Use the scratch variable 
 		<a href="#">These are simple links</a>
 		<hr>
 	>
-	d ##class(PXW.Tools.Index).WriteForm(..%ClassName(1),..#ToolType,..#ToolName)
+	Do ##class(PXW.Tools.Index).WriteForm(..%ClassName(1),..#ToolType,..#ToolName)
 ]]></Implementation>
 </Method>
 
@@ -103895,15 +103914,15 @@ Output 1 Anchor tag for each option in the navigation. Use the scratch variable 
 <Implementation><![CDATA[
 
 	Write "<table>"
-	write "<tr>"
-	write "    <th>No.</th>"
-	write "    <th>hilightSET / varid</th>"
-	write "    <th>hilightGET / fetchid</th>"
-	write "    <th>hilightDEF / defid</th>"
-	write "</tr>"
+	Write "<tr>"
+	Write "    <th>No.</th>"
+	Write "    <th>hilightSET / varid</th>"
+	Write "    <th>hilightGET / fetchid</th>"
+	Write "    <th>hilightDEF / defid</th>"
+	Write "</tr>"
 	For i=1:1:9 {
 		Write "<tr>"
-		write "<td>"_i_"</td>"
+		Write "<td>"_i_"</td>"
 		Write "<td><span class=hiliteSET"_i_">variable</span></td>"
 		Write "<td><span class=hiliteGET"_i_">variable</span></td>"
 		Write "<td><span class=hiliteDEF"_i_">&nbsp;&nbsp;&nbsp;&nbsp; block of code &nbsp;&nbsp;&nbsp;&nbsp;</span></td>"
@@ -104193,7 +104212,7 @@ Styles can be created by extending <class>PXW.Tools.Styles.super</class>]]></Des
 <FormalSpec>NewStyle:%String</FormalSpec>
 <ReturnType>%String</ReturnType>
 <Implementation><![CDATA[
-	set NewStyle=$G(NewStyle,$G(%STYLENAME))
+	Set NewStyle=$GET(NewStyle,$GET(%STYLENAME))
 	If NewStyle["PXW.Tools.Styles" Set NewStyle=$PIECE(NewStyle,"PXW.Tools.Styles.",2)
     Quit ##super()_"&%STYLE="_..EscapeURL(NewStyle)
 ]]></Implementation>
@@ -104259,7 +104278,7 @@ XData xmlstuff
 
 <Class name="PXW.Tools.DEV.Class">
 <Super>PXW.Tools.DEV.CodeDisplayPage</Super>
-<TimeChanged>67848,62171.320815666</TimeChanged>
+<TimeChanged>67851,69139.026984276</TimeChanged>
 <TimeCreated>67812,67241.373285922</TimeCreated>
 
 <Parameter name="CodeType">
@@ -104398,7 +104417,7 @@ s %NS="LOCAL_USER" d ##class(PXW.Tools.DEV.Class).WriteClass("%iKnow.Classificat
     Set output=##class(PXW.Tools.DEV.HTML.bnf).%New()
 	Set output.ThisType=..#CodeType
 	Set output.FormatEmbeddedSQl=$SELECT($$$UPPER(FormatOptions)["NOSQLFORMATTING":0,1:1)
-	set output.ClassCommentsAsDocumentation=$s($$$UPPER(FormatOptions)["DOCBOOKMODE":1,1:0)
+	Set output.ClassCommentsAsDocumentation=$SELECT($$$UPPER(FormatOptions)["DOCBOOKMODE":1,1:0)
 	Set output.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace(%NS)
 	Set sc=output.ClassServer.GetClassStudioText(ClassName,.text,.linesOfCode,.timestamp)
 	Set zh(1,"load")=$ZHOROLOG-zh,zh=$ZHOROLOG
@@ -104470,10 +104489,13 @@ s %NS="LOCAL_USER" d ##class(PXW.Tools.DEV.Class).WriteClass("%iKnow.Classificat
 		Set zh(5,"render end")=$ZHOROLOG-zh,zh=$ZHOROLOG
 
 		If forceXref {
+			Write "<pre>"
 			$$$DEBUGNew(##class(PXW.Tools.Debugger).%New())
 			$$$DEBUG("Xref build")
-			Do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName,1,1)
+			Set sc=##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName,1,1)
+			If $$$ISERR(sc) Do ..WriteStatus(sc)
 			$$$DEBUGStop
+			Write "</pre>"
 		} Else {
 			Do ##class(PXW.Xref.Build).Build(%NS,"CLS",ClassName,0)
 		}
@@ -104557,33 +104579,33 @@ s %NS="LOCAL_USER" d ##class(PXW.Tools.DEV.Class).WriteClass("%iKnow.Classificat
 	If $ISOBJECT($GET(scratch)) {
 		Set output=scratch
 		Write "<hr>"
-		if formatoptions["DOCBOOKMODE" {
+		If formatoptions["DOCBOOKMODE" {
 			While output.NextIndexItemByName(.name,.type,.anchor,.error,.typename) {
-				if typename'="" {
-					set bytype(typename,name)=$lb(anchor,error)
+				If typename'="" {
+					Set bytype(typename,name)=$LISTBUILD(anchor,error)
 				}
 			}
-			s type=""
-			f  {
-				s type=$o(bytype(type))
-				q:type=""
+			Set type=""
+			For  {
+				Set type=$ORDER(bytype(type))
+				Quit:type=""
 
-				w "<details>"
-				w "<summary>"_..EscapeHTML(type)_"</summary>"
-				s name=""
-				f  {
-					s name=$o(bytype(type,name),1,data)
-					q:name=""
-					s $lb(anchor,error)=data
+				Write "<details>"
+				Write "<summary>"_..EscapeHTML(type)_"</summary>"
+				Set name=""
+				For  {
+					Set name=$ORDER(bytype(type,name),1,data)
+					Quit:name=""
+					Set $LISTBUILD(anchor,error)=data
 					If error="" {
 						Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_"CDEF"_type_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
 					} Else {
 						Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_$$$classError_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
 					}
 				}
-				w "</details>"
+				Write "</details>"
 			}
-		} else {
+		} Else {
 			While output.NextIndexItemByName(.name,.type,.anchor,.error) {
 					If error="" {
 						Write "<a onclick='HiliteElement("""_anchor_"SPAN"");' class='"_"CDEF"_type_"' href=#"_anchor_">"_..EscapeHTML(name)_"</a>"
@@ -105816,7 +105838,7 @@ OVERRIDING StoredFunction </Description>
 <Class name="PXW.Tools.DEV.HTML.bnf">
 <IncludeCode>PXW.Tools.Styles.macros</IncludeCode>
 <Super>PXW.Tools.DEV.HTML.output</Super>
-<TimeChanged>67848,62209.520087131</TimeChanged>
+<TimeChanged>67851,70329.024770033</TimeChanged>
 <TimeCreated>67812,67241.836204596</TimeCreated>
 
 <Property name="Analyser">
@@ -107460,7 +107482,7 @@ Method writeSQLWithClause(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Co
 
 <Method name="findElementsSkipSub">
 <ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[Object:PXW.DEV.Element,Type:%String,&OutputList:%ListOfObjects(ELEMENTTYPE="PXW.DEV.Element")]]></FormalSpec>
+<FormalSpec><![CDATA[Object:PXW.DEV.Element,Type:%String,&OutputList:%ListOfObjects(ELEMENTTYPE="PXW.DEV.Element")=""]]></FormalSpec>
 <Implementation><![CDATA[
     #dim ele as PXW.DEV.Element
     If Object.type=Type {
@@ -107579,7 +107601,7 @@ Method writeSQLWithClause(element As PXW.DEV.BNF.Elements.SQL) As PXW.DEV.BNF.Co
     Kill values
     Do element.findElementsXPath("InsertMethod/InsertValuesList/UpdateValues/SqlExpression",.values)
     Do element.findElementsXPath("InsertMethod/InsertMultirow/SelectCommand/SelectList/SelectSublist/DerivedColumn/SqlExpression",.values)
-    If $ISOBJECT(values) {
+    If $ISOBJECT($Get(values)) {
         For i=1:1:values.Count() {
             Set valueE=values.GetAt(i)
             Do ..wrapElementHTML(valueE,"<span class=""SQLSection"" title=""Col "_i_" ("_$GET(colidx(i))_")"">","</span>")
@@ -108235,7 +108257,7 @@ Method wrapCommentBlock(Element As PXW.DEV.Element, preValue As %String = "", po
 <Class name="PXW.Tools.DEV.HTML.output">
 <IncludeCode>PXW.Debuggers.Macros,PXW.Tools.Styles.macros</IncludeCode>
 <Super>PXW.DEV.BNF.processor</Super>
-<TimeChanged>67848,62131.633431479</TimeChanged>
+<TimeChanged>67850,71567.248838699</TimeChanged>
 <TimeCreated>67812,67241.874251789</TimeCreated>
 
 <Property name="This">
@@ -110128,7 +110150,7 @@ Used to SHOW the settings only. There is no update yet.
 
 <Class name="PXW.Tools.DEV.Xref">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67842,67768.311769653</TimeChanged>
+<TimeChanged>67851,69538.019896346</TimeChanged>
 <TimeCreated>67812,67241.719174931</TimeCreated>
 
 <Parameter name="ToolName">
@@ -110162,7 +110184,7 @@ Used to SHOW the settings only. There is no update yet.
 	}
 	;w "<pre>" zw rs w "</pre>"
 	Set showk3=$SELECT(flags[",SHOWK3":1,1:"")
-	Set showln=$S(flags["BY CALLED":1,1:0)
+	Set showln=$SELECT(flags["BY CALLED":1,1:0)
 	Set newflags=flags
 	Set newflags=$REPLACE(newflags,",BY ITEM","")
 	Set newflags=$REPLACE(newflags,",BY CALLED","")
@@ -110239,7 +110261,7 @@ Used to SHOW the settings only. There is no update yet.
 	If flags'["SUPER" Write "<a href="""_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,flags_",SUPER",codeSearch)_""">Include Super</a>"
 	If flags["SUPER" Write "<a href="""_..HREFTo(itemtype,itemk1,itemk2,calledByCommand,calledByKey1,calledByKey2,windowSize,$REPLACE(flags,",SUPER",""),codeSearch)_""">Exclude Super</a>"
 
-	d ##class(PXW.Tools.Index).WriteForm(..%ClassName(1),..#ToolType,..#ToolName)
+	Do ##class(PXW.Tools.Index).WriteForm(..%ClassName(1),..#ToolType,..#ToolName)
 
 	/*
 	&html<
@@ -110564,7 +110586,7 @@ Calling page is passed in so you can decide what to display on the form/if anyth
 
 <Class name="PXW.Tools.DEV.XrefBuildProblems">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67843,71365.580581688</TimeChanged>
+<TimeChanged>67851,68702.663308317</TimeChanged>
 <TimeCreated>67812,67241.777757121</TimeCreated>
 
 <Parameter name="ToolName">
@@ -110607,7 +110629,10 @@ ID, BuildStatus, ItemKey1, ItemType, LastUpdate, NameSpace</Description>
 		Write "</td>"
 		Write "<td>"_..EscapeHTML(rs.LastUpdate)_"</td>"
 		Set txt=$SYSTEM.Status.GetErrorText(rs.BuildStatus)
-        Write "<td>"_..EscapeHTML(txt)_"</td>"
+		write "<td><details>"
+        Write "<summary>"_..EscapeHTML(txt)_"</summary>"
+		do ..WriteStatus(rs.BuildStatus)
+		write "</details></td>"
 		Write "</tr>",!
 	}
 	Write "</tbody></table>"
@@ -110834,7 +110859,7 @@ Tends to be called more often with all sorts of data passed in</Description>
 
 <Class name="PXW.Tools.Index">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67843,68969.323442596</TimeChanged>
+<TimeChanged>67851,69463.438269082</TimeChanged>
 <TimeCreated>67812,67241.161298851</TimeCreated>
 
 <Method name="WriteStyles">
@@ -110865,7 +110890,7 @@ the layout information can go here.
 	;Write "<div class='grid-container'>"
 	Write "<div>"
 	While rs.%Next() {
-		set name=rs.%Get("ClassName")
+		Set name=rs.%Get("ClassName")
 		Set type=rs.%Get("ToolType")
 		Set toolname=rs.%Get("ToolName")
 		Do ..WriteFormInSection(name,type,toolname)
@@ -110905,7 +110930,7 @@ It pulls the defaults directly from the %request data.</Description>
 						; if I find one thats not I will deal with this later
 						Set VNAME=$TRANSLATE(VAR,"abcdefghijklmnopqrstuvwxyz")
 						Set DEF=$TRANSLATE(DEF,"""")
-						set DEF=%request.Get(VNAME,DEF)
+						Set DEF=%request.Get(VNAME,DEF)
 						Set iid=aname_VNAME
 						&html<<p><label for=#(iid)#>#(VAR)#</label>>
 						If TYP="%Boolean" {
@@ -110915,7 +110940,7 @@ It pulls the defaults directly from the %request data.</Description>
 						}
 						&html<</p>>
 						Set accesskey=""
-					} else {
+					} Else {
 						;WRITE "else VAR="_VAR
 					}
 				}
@@ -110950,12 +110975,12 @@ Doing it this way for speed of development.</Description>
 		<details id="#(aname)#" class=#(css)#>
 			<summary>#(ToolName)#</summary>
 		>
-		w "<span style=""display:inline-block"">" 
-			d ..WriteForm(ClassName,Type,ToolName) 
-		w "</span>"
-		w "<span style=""valign:top; display:inline-block"">" 
-			if HREFto.Description'="" write HREFto.Description
-		w "</span>"
+		Write "<span style=""display:inline-block"">" 
+			Do ..WriteForm(ClassName,Type,ToolName) 
+		Write "</span>"
+		Write "<span style=""valign:top; display:inline-block"">" 
+			If HREFto.Description'="" Write HREFto.Description
+		Write "</span>"
 		
 		&html<</details>>
 	}
@@ -110971,11 +110996,11 @@ Doing it this way for speed of development.</Description>
 	Set rs=##class(PXW.Tools.Queries).SelectToolsForNamespaceFunc(%NS)
 	
 	While rs.%Next() {
-		set name=rs.%Get("ClassName")
+		Set name=rs.%Get("ClassName")
 		;Set type=rs.%Get("ToolType")
 		Set toolname=rs.%Get("ToolName")
 		
-		if toolname'="" {
+		If toolname'="" {
 			Write "<a href="""_$CLASSMETHOD(name,"HREFTo")_""">"_..EscapeHTML(toolname)_"</a>"
 		}
 	}
@@ -111010,7 +111035,7 @@ Override the HREFTo method so that tools can get a HREF TO a page:
 </p>]]></Description>
 <IncludeCode>PXW.Debuggers.Macros,PXW.Tools.Styles.macros</IncludeCode>
 <Super>%CSP.Page</Super>
-<TimeChanged>67846,70311.601727153</TimeChanged>
+<TimeChanged>67851,69763.779104189</TimeChanged>
 <TimeCreated>67812,67241.19484692</TimeCreated>
 
 <Parameter name="ToolType">
@@ -111048,6 +111073,7 @@ This sets up some floating % variables that can be accessed at any time.
 	#dim %request as %CSP.Request
 	#dim %session as %CSP.Session
 	#dim %response as %CSP.Response
+	#dim %STYLE as PXW.Tools.Styles.super
 	
 	; A login page may set up a original_user session variable that we can use to sign in here 
 	If $GET(%session.Data("original user"))]"" {
@@ -111576,6 +111602,14 @@ Write out extra javascript here, the SCRIPT tags are already in place.</Descript
 			}
         } 
         Write "<pre style='color:red;'>" Write txt Write "</pre>"	
+		Write "<pre>"
+		Set stack=err(1,"stack")
+		For i=1:1:$LISTLENGTH(stack) {
+			Set stackd=$LIST(stack,i)
+			Set type=$PIECE(stackd,"^",1),caller=$PIECE(stackd,"^",2,3)
+			If type'="",caller'="^" Write !,type_" <a class='"_$$$classLabel_"' href="""_##class(PXW.Tools.DEV.Routine).HREFTo(caller)_""">"_..EscapeHTML(caller)_"</a>"
+		}
+		Write "</pre>"
     }
 ]]></Implementation>
 </Method>
@@ -112532,7 +112566,7 @@ Base class for pages that have a Top, Left, and Right content:
 
 <Class name="PXW.Tools.Styles.LightDark">
 <Super>PXW.Tools.Styles.super</Super>
-<TimeChanged>67848,59691.027239005</TimeChanged>
+<TimeChanged>67851,68871.077857658</TimeChanged>
 <TimeCreated>67812,67242.027290465</TimeCreated>
 
 <Method name="WriteStyles">
@@ -112632,6 +112666,8 @@ Base class for pages that have a Top, Left, and Right content:
 	table tbody tr:Hover { background-color: var(--bgHover);  }
 	
 	td input { width: 100%;}
+
+	td details summary { font-size: medium;}
 
 	details {
 		margin:0.5em;
@@ -114818,7 +114854,7 @@ A list of namespaces where there has not been a build today</Description>
 <Class name="PXW.Xref.Builders.Class">
 <IncludeCode>PXW.Debuggers.Macros</IncludeCode>
 <Super>PXW.Xref.Builder</Super>
-<TimeChanged>67840,44858.145640344</TimeChanged>
+<TimeChanged>67851,68513.823884707</TimeChanged>
 <TimeCreated>67812,67242.526606818</TimeCreated>
 
 <Parameter name="CodeType">
@@ -114827,7 +114863,7 @@ A list of namespaces where there has not been a build today</Description>
 
 <Property name="This">
 <Description>
-The thing that $THIS or ..THIS means.</Description>
+The thing that $THIS or ..This means.</Description>
 <Type>%String</Type>
 </Property>
 
@@ -115735,7 +115771,7 @@ Method xrefCDEF(element as PXW.DEV.BNF.Elements.ClassDefinition) As PXW.DEV.BNF.
 <Implementation><![CDATA[
     Set method=element.ToString(0)
 	Set atom=element.FirstAtom()
-    ; method in ..this class
+    ; method in ..This class
     If method?1".."1.E {
 		Do ..SaveCOSXref("CLS",..CalledByClassName,$PIECE(method,"..",2),"JScall",atom)
     } Else {
@@ -115863,7 +115899,7 @@ Method xrefCOS(element as PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.ele
 					Do ..SaveSQLXref("CLS",..CalledByClassName,fulltable_"."_fieldname,command,atom,.CalledByItem)
 				}
 			} Else {
-				Do ..ClassServer.GetClassPathFromTable(fulltable,fieldname,.patharray)			
+				Do ..ClassServer.GetClassPathFromTable(fulltable,fieldname,.patharray,..This)			
 				Set atom=cref.FirstAtom()
 				Set command=element.type
 				For i=1:1:$GET(patharray) {
@@ -115906,7 +115942,7 @@ Method xrefCOS(element as PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.ele
 	Set columnNameE=""
 	While sqlanalyse.NextColumnReference(.columnNameE,.fulltable,.fieldname) {
 		Kill patharray
-		Do ..ClassServer.GetClassPathFromTable(fulltable,fieldname,.patharray)
+		Do ..ClassServer.GetClassPathFromTable(fulltable,fieldname,.patharray,..This)
 		Set atom=columnNameE.FirstAtom()
 		Set command=element.type
 		For i=1:1:$GET(patharray) {
@@ -115934,7 +115970,7 @@ Method xrefCOS(element as PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.ele
 	Set columnNameE=""
 	While sqlanalyse.NextColumnReference(.columnNameE,.fulltable,.fieldname) {
 		Kill patharray
-		Do ..ClassServer.GetClassPathFromTable(fulltable,fieldname,.patharray)
+		Do ..ClassServer.GetClassPathFromTable(fulltable,fieldname,.patharray,..This)
 		Set atom=columnNameE.FirstAtom()
 		Set command=element.type
 		For i=1:1:$GET(patharray) {
@@ -115963,7 +115999,7 @@ Method xrefCOS(element as PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.ele
 	Kill tables
 	While sqlanalyse.NextColumnReference(.columnNameE,.fulltable,.fieldname) {
 		Kill patharray
-		Do ..ClassServer.GetClassPathFromTable(fulltable,fieldname,.patharray)
+		Do ..ClassServer.GetClassPathFromTable(fulltable,fieldname,.patharray,..This)
 		Set atom=columnNameE.FirstAtom()
 		Set command=element.type
 		For i=1:1:$GET(patharray) {
@@ -117604,963 +117640,6 @@ gettreerecurse(NameSpace,ItemKey1,ItemKey2)
 </Class>
 
 
-<Class name="PXW.samples.SpeedTests">
-<Description>
-class to use to test various things for speed</Description>
-<IncludeCode>PXW.Debuggers.Macros</IncludeCode>
-<Super>%RegisteredObject</Super>
-<TimeChanged>67817,63095.906842682</TimeChanged>
-<TimeCreated>67815,69810.564583132</TimeCreated>
-
-<Parameter name="TestString">
-<Default>This is a test string</Default>
-</Parameter>
-
-<Method name="All">
-<ClassMethod>1</ClassMethod>
-<Implementation><![CDATA[
-    d ..UnusedReturns()
-    d ..ObjectCheckPos()
-    d ..ObjectCheckNeg()
-    d ..ParameterPassingNumber()
-    d ..ParameterPassingString()
-    d ..ParameterPassingObject()
-    d ..IncrementArray()
-    d ..IncrementVsString()
-    d ..ConCatString()
-    d ..ConCatStringNull()
-    d ..ConCatNullNull()
-    d ..ConCatFromArray()
-    d ..NestFunctions()
-    d ..DataTestPos()
-    d ..DataTestNeg()
-    d ..IfTest()
-    d ..IfTestNull()
-    d ..ReuseVar()
-    d ..TestKeyword()
-]]></Implementation>
-</Method>
-
-<Method name="TestKeyword">
-<ClassMethod>1</ClassMethod>
-<Implementation><![CDATA[
-
-    w !,"TestKeyword"
-    s m=100000
-    s line="Keyword parameter"
-
-    d ..startTimer(.res,"s i=2 While $e(line,i)?1AN { s i=i+1 }")
-    f j=1:1:m {
-        s i=2 
-        While $e(line,i)?1AN { s i=i+1 }
-        s x=$e(line,1,i-1)
-    }
-    w !,"x="_x_"."
-    d ..stopTimer(.res)
-
-   d ..startTimer(.res,"s i=1 While $e(line,$i(i))?1AN { }")
-    f j=1:1:m {
-        s i=1 
-        While $e(line,$i(i))?1AN { }
-        s x=$e(line,1,i-1)
-    }
-    w !,"x="_x_"."
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"s i=2 While $e(line,i,i)?1AN { s i=i+1 }")
-    f j=1:1:m {
-        s i=2 
-        While $e(line,i,i)?1AN { s i=i+1 }
-        s x=$e(line,1,i-1)
-    }
-    w !,"x="_x_"."
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"s i=2 While $e(line,$i(i),i)?1AN {  }")
-    f j=1:1:m {
-        s i=2 
-        While $e(line,$i(i),i)?1AN { }
-        s x=$e(line,1,i-1)
-    }
-    w !,"x="_x_"."
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"s i=2 While $e(line,$i(i))?1AN {  }")
-    f j=1:1:m {
-        s i=2 
-        While $e(line,$i(i))?1AN { }
-        s x=$e(line,1,i-1)
-    }
-    w !,"x="_x_"."
-    d ..stopTimer(.res)
-
-    d ..showRes(.res)
-]]></Implementation>
-</Method>
-
-<Method name="ReuseVar">
-<ClassMethod>1</ClassMethod>
-<Implementation><![CDATA[
-    w !,"ReuseVar"
-    s m=10000
-    s var=""
-
-    d ..startTimer(.res,"Reuse same 10 times")
-    f i=1:1:m {
-        s var=##class(PXW.DEV.Element).%New() ; 1
-        s var=##class(PXW.DEV.Element).%New() ; 2
-        s var=##class(PXW.DEV.Element).%New() ; 3
-        s var=##class(PXW.DEV.Element).%New() ; 4
-        s var=##class(PXW.DEV.Element).%New() ; 5
-        s var=##class(PXW.DEV.Element).%New() ; 6
-        s var=##class(PXW.DEV.Element).%New() ; 7
-        s var=##class(PXW.DEV.Element).%New() ; 8
-        s var=##class(PXW.DEV.Element).%New() ; 9
-        s var=##class(PXW.DEV.Element).%New() ; 10
-    }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"Use 10 diferent")
-    f i=1:1:m {
-        s var1=##class(PXW.DEV.Element).%New() ; 1
-        s var2=##class(PXW.DEV.Element).%New() ; 2
-        s var3=##class(PXW.DEV.Element).%New() ; 3
-        s var4=##class(PXW.DEV.Element).%New() ; 4
-        s var5=##class(PXW.DEV.Element).%New() ; 5
-        s var6=##class(PXW.DEV.Element).%New() ; 6
-        s var7=##class(PXW.DEV.Element).%New() ; 7
-        s var8=##class(PXW.DEV.Element).%New() ; 8
-        s var9=##class(PXW.DEV.Element).%New() ; 9
-        s var0=##class(PXW.DEV.Element).%New() ; 10
-    }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"Reuse same 10 times in method call")
-    f i=1:1:m {
-        d ..newElement(.var) ; 1
-        d ..newElement(.var) ; 2
-        d ..newElement(.var) ; 3
-        d ..newElement(.var) ; 4
-        d ..newElement(.var) ; 5
-        d ..newElement(.var) ; 6
-        d ..newElement(.var) ; 7
-        d ..newElement(.var) ; 8
-        d ..newElement(.var) ; 9
-        d ..newElement(.var) ; 10
-    }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"Use 10 different in method call")
-    f i=1:1:m {
-        d ..newElement(.var1) ; 1
-        d ..newElement(.var2) ; 2
-        d ..newElement(.var3) ; 3
-        d ..newElement(.var4) ; 4
-        d ..newElement(.var5) ; 5
-        d ..newElement(.var6) ; 6
-        d ..newElement(.var7) ; 7
-        d ..newElement(.var8) ; 8
-        d ..newElement(.var9) ; 9
-        d ..newElement(.var0) ; 10
-    }
-    d ..stopTimer(.res)
-
-
-
-    d ..showRes(.res)
-]]></Implementation>
-</Method>
-
-<Method name="newElement">
-<ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[&ele]]></FormalSpec>
-<Implementation><![CDATA[
-    s ele=##class(PXW.DEV.Element).%New()
-    q
-]]></Implementation>
-</Method>
-
-<Method name="IfTestNull">
-<ClassMethod>1</ClassMethod>
-<Implementation><![CDATA[
-    w !,"IfTestNull"
-    s m=10000000
-    s var=""
-    
-    s x=""
-    d ..startTimer(.res,"i x="""" { s y=1 } else { s z=1 } ; true x is null")
-    f i=1:1:m {
-        i x="""" { s y=1 } else { s z=1 }
-    }
-    d ..stopTimer(.res)
-
-    s x=""
-    d ..startTimer(.res,"i x'="""" { s y=1 } else { s z=1 } ; false x is null")
-    f i=1:1:m {
-        i x'="""" { s y=1 } else { s z=1 }
-    }
-    d ..stopTimer(.res)
-
-    s x=""
-    d ..startTimer(.res,"i x]"""" { s y=1 } else { s z=1 } ; false x is null")
-    f i=1:1:m {
-        i x]"""" { s y=1 } else { s z=1 }
-    }
-    d ..stopTimer(.res)
-
-    s x=""
-    d ..startTimer(.res,"i x']"""" { s y=1 } else { s z=1 } ; true x is null")
-    f i=1:1:m {
-        i x']"""" { s y=1 } else { s z=1 }
-    }
-    d ..stopTimer(.res)
-
-
-    s x="set"
-    d ..startTimer(.res,"i x="""" { s y=1 } else { s z=1 } ; false x is not null")
-    f i=1:1:m {
-        i x="""" { s y=1 } else { s z=1 }
-    }
-    d ..stopTimer(.res)
-
-    s x="set"
-    d ..startTimer(.res,"i x'="""" { s y=1 } else { s z=1 } ; true x is not null")
-    f i=1:1:m {
-        i x'="""" { s y=1 } else { s z=1 }
-    }
-    d ..stopTimer(.res)
-
-    s x="set"
-    d ..startTimer(.res,"i x]"""" { s y=1 } else { s z=1 } ; true x is not null")
-    f i=1:1:m {
-        i x]"""" { s y=1 } else { s z=1 }
-    }
-    d ..stopTimer(.res)
-
-    s x="set"
-    d ..startTimer(.res,"i x']"""" { s y=1 } else { s z=1 } ; false x is not null")
-    f i=1:1:m {
-        i x']"""" { s y=1 } else { s z=1 }
-    }
-    d ..stopTimer(.res)
-
-
-    d ..showRes(.res)
-]]></Implementation>
-</Method>
-
-<Method name="IfTest">
-<ClassMethod>1</ClassMethod>
-<Implementation><![CDATA[
-    w !,"IfTest"
-    s m=10000000
-    s var=""
-    
-    s x=99
-    d ..startTimer(.res,"i x=99 ; true")
-    f i=1:1:m {
-        i x=99 
-    }
-    d ..stopTimer(.res)
-
-    s x=99
-    d ..startTimer(.res,"i +x=+99 ; true")
-    f i=1:1:m {
-        i +x=+99 
-    }
-    d ..stopTimer(.res)
-
-    s x=99
-    d ..startTimer(.res,"i +x=99 ; true")
-    f i=1:1:m {
-        i +x=99 
-    }
-    d ..stopTimer(.res)
-
-    s x=99
-    d ..startTimer(.res,"i +x=""99"" ; true")
-    f i=1:1:m {
-        i +x="99" 
-    }
-    d ..stopTimer(.res)
-
-    s x=99
-    d ..startTimer(.res,"i x=""99"" ; true")
-    f i=1:1:m {
-        i x="99" 
-    }
-    d ..stopTimer(.res)
-
-    s x=99,y=99
-    d ..startTimer(.res,"i +x=+y ; true")
-    f i=1:1:m {
-        i +x=+y 
-    }
-    d ..stopTimer(.res)
-
-    s x=99,y=99
-    d ..startTimer(.res,"i +x=+y { } ; true")
-    f i=1:1:m {
-        i +x=+y 
-    }
-    d ..stopTimer(.res)
-
-
-    s x=99
-    d ..startTimer(.res,"i x=100 ; false")
-    f i=1:1:m {
-        i x=100 
-    }
-    d ..stopTimer(.res)
-
-    s x=99
-    d ..startTimer(.res,"i +x=+100 ; false")
-    f i=1:1:m {
-        i +x=+100 
-    }
-    d ..stopTimer(.res)
-
-    s x=99
-    d ..startTimer(.res,"i +x=100 ; false")
-    f i=1:1:m {
-        i +x=100 
-    }
-    d ..stopTimer(.res)
-
-    s x=99
-    d ..startTimer(.res,"i +x=""100"" ; false")
-    f i=1:1:m {
-        i +x="100" 
-    }
-    d ..stopTimer(.res)
-
-    s x=99
-    d ..startTimer(.res,"i x=""100"" ; false")
-    f i=1:1:m {
-        i x="99" 
-    }
-    d ..stopTimer(.res)
-
-    s x="ninetynine"
-    d ..startTimer(.res,"i x=""ninetynine"" ; true")
-    f i=1:1:m {
-        i x="ninetynine" 
-    }
-    d ..stopTimer(.res)
-
-    s x="ninetynine"
-    d ..startTimer(.res,"i x=""onehundred"" ; false")
-    f i=1:1:m {
-        i x="onehundred" 
-    }
-    d ..stopTimer(.res)
-
-    s x=99,y=100
-    d ..startTimer(.res,"i +x=+y ; false")
-    f i=1:1:m {
-        i +x=+y 
-    }
-    d ..stopTimer(.res)
-
-    s x=99,y=100
-    d ..startTimer(.res,"i +x=+y {  } ; false")
-    f i=1:1:m {
-        i +x=+y { } 
-    }
-    d ..stopTimer(.res)
-
-
-    d ..showRes(.res)
-]]></Implementation>
-</Method>
-
-<Method name="DataTestPos">
-<ClassMethod>1</ClassMethod>
-<Implementation><![CDATA[
-    w !,"DataTestPos"
-    s m=10000000
-    s var=""
-
-    d ..startTimer(.res,"s x=0 i $D(var) s current=var,x=1")
-    f i=1:1:m {
-        s x=0
-        i $D(var) s current=var,x=1
-    }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"s x=0 i $D(var) { s  current=var,x=1 } ")
-    f i=1:1:m { s x=0 i $D(var) { s current=var,x=1 } }
-    d ..stopTimer(.res)
-
-
-    d ..startTimer(.res,"i $D(var) s current=var,x=1 else s x=0")
-    f i=1:1:m {
-        i $D(var) {
-            s current=var,x=1
-        } else {
-            s x=0
-        }
-    }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"i $D(var,current) s x=1")
-    f i=1:1:m {
-        s x=0
-        i $D(var,current) s x=1
-    }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"s:$D(var,current) x=1")
-    f i=1:1:m {
-        s x=0
-        s:$D(var,current) x=1
-    }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"s x=$s($D(var,current):1,1:0)")
-    f i=1:1:m {
-        s x=$s($D(var,current):1,1:0)
-    }
-    d ..stopTimer(.res)
-
-    d ..showRes(.res)
-]]></Implementation>
-</Method>
-
-<Method name="DataTestNeg">
-<ClassMethod>1</ClassMethod>
-<Implementation><![CDATA[
-    w !,"DataTestNeg"
-    s m=10000000
-
-    d ..startTimer(.res,"i $D(var) s current=var,x=1")
-    f i=1:1:m {
-        s x=0
-        i $D(var) s current=var,x=1
-    }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"s x=0 i $D(var) { s  current=var,x=1 } ")
-    f i=1:1:m { s x=0 i $D(var) { s current=var,x=1 } }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"i $D(var) s current=var,x=1 else s x=0")
-    f i=1:1:m {
-        i $D(var) {
-            s current=var,x=1
-        } else {
-            s x=0
-        }
-    }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"i $D(var,current) s x=1")
-    f i=1:1:m {
-        s x=0
-        i $D(var,current) s x=1
-    }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"s:$D(var,current) x=1")
-    f i=1:1:m {
-        s x=0
-        s:$D(var,current) x=1
-    }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"s x=$s($D(var,current):1,1:0)")
-    f i=1:1:m {
-        s x=$s($D(var,current):1,1:0)
-    }
-    d ..stopTimer(.res)
-
-    d ..showRes(.res)
-]]></Implementation>
-</Method>
-
-<Method name="NestFunctions">
-<ClassMethod>1</ClassMethod>
-<Implementation><![CDATA[
-    w !,"NestFunctions"
-    s m=1000000
-    s line="abcdefghijklmnopqrstuvwxyz"
-    s char="x"
-
-    d ..startTimer(.res,"s len=$l(char),read=$e(line,1,len),upper=$$$UPPER(read)")
-    f i=1:1:m {
-        s len=$l(char),read=$e(line,1,len),upper=$$$UPPER(read)
-    }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"s read=$e(line,1,$l(char)),upper=$$$UPPER(read)")
-    f i=1:1:m {
-        s read=$e(line,1,$l(char)),upper=$$$UPPER(read)
-    }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"s upper=$$$UPPER($e(line,1,$l(char)))")
-    f i=1:1:m {
-        s upper=$$$UPPER($e(line,1,$l(char)))
-    }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"s upper=$zconvert($e(line,1,$l(char)),""U"")")
-    f i=1:1:m {
-        s upper=$zconvert($e(line,1,$l(char)),"U")
-    }
-    d ..stopTimer(.res)
-
-    d ..showRes(.res)
-]]></Implementation>
-</Method>
-
-<Method name="ConCatFromArray">
-<ClassMethod>1</ClassMethod>
-<Implementation><![CDATA[
-    w !,"ConcatFromArray"
-    s m=100000
-    s times=1000
-
-    s p=##class(PXW.Tools.DEV.HTML.bnf).%New()
-    f i=1:2:times {
-        s p.pre(i)="abcdefghijklmnopqrstuvwxyz"
-    }
-
-    d ..startTimer(.res,"s x=x_$g(p.pre(i))")
-    f j=1:1:m {
-        s x=""
-        f i=i:1:times {
-            s x=x_$g(p.pre(i))
-        }
-    }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"s:$data(p.pre(i),v) x=x_v")
-    f j=1:1:m {
-        s x=""
-        f i=i:1:times {
-            s:$data(p.pre(i),v) x=x_v
-        }
-    }
-    d ..stopTimer(.res)
-
-    d ..showRes(.res)
-]]></Implementation>
-</Method>
-
-<Method name="ConCatString">
-<ClassMethod>1</ClassMethod>
-<Implementation><![CDATA[
-    w !,"ConCatString"
-    s m=1000000
-    s str="abcdefghijklmnopqrstuvwxyz"
-    s str2="abcdefghijklmnopqrstuvwxyz"
- 
-    d ..startTimer(.res,"s x=x_str")
-    f i=1:1:m {
-        s x=""
-        s x=x_str
-        s x=x_str2
-    }
-    d ..stopTimer(.res)
-
-   d ..startTimer(.res,"s x=x_str_str2")
-    f i=1:1:m {
-        s x=""
-        s x=x_str_str2
-    }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"s:str'="" x=x_str")
-    f i=1:1:m {
-        s x=""
-        s:str'="" x=x_str
-        s:str2'="" x=x_str2
-    }
-    d ..stopTimer(.res)
-
-    d ..showRes(.res)
-]]></Implementation>
-</Method>
-
-<Method name="ConCatStringNull">
-<ClassMethod>1</ClassMethod>
-<Implementation><![CDATA[
-    w !,"ConCatStringNull"
-    s m=1000000
-    s str="abcdefghijklmnopqrstuvwxyz"
-    s str2=""
- 
-    d ..startTimer(.res,"s x=x_str")
-    f i=1:1:m {
-        s x=""
-        s x=x_str
-        s x=x_str2
-    }
-    d ..stopTimer(.res)
-    
-    d ..startTimer(.res,"s x=x_str_str2")
-    f i=1:1:m {
-        s x=""
-        s x=x_str_str2
-    }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"s:str'="" x=x_str")
-    f i=1:1:m {
-        s x=""
-        s:str'="" x=x_str
-        s:str2'="" x=x_str2
-    }
-    d ..stopTimer(.res)
-
-    d ..showRes(.res)
-]]></Implementation>
-</Method>
-
-<Method name="ConCatNullNull">
-<ClassMethod>1</ClassMethod>
-<Implementation><![CDATA[
-    w !,"ConCatNullNull"
-    s m=1000000
-    s str=""
-    s str2=""
- 
-    d ..startTimer(.res,"s x=x_str")
-    f i=1:1:m {
-        s x=""
-        s x=x_str
-        s x=x_str2
-    }
-    d ..stopTimer(.res)
-
-   d ..startTimer(.res,"s x=x_str_str2")
-    f i=1:1:m {
-        s x=""
-        s x=x_str_str2
-    }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"s:str'="" x=x_str")
-    f i=1:1:m {
-        s x=""
-        s:str'="" x=x_str
-        s:str2'="" x=x_str2
-    }
-    d ..stopTimer(.res)
-
-    d ..showRes(.res)
-]]></Implementation>
-</Method>
-
-<Method name="IncrementArray">
-<ClassMethod>1</ClassMethod>
-<Implementation><![CDATA[
-    w !,"IncrementArray"
-    s m=1000,times=10
-
-    d ..startTimer(.res,"s x=p.pre(1),x=x+1,p.pre(1,x)="""",p.pre(1)=x")
-    f j=1:1:times {
-        s p=##class(PXW.Tools.DEV.HTML.bnf).%New()
-        f i=1:1:m { s x=$g(p.pre(1)),x=x+1,p.pre(1,x)="",p.pre(1)=x }
-    }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"s x=$i(p.pre(1)),p.pre(1,x)=""""")
-    f j=1:1:times {
-        s p=##class(PXW.Tools.DEV.HTML.bnf).%New()
-        f i=1:1:m { s x=$i(p.pre(1)),p.pre(1,x)="" } 
-    }
-    d ..stopTimer(.res)
-
-   d ..startTimer(.res,"s pre(1,$i(p.pre(1)))=""""")
-    f j=1:1:times {
-        s p=##class(PXW.Tools.DEV.HTML.bnf).%New()
-        f i=1:1:m { s p.pre(1,$i(p.pre(1)))="" } 
-    }
-    d ..stopTimer(.res)
-
-    d ..showRes(.res)
-]]></Implementation>
-</Method>
-
-<Method name="IncrementVsString">
-<ClassMethod>1</ClassMethod>
-<Implementation><![CDATA[
-    w !,"IncrementVsString"
-    s c=3,m=1001,times=10
-
-   d ..startTimer(.res,"s p.pre(m,$i(p.pre(m)))=""abcdefghijklmnopqrstuvwxyz""")
-    f j=1:1:times {
-        s p=##class(PXW.Tools.DEV.HTML.bnf).%New()
-        ; populate half so the fetch takes into account missing entries
-        f i=1:2:m {
-            f k=1:1:c { 
-                s p.pre(i,$i(p.pre(i)))="abcdefghijklmnopqrstuvwxyz" 
-            } 
-        }
-        ; fetch
-        f i=1:1:m {
-            s x=""
-            i $d(p.pre(i),n) f k=1:1:n s x=x_p.pre(i,n) 
-        }
-    }
-    d ..stopTimer(.res)
-    
-    d ..startTimer(.res,"s p.pre(m)=$G(p.pre(m))_""abcdefghijklmnopqrstuvwxyz""")
-    f j=1:1:times {
-        s p=##class(PXW.Tools.DEV.HTML.bnf).%New()
-        f i=1:2:m {
-            f k=1:1:c { 
-                s p.pre(i)=$G(p.pre(i))_"abcdefghijklmnopqrstuvwxyz" 
-            } 
-        }
-        ; fetch
-        f i=1:1:m {
-            s x=$g(p.pre(i))
-        }
-    }
-    d ..stopTimer(.res)
-
-
-    d ..showRes(.res)
-]]></Implementation>
-</Method>
-
-<Method name="UnusedReturns">
-<ClassMethod>1</ClassMethod>
-<Implementation><![CDATA[
-    w !,"UnusedReturns"
-    s m=1000000
-
-    d ..startTimer(.res,"s x=..basicQuit()")
-    f i=1:1:m { s x=..basicQuit() }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"d..basicQuit()")
-    f i=1:1:m { d ..basicQuit() } 
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"i ..basicQuit()")
-    f i=1:1:m { i ..basicQuit() } 
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"i ..basicQuit() {}")
-    f i=1:1:m { i ..basicQuit() {} } 
-    d ..stopTimer(.res)
-
-    d ..showRes(.res)
-]]></Implementation>
-</Method>
-
-<Method name="ObjectCheckPos">
-<ClassMethod>1</ClassMethod>
-<Implementation><![CDATA[
-    w !,"ObjectCheckPos"
-    s o=##class(PXW.DEV.Atom).%New()
-    s m=1000000
-
-    d ..startTimer(.res,"+o")
-    f i=1:1:m { i +o { s x=1 } }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"o")
-    f i=1:1:m { i o { s x=1 } }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"$isobject(o)")
-    f i=1:1:m { i $isobject(o) { s x=1 } }
-    d ..stopTimer(.res)
-
-    d ..showRes(.res)
-]]></Implementation>
-</Method>
-
-<Method name="ObjectCheckNeg">
-<ClassMethod>1</ClassMethod>
-<Implementation><![CDATA[
-    w !,"ObjectCheckNeg"
-    s o=""
-    s m=1000000
-
-    d ..startTimer(.res,"+o")
-    f i=1:1:m { i +o { s x=1 } }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"o")
-    f i=1:1:m { i o { s x=1 } }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"$isobject(o)")
-    f i=1:1:m { i $isobject(o) { s x=1 } }
-    d ..stopTimer(.res)
-
-    d ..showRes(.res)
-]]></Implementation>
-</Method>
-
-<Method name="ParameterPassingNumber">
-<ClassMethod>1</ClassMethod>
-<Implementation><![CDATA[
-    w !,"ParameterPassingNumber"
-    s p=1
-    s m=1000000
-
-    d ..startTimer(.res,"..singleParameter(1)")
-    f i=1:1:m { s x=..singleParameter(1) }
-    d ..stopTimer(.res)
-
-
-    d ..startTimer(.res,"..singleParameter(p)")
-    f i=1:1:m { s x=..singleParameter(p) }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"..singleParameter(.p)")
-    f i=1:1:m { s x=..singleParameter(.p) }
-    d ..stopTimer(.res)
-
-
-    d ..showRes(.res)
-]]></Implementation>
-</Method>
-
-<Method name="ParameterPassingString">
-<ClassMethod>1</ClassMethod>
-<Implementation><![CDATA[
-    w !,"ParameterPassingString"
-    s p="this is a string"
-    s m=1000000
-
-    d ..startTimer(.res,"..singleParameter(""a string"")")
-    f i=1:1:m { s x=..singleParameter("this is a string") }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"..singleParameter(p)")
-    f i=1:1:m { s x=..singleParameter(p) }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"..singleParameter(.p)")
-    f i=1:1:m { s x=..singleParameter(.p) }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"p=""a string"",..singleParameter(.p)")
-    f i=1:1:m { s p="this is a string",x=..singleParameter(.p) }
-    d ..stopTimer(.res)
-
-   d ..startTimer(.res,"p=..#TestString,..singleParameter(.p)")
-    f i=1:1:m { s p=..#TestString,x=..singleParameter(.p) }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"..singleParameter(..#TestString)")
-    f i=1:1:m { s x=..singleParameter(..#TestString) }
-    d ..stopTimer(.res)
-
-
-    d ..showRes(.res)
-]]></Implementation>
-</Method>
-
-<Method name="ParameterPassingObject">
-<ClassMethod>1</ClassMethod>
-<Implementation><![CDATA[
-    w !,"ParameterPassingObject"
-    s p=##class(PXW.DEV.Element).%New()
-    s m=1000000
-
-    d ..startTimer(.res,"..singleParameter(p)")
-    f i=1:1:m { s x=..singleParameter(p) }
-    d ..stopTimer(.res)
-
-    d ..startTimer(.res,"..singleParameter(.p)")
-    f i=1:1:m { s x=..singleParameter(.p) }
-    d ..stopTimer(.res)
-
-    d ..showRes(.res)
-]]></Implementation>
-</Method>
-
-<Method name="startTimer">
-<ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[&results,Name:%String]]></FormalSpec>
-<Implementation><![CDATA[
-    s zh=$zh
-    s results("current")=Name
-    s results("zh")=zh
-    s results("run order",$i(results("run order")))=Name
-]]></Implementation>
-</Method>
-
-<Method name="stopTimer">
-<ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[&results]]></FormalSpec>
-<Implementation><![CDATA[
-    s time=$zh-results("zh")
-    s name=results("current")
-    s results("name",name)=time
-]]></Implementation>
-</Method>
-
-<Method name="showRes">
-<ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[&results:%String]]></FormalSpec>
-<Implementation><![CDATA[
-    /*s t=""
-    s min=1E14,mintest=""
-    f  s t=$o(results("name",t)) q:t=""  s:results("name",t)<min min=results("name",t),mintest=t
-
-    s t=""
-    f  s t=$o(results("name",t)) q:t=""  w !,$s(t=mintest:"* ",1:"  ")_t,?30,results("name",t)
-    */
-    k ranked
-    s t=""
-    f  s t=$o(results("run order",t),1,name) q:t=""  s time=results("name",name),ranked(time,t)=name
-
-    s time="",t=""
-    f  {
-        s time=$o(ranked(time)) 
-        q:time=""  
-        f  {
-            s t=$o(ranked(time,t),1,name) 
-            q:t=""  
-            w !,time,?10,name
-        }
-    }
-    w !
-]]></Implementation>
-</Method>
-
-<Method name="basicQuit">
-<ClassMethod>1</ClassMethod>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[    q 1
-]]></Implementation>
-</Method>
-
-<Method name="singleParameter">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>parameter:%String</FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[    q 1
-]]></Implementation>
-</Method>
-</Class>
-
-
-<Class name="PXW.samples.cclass">
-<Final>1</Final>
-<Super>%Exception.AbstractException</Super>
-<TimeChanged>67831,71209.588454534</TimeChanged>
-<TimeCreated>67828,69127.121444231</TimeCreated>
-
-<Method name="mInCClass">
-<Implementation><![CDATA[
-    #dim e as %Exception.SystemException
-    s x=e.AsStatus()
-]]></Implementation>
-</Method>
-</Class>
-
-
 <Class name="PXW.samples.element">
 <Super>PXW.DEV.Element</Super>
 <TimeChanged>67822,62018.39014954</TimeChanged>
@@ -118779,21 +117858,6 @@ FileName: /home/irisowner/dev/debug/MON.csv
     u oldio
 
     q $$$OK
-]]></Implementation>
-</Method>
-</Class>
-
-
-<Class name="PXW.samples.pclass">
-<Abstract>1</Abstract>
-<Super>%Library.RegisteredObject</Super>
-<System>3</System>
-<TimeChanged>67831,70308.004382496</TimeChanged>
-<TimeCreated>67828,69103.642895387</TimeCreated>
-
-<Method name="mInPclass">
-<Final>1</Final>
-<Implementation><![CDATA[    q 1
 ]]></Implementation>
 </Method>
 </Class>

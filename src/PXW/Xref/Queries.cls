@@ -53,7 +53,7 @@ Query Get(NameSpace As %String, ItemType As %String = "", ItemKey1 As %String = 
 	--IF CalledByKey2'=""
 		--IF CalledByKey2["," 
 			AND CalledByKey2 %INLIST $LISTFROMSTRING(:CalledByKey2)
-		--ELSEIF CalledByKey1["*"
+		--ELSEIF CalledByKey2["*"
 			AND CalledByKey2 LIKE replace(replace(:CalledByKey2,'%','\%'),'*','%') ESCAPE '\'
 		--ELSE
 			AND CalledByKey2=:CalledByKey2
