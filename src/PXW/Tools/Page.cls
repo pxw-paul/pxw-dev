@@ -67,7 +67,7 @@ ClassMethod OnPreHTTP() As %Boolean [ ServerOnly = 1 ]
 	Try {
 		Set %STYLE=$SYSTEM.OBJ.New(styleclass)
 	} Catch {
-		Set %STYLE=##class(PXW.Tools.Styles.Dark).%New()
+		Set %STYLE=##class(PXW.Tools.Styles.LightDark).%New()
 		Set style=defaultDefault
 	}
 	Set %STYLENAME=style

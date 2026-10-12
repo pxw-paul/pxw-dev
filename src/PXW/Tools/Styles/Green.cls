@@ -75,6 +75,7 @@ Method WriteStyles()
 	a:active { text-decoration:none;  color: inherit; }
 	pre { margin:0px; tab-size:4;}
 	input {  background-color: var(--bgHilite); color: var(--fgInverse);border:0;}
+	hr { border-color: var(--fgNormal); }
   /*
         +----------------------------------------------+
         |header #toolsHead                             |
@@ -111,7 +112,7 @@ Method WriteStyles()
  		/*background-color:#2E2E2E;
   		color: #fff;*/
 	}
-	table tbody tr:Hover { background-color:var(--bgHover); color: var(--fgInverse);}
+	table tbody tr:Hover * { background-color:var(--bgHover) !important; color: var(--fgInverse) !important;}
 
 	td input { width: 100%;}
 
@@ -185,6 +186,12 @@ Method WriteStyles()
 	/* Object script only styles */
 	.CDEFOneClassMember { display:block; margin:0px 0px 0px 20px;  }
 
+	.DOCBOOK {
+		/*background-color: var(--bgAlternate3);*/ /*color: var(--fgComment); */
+		margin-left:4ch; margin-top:0.5em; width:80ch;
+		white-space: normal;
+		/*font-family: Arial, Helvetica, sans-serif; font-size: medium;*/
+	}
 
 	.XMLTag { /*color:#85a6ff;*/ }
 	.XMLAttribute { /*color:#ade2ff;*/ }

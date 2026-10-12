@@ -170,6 +170,13 @@ Method WriteStyles()
 							/* 20px indent to make it not on the left side,
 							   but because this is a block we are effectively inserting an unwanted new line so move the whole thing up 1 line (-1em)*/
 							margin:-1em 0px 0px 20px;  }
+	
+	.DOCBOOK {
+		background-color: var(--bgAlternate3); /*color: var(--fgComment); */
+		margin-left:4ch; margin-top:0.5em; width:80ch;
+		white-space: normal;
+		font-family: Arial, Helvetica, sans-serif; font-size: medium;
+	}
 
 	.XMLTag { color: var(--fgProgramKeyword); }
 	.XMLAttribute { color:var(--fgCodeVariable); }

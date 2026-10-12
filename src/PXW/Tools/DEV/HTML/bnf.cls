@@ -251,7 +251,8 @@ Method writeCDEFClassDefinition(element As PXW.DEV.BNF.Elements.ClassDefinition)
 {
     $$$DEBUGMethodBegin
     Set keywordatom=element.FirstAtom()
-    Do ..OutputKeywordCommentAsDocumentation(element,.commentid)
+    set body=element.findFirstElementByType("ClassMemberSection")
+    Do ..OutputKeywordCommentAsDocumentation(element,.commentid,body)
     ;Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This)
     Set count=..GetXrefCount("","")
     Set menu="<div class="""_$$$classLensMenu_" nocopy"">"

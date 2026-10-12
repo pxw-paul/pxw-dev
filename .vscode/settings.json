@@ -50,5 +50,6 @@
         "port": 52775,
         "username": "_SYSTEM",
         "scheme":"http"
-    }
+    },
+    "workbench.colorTheme": "InterSystems Default Dark Modern"
 }
