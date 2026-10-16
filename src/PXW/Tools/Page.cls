@@ -141,6 +141,7 @@ ClassMethod OnPage() As %Status
 				<span id=toolsFooterTIM>processtime=#($ZHOROLOG-zh)#</span> 
 				<span id=toolsFooterPID>$job=#($JOB)#</span>
 				<span id=toolsFooterMEM>$s=#(startmem-$STORAGE)#</span>
+				<span id=toolsFooterUSR>$username=#($USERNAME)#</span>
 			</div>
 		</body>
 	</html>>

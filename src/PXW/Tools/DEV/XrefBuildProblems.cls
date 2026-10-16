@@ -59,7 +59,7 @@ ClassMethod WriteNav(ByRef scratch)
 /// The problems could be either: 
 /// <ul><li>Errors in the build process i.e. a bug.</a>
 /// 	<li>Problems found during the parsing. This could be a bug in the parser
-/// 		or an actual problem in the code being parsed.
+/// 		or a problem in the code being parsed.
 /// 	</li>
 ///	</ul>
 /// </p>

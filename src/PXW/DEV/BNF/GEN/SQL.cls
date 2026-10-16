@@ -4305,12 +4305,40 @@ Method SqlCaseExpression22Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	quit ok
 }
 
-///  sql_case_when ::= 'WHEN' sql_expression 'THEN' sql_expression
+///  sql_case_then ::= 'THEN' sql_expression
+/// summary values:THEN
+/// summary=K&C
+Method SqlCaseThen(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary K&C
+	if '(..isKeyword("THEN")) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"THEN")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  sql_case_when ::= 'WHEN' sql_expression sql_case_then
 /// summary values:WHEN
-/// summary=K&C&K&C
+/// summary=K&C&C
 Method SqlCaseWhen(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&C&K&C
+	; rules summary K&C&C
 	if '(..isKeyword("WHEN")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -4318,10 +4346,8 @@ Method SqlCaseWhen(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"WHEN")  {
 		if ..SqlExpression(.subElement,.addedElement)  {
-			if ..addKeyword(.subElement,"THEN")  {
-				if ..SqlExpression(.subElement,.addedElement)  {
-					set done=1 ; end compileRules
-				}
+			if ..SqlCaseThen(.subElement,.addedElement)  {
+				set done=1 ; end compileRules
 			}
 		}
 	}
@@ -6922,7 +6948,7 @@ Method SqlPredicate(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	quit ok
 }
 
-///  sql_primary ::= sql_number | sql_string | sql_case_expression | sql_fn_function | sql_function | colon_sql_cos_variable | stored_proc_call | column_reference | sql_special_variable | macrocall | ( '(' subquery_specification ')' ) | ( '(' sql_expression ( ',' sql_expression )* ')' )
+///  sql_primary ::= sql_number | sql_string | sql_case_expression | sql_fn_function | sql_function | colon_sql_cos_variable | stored_proc_call | sql_special_variable | column_reference | macrocall | ( '(' subquery_specification ')' ) | ( '(' sql_expression ( ',' sql_expression )* ')' )
 /// summary=C|C|C|C|C|C|C|C|C|C|(P&C&P)|(P&C&(?4punctuation:4?)*&P)
 Method SqlPrimary(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
@@ -6945,9 +6971,9 @@ Method SqlPrimary(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set done=1 ; or
 	} elseif ..StoredProcCall(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..ColumnReference(.subElement,.addedElement)  {
-		set done=1 ; or
 	} elseif ..SqlSpecialVariable(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..ColumnReference(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..Macrocall(.subElement,.addedElement)  {
 		set done=1 ; or

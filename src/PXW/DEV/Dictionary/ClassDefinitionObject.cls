@@ -952,7 +952,7 @@ Method GetClassName(ClassName As %String, Output classtype As %String) As %Strin
 }
 
 /// OwningClassName is the name of the class that the query belongs to. Used when no schema is provided.
-Method GetClassNameFromTableName(SQLTableName As %String, OwningClassName As %String) As %String
+Method GetClassNameFromTableName(SQLTableName As %String, OwningClassName As %String="") As %String
 {
     ;New %NS Set %NS=..Namespace.Name
     Set NS=..Namespace.Name
@@ -1149,7 +1149,7 @@ Method GetClassPath(ClassName As %String, PropertyPath As %String, Output PathAr
 /// a(2)=$lb("f1.data.race","Circuit","f1.data.circuit")
 /// a(3)=$lb("f1.data.circuit","Name","data.model.string")
 /// if some step on the path cannot be found then the array will have blanks
-Method GetClassPathFromTable(TableName As %String, FieldPath As %String, Output PathArray As %List,OwningClassName as %String)
+Method GetClassPathFromTable(TableName As %String, FieldPath As %String, Output PathArray As %List,OwningClassName as %String="")
 {
 	
     Set classname=..GetClassNameFromTableName(TableName,OwningClassName)

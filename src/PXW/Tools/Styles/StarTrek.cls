@@ -433,7 +433,6 @@ Method WriteStyles()
 	/* END of nav */
 	/* Start of style for the code display */
 
-
 	.EmbeddedJS { background-color:#404040; display:inline-block;}
 	.EmbeddedSQL { background-color:#404040; display:inline-block; vertical-align: top;}
 	.EmbeddedXML { background-color:#404040; display:inline-block;}
@@ -477,10 +476,10 @@ Method WriteStyles()
 	.codeNumber { color: var(--fgCodeNumber); }
 	.codeLabel, a.codeLabel, a.codeLabel:visited { color: var(--fgCodeLabel);}
 	.codeLabelDef { color:var(--fgCodeLabel); font-weight: bold;}
-
+	.codeIndentBlock { margin-left:4ch; }
 
 	/* Object script only styles */
-	.CDEFOneClassMember { display:block; margin:0px 0px 0px 20px;  }
+	.CDEFOneClassMember { display:block; margin:0px 0px 0px 4ch;  }
 
 	.XMLTag { color:#85a6ff; }
 	.XMLAttribute { color:#ade2ff; }

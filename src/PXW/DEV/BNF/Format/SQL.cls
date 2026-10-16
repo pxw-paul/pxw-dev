@@ -56,6 +56,7 @@ Method resetWhitespace(Atom As PXW.DEV.Atom)
 
 Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %String = "")
 {
+    #dim a as PXW.DEV.Atom
     #define BriefLimit 100
     #define IsBrief(%e) $l(%e.ToString())<$$$BriefLimit
     set brief=(flags["BRIEF")
@@ -85,6 +86,14 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %Stri
 
         If element.type="SqlCaseWhen" {
             Do ..setWhitespaceNewLineElement(element,indent)
+        }
+        If element.type="SqlCaseThen" {
+            if $$$IsBrief(element) {
+                set flags="BRIEF"
+            } else {
+                set indent=indent+1
+                Do ..setWhitespaceNewLineElement(element,indent)
+            }
         }
         If element.type="SqlCaseElse" {
             Do ..setWhitespaceNewLineElement(element,indent)
@@ -146,6 +155,20 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %Stri
         If element.type="OrderByClause" {
             Do ..setWhitespaceNewLineElement(element,indent)
         }
+
+        if element.type="SqlFunction" {
+            if $$$IsBrief(element) {
+                s flags="BRIEF"
+            } else {
+                s indent=indent+1
+                for i=1:1:element.partsCount() {
+                    set atom=element.partsGetAt(i)
+                    if atom.IsAtom,atom.value="," {
+                        do ..setWhitespaceNewLine(atom,indent)
+                    }
+                }
+            }
+        }
     }
     set akey=""
    	For  {
@@ -155,7 +178,9 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %Stri
 	    If a.IsElement {
 			Do ..setAll(a,indent,flags)
 		} Else {
-           ; set a.line=..currentLine
+           if $$$UPPER($p(a.type,":",1))="KEYWORD" {
+                s a.value=$$$UPPER(a.value)
+           }
         }
 	}
 

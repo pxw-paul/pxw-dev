@@ -35,7 +35,7 @@ ClassMethod NewString(Code As %String) As PXW.DEV.InputStream
 	Set reader.line=1
 	Set reader.col=0
 	Set reader.length=$LENGTH(Code)
-	set reader.nextCountLimit=reader.length*4 
+	set reader.nextCountLimit=reader.length*10
 	Quit reader
 }
 

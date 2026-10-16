@@ -74,6 +74,9 @@ ROUTINE PXW.Tools.Styles.macros [Type=INC]
 /// classLableDef
 #define classLabelDef "codeLabelDef"
 
+/// classIndent
+#define classIndent "codeIndentBlock"
+
 #; CLASSES RELATING TO HIGHLIGHING 
 /// classHilite
 #define classHilite "hilite"

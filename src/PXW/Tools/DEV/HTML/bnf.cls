@@ -273,10 +273,12 @@ Method writeCDEFAttributeViewQuery(element As PXW.DEV.BNF.Elements.ClassDefiniti
     $$$DEBUGMethodBegin
     Set ..SqlProgramAnalyser=""
     Set queryE=element.findFirstElementByType("ClassQueryBody")
-    ;s formatter=##class(PXW.DEV.BNF.Format.SQL).%New()
-    ;d formatter.formatElement(queryE)
     If $ISOBJECT(queryE) {
-        Do ..wrapElementHTML(queryE,"<div>","</div>")
+        If ..FormatEmbeddedSQl {
+            s formatter=##class(PXW.DEV.BNF.Format.SQL).%New()
+            d formatter.formatElement(queryE)
+        }
+        Do ..wrapElementHTML(queryE,"<div class="""_$$$classIndent_""">","</div>")
     }
     $$$DEBUGMethodEnd
     Quit ""
@@ -1915,7 +1917,7 @@ Method FollowImplicitJoins(ColumnReference As PXW.DEV.Element, fulltable As %Str
     $$$DEBUGMethodBegin
     Set columnNameE=ColumnReference.findFirstElementByType("ColumnName",0)
     Set crefimpE=ColumnReference.findFirstElementByType("ColumnReferenceImplicit",0)
-    Do ..wrapElementHTML(columnNameE,"<a class="""_$$$classObjectMember_""" href="""_..HREFToSQLTable(fulltable,columnNameE.ToString(0))_""">","</a>")
+    Do ..wrapElementHTML(columnNameE,"<a title="""_fulltable_""" class="""_$$$classObjectMember_""" href="""_..HREFToSQLTable(fulltable,columnNameE.ToString(0))_""">","</a>")
     If $ISOBJECT(crefimpE) {
         Set fulref=columnNameE.ToString(0)_"->"
         Set cols=##class(%ListOfObjects).%New()
@@ -1923,7 +1925,7 @@ Method FollowImplicitJoins(ColumnReference As PXW.DEV.Element, fulltable As %Str
         For i=1:1:cols.Count() {
             Set ij=cols.GetAt(i)
             Set fulref=fulref_ij.ToString(0)
-            Do ..wrapElementHTML(ij,"<a class="""_$$$classObjectMember_""" href="""_..HREFToSQLTable(fulltable,fulref)_""">","</a>")
+            Do ..wrapElementHTML(ij,"<a title="""_fulltable_""" class="""_$$$classObjectMember_""" href="""_..HREFToSQLTable(fulltable,fulref)_""">","</a>")
             Set fulref=fulref_"->"
         }
     }

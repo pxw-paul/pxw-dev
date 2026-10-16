@@ -22,6 +22,7 @@ Class PXW.Xref.LastUpdatedDetails [ ClassType = view, Owner = {_PUBLIC}, ViewQue
 		pxw_xref.lastupdateddetails_myformat(atel."Namespace") as formattedNs,
 		xd.XrefCount as CallsCount,
 		yd.XrefCount as UsedCount,
+		null as null_thing,
 		(
 			select count(*)+xd.XrefCount+yd.XrefCount 
 				from  pxw_xref.data as xx 

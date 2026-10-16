@@ -216,8 +216,8 @@ sql_primary                      ::= sql_number
 										  | sql_function
 										  | colon_sql_cos_variable
 										  | stored_proc_call
-										  | column_reference
 										  | sql_special_variable
+										  | column_reference
 										  | macrocall
 										  | ( '(' subquery_specification ')' )
 										  | ( '(' sql_expression ( ',' sql_expression )* ')' ) /* for IN ( a,b,c) type expressions (IN is being treated like a +) this may cause more issues but a nice solution for now*/
@@ -441,7 +441,8 @@ sql_function_datepart_part_word ::= 'year' | 'yy' | 'yyyy'
 sql_case_expression					::= 'CASE' ( sql_case_expression1 | sql_case_expression2 ) [ sql_case_else ] sql_case_end
 sql_case_expression1				::= sql_case_when  ( sql_case_when )* 
 sql_case_expression2				::= sql_expression ( sql_case_when )* 
-sql_case_when						::= 'WHEN' sql_expression 'THEN' sql_expression
+sql_case_when						::= 'WHEN' sql_expression sql_case_then
+sql_case_then						::= 'THEN' sql_expression
 sql_case_else						::= 'ELSE' sql_expression
 sql_case_end						::= 'END'
 

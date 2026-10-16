@@ -125,7 +125,8 @@ Method WriteStyles()
 	
 	#toolsMainBodyNav { resize: horizontal;}
 	nav { background-color: var(--bgAlternate1); height:100%; overflow:auto; }
-    nav a { margin-top: 0.25em; }
+    nav a { padding:0.5em; /*margin-top: 0.5em; margin-bottom: 0.5em; */}
+    nav a:hover { background-color: var(--bgHover); }
 	
 	nav details::details-content {
 		padding-left:2em;
@@ -174,6 +175,7 @@ Method WriteStyles()
 	.codeNumber { color: var(--fgCodeNumber); }
 	.codeLabel, a.codeLabel, a.codeLabel:visited { color: var(--fgCodeLabel);}
 	.codeLabelDef { color:var(--fgCodeLabel); font-weight: bold;}
+	.codeIndentBlock { margin-left:4ch; }
 
 
 	/* Object script only styles */

@@ -148,8 +148,16 @@ ClassMethod GenAll(ExportGEN as %Boolean=1)
 ClassMethod ExportAll()
 {
     Set dt=$TRANSLATE($ZDATETIME($HOROLOG,3),":- ","")
-    Set file="/home/irisowner/dev/debug/PXWALLINC_"_dt_".xml"
-    Do $SYSTEM.OBJ.Export("PXW.*.CLS,PXW.*.INC",file)
+    Set filedir=^PXW.Debuggers("BasicToFile") 
+    If ##class(%Library.File).DirectoryExists(filedir)=0 {
+        Set sc=##class(%File).CreateDirectory(^PXW.Debuggers("BasicToFile"),.created)
+        Set ^PXW.Debuggers("BasicToFile","dirCreated")=$LISTBUILD(sc,created,$HOROLOG)
+        zw ^PXW.Debuggers("BasicToFile","dirCreated")
+    }
+
+    Set file=filedir_"PXWALLINC_"_dt_".xml"
+    Set sc=$SYSTEM.OBJ.Export("PXW.*.CLS,PXW.*.INC",file)
+    do:$$$ISERR(sc) $SYSTEM.Status.DisplayError(sc)
     Write !,"File="_file,!
 }
 
@@ -162,7 +170,8 @@ ClassMethod ExportGEN()
         For i=1:1:$LISTLENGTH(classes) {
             Set cls=$LISTGET(classes,i)
             Write !,"Exporting "_package_cls_".CLS to "_genroot_cls_".cls"
-            Do $SYSTEM.OBJ.ExportUDL(package_cls_".CLS",genroot_cls_".cls")
+            set sc=$SYSTEM.OBJ.ExportUDL(package_cls_".CLS",genroot_cls_".cls")
+            if $$$ISERR(sc) do $system.OBJ.DisplayError(sc)
         }
     }
 }

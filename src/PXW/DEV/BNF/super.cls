@@ -536,6 +536,7 @@ Method recover(ParentElement As PXW.DEV.Element, ByRef subElement As PXW.DEV.Ele
 	Set subElement=##class(PXW.DEV.Element).%New()
 	Set subElement.type="recover"
 
+    set oldnextcount=..stream.nextCount
     Set matchcount=0 
 	Set ok=0
 	Set r=""
@@ -575,7 +576,8 @@ Method recover(ParentElement As PXW.DEV.Element, ByRef subElement As PXW.DEV.Ele
 		Set atom=..newAtom("ERROR",r)
 		Do subElement.AddPart(atom)
 		Do ParentElement.AddPart(subElement)
-	}	
+	}
+    set ..stream.nextCount=oldnextcount
     $$$DEBUG("RECOVER END AT:"_$$$peek(..stream,20))
 	$$$DEBUGMethodEnd
     ; recover always is true?

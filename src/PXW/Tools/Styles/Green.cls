@@ -181,10 +181,11 @@ Method WriteStyles()
 	.codeNumber { color: var(--fgCodeNumber); }
 	.codeLabel, a.codeLabel, a.codeLabel:visited { color: var(--fgCodeLabel);}
 	.codeLabelDef { color:var(--fgCodeLabel); font-weight: bold;}
+	.codeIndentBlock { margin-left:4ch; }
 
 
 	/* Object script only styles */
-	.CDEFOneClassMember { display:block; margin:0px 0px 0px 20px;  }
+	.CDEFOneClassMember { display:block; margin:0px 0px 0px 4ch;  }
 
 	.DOCBOOK {
 		/*background-color: var(--bgAlternate3);*/ /*color: var(--fgComment); */

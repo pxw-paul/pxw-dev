@@ -210,13 +210,13 @@ Method WriteStyles()
 	.codeNumber { color: var(--fgCodeNumber); }
 	.codeLabel, a.codeLabel, a.codeLabel:visited { color: var(--fgCodeLabel);}
 	.codeLabelDef { color:var(--fgCodeLabel); font-weight: bold;}
-
+	.codeIndentBlock { margin-left:4ch; }
 
 	/* Object script only styles */
 	.CDEFOneClassMember { display:block; 
 							/* 20px indent to make it not on the left side,
 							   but because this is a block we are effectively inserting an unwanted new line so move the whole thing up 1 line (-1em)*/
-							margin:-1em 0px 0px 20px;  }
+							margin:-1em 0px 0px 4ch;  }
 
 	.DOCBOOK {
 		background-color: var(--bgAlternate3); /*color: var(--fgComment); */
