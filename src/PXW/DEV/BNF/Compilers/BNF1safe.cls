@@ -97,7 +97,7 @@ Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
     Set value=""
     Set ch=..peek(1)
     ; must start with a letter
-    If value="",ch?1A Set value=..next()
+    If ch?1A Set value=..next()
     
     If value="" {
         $$$DEBUG("checking identifier, ok=0")

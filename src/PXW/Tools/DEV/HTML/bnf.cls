@@ -891,6 +891,21 @@ Method writeCOSCosCodeBlock(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.
     Quit ""
 }
 
+Method writeCOSCosCodeBlockCurly(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosCodeBlockCurly")
+{
+    $$$DEBUGMethodBegin
+    s first=element.FirstAtom()
+    s last=element.LastAtom()
+    if first,first.value="{",last,last.value="}" {
+        ; should be enough to make it unique without resorting to counting
+        s varname="CodeBlockCurly"_(+element)_(+first)_(+last)
+        Do ..wrapAtomHTML(first,"<span varid="""_varname_""" onclick=""HiliteSets('"_varname_"');"">","</span>")
+        Do ..wrapAtomHTML(last,"<span varid="""_varname_""" onclick=""HiliteSets('"_varname_"');"">","</span>")
+    }
+    $$$DEBUGMethodEnd
+    Quit ""
+}
+
 Method writeCOSCosDirective(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosDirective")
 {
     $$$DEBUGMethodBegin

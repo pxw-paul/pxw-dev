@@ -61,11 +61,24 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %Stri
     #define IsBrief(%e) $l(%e.ToString())<$$$BriefLimit
     set brief=(flags["BRIEF")
     if 'brief {
-        If element.type="SelectCommand" {
+        if element.type="SubquerySpecification" {
             if $$$IsBrief(element) {
-                set flags="BRIEF"
+                s flags="BRIEF"
             } else {
+                s flags="STARTSUB"
+            }
+        }
+        If element.type="SelectCommand" {
+            ; for sub queries I want: (select 
+            ;                           ....)
+            ; not:(
+            ;      select 
+            ;            ...)
+            if flags'["STARTSUB" {
                 Do ..setWhitespaceNewLineElement(element,indent)
+            } else {
+                s flags=""
+                s indent=indent+1
             }
         }
 
@@ -138,6 +151,8 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %Stri
 
         If element.type="WithClause" {
             Do ..setWhitespaceNewLineElement(element,indent)
+            s last=element.LastAtom()
+            if last.value=")" do ..setWhitespaceNewLine(last,indent)
             Set indent=indent+1
         }
 

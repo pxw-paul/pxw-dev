@@ -489,7 +489,7 @@ Method compileRule(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.El
     #dim rulesE as PXW.DEV.Element
 
     #define WRITE(%code) $$$WRITENOLINE(Method,%code)
-
+    Set dot="." ; compiles faster code "d ..addPunctuation(.subElement)" is faster than "d ..addPunctuation(subElement)" by about 10%
     Set subelement=Element.partsGetNext("") ; get the first thing
 
     If subelement.type="Keyword" {
@@ -499,22 +499,22 @@ Method compileRule(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.El
         If ..Loader.isKeyword(atom.value) {
             ;i word="class" break
             Set ..keywords($$$UPPER(atom.value))=1
-            $$$WRITE("..addKeyword(."_subElementVar_","""_$$$UPPER(word)_""") ")
+            $$$WRITE("..addKeyword("_dot_subElementVar_","""_$$$UPPER(word)_""") ")
         } ElseIf $$$UPPER($PIECE(word,":",1))="REGEXP"{
-            $$$WRITE("..addRegex(."_subElementVar_","""_$PIECE(word,":",2)_""") ")
+            $$$WRITE("..addRegex("_dot_subElementVar_","""_$PIECE(word,":",2)_""") ")
         } Else {
-            $$$WRITE("..addPunctuation(."_subElementVar_","""_word_""") ")
+            $$$WRITE("..addPunctuation("_dot_subElementVar_","""_word_""") ")
         }
     } ElseIf subelement.type="Call" {
         Set mnameA=Element.FirstAtom()
         Set mname=..methodName(mnameA.ToString(0))
-        $$$WRITE(".."_mname_"(."_subElementVar_",.addedElement) ")
+        $$$WRITE(".."_mname_"("_dot_subElementVar_",.addedElement) ")
     } ElseIf subelement.type="Subrule" {
         Set rulesE=subelement.findFirstElementByType("rules",0)
         Set subMethod=..NewMethod(..SubMethodName(..CurrentMethod.Name,"Sub"))
         Set subMethod.Description=rulesE.ToString(" ")
         Do ..compileSubRule(subMethod,rulesE,indent,QuickCheckDone)
-        $$$WRITE(".."_subMethod.Name_"(."_subElementVar_",.addedElement) ")
+        $$$WRITE(".."_subMethod.Name_"("_dot_subElementVar_",.addedElement) ")
     } ElseIf subelement.type="OptionalGroup" {
         Set rulesE=subelement.findFirstElementByType("Rules",0)
         If rulesE.partsCount()=1 {
@@ -525,7 +525,7 @@ Method compileRule(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.El
         } Else {
             Set subMethod=..NewMethod(..SubMethodName(..CurrentMethod.Name,"OptGrp"))
             Do ..compileOptionalGroup(subMethod,rulesE,indent)
-            $$$WRITE(".."_subMethod.Name_"(."_subElementVar_",.addedElement) ") 
+            $$$WRITE(".."_subMethod.Name_"("_dot_subElementVar_",.addedElement) ") 
         }
     } ElseIf subelement.type="NotRule" {
         Set ruleE=subelement.findFirstElementByType("NotableRule",0)
@@ -534,19 +534,19 @@ Method compileRule(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.El
     } ElseIf subelement.type="RepeatSep" {
         Set subMethod=..NewMethod(..SubMethodName(..CurrentMethod.Name,"RepSep"))
         Do ..compileRepeatSep(subMethod,subelement,indent)
-        $$$WRITE(".."_subMethod.Name_"(."_subElementVar_",.addedElement) ") 
+        $$$WRITE(".."_subMethod.Name_"("_dot_subElementVar_",.addedElement) ") 
     } ElseIf subelement.type="LookAhead" {
         Set subMethod=..NewMethod(..SubMethodName(..CurrentMethod.Name,"Peek"))
         Do ..compilePeek(subMethod,subelement,indent)
-        $$$WRITE(".."_subMethod.Name_"(."_subElementVar_",.addedElement) ") 
+        $$$WRITE(".."_subMethod.Name_"("_dot_subElementVar_",.addedElement) ") 
     } ElseIf subelement.type="RepeatOne" { 
         Set subMethod=..NewMethod(..SubMethodName(..CurrentMethod.Name,"RepOne"))
         Do ..compileRepeatOne(subMethod,subelement,indent)
-        $$$WRITE(".."_subMethod.Name_"(."_subElementVar_",.addedElement) ") 
+        $$$WRITE(".."_subMethod.Name_"("_dot_subElementVar_",.addedElement) ") 
     } ElseIf subelement.type="RepeatZero" { 
         Set subMethod=..NewMethod(..SubMethodName(..CurrentMethod.Name,"RepZero"))
         Do ..compileRepeatZero(subMethod,subelement,indent)
-        $$$WRITE(".."_subMethod.Name_"(."_subElementVar_",.addedElement) ") 
+        $$$WRITE(".."_subMethod.Name_"("_dot_subElementVar_",.addedElement) ") 
     } ElseIf subelement.type="OptionalSingle" { 
         Set ruleE=subelement.findFirstElementByType("OptionalableRule",0)
         $$$WRITE("$s(")
