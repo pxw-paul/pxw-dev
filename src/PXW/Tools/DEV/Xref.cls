@@ -161,7 +161,41 @@ ClassMethod HREFFrom(Output ItemType As %String, Output ItemKey1 As %String, Out
 	Set CodeSearch=%request.Get("CS")
 }
 
-/// This should return a string of the href to this page based on the input parameters
+/// <p>
+/// Search the Xref database.
+/// </p>
+/// <p>
+/// <ul><li>Item is the thing that is referenced.</li>
+/// 	<li>CalledBy is the thing that does the referencing the Item.</li>
+/// </ul>
+/// For example:
+/// <example>
+/// class package.myclass extends %Library.RegisteredObject
+/// </example>
+/// The Item is %Library.RegisteredObject. The CalledBy is package.myclass.
+/// </p>
+/// <dl>
+///     <dt>ItemType</dt>
+///     <dd>The type of Item. eg CLS,RTN,GBL,MAC</dd>
+///     <dt>ItemKey1</dt>
+///     <dd>Usually the main name of the Item. E.G. the class name.</dd>
+///     <dt>ItemKey2</dt>
+///     <dd>The section of the item. E.G. the method name.</dd>
+///     <dt>CalledByCommand</dt>
+///     <dd>The way the Item is called E.G. it could be a Variable or a VariableSet</dd>
+///     <dt>CalledByKey1</dt>
+///     <dd>The main name of the Caller. E.G. The class name.</dd>
+///     <dt>CalledByKey2</dt>
+///     <dd>The section of the Caller. E.G. the method name.</dd>
+///     <dt>WindowSize</dt>
+///     <dd>Set this to the size of the window of code to display.</dd>
+///     <dt>Flags</dt>
+///     <dd>Extra flags used to control the output.</dd>
+///     <dt>CodeSearch</dt>
+///     <dd>When displaying the code you can filter by the code that is found.</dd>
+/// </dl>
+/// <p>All parameters are optional, but there must be at least 1 of ItemKey1,ItemKey2,CalledByKey1 or CalledByKey2.<p>
+/// <p>Most parameters can have a wildcard (*). This includes the CodeSearch.</p>
 ClassMethod HREFTo(ItemType As %String = "", ItemKey1 As %String = "", ItemKey2 As %String = "", CalledByCommand As %String = "", CalledByKey1 As %String = "", CalledByKey2 As %String = "", WindowSize As %Integer = "", Flags As %String = "", CodeSearch As %String = "") As %String
 {
 	Set href=##super()
