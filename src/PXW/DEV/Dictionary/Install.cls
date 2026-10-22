@@ -35,9 +35,9 @@ ClassMethod Setup() As %Status
 }
 
 classmethod XrefSeed() {
-    j ##class(PXW.Xref.Build).Build("LOCAL_USER","","*")
-    h 1
-    j ##class(PXW.Xref.Build).Build("LOCAL_USER","","PXW*")
+    Job ##class(PXW.Xref.Build).Build("LOCAL_USER","","*")
+    Hang 1
+    Job ##class(PXW.Xref.Build).Build("LOCAL_USER","","PXW*")
 }
 
 ClassMethod SetupCLS(NamespaceName As %String, AtelierServerName As %String, AtelierServer As %String, AtelierPort As %String, AtelierNamespace As %String, Ausername As %String, Apassword As %String) As %Status
@@ -144,21 +144,15 @@ ClassMethod GenAll(ExportGEN as %Boolean=1)
     Do:ExportGEN ..ExportGEN()
 }
 
-/// d ##class(PXW.DEV.Dictionary.Install).ExportAll()
-ClassMethod ExportAll()
+/// w ##class(PXW.DEV.Dictionary.Install).ExportAll()
+ClassMethod ExportAll() as %String
 {
     Set dt=$TRANSLATE($ZDATETIME($HOROLOG,3),":- ","")
-    Set filedir=^PXW.Debuggers("BasicToFile") 
-    If ##class(%Library.File).DirectoryExists(filedir)=0 {
-        Set sc=##class(%File).CreateDirectory(^PXW.Debuggers("BasicToFile"),.created)
-        Set ^PXW.Debuggers("BasicToFile","dirCreated")=$LISTBUILD(sc,created,$HOROLOG)
-        zw ^PXW.Debuggers("BasicToFile","dirCreated")
-    }
-
+    Set filedir="/usr/irissys/csp/user/"
     Set file=filedir_"PXWALLINC_"_dt_".xml"
     Set sc=$SYSTEM.OBJ.Export("PXW.*.CLS,PXW.*.INC",file)
-    do:$$$ISERR(sc) $SYSTEM.Status.DisplayError(sc)
-    Write !,"File="_file,!
+    Do:$$$ISERR(sc) $SYSTEM.Status.DisplayError(sc)
+    Quit file
 }
 
 ClassMethod ExportGEN()
@@ -170,8 +164,8 @@ ClassMethod ExportGEN()
         For i=1:1:$LISTLENGTH(classes) {
             Set cls=$LISTGET(classes,i)
             Write !,"Exporting "_package_cls_".CLS to "_genroot_cls_".cls"
-            set sc=$SYSTEM.OBJ.ExportUDL(package_cls_".CLS",genroot_cls_".cls")
-            if $$$ISERR(sc) do $system.OBJ.DisplayError(sc)
+            Set sc=$SYSTEM.OBJ.ExportUDL(package_cls_".CLS",genroot_cls_".cls")
+            If $$$ISERR(sc) Do $SYSTEM.OBJ.DisplayError(sc)
         }
     }
 }

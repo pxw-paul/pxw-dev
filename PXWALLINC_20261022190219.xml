@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="IRIS" version="26" zv="IRIS for UNIX (Ubuntu Server LTS for x86-64 Containers) 2026.1 (Build 234U)" ts="2026-10-09 08:09:59">
+<Export generator="IRIS" version="26" zv="IRIS for UNIX (Ubuntu Server LTS for x86-64 Containers) 2026.1 (Build 234U)" ts="2026-10-22 19:02:19">
 <Class name="PXW.DEV.Atom">
 <Super>PXW.DEV.Particle</Super>
-<TimeChanged>67830,28950.607042217</TimeChanged>
-<TimeCreated>67812,67237.843915421</TimeCreated>
+<TimeChanged>67859,71081.665759643</TimeChanged>
+<TimeCreated>67859,71081.665759643</TimeCreated>
 
 <UDLText name="T">
 <Content><![CDATA[/* strictly speaking we should only need type and value*/
@@ -161,8 +161,8 @@ Find the left-most comment which could be before some whitespace.</Description>
 <Class name="PXW.DEV.BNF.Analyse.COS">
 <IncludeCode>PXW.Debuggers.Macros</IncludeCode>
 <Super>PXW.DEV.BNF.Analyse.analyser</Super>
-<TimeChanged>67851,69899.078418587</TimeChanged>
-<TimeCreated>67812,67238.099286582</TimeCreated>
+<TimeChanged>67859,71081.900075251</TimeChanged>
+<TimeCreated>67859,71081.900075251</TimeCreated>
 
 <Parameter name="CodeType">
 <Default>CLS,INC,INT,MAC</Default>
@@ -1845,8 +1845,8 @@ It will also add these atoms to the stringElement, so that we can do more with i
 <Class name="PXW.DEV.BNF.Analyse.Python">
 <IncludeCode>PXW.Debuggers.Macros</IncludeCode>
 <Super>PXW.DEV.BNF.Analyse.analyser</Super>
-<TimeChanged>67812,67238.131932519</TimeChanged>
-<TimeCreated>67812,67238.131932519</TimeCreated>
+<TimeChanged>67859,71081.928995112</TimeChanged>
+<TimeCreated>67859,71081.928995112</TimeCreated>
 
 <Parameter name="CodeType">
 <Default>CLS,INT,MAC</Default>
@@ -1916,8 +1916,8 @@ best to analyse the entire codeblock all at once.</Description>
 
 <Class name="PXW.DEV.BNF.Analyse.SQL">
 <Super>PXW.DEV.BNF.Analyse.analyser</Super>
-<TimeChanged>67849,61858.185696855</TimeChanged>
-<TimeCreated>67812,67238.164736006</TimeCreated>
+<TimeChanged>67859,71081.958554202</TimeChanged>
+<TimeCreated>67859,71081.958554202</TimeCreated>
 
 <Parameter name="CodeType">
 <Default>CLS,INT,MAC</Default>
@@ -2436,8 +2436,8 @@ returns the full table name of the column</Description>
 
 <Class name="PXW.DEV.BNF.Analyse.analyser">
 <Super>PXW.DEV.BNF.processor</Super>
-<TimeChanged>67831,66359.585567812</TimeChanged>
-<TimeCreated>67812,67238.049915655</TimeCreated>
+<TimeChanged>67859,71081.857550184</TimeChanged>
+<TimeCreated>67859,71081.857550184</TimeCreated>
 
 <Parameter name="CodeType">
 </Parameter>
@@ -2531,8 +2531,8 @@ Warnings assigned to elements
 <Description><![CDATA[
 <p>Going to get a bit weird here, a bnf definition of bnf that is written to decode itself and regerate the decoder!</p>]]></Description>
 <Super>PXW.DEV.BNF.Compilers.loader</Super>
-<TimeChanged>67824,69931.030601331</TimeChanged>
-<TimeCreated>67812,67238.192492366</TimeCreated>
+<TimeChanged>67859,71081.981207678</TimeChanged>
+<TimeCreated>67859,71081.981207678</TimeCreated>
 
 <Projection name="GEN">
 <Description>
@@ -2615,8 +2615,8 @@ Using this method of working the compiler should remain safe - hence the name.
 
 Maybe we can go further and remove references to macros.</Description>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67824,69316.284167819</TimeChanged>
-<TimeCreated>67812,67238.227271016</TimeCreated>
+<TimeChanged>67863,71306.76945708</TimeChanged>
+<TimeCreated>67859,71082.012293538</TimeCreated>
 
 <UDLText name="T">
 <Content><![CDATA[/* TWEAKED METHODS */
@@ -2721,7 +2721,7 @@ Its a call to something else if we are at the START of the line</Description>
     Set value=""
     Set ch=..peek(1)
     ; must start with a letter
-    If value="",ch?1A Set value=..next()
+    If ch?1A Set value=..next()
     
     If value="" {
         $$$DEBUG("checking identifier, ok=0")
@@ -3470,8 +3470,8 @@ summary values:(</Description>
 
 <Class name="PXW.DEV.BNF.Compilers.BNF2">
 <Super>PXW.DEV.BNF.Compilers.loader</Super>
-<TimeChanged>67812,67238.253772663</TimeChanged>
-<TimeCreated>67812,67238.253772663</TimeCreated>
+<TimeChanged>67859,71082.036132879</TimeChanged>
+<TimeCreated>67859,71082.036132879</TimeCreated>
 
 <Projection name="GEN">
 <Description>
@@ -3569,8 +3569,8 @@ Using this method of working the compiler should remain safe - hence the name.
 
 Maybe we can go further and remove references to macros.</Description>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67812,67238.288223546</TimeChanged>
-<TimeCreated>67812,67238.288223546</TimeCreated>
+<TimeChanged>67863,71408.872059406</TimeChanged>
+<TimeCreated>67859,71082.069726253</TimeCreated>
 
 <UDLText name="T">
 <Content><![CDATA[
@@ -3690,7 +3690,7 @@ Its a call to something else if we are at the START of the line</Description>
     Set value=""
     Set ch=..peek(1)
     ; must start with a letter
-    If value="",ch?1A Set value=..next()
+    If ch?1A Set value=..next()
     
     If value="" {
         $$$DEBUG("checking identifier, ok=0")
@@ -4533,8 +4533,8 @@ summary values:(</Description>
 <Class name="PXW.DEV.BNF.Compilers.Compiler">
 <IncludeCode>PXW.DEV.BNF.Compilers.macros</IncludeCode>
 <Super>%RegisteredObject</Super>
-<TimeChanged>67836,62534.316947001</TimeChanged>
-<TimeCreated>67812,67238.334389937</TimeCreated>
+<TimeChanged>67864,69684.218113557</TimeChanged>
+<TimeCreated>67859,71082.1110793</TimeCreated>
 <DependsOn>PXW.DEV.BNF.super</DependsOn>
 
 <Property name="Loader">
@@ -5074,7 +5074,7 @@ Element=Definition PXW.DEV.BNF.Element @216
     #dim rulesE as PXW.DEV.Element
 
     #define WRITE(%code) $$$WRITENOLINE(Method,%code)
-
+    Set dot="." ; compiles faster code "d ..addPunctuation(.subElement)" is faster than "d ..addPunctuation(subElement)" by about 10%
     Set subelement=Element.partsGetNext("") ; get the first thing
 
     If subelement.type="Keyword" {
@@ -5084,22 +5084,22 @@ Element=Definition PXW.DEV.BNF.Element @216
         If ..Loader.isKeyword(atom.value) {
             ;i word="class" break
             Set ..keywords($$$UPPER(atom.value))=1
-            $$$WRITE("..addKeyword(."_subElementVar_","""_$$$UPPER(word)_""") ")
+            $$$WRITE("..addKeyword("_dot_subElementVar_","""_$$$UPPER(word)_""") ")
         } ElseIf $$$UPPER($PIECE(word,":",1))="REGEXP"{
-            $$$WRITE("..addRegex(."_subElementVar_","""_$PIECE(word,":",2)_""") ")
+            $$$WRITE("..addRegex("_dot_subElementVar_","""_$PIECE(word,":",2)_""") ")
         } Else {
-            $$$WRITE("..addPunctuation(."_subElementVar_","""_word_""") ")
+            $$$WRITE("..addPunctuation("_dot_subElementVar_","""_word_""") ")
         }
     } ElseIf subelement.type="Call" {
         Set mnameA=Element.FirstAtom()
         Set mname=..methodName(mnameA.ToString(0))
-        $$$WRITE(".."_mname_"(."_subElementVar_",.addedElement) ")
+        $$$WRITE(".."_mname_"("_dot_subElementVar_",.addedElement) ")
     } ElseIf subelement.type="Subrule" {
         Set rulesE=subelement.findFirstElementByType("rules",0)
         Set subMethod=..NewMethod(..SubMethodName(..CurrentMethod.Name,"Sub"))
         Set subMethod.Description=rulesE.ToString(" ")
         Do ..compileSubRule(subMethod,rulesE,indent,QuickCheckDone)
-        $$$WRITE(".."_subMethod.Name_"(."_subElementVar_",.addedElement) ")
+        $$$WRITE(".."_subMethod.Name_"("_dot_subElementVar_",.addedElement) ")
     } ElseIf subelement.type="OptionalGroup" {
         Set rulesE=subelement.findFirstElementByType("Rules",0)
         If rulesE.partsCount()=1 {
@@ -5110,7 +5110,7 @@ Element=Definition PXW.DEV.BNF.Element @216
         } Else {
             Set subMethod=..NewMethod(..SubMethodName(..CurrentMethod.Name,"OptGrp"))
             Do ..compileOptionalGroup(subMethod,rulesE,indent)
-            $$$WRITE(".."_subMethod.Name_"(."_subElementVar_",.addedElement) ") 
+            $$$WRITE(".."_subMethod.Name_"("_dot_subElementVar_",.addedElement) ") 
         }
     } ElseIf subelement.type="NotRule" {
         Set ruleE=subelement.findFirstElementByType("NotableRule",0)
@@ -5119,19 +5119,19 @@ Element=Definition PXW.DEV.BNF.Element @216
     } ElseIf subelement.type="RepeatSep" {
         Set subMethod=..NewMethod(..SubMethodName(..CurrentMethod.Name,"RepSep"))
         Do ..compileRepeatSep(subMethod,subelement,indent)
-        $$$WRITE(".."_subMethod.Name_"(."_subElementVar_",.addedElement) ") 
+        $$$WRITE(".."_subMethod.Name_"("_dot_subElementVar_",.addedElement) ") 
     } ElseIf subelement.type="LookAhead" {
         Set subMethod=..NewMethod(..SubMethodName(..CurrentMethod.Name,"Peek"))
         Do ..compilePeek(subMethod,subelement,indent)
-        $$$WRITE(".."_subMethod.Name_"(."_subElementVar_",.addedElement) ") 
+        $$$WRITE(".."_subMethod.Name_"("_dot_subElementVar_",.addedElement) ") 
     } ElseIf subelement.type="RepeatOne" { 
         Set subMethod=..NewMethod(..SubMethodName(..CurrentMethod.Name,"RepOne"))
         Do ..compileRepeatOne(subMethod,subelement,indent)
-        $$$WRITE(".."_subMethod.Name_"(."_subElementVar_",.addedElement) ") 
+        $$$WRITE(".."_subMethod.Name_"("_dot_subElementVar_",.addedElement) ") 
     } ElseIf subelement.type="RepeatZero" { 
         Set subMethod=..NewMethod(..SubMethodName(..CurrentMethod.Name,"RepZero"))
         Do ..compileRepeatZero(subMethod,subelement,indent)
-        $$$WRITE(".."_subMethod.Name_"(."_subElementVar_",.addedElement) ") 
+        $$$WRITE(".."_subMethod.Name_"("_dot_subElementVar_",.addedElement) ") 
     } ElseIf subelement.type="OptionalSingle" { 
         Set ruleE=subelement.findFirstElementByType("OptionalableRule",0)
         $$$WRITE("$s(")
@@ -5526,8 +5526,8 @@ EG if the summary says something like "P|P|P|P" then its searching for a list of
 
 <Class name="PXW.DEV.BNF.Compilers.Compiler1">
 <Super>PXW.DEV.BNF.Compilers.Compiler</Super>
-<TimeChanged>67812,67238.365354147</TimeChanged>
-<TimeCreated>67812,67238.365354147</TimeCreated>
+<TimeChanged>67859,71082.137981288</TimeChanged>
+<TimeCreated>67859,71082.137981288</TimeCreated>
 <DependsOn>PXW.DEV.BNF.Compilers.BNF1safe</DependsOn>
 
 <Property name="parser">
@@ -5538,8 +5538,8 @@ EG if the summary says something like "P|P|P|P" then its searching for a list of
 
 <Class name="PXW.DEV.BNF.Compilers.Compiler2">
 <Super>PXW.DEV.BNF.Compilers.Compiler</Super>
-<TimeChanged>67812,67238.397780813</TimeChanged>
-<TimeCreated>67812,67238.397780813</TimeCreated>
+<TimeChanged>67859,71082.166706787</TimeChanged>
+<TimeCreated>67859,71082.166706787</TimeCreated>
 <DependsOn>PXW.DEV.BNF.Compilers.BNF2safe</DependsOn>
 
 <Property name="parser">
@@ -5914,8 +5914,8 @@ Keeping these all in the project to show why some of the code is like it is.
 Some of these test do show some inconsistencies when run many times.</Description>
 <IncludeCode>PXW.Debuggers.Macros</IncludeCode>
 <Super>%RegisteredObject</Super>
-<TimeChanged>67822,28918.158080157</TimeChanged>
-<TimeCreated>67817,66821.908390527</TimeCreated>
+<TimeChanged>67859,71082.274916909</TimeChanged>
+<TimeCreated>67859,71082.274916909</TimeCreated>
 
 <Parameter name="TestString">
 <Default>This is a test string</Default>
@@ -7136,8 +7136,8 @@ Some of these test do show some inconsistencies when run many times.</Descriptio
 
 
 <Class name="PXW.DEV.BNF.Compilers.elementHandler">
-<TimeChanged>67812,67238.423171748</TimeChanged>
-<TimeCreated>67812,67238.423171748</TimeCreated>
+<TimeChanged>67859,71082.18824597</TimeChanged>
+<TimeCreated>67859,71082.18824597</TimeCreated>
 
 <Parameter name="Type">
 <Description>
@@ -7153,8 +7153,8 @@ set to POST to make this method called AFTER the element's children have been pr
 
 <Class name="PXW.DEV.BNF.Compilers.loader">
 <Super>%RegisteredObject</Super>
-<TimeChanged>67812,67238.449146665</TimeChanged>
-<TimeCreated>67812,67238.449146665</TimeCreated>
+<TimeChanged>67859,71082.211596162</TimeChanged>
+<TimeCreated>67859,71082.211596162</TimeCreated>
 
 <Parameter name="Paths">
 <Description>
@@ -7242,7 +7242,7 @@ The check is done lots of times to keep building up a word until the test fails.
 </Class>
 
 
-<Routine name="PXW.DEV.BNF.Compilers.macros" type="INC" timestamp="67812,67238.450453261"><![CDATA[
+<Routine name="PXW.DEV.BNF.Compilers.macros" type="INC" timestamp="67859,71082.212673997"><![CDATA[
 /// Write to the given method
 #define WRITENOLINE(%method,%code) d %method.Implementation.Write(%code)
 
@@ -7261,8 +7261,8 @@ The check is done lots of times to keep building up a word until the test fails.
 
 <Class name="PXW.DEV.BNF.Compilers.projection">
 <Super>%Projection.AbstractProjection</Super>
-<TimeChanged>67812,67238.475261095</TimeChanged>
-<TimeCreated>67812,67238.475261095</TimeCreated>
+<TimeChanged>67859,71082.238317003</TimeChanged>
+<TimeCreated>67859,71082.238317003</TimeCreated>
 
 <Parameter name="GenerateTo">
 <Description>
@@ -7314,8 +7314,8 @@ This method is invoked when a class is compiled</Description>
 
 <Class name="PXW.DEV.BNF.DEF.COS">
 <Super>PXW.DEV.BNF.Compilers.loader</Super>
-<TimeChanged>67836,62853.143183624</TimeChanged>
-<TimeCreated>67812,67238.538281585</TimeCreated>
+<TimeChanged>67859,71082.348905207</TimeChanged>
+<TimeCreated>67859,71082.348905207</TimeCreated>
 
 <Projection name="GEN">
 <Type>PXW.DEV.BNF.Compilers.projection</Type>
@@ -8188,8 +8188,8 @@ json_string                         ::= 'NEEDS JSON STRING'
 
 <Class name="PXW.DEV.BNF.DEF.CSP">
 <Super>PXW.DEV.BNF.Compilers.loader</Super>
-<TimeChanged>67815,59454.630936887</TimeChanged>
-<TimeCreated>67812,67238.568061678</TimeCreated>
+<TimeChanged>67859,71082.375405648</TimeChanged>
+<TimeCreated>67859,71082.375405648</TimeCreated>
 
 <Projection name="GEN">
 <Type>PXW.DEV.BNF.Compilers.projection</Type>
@@ -8259,8 +8259,8 @@ text_no_space                       ::= 'NEEDS TEXT'
 
 <Class name="PXW.DEV.BNF.DEF.ClassDefinition">
 <Super>PXW.DEV.BNF.Compilers.loader</Super>
-<TimeChanged>67848,59158.899907927</TimeChanged>
-<TimeCreated>67812,67238.502834751</TimeCreated>
+<TimeChanged>67859,71082.304636117</TimeChanged>
+<TimeCreated>67859,71082.304636117</TimeCreated>
 
 <Projection name="GEN">
 <Type>PXW.DEV.BNF.Compilers.projection</Type>
@@ -8986,8 +8986,8 @@ cos_code_block_storage              ::= ('<!' '[CDATA[' cos_code_block_sql_stora
 
 <Class name="PXW.DEV.BNF.DEF.JS">
 <Super>PXW.DEV.BNF.Compilers.loader</Super>
-<TimeChanged>67812,67238.59634298</TimeChanged>
-<TimeCreated>67812,67238.59634298</TimeCreated>
+<TimeChanged>67859,71082.399881033</TimeChanged>
+<TimeCreated>67859,71082.399881033</TimeCreated>
 
 <Projection name="GEN">
 <Description>
@@ -9539,8 +9539,8 @@ is_not_Line_Terminator              ::= 'NEEDS is_not_Line_Terminator'
 <Description>
 Generated on-line by google AI - not tested</Description>
 <Super>%RegisteredObject</Super>
-<TimeChanged>67821,67376.647063983</TimeChanged>
-<TimeCreated>67821,62817.811142405</TimeCreated>
+<TimeChanged>67859,71082.424607143</TimeChanged>
+<TimeCreated>67859,71082.424607143</TimeCreated>
 
 <XData name="file">
 <Data><![CDATA[
@@ -9613,8 +9613,8 @@ digit             ::= [0-9]
 
 <Class name="PXW.DEV.BNF.DEF.Python">
 <Super>PXW.DEV.BNF.Compilers.loader</Super>
-<TimeChanged>67821,61278.681553537</TimeChanged>
-<TimeCreated>67812,67238.625896724</TimeCreated>
+<TimeChanged>67859,71082.449746713</TimeChanged>
+<TimeCreated>67859,71082.449746713</TimeCreated>
 
 <Projection name="GEN">
 <Description>
@@ -10509,8 +10509,8 @@ func_type_comment:
 
 <Class name="PXW.DEV.BNF.DEF.SQL">
 <Super>PXW.DEV.BNF.Compilers.loader</Super>
-<TimeChanged>67831,62424.005262275</TimeChanged>
-<TimeCreated>67812,67238.658113367</TimeCreated>
+<TimeChanged>67859,71082.477020453</TimeChanged>
+<TimeCreated>67859,71082.477020453</TimeCreated>
 
 <Projection name="GEN">
 <Type>PXW.DEV.BNF.Compilers.projection</Type>
@@ -10732,8 +10732,8 @@ sql_primary                      ::= sql_number
 										  | sql_function
 										  | colon_sql_cos_variable
 										  | stored_proc_call
-										  | column_reference
 										  | sql_special_variable
+										  | column_reference
 										  | macrocall
 										  | ( '(' subquery_specification ')' )
 										  | ( '(' sql_expression ( ',' sql_expression )* ')' ) /* for IN ( a,b,c) type expressions (IN is being treated like a +) this may cause more issues but a nice solution for now*/
@@ -10957,7 +10957,8 @@ sql_function_datepart_part_word ::= 'year' | 'yy' | 'yyyy'
 sql_case_expression					::= 'CASE' ( sql_case_expression1 | sql_case_expression2 ) [ sql_case_else ] sql_case_end
 sql_case_expression1				::= sql_case_when  ( sql_case_when )* 
 sql_case_expression2				::= sql_expression ( sql_case_when )* 
-sql_case_when						::= 'WHEN' sql_expression 'THEN' sql_expression
+sql_case_when						::= 'WHEN' sql_expression sql_case_then
+sql_case_then						::= 'THEN' sql_expression
 sql_case_else						::= 'ELSE' sql_expression
 sql_case_end						::= 'END'
 
@@ -10989,8 +10990,8 @@ identifier                    ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z
 
 <Class name="PXW.DEV.BNF.DEF.SQLShowPlan">
 <Super>PXW.DEV.BNF.Compilers.loader</Super>
-<TimeChanged>67849,29730.736401296</TimeChanged>
-<TimeCreated>67812,67238.686191904</TimeCreated>
+<TimeChanged>67859,71082.503287269</TimeChanged>
+<TimeCreated>67859,71082.503287269</TimeCreated>
 
 <Projection name="GEN">
 <Type>PXW.DEV.BNF.Compilers.projection</Type>
@@ -11096,8 +11097,8 @@ table_subscript_alias ::= '(' alias_name ['.' ( property_name '->')* ] ')'
 
 alias_property      ::= alias_name NOSPACE '.' NOSPACE property_name
 
-index_keys          ::= ',' 'using' 'the' index_keys_given ',' 'and' (index_keys_looping | index_keys_getting)
-index_keys_given    ::= 'given' index_key 
+index_keys          ::= [',' index_keys_given] [',' 'and'? (index_keys_looping | index_keys_getting)]
+index_keys_given    ::= 'using' 'the' 'given' index_key 
                         (',' ['and'] !'looping' !'getting' index_key)* 
                         ['and' !'looping' !'getting' index_key]
 index_keys_looping  ::= 'looping' 'on' 
@@ -11106,7 +11107,7 @@ index_keys_looping  ::= 'looping' 'on'
                             ['and' !'given' (index_key_with_range | index_key) ]
 index_keys_getting  ::= 'getting' index_key_name
 index_key           ::= ('%SQLUPPER(' index_key_name ')') | index_key_name
-index_key_with_range ::= index_key ( '(with a given set of values)' | '(with a range condition)' )
+index_key_with_range ::= index_key ( '(with a given set of values)' | '(with a range condition)' | '(with a <> condition)' )
 index_key_name      ::= alias_property | property_name
 
 
@@ -11139,12 +11140,12 @@ PUNCTUATION_REGEX ::= 'regexp:[^\w\s]']]]]><![CDATA[>
 
 <Class name="PXW.DEV.BNF.Element">
 <Super>PXW.DEV.Element</Super>
-<TimeChanged>67812,67237.957418378</TimeChanged>
-<TimeCreated>67812,67237.957418378</TimeCreated>
+<TimeChanged>67859,71081.770266746</TimeChanged>
+<TimeCreated>67859,71081.770266746</TimeCreated>
 </Class>
 
 
-<Routine name="PXW.DEV.BNF.ElementMacros" type="INC" timestamp="67824,79551.401621727"><![CDATA[
+<Routine name="PXW.DEV.BNF.ElementMacros" type="INC" timestamp="67859,71081.771202727"><![CDATA[
 #; 
 /// Get number of parts on the element.
 #define ElementPartsCount(%e) $GET(%PXWparts(+%e))
@@ -11177,43 +11178,43 @@ PUNCTUATION_REGEX ::= 'regexp:[^\w\s]']]]]><![CDATA[>
 
 <Class name="PXW.DEV.BNF.Elements.COS">
 <Super>PXW.DEV.BNF.Element</Super>
-<TimeChanged>67812,67238.739848153</TimeChanged>
-<TimeCreated>67812,67238.739848153</TimeCreated>
+<TimeChanged>67859,71082.553218131</TimeChanged>
+<TimeCreated>67859,71082.553218131</TimeCreated>
 </Class>
 
 
 <Class name="PXW.DEV.BNF.Elements.ClassDefinition">
 <Super>PXW.DEV.BNF.Element</Super>
-<TimeChanged>67812,67238.712830079</TimeChanged>
-<TimeCreated>67812,67238.712830079</TimeCreated>
+<TimeChanged>67859,71082.527924655</TimeChanged>
+<TimeCreated>67859,71082.527924655</TimeCreated>
 </Class>
 
 
 <Class name="PXW.DEV.BNF.Elements.JS">
 <Super>PXW.DEV.BNF.Element</Super>
-<TimeChanged>67812,67238.767837626</TimeChanged>
-<TimeCreated>67812,67238.767837626</TimeCreated>
+<TimeChanged>67859,71082.577779826</TimeChanged>
+<TimeCreated>67859,71082.577779826</TimeCreated>
 </Class>
 
 
 <Class name="PXW.DEV.BNF.Elements.Python">
 <Super>PXW.DEV.BNF.Element</Super>
-<TimeChanged>67812,67238.794263323</TimeChanged>
-<TimeCreated>67812,67238.794263323</TimeCreated>
+<TimeChanged>67859,71082.60093826</TimeChanged>
+<TimeCreated>67859,71082.60093826</TimeCreated>
 </Class>
 
 
 <Class name="PXW.DEV.BNF.Elements.SQL">
 <Super>PXW.DEV.BNF.Element</Super>
-<TimeChanged>67812,67238.820092869</TimeChanged>
-<TimeCreated>67812,67238.820092869</TimeCreated>
+<TimeChanged>67859,71082.624072981</TimeChanged>
+<TimeCreated>67859,71082.624072981</TimeCreated>
 </Class>
 
 
 <Class name="PXW.DEV.BNF.Format.CDefXML">
 <Super>%RegisteredObject</Super>
-<TimeChanged>67828,28820.010275276</TimeChanged>
-<TimeCreated>67812,67238.846776904</TimeCreated>
+<TimeChanged>67859,71082.647597557</TimeChanged>
+<TimeCreated>67859,71082.647597557</TimeCreated>
 
 <Property name="indent">
 <Type>%Integer</Type>
@@ -11337,8 +11338,8 @@ If there is NO whitespace leave alone, otherwise make it a single space.</Descri
 
 <Class name="PXW.DEV.BNF.Format.SQL">
 <Super>%RegisteredObject</Super>
-<TimeChanged>67851,29549.645066663</TimeChanged>
-<TimeCreated>67812,67238.881772481</TimeCreated>
+<TimeChanged>67864,62643.690176204</TimeChanged>
+<TimeCreated>67859,71082.678447578</TimeCreated>
 
 <Property name="indent">
 <Type>%Integer</Type>
@@ -11414,15 +11415,29 @@ Whitespace on Comments is untouched. - WHICH IS NOT QUITE RIGHT FOR LINECOMMENTS
 <Method name="setAll">
 <FormalSpec>element:PXW.DEV.Element,indent:%Integer=0,flags:%String=""</FormalSpec>
 <Implementation><![CDATA[
+    #dim a as PXW.DEV.Atom
     #define BriefLimit 100
     #define IsBrief(%e) $l(%e.ToString())<$$$BriefLimit
     set brief=(flags["BRIEF")
     if 'brief {
-        If element.type="SelectCommand" {
+        if element.type="SubquerySpecification" {
             if $$$IsBrief(element) {
-                set flags="BRIEF"
+                s flags="BRIEF"
             } else {
+                s flags="STARTSUB"
+            }
+        }
+        If element.type="SelectCommand" {
+            ; for sub queries I want: (select 
+            ;                           ....)
+            ; not:(
+            ;      select 
+            ;            ...)
+            if flags'["STARTSUB" {
                 Do ..setWhitespaceNewLineElement(element,indent)
+            } else {
+                s flags=""
+                s indent=indent+1
             }
         }
 
@@ -11443,6 +11458,14 @@ Whitespace on Comments is untouched. - WHICH IS NOT QUITE RIGHT FOR LINECOMMENTS
 
         If element.type="SqlCaseWhen" {
             Do ..setWhitespaceNewLineElement(element,indent)
+        }
+        If element.type="SqlCaseThen" {
+            if $$$IsBrief(element) {
+                set flags="BRIEF"
+            } else {
+                set indent=indent+1
+                Do ..setWhitespaceNewLineElement(element,indent)
+            }
         }
         If element.type="SqlCaseElse" {
             Do ..setWhitespaceNewLineElement(element,indent)
@@ -11487,6 +11510,8 @@ Whitespace on Comments is untouched. - WHICH IS NOT QUITE RIGHT FOR LINECOMMENTS
 
         If element.type="WithClause" {
             Do ..setWhitespaceNewLineElement(element,indent)
+            s last=element.LastAtom()
+            if last.value=")" do ..setWhitespaceNewLine(last,indent)
             Set indent=indent+1
         }
 
@@ -11504,6 +11529,20 @@ Whitespace on Comments is untouched. - WHICH IS NOT QUITE RIGHT FOR LINECOMMENTS
         If element.type="OrderByClause" {
             Do ..setWhitespaceNewLineElement(element,indent)
         }
+
+        if element.type="SqlFunction" {
+            if $$$IsBrief(element) {
+                s flags="BRIEF"
+            } else {
+                s indent=indent+1
+                for i=1:1:element.partsCount() {
+                    set atom=element.partsGetAt(i)
+                    if atom.IsAtom,atom.value="," {
+                        do ..setWhitespaceNewLine(atom,indent)
+                    }
+                }
+            }
+        }
     }
     set akey=""
    	For  {
@@ -11513,7 +11552,9 @@ Whitespace on Comments is untouched. - WHICH IS NOT QUITE RIGHT FOR LINECOMMENTS
 	    If a.IsElement {
 			Do ..setAll(a,indent,flags)
 		} Else {
-           ; set a.line=..currentLine
+           if $$$UPPER($p(a.type,":",1))="KEYWORD" {
+                s a.value=$$$UPPER(a.value)
+           }
         }
 	}
 
@@ -11551,8 +11592,8 @@ Whitespace on Comments is untouched. - WHICH IS NOT QUITE RIGHT FOR LINECOMMENTS
 
 <Class name="PXW.DEV.BNF.Format.SQLShowPlan">
 <Super>PXW.DEV.BNF.processor</Super>
-<TimeChanged>67851,69599.208086557</TimeChanged>
-<TimeCreated>67846,55194.329264872</TimeCreated>
+<TimeChanged>67859,71082.706043206</TimeChanged>
+<TimeCreated>67859,71082.706043206</TimeCreated>
 
 <Property name="placeHolder">
 <Type>PXW.DEV.Element</Type>
@@ -11725,858 +11766,11 @@ When module X is reached, move it to the end of the place holder</Description>
 </Class>
 
 
-<Class name="PXW.DEV.BNF.GEN.BNF1">
-<ProcedureBlock>1</ProcedureBlock>
-<Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67824,69261.737343395</TimeChanged>
-<TimeCreated>67824,68839.21046882</TimeCreated>
-
-<Method name="Call">
-<Description>
- call ::= IDENTIFIER
-summary=C</Description>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary C
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..Identifier(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		; copyMode=0
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="Definition">
-<Description><![CDATA[
- definition ::= IDENTIFIER EQUALS rules
-summary=C&C&C]]></Description>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary C&C&C
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..Identifier(.subElement,.addedElement)  {
-		if ..Equals(.subElement,.addedElement)  {
-			if ..Rules(.subElement,.addedElement)  {
-				set done=1 ; end compileRules
-			}
-		}
-	}
-
-	if done {
-		; copyMode=0
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="Equals">
-<Description>
- EQUALS ::= 'NEEDS EQUALS'
-summary values:NEEDS EQUALS
-summary=P</Description>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary P
-	if '(..isStringSingle("NEEDS EQUALS",.value)) { quit 0 /* normal */ /*3 */ }
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"NEEDS EQUALS")  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		; copyMode=0
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="File">
-<Description>
- file ::= definition*
-summary=(C)*</Description>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary (C)*
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..File1RepZero(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		; copyMode=0
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="File1RepZero">
-<Description>
- definition*</Description>
-<Final>1</Final>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<Private>1</Private>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary C
-	set subElement=ParentElement
-	; method start
-	while ..Definition(.subElement,.addedElement)  {
-		;
-	}
-	set ok=1
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="Identifier">
-<Description>
- IDENTIFIER ::= 'NEEDS IDENTIFIER'
-summary values:NEEDS IDENTIFIER
-summary=P</Description>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary P
-	if '(..isStringSingle("NEEDS IDENTIFIER",.value)) { quit 0 /* normal */ /*3 */ }
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"NEEDS IDENTIFIER")  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		; copyMode=0
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="Keyword">
-<Description>
- KEYWORD ::= 'NEEDS STRING'
-summary values:NEEDS STRING
-summary=P</Description>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary P
-	if '(..isStringSingle("NEEDS STRING",.value)) { quit 0 /* normal */ /*3 */ }
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"NEEDS STRING")  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		; copyMode=0
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="LookAhead">
-<Description><![CDATA[
- look_ahead ::= '&' look_ahead_rule
-summary values:&
-summary=P&C]]></Description>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary P&C
-	if '..isPunctuation("&",1) { quit 0 /* normal */ }
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"&")  {
-		if ..LookAheadRule(.subElement,.addedElement)  {
-			set done=1 ; end compileRules
-		}
-	}
-
-	if done {
-		; copyMode=0
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="LookAheadRule">
-<Description>
- look_ahead_rule ::= KEYWORD | subrule | call
-summary=C|C|C</Description>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary C|C|C
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..Keyword(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Subrule(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Call(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		; copyMode=0
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="NotRule">
-<Description><![CDATA[
- not_rule ::= '!' notable_rule
-summary values:!
-summary=P&C]]></Description>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary P&C
-	if '..isPunctuation("!",1) { quit 0 /* normal */ }
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"!")  {
-		if ..NotableRule(.subElement,.addedElement)  {
-			set done=1 ; end compileRules
-		}
-	}
-
-	if done {
-		; copyMode=0
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="NotableRule">
-<Description>
- notable_rule ::= KEYWORD | subrule | call
-summary=C|C|C</Description>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary C|C|C
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..Keyword(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Subrule(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Call(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		; copyMode=0
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="OptionalGroup">
-<Description><![CDATA[
- optional_group ::= '[' rules ']'
-summary values:[
-summary=P&C&P]]></Description>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary P&C&P
-	if '..isPunctuation("[",1) { quit 0 /* normal */ }
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"[")  {
-		if ..Rules(.subElement,.addedElement)  {
-			if ..addPunctuation(.subElement,"]")  {
-				set done=1 ; end compileRules
-			}
-		}
-	}
-
-	if done {
-		; copyMode=0
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="OptionalSingle">
-<Description><![CDATA[
- optional_single ::= optionalable_rule '?'
-summary=C&P]]></Description>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary C&P
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..OptionalableRule(.subElement,.addedElement)  {
-		if ..addPunctuation(.subElement,"?")  {
-			set done=1 ; end compileRules
-		}
-	}
-
-	if done {
-		; copyMode=0
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="OptionalableRule">
-<Description>
- optionalable_rule ::= KEYWORD | subrule | call
-summary=C|C|C</Description>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary C|C|C
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..Keyword(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Subrule(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Call(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		; copyMode=0
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="Or">
-<Description>
- or ::= '|'
-summary values:|
-summary=P</Description>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary P
-	if '(..isStringSingle("|",.value)) { quit 0 /* normal */ /*3 */ }
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"|")  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		; copyMode=0
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="Repeat">
-<Description>
- repeat ::= repeat_zero | repeat_one
-summary=C|C</Description>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary C|C
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..RepeatZero(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..RepeatOne(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		; copyMode=0
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="RepeatOne">
-<Description><![CDATA[
- repeat_one ::= repeatable_rule '+'
-summary=C&P]]></Description>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary C&P
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..RepeatableRule(.subElement,.addedElement)  {
-		if ..addPunctuation(.subElement,"+")  {
-			set done=1 ; end compileRules
-		}
-	}
-
-	if done {
-		; copyMode=0
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="RepeatSep">
-<Description><![CDATA[
- repeat_sep ::= repeat_sep_separator '.' repeat_sep_rule '+'
-summary=C&P&C&P]]></Description>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary C&P&C&P
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..RepeatSepSeparator(.subElement,.addedElement)  {
-		if ..addPunctuation(.subElement,".")  {
-			if ..RepeatSepRule(.subElement,.addedElement)  {
-				if ..addPunctuation(.subElement,"+")  {
-					set done=1 ; end compileRules
-				}
-			}
-		}
-	}
-
-	if done {
-		; copyMode=0
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="RepeatSepRule">
-<Description>
- repeat_sep_rule ::= optional_single | KEYWORD | subrule | call
-summary=C|C|C|C</Description>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary C|C|C|C
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..OptionalSingle(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Keyword(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Subrule(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Call(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		; copyMode=0
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="RepeatSepSeparator">
-<Description>
- repeat_sep_separator ::= KEYWORD | subrule | call
-summary=C|C|C</Description>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary C|C|C
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..Keyword(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Subrule(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Call(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		; copyMode=0
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="RepeatZero">
-<Description><![CDATA[
- repeat_zero ::= repeatable_rule '*'
-summary=C&P]]></Description>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary C&P
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..RepeatableRule(.subElement,.addedElement)  {
-		if ..addPunctuation(.subElement,"*")  {
-			set done=1 ; end compileRules
-		}
-	}
-
-	if done {
-		; copyMode=0
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="RepeatableRule">
-<Description>
- repeatable_rule ::= KEYWORD | subrule | call
-summary=C|C|C</Description>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary C|C|C
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..Keyword(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Subrule(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Call(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		; copyMode=0
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="Rule">
-<Description>
- rule ::= repeat_sep | repeat_zero | repeat_one | optional_single | KEYWORD | or | subrule | optional_group | call | look_ahead | not_rule
-summary=C|C|C|C|C|C|C|C|C|C|C</Description>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary C|C|C|C|C|C|C|C|C|C|C
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..RepeatSep(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..RepeatZero(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..RepeatOne(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..OptionalSingle(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Keyword(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Or(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Subrule(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..OptionalGroup(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Call(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..LookAhead(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..NotRule(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		; copyMode=0
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="Rules">
-<Description>
- rules ::= rule*
-summary=(C)*</Description>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary (C)*
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..Rules1RepZero(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	if done {
-		; copyMode=0
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="Rules1RepZero">
-<Description>
- rule*</Description>
-<Final>1</Final>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<Private>1</Private>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary C
-	set subElement=ParentElement
-	; method start
-	while ..Rule(.subElement,.addedElement)  {
-		;
-	}
-	set ok=1
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="Subrule">
-<Description><![CDATA[
- subrule ::= '(' rules ')'
-summary values:(
-summary=P&C&P]]></Description>
-<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	; rules summary P&C&P
-	if '..isPunctuation("(",1) { quit 0 /* normal */ }
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"(")  {
-		if ..Rules(.subElement,.addedElement)  {
-			if ..addPunctuation(.subElement,")")  {
-				set done=1 ; end compileRules
-			}
-		}
-	}
-
-	if done {
-		; copyMode=0
-		$$$BNFCOMMIT(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	$$$DEBUGMethodEnd
-	quit ok
-]]></Implementation>
-</Method>
-
-<Method name="newElement">
-<FormalSpec>Type:%String</FormalSpec>
-<ReturnType>PXW.DEV.BNF.Element</ReturnType>
-<Implementation><![CDATA[	quit ##class(PXW.DEV.BNF.Element).%New(Type)
-]]></Implementation>
-</Method>
-
-<Parameter name="KeywordPattern">
-<Default>1.A</Default>
-</Parameter>
-
-<Parameter name="Keywords"/>
-</Class>
-
-
 <Class name="PXW.DEV.BNF.GEN.COS">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67849,29891.839799093</TimeChanged>
-<TimeCreated>67849,29891.539937464</TimeCreated>
+<TimeChanged>67864,70608.021921665</TimeChanged>
+<TimeCreated>67864,70607.756535579</TimeCreated>
 
 <Method name="AmpOp">
 <Description><![CDATA[
@@ -33774,8 +32968,16 @@ summary=K&?4OptionalSingle4?&C]]></Description>
 <Class name="PXW.DEV.BNF.GEN.CSP">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67849,29893.008640579</TimeChanged>
-<TimeCreated>67849,29892.974956634</TimeCreated>
+<TimeChanged>67864,70625.653975122</TimeChanged>
+<TimeCreated>67864,70609.094484615</TimeCreated>
+
+<Parameter name="KeywordPattern">
+<Default>1.A</Default>
+</Parameter>
+
+<Parameter name="Keywords">
+<Default>JAVASCRIPT,LANGUAGE,PUBLIC,SCRIPT,STYLESHEET,TYPE</Default>
+</Parameter>
 
 <Method name="CosExpression">
 <Description>
@@ -35895,22 +35097,14 @@ summary=P</Description>
 <Implementation><![CDATA[	quit ##class(PXW.DEV.BNF.Element).%New(Type)
 ]]></Implementation>
 </Method>
-
-<Parameter name="KeywordPattern">
-<Default>1.A</Default>
-</Parameter>
-
-<Parameter name="Keywords">
-<Default>JAVASCRIPT,LANGUAGE,PUBLIC,SCRIPT,STYLESHEET,TYPE</Default>
-</Parameter>
 </Class>
 
 
 <Class name="PXW.DEV.BNF.GEN.ClassDefinition">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67849,29894.660479784</TimeChanged>
-<TimeCreated>67849,29894.490601978</TimeCreated>
+<TimeChanged>67864,70610.643389213</TimeChanged>
+<TimeCreated>67864,70610.487349031</TimeCreated>
 
 <Method name="AliasIdentifier">
 <Description>
@@ -49005,8 +48199,8 @@ summary=C</Description>
 <Class name="PXW.DEV.BNF.GEN.JS">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67849,29896.616091857</TimeChanged>
-<TimeCreated>67849,29896.459396872</TimeCreated>
+<TimeChanged>67864,70612.388981462</TimeChanged>
+<TimeCreated>67864,70612.244270824</TimeCreated>
 
 <Method name="AliasName">
 <Description><![CDATA[
@@ -60548,8 +59742,8 @@ summary=K&[C]&C]]></Description>
 <Class name="PXW.DEV.BNF.GEN.Python">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67849,29897.649633677</TimeChanged>
-<TimeCreated>67849,29897.454251312</TimeCreated>
+<TimeChanged>67864,70613.336792352</TimeChanged>
+<TimeCreated>67864,70613.162341074</TimeCreated>
 
 <Method name="AnnotatedRhs">
 <Description><![CDATA[
@@ -79162,8 +78356,8 @@ summary=C</Description>
 <Class name="PXW.DEV.BNF.GEN.SQL">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67849,29901.003403045</TimeChanged>
-<TimeCreated>67849,29900.84220479</TimeCreated>
+<TimeChanged>67864,70616.379570743</TimeChanged>
+<TimeCreated>67864,70616.234498643</TimeCreated>
 
 <Method name="AliasName">
 <Description>
@@ -84349,15 +83543,47 @@ summary=C</Description>
 ]]></Implementation>
 </Method>
 
-<Method name="SqlCaseWhen">
+<Method name="SqlCaseThen">
 <Description><![CDATA[
- sql_case_when ::= 'WHEN' sql_expression 'THEN' sql_expression
-summary values:WHEN
-summary=K&C&K&C]]></Description>
+ sql_case_then ::= 'THEN' sql_expression
+summary values:THEN
+summary=K&C]]></Description>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-	; rules summary K&C&K&C
+	; rules summary K&C
+	if '(..isKeyword("THEN")) { quit 0 /* normal */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addKeyword(.subElement,"THEN")  {
+		if ..SqlExpression(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+]]></Implementation>
+</Method>
+
+<Method name="SqlCaseWhen">
+<Description><![CDATA[
+ sql_case_when ::= 'WHEN' sql_expression sql_case_then
+summary values:WHEN
+summary=K&C&C]]></Description>
+<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	; rules summary K&C&C
 	if '(..isKeyword("WHEN")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -84365,10 +83591,8 @@ summary=K&C&K&C]]></Description>
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"WHEN")  {
 		if ..SqlExpression(.subElement,.addedElement)  {
-			if ..addKeyword(.subElement,"THEN")  {
-				if ..SqlExpression(.subElement,.addedElement)  {
-					set done=1 ; end compileRules
-				}
+			if ..SqlCaseThen(.subElement,.addedElement)  {
+				set done=1 ; end compileRules
 			}
 		}
 	}
@@ -87422,7 +86646,7 @@ summary=P|K|K|K|P|K|P|P</Description>
 
 <Method name="SqlPrimary">
 <Description><![CDATA[
- sql_primary ::= sql_number | sql_string | sql_case_expression | sql_fn_function | sql_function | colon_sql_cos_variable | stored_proc_call | column_reference | sql_special_variable | macrocall | ( '(' subquery_specification ')' ) | ( '(' sql_expression ( ',' sql_expression )* ')' )
+ sql_primary ::= sql_number | sql_string | sql_case_expression | sql_fn_function | sql_function | colon_sql_cos_variable | stored_proc_call | sql_special_variable | column_reference | macrocall | ( '(' subquery_specification ')' ) | ( '(' sql_expression ( ',' sql_expression )* ')' )
 summary=C|C|C|C|C|C|C|C|C|C|(P&C&P)|(P&C&(?4punctuation:4?)*&P)]]></Description>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <ReturnType>%Boolean</ReturnType>
@@ -87446,9 +86670,9 @@ summary=C|C|C|C|C|C|C|C|C|C|(P&C&P)|(P&C&(?4punctuation:4?)*&P)]]></Description>
 		set done=1 ; or
 	} elseif ..StoredProcCall(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..ColumnReference(.subElement,.addedElement)  {
-		set done=1 ; or
 	} elseif ..SqlSpecialVariable(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..ColumnReference(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..Macrocall(.subElement,.addedElement)  {
 		set done=1 ; or
@@ -89684,8 +88908,8 @@ summary=P&C]]></Description>
 <Class name="PXW.DEV.BNF.GEN.SQLShowPlan">
 <ProcedureBlock>1</ProcedureBlock>
 <Super>PXW.DEV.BNF.super</Super>
-<TimeChanged>67849,29901.525299367</TimeChanged>
-<TimeCreated>67849,29901.484936595</TimeCreated>
+<TimeChanged>67864,70616.842991758</TimeChanged>
+<TimeCreated>67864,70616.806808493</TimeCreated>
 
 <Method name="AliasName">
 <Description>
@@ -90602,12 +89826,12 @@ summary=C|C</Description>
 
 <Method name="IndexKeyWithRange">
 <Description><![CDATA[
- index_key_with_range ::= index_key ( '(with a given set of values)' | '(with a range condition)' )
-summary=C&(P|P)]]></Description>
+ index_key_with_range ::= index_key ( '(with a given set of values)' | '(with a range condition)' | '(with a <> condition)' )
+summary=C&(P|P|P)]]></Description>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-	; rules summary C&(P|P)
+	; rules summary C&(P|P|P)
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -90631,22 +89855,24 @@ summary=C&(P|P)]]></Description>
 </Method>
 
 <Method name="IndexKeyWithRange1Sub">
-<Description>
- '(with a given set of values)' | '(with a range condition)'
-summary values:(WITH A GIVEN SET OF VALUES),(WITH A RANGE CONDITION)
-summary=P|P</Description>
+<Description><![CDATA[
+ '(with a given set of values)' | '(with a range condition)' | '(with a <> condition)'
+summary values:(WITH A GIVEN SET OF VALUES),(WITH A RANGE CONDITION),(WITH A <> CONDITION)
+summary=P|P|P]]></Description>
 <Final>1</Final>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <Private>1</Private>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-	; rules summary P|P
-	if '..isStringSingle("(WITH A GIVEN SET OF VALUES)",28),'..isStringSingle("(WITH A RANGE CONDITION)",24) { quit 0 /* normal */ }
+	; rules summary P|P|P
+	if '..isStringSingle("(WITH A GIVEN SET OF VALUES)",28),'..isStringSingle("(WITH A RANGE CONDITION)",24),'..isStringSingle("(WITH A <> CONDITION)",21) { quit 0 /* normal */ }
 	set subElement=ParentElement
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"(with a given set of values)")  {
 		set done=1 ; or
 	} elseif ..addPunctuation(.subElement,"(with a range condition)")  {
+		set done=1 ; or
+	} elseif ..addPunctuation(.subElement,"(with a <> condition)")  {
 		set done=1 ; end compileRules
 	}
 
@@ -90657,31 +89883,19 @@ summary=P|P</Description>
 
 <Method name="IndexKeys">
 <Description><![CDATA[
- index_keys ::= ',' 'using' 'the' index_keys_given ',' 'and' (index_keys_looping | index_keys_getting)
-summary values:,
-summary=P&K&K&C&P&K&(C|C)]]></Description>
+ index_keys ::= [',' index_keys_given] [',' 'and'? (index_keys_looping | index_keys_getting)]
+summary=[P&C]&[P&?4OptionalSingle4?&(C|C)]]]></Description>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-	; rules summary P&K&K&C&P&K&(C|C)
-	if '..isPunctuation(",",1) { quit 0 /* normal */ }
+	; rules summary [P&C]&[P&?4OptionalSingle4?&(C|C)]
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(.subElement,",")  {
-		if ..addKeyword(.subElement,"USING")  {
-			if ..addKeyword(.subElement,"THE")  {
-				if ..IndexKeysGiven(.subElement,.addedElement)  {
-					if ..addPunctuation(.subElement,",")  {
-						if ..addKeyword(.subElement,"AND")  {
-							if ..IndexKeys1Sub(.subElement,.addedElement)  {
-								set done=1 ; end compileRules
-							}
-						}
-					}
-				}
-			}
+	if ..IndexKeys1OptGrp(.subElement,.addedElement)  {
+		if ..IndexKeys2OptGrp(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
 		}
 	}
 
@@ -90697,7 +89911,71 @@ summary=P&K&K&C&P&K&(C|C)]]></Description>
 ]]></Implementation>
 </Method>
 
-<Method name="IndexKeys1Sub">
+<Method name="IndexKeys1OptGrp">
+<Description><![CDATA[
+
+summary values:,
+summary=P&C]]></Description>
+<Final>1</Final>
+<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
+<Private>1</Private>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	; rules summary P&C
+	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,",")  {
+		if ..IndexKeysGiven(.subElement,.addedElement)  {
+			set done=1 ; end compileRules
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+]]></Implementation>
+</Method>
+
+<Method name="IndexKeys2OptGrp">
+<Description><![CDATA[
+
+summary values:,
+summary=P&?4OptionalSingle4?&(C|C)]]></Description>
+<Final>1</Final>
+<FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
+<Private>1</Private>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	; rules summary P&?4OptionalSingle4?&(C|C)
+	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,",")  {
+		if $s(..addKeyword(.subElement,"AND") :1,1:1)  {
+			if ..IndexKeys3Sub(.subElement,.addedElement)  {
+				set done=1 ; end compileRules
+			}
+		}
+	}
+
+	if done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=1 /* failure rollsback but returns OK */
+	}
+	quit ok
+]]></Implementation>
+</Method>
+
+<Method name="IndexKeys3Sub">
 <Description>
 index_keys_looping | index_keys_getting
 summary=C|C</Description>
@@ -90754,23 +90032,27 @@ summary=K&C]]></Description>
 
 <Method name="IndexKeysGiven">
 <Description><![CDATA[
- index_keys_given ::= 'given' index_key (',' ['and'] !'looping' !'getting' index_key)* ['and' !'looping' !'getting' index_key]
-summary values:GIVEN
-summary=K&C&(?4punctuation:4?)*&[K&?4NotRule4?&?4NotRule4?&C]]]></Description>
+ index_keys_given ::= 'using' 'the' 'given' index_key (',' ['and'] !'looping' !'getting' index_key)* ['and' !'looping' !'getting' index_key]
+summary values:USING
+summary=K&K&K&C&(?4punctuation:4?)*&[K&?4NotRule4?&?4NotRule4?&C]]]></Description>
 <FormalSpec><![CDATA[ParentElement:PXW.DEV.BNF.Element,&subElement:PXW.DEV.BNF.Element]]></FormalSpec>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
-	; rules summary K&C&(?4punctuation:4?)*&[K&?4NotRule4?&?4NotRule4?&C]
-	if '(..isKeyword("GIVEN")) { quit 0 /* normal */ }
+	; rules summary K&K&K&C&(?4punctuation:4?)*&[K&?4NotRule4?&?4NotRule4?&C]
+	if '(..isKeyword("USING")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addKeyword(.subElement,"GIVEN")  {
-		if ..IndexKey(.subElement,.addedElement)  {
-			if ..IndexKeysGiven1RepZero(.subElement,.addedElement)  {
-				if ..IndexKeysGiven3OptGrp(.subElement,.addedElement)  {
-					set done=1 ; end compileRules
+	if ..addKeyword(.subElement,"USING")  {
+		if ..addKeyword(.subElement,"THE")  {
+			if ..addKeyword(.subElement,"GIVEN")  {
+				if ..IndexKey(.subElement,.addedElement)  {
+					if ..IndexKeysGiven1RepZero(.subElement,.addedElement)  {
+						if ..IndexKeysGiven3OptGrp(.subElement,.addedElement)  {
+							set done=1 ; end compileRules
+						}
+					}
 				}
 			}
 		}
@@ -92748,8 +92030,8 @@ summary=R</Description>
 
 <Class name="PXW.DEV.BNF.Run.COS">
 <Super>PXW.DEV.BNF.GEN.COS</Super>
-<TimeChanged>67831,28783.024523088</TimeChanged>
-<TimeCreated>67812,67240.137717309</TimeCreated>
+<TimeChanged>67859,71083.85954097</TimeChanged>
+<TimeCreated>67859,71083.85954097</TimeCreated>
 
 <Property name="codemode">
 <Type>%String</Type>
@@ -94479,8 +93761,8 @@ the missing p2 ends up with an "EmptyParameter" in it so that it can be counted 
 
 <Class name="PXW.DEV.BNF.Run.CSP">
 <Super>PXW.DEV.BNF.GEN.CSP</Super>
-<TimeChanged>67812,67240.179991176</TimeChanged>
-<TimeCreated>67812,67240.179991176</TimeCreated>
+<TimeChanged>67859,71083.896106802</TimeChanged>
+<TimeCreated>67859,71083.896106802</TimeCreated>
 
 <Property name="commentMode">
 <Description>
@@ -94853,8 +94135,8 @@ Skip over the next set of comments, return 1 if something was done or 0</Descrip
 
 <Class name="PXW.DEV.BNF.Run.ClassDefinition">
 <Super>PXW.DEV.BNF.GEN.ClassDefinition</Super>
-<TimeChanged>67827,77903.181525254</TimeChanged>
-<TimeCreated>67812,67240.057064898</TimeCreated>
+<TimeChanged>67859,71083.787969476</TimeChanged>
+<TimeCreated>67859,71083.787969476</TimeCreated>
 
 <Property name="commentMode">
 <Description>
@@ -95435,14 +94717,11 @@ When this runs in lowmem mode you are expected to handle some of the stuff in th
     
     ;s atom=..newAtom("Expression Begin","")
     ; d subElement.AddPart(atom)
-    Do:..needsWScheck ..skipWhiteSpaceAndComments()
-    
+
     Set parser=##class(PXW.DEV.BNF.Run.COS).%New()
     Set parser.stream=..stream
-    set parser.CloseSqOpDisable=1 ; ] is end of block 
-    set parser.whitespace=..whitespace
-    set parser.comment=..comment    
     ;d parser.skipWhiteSpaceAndComments()
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
     If parser.peek(1)="}" {
         ; its empty 
         ;s ..whitespace=parser.whitespace
@@ -96197,8 +95476,8 @@ for each thing that is an identifier?</Description>
 
 <Class name="PXW.DEV.BNF.Run.JS">
 <Super>PXW.DEV.BNF.GEN.JS</Super>
-<TimeChanged>67812,67240.230947424</TimeChanged>
-<TimeCreated>67812,67240.230947424</TimeCreated>
+<TimeChanged>67859,71083.940455651</TimeChanged>
+<TimeCreated>67859,71083.940455651</TimeCreated>
 
 <Property name="commentMode">
 <Description>
@@ -96796,8 +96075,8 @@ summary=P</Description>
 
 <Class name="PXW.DEV.BNF.Run.Python">
 <Super>PXW.DEV.BNF.GEN.Python</Super>
-<TimeChanged>67812,67240.291129716</TimeChanged>
-<TimeCreated>67812,67240.291129716</TimeCreated>
+<TimeChanged>67859,71083.993795724</TimeChanged>
+<TimeCreated>67859,71083.993795724</TimeCreated>
 
 <Property name="fStringEndChar">
 <Type>%String</Type>
@@ -97483,8 +96762,8 @@ readExit
 
 <Class name="PXW.DEV.BNF.Run.SQL">
 <Super>PXW.DEV.BNF.GEN.SQL</Super>
-<TimeChanged>67812,67240.337788847</TimeChanged>
-<TimeCreated>67812,67240.337788847</TimeCreated>
+<TimeChanged>67859,71084.037405949</TimeChanged>
+<TimeCreated>67859,71084.037405949</TimeCreated>
 
 <Property name="commentMode">
 <Description>
@@ -97794,8 +97073,8 @@ sql_string ::= 'NEED STRING'
 
 <Class name="PXW.DEV.BNF.Run.SQLShowPlan">
 <Super>PXW.DEV.BNF.GEN.SQLShowPlan</Super>
-<TimeChanged>67812,67240.372329782</TimeChanged>
-<TimeCreated>67812,67240.372329782</TimeCreated>
+<TimeChanged>67859,71084.069262934</TimeChanged>
+<TimeCreated>67859,71084.069262934</TimeCreated>
 
 <Property name="StartedNewLine">
 <Type>%Boolean</Type>
@@ -97974,7 +97253,7 @@ summary=P</Description>
 </Class>
 
 
-<Routine name="PXW.DEV.BNF.macros" type="INC" timestamp="67824,79754.750150889"><![CDATA[
+<Routine name="PXW.DEV.BNF.macros" type="INC" timestamp="67859,71081.771993408"><![CDATA[
 #include PXW.DEV.BNF.ElementMacros 
 
 /// start a parser section "transaction"
@@ -98020,8 +97299,8 @@ summary=P</Description>
 <Class name="PXW.DEV.BNF.processor">
 <IncludeCode>PXW.Debuggers.Macros,PXW.DEV.BNF.macros</IncludeCode>
 <Super>%RegisteredObject</Super>
-<TimeChanged>67831,66280.872087883</TimeChanged>
-<TimeCreated>67812,67237.985997628</TimeCreated>
+<TimeChanged>67859,71081.80004789</TimeChanged>
+<TimeCreated>67859,71081.80004789</TimeCreated>
 
 <Property name="processNotRequired">
 <Description>
@@ -98165,8 +97444,8 @@ eg. Method writeCOSThing(element As PXW.DEV.BNF.Elements.COS) AS  As PXW.DEV.BNF
 <Class name="PXW.DEV.BNF.super">
 <IncludeCode>PXW.Debuggers.Macros,PXW.DEV.BNF.macros,PXW.DEV.BNF.ElementMacros</IncludeCode>
 <Super>%RegisteredObject</Super>
-<TimeChanged>67821,28973.428559369</TimeChanged>
-<TimeCreated>67812,67238.020144948</TimeCreated>
+<TimeChanged>67859,71081.830926875</TimeChanged>
+<TimeCreated>67859,71081.830926875</TimeCreated>
 
 <Property name="stream">
 <Type>PXW.DEV.InputStream</Type>
@@ -98841,6 +98120,7 @@ we can only allow 1 char, might need to be a bit cleverer here to deal with cdat
 	Set subElement=##class(PXW.DEV.Element).%New()
 	Set subElement.type="recover"
 
+    set oldnextcount=..stream.nextCount
     Set matchcount=0 
 	Set ok=0
 	Set r=""
@@ -98880,7 +98160,8 @@ we can only allow 1 char, might need to be a bit cleverer here to deal with cdat
 		Set atom=..newAtom("ERROR",r)
 		Do subElement.AddPart(atom)
 		Do ParentElement.AddPart(subElement)
-	}	
+	}
+    set ..stream.nextCount=oldnextcount
     $$$DEBUG("RECOVER END AT:"_$$$peek(..stream,20))
 	$$$DEBUGMethodEnd
     ; recover always is true?
@@ -98936,8 +98217,8 @@ we consider that the comment here is part of the sql but the CR and TAB on the n
 <Class name="PXW.DEV.Dictionary.AtelierClient">
 <IncludeCode>PXW.Debuggers.Macros</IncludeCode>
 <Super>PXW.DEV.LIB.REST.Client</Super>
-<TimeChanged>67812,67240.400155027</TimeChanged>
-<TimeCreated>67812,67240.400155027</TimeCreated>
+<TimeChanged>67859,71084.093559025</TimeChanged>
+<TimeCreated>67859,71084.093559025</TimeCreated>
 
 <Property name="Settings">
 <Type>PXW.DEV.Dictionary.AtelierSettings</Type>
@@ -99165,8 +98446,8 @@ s sc=##class(PXW.DEV.Dictionary.AtelierClient).inc("LOCAL_USER","PXW.DEV.Element
 <Description>
 Make a dynamic query on Atelier behave like a normal resultset</Description>
 <Super>%Library.AbstractResultSet</Super>
-<TimeChanged>67826,59921.237012302</TimeChanged>
-<TimeCreated>67812,67240.428970069</TimeCreated>
+<TimeChanged>67859,71084.119964008</TimeChanged>
+<TimeCreated>67859,71084.119964008</TimeCreated>
 
 <Property name="%QueryResultContent">
 <Type>%Library.DynamicObject</Type>
@@ -99221,8 +98502,8 @@ Make a dynamic query on Atelier behave like a normal resultset</Description>
 
 <Class name="PXW.DEV.Dictionary.AtelierSettings">
 <Super>PXW.DEV.LIB.REST.Settings</Super>
-<TimeChanged>67812,67240.453148924</TimeChanged>
-<TimeCreated>67812,67240.453148924</TimeCreated>
+<TimeChanged>67859,71084.140968166</TimeChanged>
+<TimeCreated>67859,71084.140968166</TimeCreated>
 
 <Property name="Namespace">
 <Type>%String</Type>
@@ -99251,8 +98532,8 @@ Crazy caching in here, it all started so simple and then got a bit out of
 control!</Description>
 <IncludeCode>PXW.Debuggers.Macros</IncludeCode>
 <Super>PXW.DEV.Dictionary.CodeInterface</Super>
-<TimeChanged>67851,69045.467328954</TimeChanged>
-<TimeCreated>67812,67240.494793826</TimeCreated>
+<TimeChanged>67859,71084.182342292</TimeChanged>
+<TimeCreated>67859,71084.182342292</TimeCreated>
 
 <Parameter name="CodeType">
 <Default>CLS</Default>
@@ -100335,7 +99616,7 @@ Pass in a ClassName in any case (eg PXW.dev.dictionary.classdefinition) and Name
 <Method name="GetClassNameFromTableName">
 <Description>
 OwningClassName is the name of the class that the query belongs to. Used when no schema is provided.</Description>
-<FormalSpec>SQLTableName:%String,OwningClassName:%String</FormalSpec>
+<FormalSpec>SQLTableName:%String,OwningClassName:%String=""</FormalSpec>
 <ReturnType>%String</ReturnType>
 <Implementation><![CDATA[
     ;New %NS Set %NS=..Namespace.Name
@@ -100554,7 +99835,7 @@ a(1)=$lb("f1.data.result","Race","f1.data.race")
 a(2)=$lb("f1.data.race","Circuit","f1.data.circuit")
 a(3)=$lb("f1.data.circuit","Name","data.model.string")
 if some step on the path cannot be found then the array will have blanks]]></Description>
-<FormalSpec>TableName:%String,FieldPath:%String,*PathArray:%List,OwningClassName:%String</FormalSpec>
+<FormalSpec>TableName:%String,FieldPath:%String,*PathArray:%List,OwningClassName:%String=""</FormalSpec>
 <Implementation><![CDATA[
 	
     Set classname=..GetClassNameFromTableName(TableName,OwningClassName)
@@ -100673,8 +99954,8 @@ on the CLASS.</Description>
 
 <Class name="PXW.DEV.Dictionary.CodeInterface">
 <Super>%Library.Persistent</Super>
-<TimeChanged>67826,60003.569994868</TimeChanged>
-<TimeCreated>67812,67240.538556287</TimeCreated>
+<TimeChanged>67859,71084.220778323</TimeChanged>
+<TimeCreated>67859,71084.220778323</TimeCreated>
 
 <Parameter name="CodeType">
 </Parameter>
@@ -100852,8 +100133,8 @@ The default behaviour of this is to treat ResultSet as a result set. If your Lis
 
 <Class name="PXW.DEV.Dictionary.CodeType">
 <Super>%Library.Persistent</Super>
-<TimeChanged>67812,67240.573109801</TimeChanged>
-<TimeCreated>67812,67240.573109801</TimeCreated>
+<TimeChanged>67859,71084.249261031</TimeChanged>
+<TimeCreated>67859,71084.249261031</TimeCreated>
 
 <Property name="Name">
 <Type>%String</Type>
@@ -100899,8 +100180,8 @@ The default behaviour of this is to treat ResultSet as a result set. If your Lis
 <Description>
 Use this class for linking code types to various classes for doing specific things</Description>
 <Super>%Library.Persistent</Super>
-<TimeChanged>67836,61686.016793848</TimeChanged>
-<TimeCreated>67812,67240.605443476</TimeCreated>
+<TimeChanged>67859,71084.278954852</TimeChanged>
+<TimeCreated>67859,71084.278954852</TimeCreated>
 
 <Property name="Usage">
 <Type>%String</Type>
@@ -101029,8 +100310,8 @@ Use this class for linking code types to various classes for doing specific thin
 <Class name="PXW.DEV.Dictionary.Include">
 <IncludeCode>PXW.Debuggers.Macros</IncludeCode>
 <Super>PXW.DEV.Dictionary.CodeInterface</Super>
-<TimeChanged>67812,67240.638845395</TimeChanged>
-<TimeCreated>67812,67240.638845395</TimeCreated>
+<TimeChanged>67859,71084.308926429</TimeChanged>
+<TimeCreated>67859,71084.308926429</TimeCreated>
 
 <Parameter name="CodeType">
 <Default>INC</Default>
@@ -101149,8 +100430,8 @@ Needs to return at least SubType,Name,TimeChanged</Description>
 
 <Class name="PXW.DEV.Dictionary.Install">
 <Super>%RegisteredObject</Super>
-<TimeChanged>67818,50578.045497783</TimeChanged>
-<TimeCreated>67812,67240.668577437</TimeCreated>
+<TimeChanged>67865,68244.73650841</TimeChanged>
+<TimeCreated>67859,71084.341183608</TimeCreated>
 
 <Method name="Setup">
 <ClassMethod>1</ClassMethod>
@@ -101191,9 +100472,9 @@ Needs to return at least SubType,Name,TimeChanged</Description>
 <Method name="XrefSeed">
 <ClassMethod>1</ClassMethod>
 <Implementation><![CDATA[
-    j ##class(PXW.Xref.Build).Build("LOCAL_USER","","*")
-    h 1
-    j ##class(PXW.Xref.Build).Build("LOCAL_USER","","PXW*")
+    Job ##class(PXW.Xref.Build).Build("LOCAL_USER","","*")
+    Hang 1
+    Job ##class(PXW.Xref.Build).Build("LOCAL_USER","","PXW*")
 ]]></Implementation>
 </Method>
 
@@ -101311,13 +100592,16 @@ d ##class(PXW.DEV.Dictionary.Install).GenAll()</Description>
 
 <Method name="ExportAll">
 <Description>
-d ##class(PXW.DEV.Dictionary.Install).ExportAll()</Description>
+w ##class(PXW.DEV.Dictionary.Install).ExportAll()</Description>
 <ClassMethod>1</ClassMethod>
+<ReturnType>%String</ReturnType>
 <Implementation><![CDATA[
     Set dt=$TRANSLATE($ZDATETIME($HOROLOG,3),":- ","")
-    Set file="/home/irisowner/dev/debug/PXWALLINC_"_dt_".xml"
-    Do $SYSTEM.OBJ.Export("PXW.*.CLS,PXW.*.INC",file)
-    Write !,"File="_file,!
+    Set filedir="/usr/irissys/csp/user/"
+    Set file=filedir_"PXWALLINC_"_dt_".xml"
+    Set sc=$SYSTEM.OBJ.Export("PXW.*.CLS,PXW.*.INC",file)
+    Do:$$$ISERR(sc) $SYSTEM.Status.DisplayError(sc)
+    Quit file
 ]]></Implementation>
 </Method>
 
@@ -101331,7 +100615,8 @@ d ##class(PXW.DEV.Dictionary.Install).ExportAll()</Description>
         For i=1:1:$LISTLENGTH(classes) {
             Set cls=$LISTGET(classes,i)
             Write !,"Exporting "_package_cls_".CLS to "_genroot_cls_".cls"
-            Do $SYSTEM.OBJ.ExportUDL(package_cls_".CLS",genroot_cls_".cls")
+            Set sc=$SYSTEM.OBJ.ExportUDL(package_cls_".CLS",genroot_cls_".cls")
+            If $$$ISERR(sc) Do $SYSTEM.OBJ.DisplayError(sc)
         }
     }
 ]]></Implementation>
@@ -101357,8 +100642,8 @@ d ##class(PXW.DEV.Dictionary.Install).ExportAll()</Description>
 <Class name="PXW.DEV.Dictionary.MAC">
 <IncludeCode>PXW.Debuggers.Macros</IncludeCode>
 <Super>PXW.DEV.Dictionary.CodeInterface</Super>
-<TimeChanged>67812,67240.704504637</TimeChanged>
-<TimeCreated>67812,67240.704504637</TimeCreated>
+<TimeChanged>67859,71084.371201291</TimeChanged>
+<TimeCreated>67859,71084.371201291</TimeCreated>
 
 <Parameter name="CodeType">
 <Default>MAC</Default>
@@ -101455,8 +100740,8 @@ Routines=PXW.*
 <Description>
 General details about the config of the namespaces</Description>
 <Super>%Library.Persistent</Super>
-<TimeChanged>67812,67240.737670816</TimeChanged>
-<TimeCreated>67812,67240.737670816</TimeCreated>
+<TimeChanged>67859,71084.399862591</TimeChanged>
+<TimeCreated>67859,71084.399862591</TimeCreated>
 
 <Property name="Name">
 <Type>%String</Type>
@@ -101491,8 +100776,8 @@ General details about the config of the namespaces</Description>
 </Storage>
 </Class>
 <TableStatsInfo name="PXW.DEV.Dictionary.Namespace.ext">
-  <EndTime>2026-08-30T18:41:42.082903Z</EndTime>
-  <Duration>.059916</Duration>
+  <EndTime>2026-10-20T18:16:46.325357Z</EndTime>
+  <Duration>.032108</Duration>
   <UserName>SuperUser</UserName>
   <SamplePercent>1</SamplePercent>
   <ExtentSize>1</ExtentSize>
@@ -101569,8 +100854,8 @@ General details about the config of the namespaces</Description>
 
 <Class name="PXW.DEV.Dictionary.PythonObject">
 <Super>%Persistent</Super>
-<TimeChanged>67812,67240.769983107</TimeChanged>
-<TimeCreated>67812,67240.769983107</TimeCreated>
+<TimeChanged>67859,71084.429062233</TimeChanged>
+<TimeCreated>67859,71084.429062233</TimeCreated>
 
 <Property name="Namespace">
 <Type>%String</Type>
@@ -101679,8 +100964,8 @@ s sc=py.GetModule("abc",.text,.lines,.lut)</Description>
 <Class name="PXW.DEV.Dictionary.Routine">
 <IncludeCode>PXW.Debuggers.Macros</IncludeCode>
 <Super>PXW.DEV.Dictionary.CodeInterface</Super>
-<TimeChanged>67812,67240.807791108</TimeChanged>
-<TimeCreated>67812,67240.807791108</TimeCreated>
+<TimeChanged>67859,71084.458475662</TimeChanged>
+<TimeCreated>67859,71084.458475662</TimeCreated>
 
 <Parameter name="CodeType">
 <Default>INT</Default>
@@ -101775,8 +101060,8 @@ Routines=PXW.*
 
 <Class name="PXW.DEV.Dictionary.RoutineCache">
 <Super>%RegisteredObject</Super>
-<TimeChanged>67812,67240.834308064</TimeChanged>
-<TimeCreated>67812,67240.834308064</TimeCreated>
+<TimeChanged>67859,71084.48377002</TimeChanged>
+<TimeCreated>67859,71084.48377002</TimeCreated>
 
 <Property name="Namespace">
 <Type>PXW.DEV.Dictionary.Namespace</Type>
@@ -101811,8 +101096,8 @@ The base class for groups of atoms that make up an element.
 Elements can be subclassed to store extra data. </Description>
 <IncludeCode>PXW.DEV.BNF.ElementMacros</IncludeCode>
 <Super>PXW.DEV.Particle</Super>
-<TimeChanged>67851,66716.01540489</TimeChanged>
-<TimeCreated>67812,67237.873167392</TimeCreated>
+<TimeChanged>67863,71584.79864597</TimeChanged>
+<TimeCreated>67859,71081.697337447</TimeCreated>
 
 <Property name="type">
 <Type>%String</Type>
@@ -102260,8 +101545,8 @@ Condition only supports = at the moment</Description>
 <Description>
 based on https://lisperator.net/pltut/parser/input-stream</Description>
 <Super>%RegisteredObject</Super>
-<TimeChanged>67851,62177.208987956</TimeChanged>
-<TimeCreated>67812,67237.902650032</TimeCreated>
+<TimeChanged>67859,71081.724266225</TimeChanged>
+<TimeCreated>67859,71081.724266225</TimeCreated>
 
 <Property name="input">
 <Type>%String</Type>
@@ -102324,7 +101609,7 @@ crazy limit on count, there must be some problem somewhere (probably with recurs
 	Set reader.line=1
 	Set reader.col=0
 	Set reader.length=$LENGTH(Code)
-	set reader.nextCountLimit=reader.length*4 
+	set reader.nextCountLimit=reader.length*10
 	Quit reader
 ]]></Implementation>
 </Method>
@@ -102531,8 +101816,8 @@ returns the string to the EndString but NOT the EndString char itself</Descripti
 
 <Class name="PXW.DEV.LIB.REST.Client">
 <Super>%Library.RegisteredObject</Super>
-<TimeChanged>67812,67240.863285937</TimeChanged>
-<TimeCreated>67812,67240.863285937</TimeCreated>
+<TimeChanged>67859,71084.515300556</TimeChanged>
+<TimeCreated>67859,71084.515300556</TimeCreated>
 
 <Property name="NetRequest">
 <Type>%Net.HttpRequest</Type>
@@ -102693,8 +101978,8 @@ Server=server:port:namespace</Description>
 
 <Class name="PXW.DEV.LIB.REST.Settings">
 <Super>%Library.Persistent</Super>
-<TimeChanged>67812,67240.896005526</TimeChanged>
-<TimeCreated>67812,67240.896005526</TimeCreated>
+<TimeChanged>67859,71084.544642393</TimeChanged>
+<TimeCreated>67859,71084.544642393</TimeCreated>
 
 <Property name="ServerName">
 <Type>%String</Type>
@@ -102793,8 +102078,8 @@ pw1971</Description>
 <Class name="PXW.DEV.Particle">
 <IncludeCode>PXW.Debuggers.Macros</IncludeCode>
 <Super>%Library.RegisteredObject</Super>
-<TimeChanged>67827,69654.380953655</TimeChanged>
-<TimeCreated>67812,67237.928875957</TimeCreated>
+<TimeChanged>67859,71081.747306991</TimeChanged>
+<TimeCreated>67859,71081.747306991</TimeCreated>
 
 <Property name="type">
 <Type>%String</Type>
@@ -102837,8 +102122,8 @@ pw1971</Description>
 <Class name="PXW.Debuggers.Basic">
 <IncludeCode>PXW.Debuggers.Macros</IncludeCode>
 <Super>%RegisteredObject</Super>
-<TimeChanged>67812,67235.711626247</TimeChanged>
-<TimeCreated>67812,67235.711626247</TimeCreated>
+<TimeChanged>67859,71080.128815668</TimeChanged>
+<TimeCreated>67859,71080.128815668</TimeCreated>
 
 <Method name="DEBUG">
 <Description>
@@ -102882,8 +102167,8 @@ Dump the current stack to the output</Description>
 
 <Class name="PXW.Debuggers.BasicToFile">
 <Super>PXW.Debuggers.Basic</Super>
-<TimeChanged>67812,67235.736834647</TimeChanged>
-<TimeCreated>67812,67235.736834647</TimeCreated>
+<TimeChanged>67859,71080.153571915</TimeChanged>
+<TimeCreated>67859,71080.153571915</TimeCreated>
 
 <Property name="AddDateTime">
 <Type>%Boolean</Type>
@@ -102992,8 +102277,8 @@ provide notification that the current object is being closed.
 
 <Class name="PXW.Debuggers.Console">
 <Super>PXW.Debuggers.Basic</Super>
-<TimeChanged>67812,67235.762334245</TimeChanged>
-<TimeCreated>67812,67235.762334245</TimeCreated>
+<TimeChanged>67859,71080.177215082</TimeChanged>
+<TimeCreated>67859,71080.177215082</TimeCreated>
 
 <Method name="DEBUG">
 <FormalSpec>message:%Library.String</FormalSpec>
@@ -103007,7 +102292,7 @@ provide notification that the current object is being closed.
 </Class>
 
 
-<Routine name="PXW.Debuggers.Macros" type="INC" timestamp="67812,67235.764079975"><![CDATA[
+<Routine name="PXW.Debuggers.Macros" type="INC" timestamp="67859,71080.178203851"><![CDATA[
 #dim %pxwdebug as PXW.Debuggers.Basic
 
 #;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -103086,8 +102371,8 @@ provide notification that the current object is being closed.
 
 
 <Class name="PXW.LIB.SQL.Generator">
-<TimeChanged>67812,67237.289325576</TimeChanged>
-<TimeCreated>67812,67237.289325576</TimeCreated>
+<TimeChanged>67859,71081.21907163</TimeChanged>
+<TimeCreated>67859,71081.21907163</TimeCreated>
 
 <Method name="GenerateArgsSave">
 <ClassMethod>1</ClassMethod>
@@ -103274,7 +102559,7 @@ Possible JSON support needed as a built in thing: param={SURNAME:SMITH,FIRSTNAME
 </Class>
 
 
-<Routine name="PXW.LIB.SQL.Macros" type="INC" timestamp="67812,67237.290705018"><![CDATA[
+<Routine name="PXW.LIB.SQL.Macros" type="INC" timestamp="67859,71081.220335741"><![CDATA[
 #define FIELD(%f) $PIECE(%f,"=",1)
 #define VALUE(%f) $PIECE(%f,"=",2)
 #define SQLFIELD(%f) $PIECE(%f,'=',1)
@@ -103284,8 +102569,8 @@ Possible JSON support needed as a built in thing: param={SURNAME:SMITH,FIRSTNAME
 
 <Class name="PXW.LIB.SQL.Query">
 <Super>%Library.SQLQuery</Super>
-<TimeChanged>67812,67237.318204158</TimeChanged>
-<TimeCreated>67812,67237.318204158</TimeCreated>
+<TimeChanged>67859,71081.250168561</TimeChanged>
+<TimeCreated>67859,71081.250168561</TimeCreated>
 <DependsOn>PXW.LIB.SQL.Generator</DependsOn>
 
 <Method name="Func">
@@ -103587,8 +102872,8 @@ returned by <b>GetInfo</b>. It is used by the various <b>ResultSet</b> objects.]
 
 <Class name="PXW.Tools.DEV.Analyse">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67851,69432.321273238</TimeChanged>
-<TimeCreated>67812,67241.279479615</TimeCreated>
+<TimeChanged>67859,71084.887550704</TimeChanged>
+<TimeCreated>67859,71084.887550704</TimeCreated>
 
 <Parameter name="ToolType">
 <Default>Code</Default>
@@ -103743,8 +103028,8 @@ Show the analysis warnings found during analysis of the code. The analysis happe
 
 <Class name="PXW.Tools.DEV.ChangeNS">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67845,60841.67295368</TimeChanged>
-<TimeCreated>67812,67241.306899685</TimeCreated>
+<TimeChanged>67859,71084.912695885</TimeChanged>
+<TimeCreated>67859,71084.912695885</TimeCreated>
 
 <Parameter name="ToolName">
 <Default>Change Namespace</Default>
@@ -103829,8 +103114,8 @@ Switch to another NameSpace.
 
 <Class name="PXW.Tools.DEV.ChangeStyle">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67851,69419.18483086</TimeChanged>
-<TimeCreated>67812,67241.339919335</TimeCreated>
+<TimeChanged>67859,71084.940649458</TimeChanged>
+<TimeCreated>67859,71084.940649458</TimeCreated>
 
 <Parameter name="ToolName">
 <Default>Change Style</Default>
@@ -104278,8 +103563,8 @@ XData xmlstuff
 
 <Class name="PXW.Tools.DEV.Class">
 <Super>PXW.Tools.DEV.CodeDisplayPage</Super>
-<TimeChanged>67851,69139.026984276</TimeChanged>
-<TimeCreated>67812,67241.373285922</TimeCreated>
+<TimeChanged>67859,71084.969846666</TimeChanged>
+<TimeCreated>67859,71084.969846666</TimeCreated>
 
 <Parameter name="CodeType">
 <Default>CLS</Default>
@@ -104861,8 +104146,8 @@ Write out extra styles here, the STYLE tags are already in place</Description>
 <Description>
 Redirects to the correct viewer based on the type of code to be viewed</Description>
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67812,67241.406358545</TimeChanged>
-<TimeCreated>67812,67241.406358545</TimeCreated>
+<TimeChanged>67859,71085.000746009</TimeChanged>
+<TimeCreated>67859,71085.000746009</TimeCreated>
 
 <Method name="WriteMainBody">
 <ClassMethod>1</ClassMethod>
@@ -105214,8 +104499,8 @@ Convert the given tool short name and convert it to the class that it relates to
 
 <Class name="PXW.Tools.DEV.CodeDisplayPage">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67812,67241.438232971</TimeChanged>
-<TimeCreated>67812,67241.438232971</TimeCreated>
+<TimeChanged>67859,71085.026636866</TimeChanged>
+<TimeCreated>67859,71085.026636866</TimeCreated>
 
 <Parameter name="CodeType">
 </Parameter>
@@ -105275,8 +104560,8 @@ ID,Name,Subtype opens from something like CODE list page, where id is probably t
 <Description>
 Example class used by the ChangeStyle function to show what code looks like in the given style.</Description>
 <Super>%Library.Persistent</Super>
-<TimeChanged>67812,67241.47112775</TimeChanged>
-<TimeCreated>67812,67241.47112775</TimeCreated>
+<TimeChanged>67859,71085.05496166</TimeChanged>
+<TimeCreated>67859,71085.05496166</TimeCreated>
 
 <Property name="ThingType">
 <Type>%String</Type>
@@ -105345,8 +104630,8 @@ This is the description of the method.</Description>
 
 <Class name="PXW.Tools.DEV.HTML.SQLShowPlan">
 <Super>PXW.Tools.DEV.HTML.bnf</Super>
-<TimeChanged>67846,71012.39644146</TimeChanged>
-<TimeCreated>67812,67241.912725188</TimeCreated>
+<TimeChanged>67859,71085.448722818</TimeChanged>
+<TimeCreated>67859,71085.448722818</TimeCreated>
 
 <Property name="modules">
 <Type>%String</Type>
@@ -105838,8 +105123,8 @@ OVERRIDING StoredFunction </Description>
 <Class name="PXW.Tools.DEV.HTML.bnf">
 <IncludeCode>PXW.Tools.Styles.macros</IncludeCode>
 <Super>PXW.Tools.DEV.HTML.output</Super>
-<TimeChanged>67851,70329.024770033</TimeChanged>
-<TimeCreated>67812,67241.836204596</TimeCreated>
+<TimeChanged>67864,69143.568713788</TimeChanged>
+<TimeCreated>67859,71085.378229581</TimeCreated>
 
 <Property name="Analyser">
 <Type>PXW.DEV.BNF.Analyse.COS</Type>
@@ -106163,7 +105448,8 @@ It will end up containing all the analysis of the sql, including sub-queries and
 <Implementation><![CDATA[
     $$$DEBUGMethodBegin
     Set keywordatom=element.FirstAtom()
-    Do ..OutputKeywordCommentAsDocumentation(element,.commentid)
+    set body=element.findFirstElementByType("ClassMemberSection")
+    Do ..OutputKeywordCommentAsDocumentation(element,.commentid,body)
     ;Set count=##class(PXW.Xref.Queries).GetCount(%NS,"CLS",..This)
     Set count=..GetXrefCount("","")
     Set menu="<div class="""_$$$classLensMenu_" nocopy"">"
@@ -106188,10 +105474,12 @@ It will end up containing all the analysis of the sql, including sub-queries and
     $$$DEBUGMethodBegin
     Set ..SqlProgramAnalyser=""
     Set queryE=element.findFirstElementByType("ClassQueryBody")
-    ;s formatter=##class(PXW.DEV.BNF.Format.SQL).%New()
-    ;d formatter.formatElement(queryE)
     If $ISOBJECT(queryE) {
-        Do ..wrapElementHTML(queryE,"<div>","</div>")
+        If ..FormatEmbeddedSQl {
+            s formatter=##class(PXW.DEV.BNF.Format.SQL).%New()
+            d formatter.formatElement(queryE)
+        }
+        Do ..wrapElementHTML(queryE,"<div class="""_$$$classIndent_""">","</div>")
     }
     $$$DEBUGMethodEnd
     Quit ""
@@ -106936,6 +106224,25 @@ method writeCDEF(element As PXW.DEV.BNF.Elements.ClassDefinition) AS PXW.DEV.BNF
 <Implementation><![CDATA[
     $$$DEBUGMethodBegin
     Do ..wrapElementHTML(element,"<span class='EmbeddedCOS'>","</span>")
+    $$$DEBUGMethodEnd
+    Quit ""
+]]></Implementation>
+</Method>
+
+<Method name="writeCOSCosCodeBlockCurly">
+<FormalSpec>element:PXW.DEV.BNF.Elements.COS</FormalSpec>
+<ReturnType>PXW.DEV.BNF.Compilers.elementHandler</ReturnType>
+<ReturnTypeParams>Type="CosCodeBlockCurly"</ReturnTypeParams>
+<Implementation><![CDATA[
+    $$$DEBUGMethodBegin
+    s first=element.FirstAtom()
+    s last=element.LastAtom()
+    if first,first.value="{",last,last.value="}" {
+        ; should be enough to make it unique without resorting to counting
+        s varname="CodeBlockCurly"_(+element)_(+first)_(+last)
+        Do ..wrapAtomHTML(first,"<span varid="""_varname_""" onclick=""HiliteSets('"_varname_"');"">","</span>")
+        Do ..wrapAtomHTML(last,"<span varid="""_varname_""" onclick=""HiliteSets('"_varname_"');"">","</span>")
+    }
     $$$DEBUGMethodEnd
     Quit ""
 ]]></Implementation>
@@ -108164,7 +107471,7 @@ method writePY(element As PXW.DEV.BNF.Elements.Python) AS PXW.DEV.BNF.Compilers.
     $$$DEBUGMethodBegin
     Set columnNameE=ColumnReference.findFirstElementByType("ColumnName",0)
     Set crefimpE=ColumnReference.findFirstElementByType("ColumnReferenceImplicit",0)
-    Do ..wrapElementHTML(columnNameE,"<a class="""_$$$classObjectMember_""" href="""_..HREFToSQLTable(fulltable,columnNameE.ToString(0))_""">","</a>")
+    Do ..wrapElementHTML(columnNameE,"<a title="""_fulltable_""" class="""_$$$classObjectMember_""" href="""_..HREFToSQLTable(fulltable,columnNameE.ToString(0))_""">","</a>")
     If $ISOBJECT(crefimpE) {
         Set fulref=columnNameE.ToString(0)_"->"
         Set cols=##class(%ListOfObjects).%New()
@@ -108172,7 +107479,7 @@ method writePY(element As PXW.DEV.BNF.Elements.Python) AS PXW.DEV.BNF.Compilers.
         For i=1:1:cols.Count() {
             Set ij=cols.GetAt(i)
             Set fulref=fulref_ij.ToString(0)
-            Do ..wrapElementHTML(ij,"<a class="""_$$$classObjectMember_""" href="""_..HREFToSQLTable(fulltable,fulref)_""">","</a>")
+            Do ..wrapElementHTML(ij,"<a title="""_fulltable_""" class="""_$$$classObjectMember_""" href="""_..HREFToSQLTable(fulltable,fulref)_""">","</a>")
             Set fulref=fulref_"->"
         }
     }
@@ -108257,8 +107564,8 @@ Method wrapCommentBlock(Element As PXW.DEV.Element, preValue As %String = "", po
 <Class name="PXW.Tools.DEV.HTML.output">
 <IncludeCode>PXW.Debuggers.Macros,PXW.Tools.Styles.macros</IncludeCode>
 <Super>PXW.DEV.BNF.processor</Super>
-<TimeChanged>67850,71567.248838699</TimeChanged>
-<TimeCreated>67812,67241.874251789</TimeCreated>
+<TimeChanged>67859,71085.414242425</TimeChanged>
+<TimeCreated>67859,71085.414242425</TimeCreated>
 
 <Property name="This">
 <Description>
@@ -108556,8 +107863,8 @@ the only method that should actually do any output during the middle processing<
 
 <Class name="PXW.Tools.DEV.Include">
 <Super>PXW.Tools.DEV.CodeDisplayPage</Super>
-<TimeChanged>67818,33521.530669694</TimeChanged>
-<TimeCreated>67812,67241.50004817</TimeCreated>
+<TimeChanged>67859,71085.081136034</TimeChanged>
+<TimeCreated>67859,71085.081136034</TimeCreated>
 
 <Parameter name="CodeType">
 <Default>INC</Default>
@@ -108745,8 +108052,8 @@ the layout information can go here.
 
 <Class name="PXW.Tools.DEV.MAC">
 <Super>PXW.Tools.DEV.CodeDisplayPage</Super>
-<TimeChanged>67812,67241.52966902</TimeChanged>
-<TimeCreated>67812,67241.52966902</TimeCreated>
+<TimeChanged>67859,71085.107271026</TimeChanged>
+<TimeCreated>67859,71085.107271026</TimeCreated>
 
 <Parameter name="CodeType">
 <Default>MAC</Default>
@@ -108930,8 +108237,8 @@ the layout information can go here.
 
 <Class name="PXW.Tools.DEV.ParserTest">
 <Super>PXW.Tools.PageTLR</Super>
-<TimeChanged>67843,70458.726274792</TimeChanged>
-<TimeCreated>67812,67241.562909376</TimeCreated>
+<TimeChanged>67859,71085.136650381</TimeChanged>
+<TimeCreated>67859,71085.136650381</TimeCreated>
 
 <Parameter name="ToolName">
 <Default>Parser Test</Default>
@@ -109211,8 +108518,8 @@ This shoud output some variables, getting the data from %request</Description>
 
 <Class name="PXW.Tools.DEV.PythonModule">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67836,61870.380313435</TimeChanged>
-<TimeCreated>67812,67241.59386272</TimeCreated>
+<TimeChanged>67859,71085.165018847</TimeChanged>
+<TimeCreated>67859,71085.165018847</TimeCreated>
 
 <Parameter name="ToolType">
 <Default>Code</Default>
@@ -109548,8 +108855,8 @@ Write out extra javascript here, the SCRIPT tags are already in place</Descripti
 
 <Class name="PXW.Tools.DEV.Routine">
 <Super>PXW.Tools.DEV.CodeDisplayPage</Super>
-<TimeChanged>67812,67241.625086231</TimeChanged>
-<TimeCreated>67812,67241.625086231</TimeCreated>
+<TimeChanged>67859,71085.194688303</TimeChanged>
+<TimeCreated>67859,71085.194688303</TimeCreated>
 
 <Parameter name="CodeType">
 <Default>INT</Default>
@@ -109800,8 +109107,8 @@ Write out extra javascript here, the SCRIPT tags are already in place</Descripti
 
 <Class name="PXW.Tools.DEV.SQLShowPlan">
 <Super>PXW.Tools.PageTLR</Super>
-<TimeChanged>67846,70950.356359191</TimeChanged>
-<TimeCreated>67812,67241.687705964</TimeCreated>
+<TimeChanged>67859,71085.246903994</TimeChanged>
+<TimeCreated>67859,71085.246903994</TimeCreated>
 
 <Parameter name="ToolName">
 <Default>SQL Show Plan</Default>
@@ -110082,8 +109389,8 @@ This shoud output some variables, getting the data from %request</Description>
 
 <Class name="PXW.Tools.DEV.Settings">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67843,70589.715517011</TimeChanged>
-<TimeCreated>67812,67241.653410511</TimeCreated>
+<TimeChanged>67859,71085.219411047</TimeChanged>
+<TimeCreated>67859,71085.219411047</TimeCreated>
 
 <Parameter name="ToolName">
 <Default>Show Settings</Default>
@@ -110150,8 +109457,8 @@ Used to SHOW the settings only. There is no update yet.
 
 <Class name="PXW.Tools.DEV.Xref">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67851,69538.019896346</TimeChanged>
-<TimeCreated>67812,67241.719174931</TimeCreated>
+<TimeChanged>67864,72068.540914798</TimeChanged>
+<TimeCreated>67859,71085.274493811</TimeCreated>
 
 <Parameter name="ToolName">
 <Default>Xref Search</Default>
@@ -110329,8 +109636,42 @@ This shoud output some variables, getting the data from %request</Description>
 </Method>
 
 <Method name="HREFTo">
-<Description>
-This should return a string of the href to this page based on the input parameters</Description>
+<Description><![CDATA[
+<p>
+Search the Xref database.
+</p>
+<p>
+<ul><li>Item is the thing that is referenced.</li>
+	<li>CalledBy is the thing that does the referencing the Item.</li>
+</ul>
+For example:
+<example>
+class package.myclass extends %Library.RegisteredObject
+</example>
+The Item is %Library.RegisteredObject. The CalledBy is package.myclass.
+</p>
+<dl>
+    <dt>ItemType</dt>
+    <dd>The type of Item. eg CLS,RTN,GBL,MAC</dd>
+    <dt>ItemKey1</dt>
+    <dd>Usually the main name of the Item. E.G. the class name.</dd>
+    <dt>ItemKey2</dt>
+    <dd>The section of the item. E.G. the method name.</dd>
+    <dt>CalledByCommand</dt>
+    <dd>The way the Item is called E.G. it could be a Variable or a VariableSet</dd>
+    <dt>CalledByKey1</dt>
+    <dd>The main name of the Caller. E.G. The class name.</dd>
+    <dt>CalledByKey2</dt>
+    <dd>The section of the Caller. E.G. the method name.</dd>
+    <dt>WindowSize</dt>
+    <dd>Set this to the size of the window of code to display.</dd>
+    <dt>Flags</dt>
+    <dd>Extra flags used to control the output.</dd>
+    <dt>CodeSearch</dt>
+    <dd>When displaying the code you can filter by the code that is found.</dd>
+</dl>
+<p>All parameters are optional, but there must be at least 1 of ItemKey1,ItemKey2,CalledByKey1 or CalledByKey2.<p>
+<p>Most parameters can have a wildcard (*). This includes the CodeSearch.</p>]]></Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>ItemType:%String="",ItemKey1:%String="",ItemKey2:%String="",CalledByCommand:%String="",CalledByKey1:%String="",CalledByKey2:%String="",WindowSize:%Integer="",Flags:%String="",CodeSearch:%String=""</FormalSpec>
 <ReturnType>%String</ReturnType>
@@ -110363,8 +109704,8 @@ This should return a string of the href to this page based on the input paramete
 
 <Class name="PXW.Tools.DEV.XrefBuild">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67843,70906.108506164</TimeChanged>
-<TimeCreated>67812,67241.7496372</TimeCreated>
+<TimeChanged>67859,71085.301384989</TimeChanged>
+<TimeCreated>67859,71085.301384989</TimeCreated>
 
 <Parameter name="ToolName">
 <Default>Xref Build</Default>
@@ -110586,8 +109927,8 @@ Calling page is passed in so you can decide what to display on the form/if anyth
 
 <Class name="PXW.Tools.DEV.XrefBuildProblems">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67851,68702.663308317</TimeChanged>
-<TimeCreated>67812,67241.777757121</TimeCreated>
+<TimeChanged>67859,71085.327608866</TimeChanged>
+<TimeCreated>67859,71085.327608866</TimeCreated>
 
 <Parameter name="ToolName">
 <Default>Xref Build Problems</Default>
@@ -110657,7 +109998,7 @@ Show all the problems found during Xref build.
 The problems could be either: 
 <ul><li>Errors in the build process i.e. a bug.</a>
 	<li>Problems found during the parsing. This could be a bug in the parser
-		or an actual problem in the code being parsed.
+		or a problem in the code being parsed.
 	</li>
 	</ul>
 </p>
@@ -110682,8 +110023,8 @@ The problems could be either:
 
 <Class name="PXW.Tools.DebugTiming">
 <Super>PXW.Debuggers.Basic</Super>
-<TimeChanged>67812,67241.133111218</TimeChanged>
-<TimeCreated>67812,67241.133111218</TimeCreated>
+<TimeChanged>67859,71084.757974572</TimeChanged>
+<TimeCreated>67859,71084.757974572</TimeCreated>
 
 <Property name="counts">
 <Description>
@@ -110844,8 +110185,8 @@ k2loop  Set k2=$ORDER(^||PXWDebugTiming(k1,k2),1,Row)
 
 <Class name="PXW.Tools.Debugger">
 <Super>PXW.Debuggers.Basic</Super>
-<TimeChanged>67812,67241.103890633</TimeChanged>
-<TimeCreated>67812,67241.103890633</TimeCreated>
+<TimeChanged>67859,71084.72789318</TimeChanged>
+<TimeCreated>67859,71084.72789318</TimeCreated>
 
 <Method name="DEBUG">
 <Description>
@@ -110859,8 +110200,8 @@ Tends to be called more often with all sorts of data passed in</Description>
 
 <Class name="PXW.Tools.Index">
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67851,69463.438269082</TimeChanged>
-<TimeCreated>67812,67241.161298851</TimeCreated>
+<TimeChanged>67859,71084.783893401</TimeChanged>
+<TimeCreated>67859,71084.783893401</TimeCreated>
 
 <Method name="WriteStyles">
 <Description><![CDATA[
@@ -111035,8 +110376,8 @@ Override the HREFTo method so that tools can get a HREF TO a page:
 </p>]]></Description>
 <IncludeCode>PXW.Debuggers.Macros,PXW.Tools.Styles.macros</IncludeCode>
 <Super>%CSP.Page</Super>
-<TimeChanged>67851,69763.779104189</TimeChanged>
-<TimeCreated>67812,67241.19484692</TimeCreated>
+<TimeChanged>67859,71084.813847346</TimeChanged>
+<TimeCreated>67859,71084.813847346</TimeCreated>
 
 <Parameter name="ToolType">
 <Description>
@@ -111098,7 +110439,7 @@ This sets up some floating % variables that can be accessed at any time.
 	Try {
 		Set %STYLE=$SYSTEM.OBJ.New(styleclass)
 	} Catch {
-		Set %STYLE=##class(PXW.Tools.Styles.Dark).%New()
+		Set %STYLE=##class(PXW.Tools.Styles.LightDark).%New()
 		Set style=defaultDefault
 	}
 	Set %STYLENAME=style
@@ -111181,6 +110522,7 @@ Use This as a template for the comments of all the override methods.
 				<span id=toolsFooterTIM>processtime=#($ZHOROLOG-zh)#</span> 
 				<span id=toolsFooterPID>$job=#($JOB)#</span>
 				<span id=toolsFooterMEM>$s=#(startmem-$STORAGE)#</span>
+				<span id=toolsFooterUSR>$username=#($USERNAME)#</span>
 			</div>
 		</body>
 	</html>>
@@ -111671,8 +111013,8 @@ Base class for pages that have a Top, Left, and Right content:
  +-----+------+
 </Description>
 <Super>PXW.Tools.Page</Super>
-<TimeChanged>67812,67241.226768211</TimeChanged>
-<TimeCreated>67812,67241.226768211</TimeCreated>
+<TimeChanged>67859,71084.841180045</TimeChanged>
+<TimeCreated>67859,71084.841180045</TimeCreated>
 
 <Method name="WriteMainBody">
 <ClassMethod>1</ClassMethod>
@@ -111773,8 +111115,8 @@ Base class for pages that have a Top, Left, and Right content:
 
 <Class name="PXW.Tools.Queries">
 <Owner>_PUBLIC</Owner>
-<TimeChanged>67812,67241.251198498</TimeChanged>
-<TimeCreated>67812,67241.251198498</TimeCreated>
+<TimeChanged>67859,71084.862674905</TimeChanged>
+<TimeCreated>67859,71084.862674905</TimeCreated>
 
 <Query name="SelectNsTypes">
 <Type>PXW.LIB.SQL.Query</Type>
@@ -111811,8 +111153,8 @@ Base class for pages that have a Top, Left, and Right content:
 
 <Class name="PXW.Tools.Styles.Dark">
 <Super>PXW.Tools.Styles.super</Super>
-<TimeChanged>67812,67241.946656243</TimeChanged>
-<TimeCreated>67812,67241.946656243</TimeCreated>
+<TimeChanged>67859,71085.473828585</TimeChanged>
+<TimeCreated>67859,71085.473828585</TimeCreated>
 
 <Method name="WriteStyles">
 <Implementation><![CDATA[
@@ -111977,14 +111319,21 @@ Base class for pages that have a Top, Left, and Right content:
 	.codeNumber { color: var(--fgCodeNumber); }
 	.codeLabel, a.codeLabel, a.codeLabel:visited { color: var(--fgCodeLabel);}
 	.codeLabelDef { color:var(--fgCodeLabel); font-weight: bold;}
+	.codeIndentBlock { margin-left:4ch; }
 
 
 	/* Object script only styles */
 	.CDEFOneClassMember { display:block; 
 							/* 20px indent to make it not on the left side,
 							   but because this is a block we are effectively inserting an unwanted new line so move the whole thing up 1 line (-1em)*/
-							margin:-1em 0px 0px 20px;  }
+							margin:-1em 0px 0px 4ch;  }
 
+	.DOCBOOK {
+		background-color: var(--bgAlternate3); /*color: var(--fgComment); */
+		margin-left:4ch; margin-top:0.5em; width:80ch;
+		white-space: normal;
+		font-family: Arial, Helvetica, sans-serif; font-size: medium;
+	}
 
 	.XMLTag { color: var(--fgProgramKeyword); }
 	.XMLAttribute { color:var(--fgCodeVariable); }
@@ -112041,8 +111390,8 @@ Base class for pages that have a Top, Left, and Right content:
 
 <Class name="PXW.Tools.Styles.Green">
 <Super>PXW.Tools.Styles.super</Super>
-<TimeChanged>67812,67241.972740963</TimeChanged>
-<TimeCreated>67812,67241.972740963</TimeCreated>
+<TimeChanged>67859,71085.499117984</TimeChanged>
+<TimeCreated>67859,71085.499117984</TimeCreated>
 
 <Property name="CDEFMenuInline">
 <Type>%Boolean</Type>
@@ -112121,6 +111470,7 @@ Base class for pages that have a Top, Left, and Right content:
 	a:active { text-decoration:none;  color: inherit; }
 	pre { margin:0px; tab-size:4;}
 	input {  background-color: var(--bgHilite); color: var(--fgInverse);border:0;}
+	hr { border-color: var(--fgNormal); }
   /*
         +----------------------------------------------+
         |header #toolsHead                             |
@@ -112157,7 +111507,7 @@ Base class for pages that have a Top, Left, and Right content:
  		/*background-color:#2E2E2E;
   		color: #fff;*/
 	}
-	table tbody tr:Hover { background-color:var(--bgHover); color: var(--fgInverse);}
+	table tbody tr:Hover * { background-color:var(--bgHover) !important; color: var(--fgInverse) !important;}
 
 	td input { width: 100%;}
 
@@ -112226,11 +111576,18 @@ Base class for pages that have a Top, Left, and Right content:
 	.codeNumber { color: var(--fgCodeNumber); }
 	.codeLabel, a.codeLabel, a.codeLabel:visited { color: var(--fgCodeLabel);}
 	.codeLabelDef { color:var(--fgCodeLabel); font-weight: bold;}
+	.codeIndentBlock { margin-left:4ch; }
 
 
 	/* Object script only styles */
-	.CDEFOneClassMember { display:block; margin:0px 0px 0px 20px;  }
+	.CDEFOneClassMember { display:block; margin:0px 0px 0px 4ch;  }
 
+	.DOCBOOK {
+		/*background-color: var(--bgAlternate3);*/ /*color: var(--fgComment); */
+		margin-left:4ch; margin-top:0.5em; width:80ch;
+		white-space: normal;
+		/*font-family: Arial, Helvetica, sans-serif; font-size: medium;*/
+	}
 
 	.XMLTag { /*color:#85a6ff;*/ }
 	.XMLAttribute { /*color:#ade2ff;*/ }
@@ -112338,8 +111695,8 @@ Base class for pages that have a Top, Left, and Right content:
 
 <Class name="PXW.Tools.Styles.Light">
 <Super>PXW.Tools.Styles.super</Super>
-<TimeChanged>67812,67242.000583131</TimeChanged>
-<TimeCreated>67812,67242.000583131</TimeCreated>
+<TimeChanged>67859,71085.52419112</TimeChanged>
+<TimeCreated>67859,71085.52419112</TimeCreated>
 
 <Method name="WriteStyles">
 <Implementation><![CDATA[
@@ -112503,13 +111860,20 @@ Base class for pages that have a Top, Left, and Right content:
 	.codeNumber { color: var(--fgCodeNumber); }
 	.codeLabel, a.codeLabel, a.codeLabel:visited { color: var(--fgCodeLabel);}
 	.codeLabelDef { color:var(--fgCodeLabel); font-weight: bold;}
-
+	.codeIndentBlock { margin-left:4ch; }
 
 	/* Object script only styles */
 	.CDEFOneClassMember { display:block; 
 							/* 20px indent to make it not on the left side,
 							   but because this is a block we are effectively inserting an unwanted new line so move the whole thing up 1 line (-1em)*/
-							margin:-1em 0px 0px 20px;  }
+							margin:-1em 0px 0px 4ch;  }
+	
+	.DOCBOOK {
+		background-color: var(--bgAlternate3); /*color: var(--fgComment); */
+		margin-left:4ch; margin-top:0.5em; width:80ch;
+		white-space: normal;
+		font-family: Arial, Helvetica, sans-serif; font-size: medium;
+	}
 
 	.XMLTag { color: var(--fgProgramKeyword); }
 	.XMLAttribute { color:var(--fgCodeVariable); }
@@ -112566,8 +111930,8 @@ Base class for pages that have a Top, Left, and Right content:
 
 <Class name="PXW.Tools.Styles.LightDark">
 <Super>PXW.Tools.Styles.super</Super>
-<TimeChanged>67851,68871.077857658</TimeChanged>
-<TimeCreated>67812,67242.027290465</TimeCreated>
+<TimeChanged>67859,71085.547806375</TimeChanged>
+<TimeCreated>67859,71085.547806375</TimeCreated>
 
 <Method name="WriteStyles">
 <Implementation><![CDATA[
@@ -112693,7 +112057,8 @@ Base class for pages that have a Top, Left, and Right content:
 	
 	#toolsMainBodyNav { resize: horizontal;}
 	nav { background-color: var(--bgAlternate1); height:100%; overflow:auto; }
-    nav a { margin-top: 0.25em; }
+    nav a { padding:0.5em; /*margin-top: 0.5em; margin-bottom: 0.5em; */}
+    nav a:hover { background-color: var(--bgHover); }
 	
 	nav details::details-content {
 		padding-left:2em;
@@ -112742,6 +112107,7 @@ Base class for pages that have a Top, Left, and Right content:
 	.codeNumber { color: var(--fgCodeNumber); }
 	.codeLabel, a.codeLabel, a.codeLabel:visited { color: var(--fgCodeLabel);}
 	.codeLabelDef { color:var(--fgCodeLabel); font-weight: bold;}
+	.codeIndentBlock { margin-left:4ch; }
 
 
 	/* Object script only styles */
@@ -112811,8 +112177,8 @@ Base class for pages that have a Top, Left, and Right content:
 
 <Class name="PXW.Tools.Styles.Neon">
 <Super>PXW.Tools.Styles.super</Super>
-<TimeChanged>67812,67242.058361812</TimeChanged>
-<TimeCreated>67812,67242.058361812</TimeCreated>
+<TimeChanged>67859,71085.572704876</TimeChanged>
+<TimeCreated>67859,71085.572704876</TimeCreated>
 
 <Method name="WriteStyles">
 <Implementation><![CDATA[
@@ -112888,7 +112254,7 @@ Base class for pages that have a Top, Left, and Right content:
 	}
 	
 	table tbody tr { vertical-align:top;}
-	table tbody tr:Hover { background-color: var(--bgHover);  }
+	table tbody tr:Hover * { background-color: var(--bgHover) !important;  }
 	table tbody tr:Focus-within { background-color: var(--bgHover);  }
 
 	td input { width: 100%;}
@@ -113023,14 +112389,20 @@ Base class for pages that have a Top, Left, and Right content:
 	.codeNumber { color: var(--fgCodeNumber); }
 	.codeLabel, a.codeLabel, a.codeLabel:visited { color: var(--fgCodeLabel);}
 	.codeLabelDef { color:var(--fgCodeLabel); font-weight: bold;}
-
+	.codeIndentBlock { margin-left:4ch; }
 
 	/* Object script only styles */
 	.CDEFOneClassMember { display:block; 
 							/* 20px indent to make it not on the left side,
 							   but because this is a block we are effectively inserting an unwanted new line so move the whole thing up 1 line (-1em)*/
-							margin:-1em 0px 0px 20px;  }
+							margin:-1em 0px 0px 4ch;  }
 
+	.DOCBOOK {
+		background-color: var(--bgAlternate3); /*color: var(--fgComment); */
+		margin-left:4ch; margin-top:0.5em; width:80ch;
+		white-space: normal;
+		font-family: Arial, Helvetica, sans-serif; font-size: medium;
+	}
 
 	.XMLTag { color: var(--fgProgramKeyword); }
 	.XMLAttribute { color:var(--fgCodeVariable); }
@@ -113090,8 +112462,8 @@ Base class for pages that have a Top, Left, and Right content:
 
 <Class name="PXW.Tools.Styles.StarTrek">
 <Super>PXW.Tools.Styles.super</Super>
-<TimeChanged>67844,60146.867496916</TimeChanged>
-<TimeCreated>67812,67242.08643356</TimeCreated>
+<TimeChanged>67859,71085.598016886</TimeChanged>
+<TimeCreated>67859,71085.598016886</TimeCreated>
 
 <Property name="CDEFDescriptionsAsText">
 <Type>%Boolean</Type>
@@ -113536,7 +112908,6 @@ Here are the main named holders
 	/* END of nav */
 	/* Start of style for the code display */
 
-
 	.EmbeddedJS { background-color:#404040; display:inline-block;}
 	.EmbeddedSQL { background-color:#404040; display:inline-block; vertical-align: top;}
 	.EmbeddedXML { background-color:#404040; display:inline-block;}
@@ -113580,10 +112951,10 @@ Here are the main named holders
 	.codeNumber { color: var(--fgCodeNumber); }
 	.codeLabel, a.codeLabel, a.codeLabel:visited { color: var(--fgCodeLabel);}
 	.codeLabelDef { color:var(--fgCodeLabel); font-weight: bold;}
-
+	.codeIndentBlock { margin-left:4ch; }
 
 	/* Object script only styles */
-	.CDEFOneClassMember { display:block; margin:0px 0px 0px 20px;  }
+	.CDEFOneClassMember { display:block; margin:0px 0px 0px 4ch;  }
 
 	.XMLTag { color:#85a6ff; }
 	.XMLAttribute { color:#ade2ff; }
@@ -113658,7 +113029,7 @@ Here are the main named holders
 </Class>
 
 
-<Routine name="PXW.Tools.Styles.macros" type="INC" timestamp="67812,67242.029581209"><![CDATA[
+<Routine name="PXW.Tools.Styles.macros" type="INC" timestamp="67859,71085.549686792"><![CDATA[
 
 #; These macros should all be pointing to something in the %STYLE sheet.
 #; When wrting a page it becomes simple to use $$$class macros to 
@@ -113734,6 +113105,9 @@ Here are the main named holders
 /// classLableDef
 #define classLabelDef "codeLabelDef"
 
+/// classIndent
+#define classIndent "codeIndentBlock"
+
 #; CLASSES RELATING TO HIGHLIGHING 
 /// classHilite
 #define classHilite "hilite"
@@ -113770,8 +113144,8 @@ Here are the main named holders
 <Class name="PXW.Tools.Styles.super">
 <IncludeCode>PXW.Tools.Styles.macros</IncludeCode>
 <Super>%Library.RegisteredObject</Super>
-<TimeChanged>67812,67242.115050871</TimeChanged>
-<TimeCreated>67812,67242.115050871</TimeCreated>
+<TimeChanged>67859,71085.623125348</TimeChanged>
+<TimeCreated>67859,71085.623125348</TimeCreated>
 
 <Property name="CDEFDescriptionsAsText">
 <Description>
@@ -113797,8 +113171,8 @@ If 0 then the options are grouped together in a menu holder for placement elsewh
 <Class name="PXW.Xref.AnalysisData">
 <Owner>_PUBLIC</Owner>
 <Super>%Library.Persistent</Super>
-<TimeChanged>67830,61976.165717612</TimeChanged>
-<TimeCreated>67812,67242.234739502</TimeCreated>
+<TimeChanged>67859,71085.725353694</TimeChanged>
+<TimeCreated>67859,71085.725353694</TimeCreated>
 
 <Property name="NameSpace">
 <Type>%String</Type>
@@ -113881,44 +113255,44 @@ Short Type of the warning (eg UNDEF)</Description>
 </Storage>
 </Class>
 <TableStatsInfo name="PXW.Xref.AnalysisData.ext">
-  <EndTime>2026-08-30T19:05:08.574307Z</EndTime>
-  <Duration>.194943</Duration>
+  <EndTime>2026-10-20T19:41:55.474662Z</EndTime>
+  <Duration>.221821</Duration>
   <UserName>SuperUser</UserName>
-  <SamplePercent>.142216</SamplePercent>
-  <ExtentSize>10020</ExtentSize>
+  <SamplePercent>.219665</SamplePercent>
+  <ExtentSize>14513</ExtentSize>
   <Fields>
     <FieldStatsInfo>
       <Name>Description</Name>
-      <Selectivity>0.0086%</Selectivity>
+      <Selectivity>0.0022%</Selectivity>
       <OutlierValue>"Mix of Short and Long commands "</OutlierValue>
-      <OutlierSelectivity>.277193</OutlierSelectivity>
-      <AverageFieldSize>38.46</AverageFieldSize>
-      <Histogram>$lb(.06666666666666666667,0,0,$lb(" ACCESSTYPE SET BUT NOT USED"," DERIVED TYPE OF PTARGET (%DEEPSEE.DASHBOARD.DATAPROPERTY) DIFFERS TO DIMMED TYPE (%LIBRARY.DYNAMICOBJECT) BUT THEY ARE "," GLO SET BUT NOT USED"," MIX OF SHORT AND LONG COMMANDS"," MIX OF SHORT AND LONG COMMANDS"," MIX OF SHORT AND LONG COMMANDS"," MIX OF SHORT AND LONG COMMANDS"," NAMESPACE SET BUT NOT USED"," NO QUIT FOR METHOD THAT HAS A RETURNTYPE"," RETURN TYPE IS NOT SET, DERIVED TYPE="," RETURN TYPE IS NOT SET, DERIVED TYPE=%LIBRARY.STATUS"," RETURN TYPE=%LIBRARY.STREAM, DERIVED TYPE=%LIBRARY.FILECHARACTERSTREAM BUT THEY ARE COMPATIBLE VIA %STREAM.OBJECT AT DE"," SOURCEOFFSET SET BUT NOT USED"," TCLASSNAME SET BUT NOT USED"," TS SET BUT NOT USED"," {USERINSERTED} SET BUT NOT USED"),$lb(1,1,1,32,32,32,1,2,1,38,12,1,1,2,1),$lb(541147971,1094927173,1145393737,1145393737,1196183328,1196183328,1296652320,0,0,0,0,0,0,1296652320,1312902469,1095583059,1327518037,1313808465,1380275285,0,625756482,541676320,1025854537,1380275285,1397708114,1397708114,1413696577,1129070931,1394627397,1414733907,2069189445,544953683))</Histogram>
+      <OutlierSelectivity>.226788</OutlierSelectivity>
+      <AverageFieldSize>38.58</AverageFieldSize>
+      <Histogram>$lb(.06666666666666666667,0,1,$lb("-10000000000000000000"," CTX SET BUT NOT USED"," DIMMED AS %LIBRARY.STRING DOES NOT MATCH DERIVED"," LASTX SET BUT NOT USED"," MIX OF SHORT AND LONG COMMANDS"," MIX OF SHORT AND LONG COMMANDS"," MIX OF SHORT AND LONG COMMANDS"," NO QUIT FOR METHOD THAT HAS A RETURNTYPE"," NO QUIT FOR METHOD THAT HAS A RETURNTYPE"," RETURN TYPE IS NOT SET, DERIVED TYPE="," RETURN TYPE IS NOT SET, DERIVED TYPE=%LIBRARY.STATUS"," RETURN TYPE=%NET.LDAP.CLIENT.ENTRIES, DERIVED TYPE=%LIBRARY.STATUS"," STATUS SET BUT NOT USED"," TJSON SET BUT NOT USED"," TSTATEMENTCLASS SET BUT NOT USED"," {WEBURLROOT} SET BUT NOT USED"),$lb(0,1,1,1,32,32,1,42,1,38,12,1,1,2,1),$lb(758198320,758198320,541283416,1129601056,1145654605,1145654605,1279349588,1279349588,1296652320,0,0,0,0,1296652320,1313808465,0,0,1313808465,1380275285,0,625756482,541676320,1025855045,1380275285,1398030676,1398030676,1414157135,1246973774,1398030676,1414747201,2069316930,544954181))</Histogram>
       <HasOutlier>true</HasOutlier>
     </FieldStatsInfo>
     <FieldStatsInfo>
       <Name>ID</Name>
       <Selectivity>1</Selectivity>
-      <AverageFieldSize>3.97</AverageFieldSize>
-      <Histogram>$lb(.06666666666666666667,1,0,$lb(4,542,1218,1823,2263,2823,3812,4420,5720,6262,7210,7756,8279,8731,9206,9929),$lb(0,0,1,0,1,0,0,0,0,0,1,0,1,0,1),"")</Histogram>
+      <AverageFieldSize>3.98</AverageFieldSize>
+      <Histogram>$lb(.06666666666666666667,1,0,$lb(13,953,1989,2954,4001,4917,5768,6790,7714,8676,9691,10598,11636,12540,13489,14512),$lb(0,0,0,0,1,0,0,0,0,0,0,1,1,1,1),"")</Histogram>
       <HasOutlier>false</HasOutlier>
     </FieldStatsInfo>
     <FieldStatsInfo>
       <Name>ItemKey1</Name>
-      <Selectivity>0.0788%</Selectivity>
+      <Selectivity>0.0350%</Selectivity>
       <OutlierValue>"%Compiler.TSQL.COS"</OutlierValue>
-      <OutlierSelectivity>.02386</OutlierSelectivity>
-      <AverageFieldSize>23.97</AverageFieldSize>
-      <Histogram>$lb(.06666666666666666667,0,0,$lb(" %API.ATELIER.V1"," %BIGDATA.SQMMESSAGING"," %COMPILER.LG.EJBBEANQUICK"," %COMPILER.LG.JAVAPROPDEF"," %CPT.JS.RUNTIME.PRIMITIVE"," %CSP.UTIL.SMNAVIGATORPANE"," %DEEPSEE.EXTENSIONS.UTILS.LDA"," %DEEPSEE.WORKMGR"," %LIBRARY.ENSEMBLEMGR"," %LIBRARY.PROMPT"," %REPORT.SERVERDEFINITION"," %SQL.UTIL.LOADER"," %SYS.JOURNAL.TRANSACTION"," %SYS.TRACE"," %UNITTEST.TESTCASE"," PXW.XREF.BUILD"),$lb(2,2,14,3,3,2,10,2,10,2,2,3,6,2,1),$lb(539312464,1095780654,1112098628,1112098628,1129270608,1162494530,1245795905,1330466889,1347694154,1347694154,1397763669,1129533486,1145390416,1163416645,1464816203,1145390416,1279869522,1162761029,1347571533,1279869522,1380274255,1380274255,1397836846,1363947093,1498623562,1246713170,1414676803,1398362926,1431193940,626347593,1347966766,542136407))</Histogram>
+      <OutlierSelectivity>.012233</OutlierSelectivity>
+      <AverageFieldSize>25.75</AverageFieldSize>
+      <Histogram>$lb(.06666666666666666667,0,0,$lb(" %API.ATELIER.V1"," %COMPILER.LG.EJBDEPLOYJBOSS"," %CPT.HPT.READER"," %DATAMODEL.SERIALIZER"," %DEEPSEE.QUERY.SETFUNCTION"," %DICTIONARY.STORAGESQLMAPDEFINITION"," %IKNOW.OBJECTS.SQLUTILS"," %IPM.UTILS.XMLCOMMENTHANDLER"," %LIBRARY.SQLCATALOGPRIV"," %SQL.EXPORT.MGR"," %SYS.PORTAL.RESOURCES"," %XDBC.GATEWAY.ODBC.CONNECTION"," %ZEN.REPORT.DISPLAY.COSCHART.CCHARTDUALY"," ENS.DTL.ASSIGN"," ENSLIB.EDI.XML.DOM"," PXW.TOOLS.DEV.HTML.BNF"),$lb(2,3,2,3,3,2,3,2,2,3,2,2,1,4,1),$lb(539312464,1095780654,1129270608,1330466889,1347694152,1129337902,1145132097,1096040781,1162170451,1162170451,1229149257,1145652052,1229672015,1263423319,1347235413,1229999406,1279869522,1279869522,1397836846,1363947077,1498623568,1398362926,1480868419,1480868419,1514491438,626672974,1162761006,776229964,1279869486,1162761036,1347966766,542136407))</Histogram>
       <HasOutlier>true</HasOutlier>
     </FieldStatsInfo>
     <FieldStatsInfo>
       <Name>ItemKey2</Name>
-      <Selectivity>0.0209%</Selectivity>
-      <OutlierValue>"v91"</OutlierValue>
-      <OutlierSelectivity>.01614</OutlierSelectivity>
-      <AverageFieldSize>15.03</AverageFieldSize>
-      <Histogram>$lb(.06666666666666666667,0,0,$lb(" ""__ITER__"""," %EXISTS"," %ONAFTERCREATEPAGE"," %UNLOCKID"," CHILD"," CSPPOP"," DRAWBODY"," GENDISTANCETABLE"," GETFILTEREDDATA"," HISTORICALDATABASEIMPACT"," MAILTIMEZONESET"," PEERPORT"," REVOKEADMINONE"," SQLUSERSYSPRIVSCLOSE"," V25"," ZZERRORTRAP"),$lb(1,2,2,1,2,1,1,3,1,1,1,1,1,1,1),$lb(539123551,576675657,625301577,1163413843,1330528582,1330528582,1431194703,626347596,1128810828,1212763204,1397772367,1129533520,1146241367,1146241367,1195724356,1313098067,1413892428,1195725894,1212765012,1212765012,1296124236,1296124236,1346717010,1346717010,1380275791,1380275791,1397836885,1397836885,1446130944,1446130944,1515865426,542792261))</Histogram>
+      <Selectivity>0.0098%</Selectivity>
+      <OutlierValue>"%UnlockId"</OutlierValue>
+      <OutlierSelectivity>.013802</OutlierSelectivity>
+      <AverageFieldSize>15.23</AverageFieldSize>
+      <Histogram>$lb(.06666666666666666667,0,0,$lb(" ""CONTEXT_NAMES"""," %GENERATE"," %ONNEW"," %VALIDATEREQUEST"," CLIENTRESEND"," DELEGATEREAD"," DRIVELISTEXECUTE"," GENERATEPUTOBJECT"," GETMATCHELEMENTS"," GETXAXISTITLE"," LISTERID"," ONPROCESSBATCH"," R3FETCH"," SENDREQUESTTOGATEWAY"," TESTRULE"," ZUFETCH"),$lb(1,2,2,1,1,2,1,3,4,1,1,1,1,1,1),$lb(539116367,574836558,625427790,1195724357,1330531909,1330531909,1447119945,626409804,1129072965,1129072965,1145392197,1162626375,1380537925,1146243414,1195724357,1313165889,1414349140,1296127043,1480677449,1195725912,1279873876,1279873876,1330532434,1330532434,1379092037,1379092037,1397050948,1397050948,1413829460,1413829460,1515537989,542790982))</Histogram>
       <HasOutlier>true</HasOutlier>
     </FieldStatsInfo>
     <FieldStatsInfo>
@@ -113932,11 +113306,11 @@ Short Type of the warning (eg UNDEF)</Description>
     </FieldStatsInfo>
     <FieldStatsInfo>
       <Name>LineNumber</Name>
-      <Selectivity>0.0602%</Selectivity>
-      <OutlierValue>64</OutlierValue>
-      <OutlierSelectivity>.007719</OutlierSelectivity>
-      <AverageFieldSize>3.55</AverageFieldSize>
-      <Histogram>$lb(.06666666666666666667,1,0,$lb(7,38,60,86,120,161,212,273,354,456,648,895,1200,1736,2891,13186),$lb(0,0,0,0,1,0,1,0,0,0,0,0,1,0,0),"")</Histogram>
+      <Selectivity>0.0359%</Selectivity>
+      <OutlierValue>53</OutlierValue>
+      <OutlierSelectivity>.007215</OutlierSelectivity>
+      <AverageFieldSize>3.54</AverageFieldSize>
+      <Histogram>$lb(.06666666666666666667,1,0,$lb(8,34,53,79,111,149,198,258,328,426,600,845,1151,1817,3279,12631),$lb(0,0,0,0,1,1,0,0,0,0,0,0,1,0,0),"")</Histogram>
       <HasOutlier>true</HasOutlier>
     </FieldStatsInfo>
     <FieldStatsInfo>
@@ -113946,6 +113320,15 @@ Short Type of the warning (eg UNDEF)</Description>
       <OutlierSelectivity>.999999</OutlierSelectivity>
       <AverageFieldSize>12</AverageFieldSize>
       <Histogram>$lb(.06666666666666666667,0,0,$lb(" LOCAL_USER"," LOCAL_USER"," LOCAL_USER"," LOCAL_USER"," LOCAL_USER"," LOCAL_USER"," LOCAL_USER"," LOCAL_USER"," LOCAL_USER"," LOCAL_USER"," LOCAL_USER"," LOCAL_USER"," LOCAL_USER"," LOCAL_USER"," LOCAL_USER"," LOCAL_USER"),$lb(12,12,12,12,12,12,12,12,12,12,12,12,12,12,12),$lb(541871939,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,541871939))</Histogram>
+      <HasOutlier>true</HasOutlier>
+    </FieldStatsInfo>
+    <FieldStatsInfo>
+      <Name>Type</Name>
+      <Selectivity>0.6471%</Selectivity>
+      <OutlierValue>"VUNUSED"</OutlierValue>
+      <OutlierSelectivity>.361982</OutlierSelectivity>
+      <AverageFieldSize>7.87</AverageFieldSize>
+      <Histogram>$lb(.06666666666666666667,0,0,$lb(" "_$c(0)," COMM"," COMM"," COMM"," QMISS"," RTYPE"," RTYPE"," RTYPE"," VTYPE"," VUNDEF"," VUNUSED"," VUNUSED"," VUNUSED"," VUNUSED"," VUNUSED"," VUNUSED"),$lb(1,6,6,1,1,7,7,1,2,4,9,9,9,9,9),$lb(536870912,0,1129270605,0,0,0,0,1129270605,1364019539,1364019539,1381259600,0,0,0,0,1381259600,1448368464,1415139397,1431192645,1145390592,1431520580,0,0,0,0,0,0,0,0,0,0,542528846))</Histogram>
       <HasOutlier>true</HasOutlier>
     </FieldStatsInfo>
     <FieldStatsInfo>
@@ -113965,11 +113348,11 @@ Short Type of the warning (eg UNDEF)</Description>
     </MapStatsInfo>
     <MapStatsInfo>
       <Name>IDKEY</Name>
-      <BlockCount>592</BlockCount>
+      <BlockCount>932</BlockCount>
     </MapStatsInfo>
     <MapStatsInfo>
       <Name>iAll</Name>
-      <BlockCount>120</BlockCount>
+      <BlockCount>180</BlockCount>
     </MapStatsInfo>
     <MapStatsInfo>
       <Name>iNameSpace</Name>
@@ -114019,6 +113402,11 @@ Short Type of the warning (eg UNDEF)</Description>
     </StorageInfo>
     <StorageInfo>
       <Type>Field</Type>
+      <Name>Type</Name>
+      <Info>%Library.String,SU</Info>
+    </StorageInfo>
+    <StorageInfo>
+      <Type>Field</Type>
       <Name>x__classname</Name>
       <Info>%Library.RawString,</Info>
     </StorageInfo>
@@ -114048,8 +113436,8 @@ Short Type of the warning (eg UNDEF)</Description>
 
 <Class name="PXW.Xref.AnalysisQueries">
 <Super>%RegisteredObject</Super>
-<TimeChanged>67831,63101.973440569</TimeChanged>
-<TimeCreated>67812,67242.262653406</TimeCreated>
+<TimeChanged>67859,71085.750311896</TimeChanged>
+<TimeCreated>67859,71085.750311896</TimeCreated>
 
 <Query name="Get">
 <Type>PXW.LIB.SQL.Query</Type>
@@ -114143,8 +113531,8 @@ Short Type of the warning (eg UNDEF)</Description>
 <Class name="PXW.Xref.Build">
 <IncludeCode>PXW.Debuggers.Macros</IncludeCode>
 <Super>%Library.RegisteredObject</Super>
-<TimeChanged>67812,67242.295243008</TimeChanged>
-<TimeCreated>67812,67242.295243008</TimeCreated>
+<TimeChanged>67859,71085.781519342</TimeChanged>
+<TimeCreated>67859,71085.781519342</TimeCreated>
 
 <Method name="Build">
 <Description>
@@ -114565,8 +113953,8 @@ A list of namespaces where there has not been a build today</Description>
 
 <Class name="PXW.Xref.BuildStatus">
 <Super>%Library.Persistent</Super>
-<TimeChanged>67812,67242.358413334</TimeChanged>
-<TimeCreated>67812,67242.358413334</TimeCreated>
+<TimeChanged>67859,71085.837243039</TimeChanged>
+<TimeCreated>67859,71085.837243039</TimeCreated>
 
 <Property name="RequestNamespace">
 <Type>%String</Type>
@@ -114824,8 +114212,8 @@ A list of namespaces where there has not been a build today</Description>
 
 <Class name="PXW.Xref.Builder">
 <Super>PXW.DEV.BNF.processor</Super>
-<TimeChanged>67812,67242.323260745</TimeChanged>
-<TimeCreated>67812,67242.323260745</TimeCreated>
+<TimeChanged>67859,71085.806036715</TimeChanged>
+<TimeCreated>67859,71085.806036715</TimeCreated>
 
 <Parameter name="CodeType">
 </Parameter>
@@ -114854,8 +114242,8 @@ A list of namespaces where there has not been a build today</Description>
 <Class name="PXW.Xref.Builders.Class">
 <IncludeCode>PXW.Debuggers.Macros</IncludeCode>
 <Super>PXW.Xref.Builder</Super>
-<TimeChanged>67851,68513.823884707</TimeChanged>
-<TimeCreated>67812,67242.526606818</TimeCreated>
+<TimeChanged>67859,71085.986445997</TimeChanged>
+<TimeCreated>67859,71085.986445997</TimeCreated>
 
 <Parameter name="CodeType">
 <Default>CLS</Default>
@@ -116360,8 +115748,8 @@ It might be better to use the xpath functions now, instead of this, but leaving 
 
 <Class name="PXW.Xref.Builders.MAC">
 <Super>PXW.Xref.Builders.Class</Super>
-<TimeChanged>67812,67242.565866294</TimeChanged>
-<TimeCreated>67812,67242.565866294</TimeCreated>
+<TimeChanged>67859,71086.017704017</TimeChanged>
+<TimeCreated>67859,71086.017704017</TimeCreated>
 
 <Parameter name="CodeType">
 <Default>MAC</Default>
@@ -116409,8 +115797,8 @@ It might be better to use the xpath functions now, instead of this, but leaving 
 
 <Class name="PXW.Xref.Builders.Routine">
 <Super>PXW.Xref.Builders.Class</Super>
-<TimeChanged>67812,67242.595875139</TimeChanged>
-<TimeCreated>67812,67242.595875139</TimeCreated>
+<TimeChanged>67859,71086.045075829</TimeChanged>
+<TimeCreated>67859,71086.045075829</TimeCreated>
 
 <Parameter name="CodeType">
 <Default>INT</Default>
@@ -116488,8 +115876,8 @@ ItemKey2 and CalledByKey2 will be the section of the code to look at (EG method 
              CalledByCommand will be a thing used for indexing so we can look up all VariableSets or _Overrides etc.</Description>
 <Owner>_PUBLIC</Owner>
 <Super>%Library.Persistent</Super>
-<TimeChanged>67812,67242.391430061</TimeChanged>
-<TimeCreated>67812,67242.391430061</TimeCreated>
+<TimeChanged>67859,71085.867252486</TimeChanged>
+<TimeCreated>67859,71085.867252486</TimeCreated>
 
 <Property name="NameSpace">
 <Type>%String</Type>
@@ -116672,46 +116060,46 @@ A S X=1
 </Storage>
 </Class>
 <TableStatsInfo name="PXW.Xref.Data.ext">
-  <EndTime>2026-08-30T18:51:54.289024Z</EndTime>
-  <Duration>.959757</Duration>
+  <EndTime>2026-10-20T18:41:23.35454Z</EndTime>
+  <Duration>1.03599</Duration>
   <UserName>SuperUser</UserName>
-  <SamplePercent>.030764</SamplePercent>
-  <ExtentSize>238067</ExtentSize>
+  <SamplePercent>.018036</SamplePercent>
+  <ExtentSize>695092</ExtentSize>
   <Fields>
     <FieldStatsInfo>
       <Name>CalledByCommand</Name>
-      <Selectivity>3.8223%</Selectivity>
-      <OutlierValue>"ThisObject"</OutlierValue>
-      <OutlierSelectivity>.311988</OutlierSelectivity>
-      <AverageFieldSize>10.31</AverageFieldSize>
-      <Histogram>$lb(.06666666666666666667,0,0,$lb(" $CLASSMETHOD"," OBJECTVARIABLE"," THISOBJECT"," THISOBJECT"," THISOBJECT"," THISOBJECT"," THISOBJECTSET"," VARIABLE"," VARIABLE"," _AS"," _AS"," _MACRO"," _MACRO"," _MACRO"," _MACRO"," _PLACEAFTER"),$lb(1,1,12,12,12,11,1,10,1,5,2,8,8,8,2),$lb(539247436,608390209,1329744453,1329744453,1414023507,0,0,0,0,0,0,0,1397052416,1414023507,1447121481,0,0,1447121481,1598116608,0,0,1095958528,1296122706,0,0,0,0,0,0,1296122706,1347174723,543117388))</Histogram>
+      <Selectivity>1.9629%</Selectivity>
+      <OutlierValue>"_macro"</OutlierValue>
+      <OutlierSelectivity>.247188</OutlierSelectivity>
+      <AverageFieldSize>10.37</AverageFieldSize>
+      <Histogram>$lb(.06666666666666666667,0,0,$lb(" $CLASSMETHOD"," OBJECTCHAIN"," SELECTCOMMAND"," THISOBJECT"," THISOBJECT"," THISOBJECT"," THISOBJECTSET"," VARIABLE"," VARIABLESET"," _AS"," _AS"," _MACRO"," _MACRO"," _MACRO"," _MACRO"," _PLACEAFTER"),$lb(1,1,1,12,12,11,1,9,1,5,2,8,8,8,2),$lb(539247436,608390209,1329744453,1329744453,1397050437,1397050437,1414023507,0,0,0,0,0,1397052416,1414023507,1447121481,0,1397052416,1447121481,1598116608,0,0,1095958528,1296122706,0,0,0,0,0,0,1296122706,1347174723,543117388))</Histogram>
       <HasOutlier>true</HasOutlier>
     </FieldStatsInfo>
     <FieldStatsInfo>
       <Name>CalledByKey1</Name>
-      <Selectivity>0.1774%</Selectivity>
-      <OutlierValue>"PXW.DEV.BNF.GEN.COS"</OutlierValue>
-      <OutlierSelectivity>.026352</OutlierSelectivity>
-      <AverageFieldSize>27.24</AverageFieldSize>
-      <Histogram>$lb(.06666666666666666667,0,0,$lb(" %API.ATELIER.V1"," %BIGDATA.SHARDEDSQL"," %COMPILER.INFORMIX.ITERATORFUNCTION"," %COMPILER.LG.EJBPRIMARYKEY"," %COMPILER.TSQL.COS"," %COMPILER.TYPE.RELATIONSHIP"," %CPT.JS.GENERATE.GEN.FUNCTION"," %CSP.PORTAL.SOURCECONTROL.BASE"," %CSP.UI.PORTAL.DIALOG.SQLSTATEMENTDETAILS"," %CSP.UI.PORTAL.OAUTH2.CLIENT.CONFIGURATION"," %CSP.UI.SYSTEM.FINDPANE"," %DEEPSEE.COMPUTEDDIMENSION.BASE"," %DEEPSEE.PMML.BUILDER.TREE"," PXW.DEV.BNF.GEN.COS"," PXW.DEV.BNF.GEN.SQL"," PXW.XREF.LASTUPDATED"),$lb(2,2,11,11,12,3,3,6,16,9,2,10,1,17,5),$lb(539312464,1095780654,1112098628,1112098628,1129270608,1229866575,1279733317,1279733317,1414746444,1397836846,1498432814,1330466889,1347694154,1347694154,1397763664,1347375700,1430859344,1145651532,1329681748,1347375700,1398362964,1129533486,1145390416,1129270608,1347243340,625231173,1347966766,1129272064,1397836800,1145394734,1481786694,542136407))</Histogram>
+      <Selectivity>0.0927%</Selectivity>
+      <OutlierValue>"%Compiler.TSQL.COS"</OutlierValue>
+      <OutlierSelectivity>.01021</OutlierSelectivity>
+      <AverageFieldSize>26.32</AverageFieldSize>
+      <Histogram>$lb(.06666666666666666667,0,0,$lb(" %API.ATELIER.V1"," %COMPILER.LG.EJBDEPLOYSTANDARD"," %CPT.JS.RUNTIME.BUILTIN.NULL"," %CSP.UI.PORTAL.USER"," %DEEPSEE.PMML.GENERATOR"," %DICTIONARY.COMPILEDCLASS"," %IKNOW.DEEPSEE.UI.MEASUREVALUE"," %IKNOW.UTILS.MAINTENANCEAPI"," %LIBRARY.PROMPT"," %SOAP.POLICY"," %SYS.JOURNAL.HISTORY"," %XML.SCHEMA"," %ZEN.REPORT.DISPLAY.COSCHART.CCHART"," ENS.BPL.PARSER"," ENSLIB.EDI.EDIFACT.PARSER"," PXW.XREF.LASTUPDATEDDETAILS"),$lb(2,3,3,2,3,2,8,2,2,3,2,2,1,4,1),$lb(539312464,1095780654,1129270608,1330466889,1347694154,1347694154,1397763669,1129533486,1145390416,1162170451,1229149257,1145652052,1229672015,1145390416,1431587148,1229672015,1279869522,1279869522,1397702992,1329680430,1498623562,1398362926,1481460782,1481460782,1514491438,626672974,1162761006,776097868,1279869486,1162761036,1347966766,542136407))</Histogram>
       <HasOutlier>true</HasOutlier>
     </FieldStatsInfo>
     <FieldStatsInfo>
       <Name>CalledByKey2</Name>
-      <Selectivity>0.0289%</Selectivity>
-      <OutlierValue>"%OnAfterCreatePage"</OutlierValue>
-      <OutlierSelectivity>.04533</OutlierSelectivity>
-      <AverageFieldSize>14.19</AverageFieldSize>
-      <Histogram>$lb(.06666666666666666667,0,0,$lb(" ""BREAKPOINT_GET"""," %GETDATACONTROLLER"," %ONAFTERCREATEPAGE"," AUGASSIGN"," COMPILEDTL"," DOSERIALGET"," FAVORITEICON"," GETAGGREGATESBYCATEGORY"," JSONUNARYEXPRESSION"," NODETYPE"," PREPAREACTIVATE"," SAVESETTINGS"," STATEMENT"," V145"," V56"," ZBREAKCOMMAND4SUB"),$lb(1,2,1,1,1,1,1,1,1,1,1,2,1,2,1),$lb(539116114,574771781,625427796,1195725892,1330528582,625954369,1096107841,1096107841,1129270608,1129270608,1146049349,1146049349,1178687055,1178687055,1195725889,1195725889,1246973774,1246973774,1313817669,1313817669,1347568976,1347568976,1396790853,1096172883,1413567557,1398030676,1446065205,825505024,892731392,1446327808,1514295877,542786130))</Histogram>
+      <Selectivity>0.0101%</Selectivity>
+      <OutlierValue>"%LoadData"</OutlierValue>
+      <OutlierSelectivity>.021058</OutlierSelectivity>
+      <AverageFieldSize>14.69</AverageFieldSize>
+      <Histogram>$lb(.06666666666666666667,0,0,$lb(" ""%%OID"""," %DRAWWORKLIST"," %LOADDATA"," %PROCESSMEMBERNODE"," BUILDALLDEPENDENCYGRAPHS"," CREATECLIENT"," DRAWRECORDDETAILS"," GENERATECONSTRUCTORS"," GETEXPRESSION"," ICONFOLDER"," MEMBERACCESSOR"," OUTPUTTODEVICE"," RENDERDESCRIPTION"," SETTEXT"," V131"," ZENMETHODSET"),$lb(1,2,2,1,1,1,1,3,1,1,1,1,1,1,1),$lb(539108645,572859727,625234497,1146241367,1280262468,1280262468,1347571523,626020943,1112885580,1112885580,1129465153,1129465153,1146241367,1146241367,1195724357,1313165889,1413830736,1195725893,1229147982,1229147982,1296387394,1296387394,1330992208,1330992208,1380273732,1380273732,1397052500,1397052500,1446064945,1446064945,1514491469,542786894))</Histogram>
       <HasOutlier>true</HasOutlier>
     </FieldStatsInfo>
     <FieldStatsInfo>
       <Name>CalledByKey3</Name>
-      <Selectivity>0.0477%</Selectivity>
+      <Selectivity>0.0236%</Selectivity>
       <OutlierValue>0</OutlierValue>
-      <OutlierSelectivity>.17941</OutlierSelectivity>
-      <AverageFieldSize>2.85</AverageFieldSize>
-      <Histogram>$lb(.06666666666666666667,0,0,$lb(" 0"," 0"," 0"," 10"," 13"," 166"," 2"," 24"," 3"," 34"," 4"," 48"," 54"," 68"," 8"," 99"),$lb(3,3,1,2,2,1,2,1,2,1,2,1,1,1,1),$lb(540016640,0,0,0,0,805306368,825229312,805306368,855638016,855638016,909508608,825636352,838860800,0,872415232,842268672,855638016,0,872415232,859045888,872415232,0,939524096,876085248,892600320,892600320,909639680,909639680,939524096,939524096,960036864,540621056))</Histogram>
+      <OutlierSelectivity>.20938</OutlierSelectivity>
+      <AverageFieldSize>2.83</AverageFieldSize>
+      <Histogram>$lb(.06666666666666666667,0,0,$lb(" 0"," 0"," 0"," 0"," 12"," 146"," 186"," 2"," 25"," 3"," 39"," 45"," 54"," 67"," 8"," 996"),$lb(3,3,3,1,2,2,1,2,1,2,1,1,1,1,1),$lb(540016640,0,0,0,0,0,0,805306368,825360384,838860800,875954176,875954176,943063040,825767424,838860800,0,889192448,842334208,855638016,0,956301312,859373568,875888640,875888640,892600320,892600320,909574144,909574144,939524096,939524096,960050688,540621110))</Histogram>
       <HasOutlier>true</HasOutlier>
     </FieldStatsInfo>
     <FieldStatsInfo>
@@ -116735,44 +116123,44 @@ A S X=1
     <FieldStatsInfo>
       <Name>ID</Name>
       <Selectivity>1</Selectivity>
-      <AverageFieldSize>4.72</AverageFieldSize>
-      <Histogram>$lb(.06666666666666666667,1,0,$lb(429,23313,34853,51455,64545,79978,96415,111259,125599,141450,158883,176619,192291,206499,223211,238316),$lb(0,0,0,0,0,0,0,1,1,1,1,1,0,1,1),"")</Histogram>
+      <AverageFieldSize>4.92</AverageFieldSize>
+      <Histogram>$lb(.06666666666666666667,1,0,$lb(210,50546,98353,149895,204978,260336,295868,339567,379933,421686,470888,507805,547932,592485,641326,694060),$lb(0,0,0,0,1,1,0,1,0,1,0,1,1,0,1),"")</Histogram>
       <HasOutlier>false</HasOutlier>
     </FieldStatsInfo>
     <FieldStatsInfo>
       <Name>ItemKey1</Name>
-      <Selectivity>0.0406%</Selectivity>
-      <OutlierValue>"%Library.String"</OutlierValue>
-      <OutlierSelectivity>.036455</OutlierSelectivity>
-      <AverageFieldSize>20.95</AverageFieldSize>
-      <Histogram>$lb(.06666666666666666667,0,0,$lb(" %API.ATELIER.V1"," %COMPILER.INFORMIX.ITERATORFUNCTION"," %COMPILER.TSQL.COS"," %COMPILER.XML.GENERATOR.ADAPTOR"," %CSP.REQUEST"," %CSPINCLUDE"," %EXCEPTION.ABSTRACTEXCEPTION"," %LIBRARY.REGISTEREDOBJECT"," %LIBRARY.SYSTEMBASE"," %OCCEXTENT"," %OCCSTATUS"," %SYSYSTEM"," %ZEN.DATATYPE.STRING"," PXW.DEV.BNF.ELEMENT"," PXW.DEV.BNF.MACROS"," XXX"),$lb(2,11,11,3,5,2,2,10,2,5,2,2,1,13,1),$lb(539312464,1095780654,1129270608,1229866575,1414746444,1414746444,1481460782,1330466889,1397763666,777143633,1229865804,1129533513,1163412293,1163412293,1279869522,1380271945,1398362964,1279869522,1329808197,1163416645,1398030676,1329808211,1398362969,1398362969,1514491438,626672974,1347966766,1162626381,1296122706,1347966766,1482184704,542660696))</Histogram>
+      <Selectivity>0.0134%</Selectivity>
+      <OutlierValue>"%sySystem"</OutlierValue>
+      <OutlierSelectivity>.052166</OutlierSelectivity>
+      <AverageFieldSize>20.7</AverageFieldSize>
+      <Histogram>$lb(.06666666666666666667,0,0,$lb(" %API.ATELIER.V1"," %COMPILER.UTIL.PARSETREE"," %DEEPSEE.EXTENSIONS.IKNOW.CONF.MODEL"," %DICTIONARY.STORAGESQLMAPSUBINVALIDCONDITIONDEFINITION"," %IPM.GENERAL.SEMANTICVERSION"," %LIBRARY.GLOBALBINARYSTREAM"," %LIBRARY.RESULTSET"," %LIBRARY.STRING"," %OCCDS"," %OCCREFERENCE"," %SQL.VECTORINDEX.HNSWINDEXERV2"," %SYSYSTEM"," %XML.UTILS.SCHEMAREADER"," %ZEN.REPORT.DISPLAY.COSCHART.CCHARTDUALY"," ENSEDIXML"," WEBSTRESS.CONTROLD"),$lb(2,2,3,2,2,10,10,2,5,2,3,2,2,1,1),$lb(539312464,1095780654,1129270608,1129270608,1145390416,1162170451,1229149257,1145652052,1229999406,1229999406,1279869522,1196183362,1380275029,1380275029,1398035017,1279869522,1329808196,1146290176,1380271685,1329808210,1397836846,1363947094,1498634579,1398362969,1481460782,1481460782,1514491438,626672974,1162761029,1162761029,1464156755,542590274))</Histogram>
       <HasOutlier>true</HasOutlier>
     </FieldStatsInfo>
     <FieldStatsInfo>
       <Name>ItemKey2</Name>
-      <Selectivity>0.0043%</Selectivity>
+      <Selectivity>0.0010%</Selectivity>
       <OutlierValue>"_class"</OutlierValue>
-      <OutlierSelectivity>.136128</OutlierSelectivity>
-      <AverageFieldSize>11.28</AverageFieldSize>
-      <Histogram>$lb(.06666666666666666667,0,0,$lb(" ""CALCULATED-MEMBERS"""," %ONGETSUBTITLE"," ASSTATUS"," CLASSLIST"," CURRENTTOKEN"," EJBFLAGS"," FLO"," HPTNODEMEMBERREF"," KEEPLINES"," OK"," QUEUECODE"," SQLFNFUNCTION"," TREEPTR"," _CLASS"," _CLASS"," _TOP"),$lb(1,1,1,2,1,1,1,1,1,1,1,1,1,8,2),$lb(539116353,574832972,625954375,625954375,1095979860,1095979860,1129070931,1279349587,1431458373,1129665106,1162494534,1162494534,1179406080,1179406080,1213224014,1213224014,1262830928,1262830928,1330315264,1330315264,1364542805,1364542805,1397836870,1397836870,1414677829,1414677829,1598245953,0,0,1129070931,1414483968,543118415))</Histogram>
+      <OutlierSelectivity>.160086</OutlierSelectivity>
+      <AverageFieldSize>10.93</AverageFieldSize>
+      <Histogram>$lb(.06666666666666666667,0,0,$lb(" "".TAG"""," %LOCKED"," -:-:""C"""," CHILDREN"," DASHBOARD"," ERROR"," GETDATATABLENAME"," ISERR"," MONTHLIST"," OUTPUTSESSIONTOKEN"," SDCONCEPT"," TEXT"," WRITELINE"," _CLASS"," _CLASS"," _TOP"),$lb(1,1,1,1,1,1,1,1,1,1,1,1,1,8,2),$lb(539110996,573461569,625758019,625758019,758787386,758787386,1128810828,1128810828,1145131848,1145131848,1163022927,1163022927,1195725892,1195725892,1230194002,1230194002,1297043028,1297043028,1330992208,1330992208,1396982607,1396982607,1413830740,1413830740,1465010516,1465010516,1598245953,0,0,1129070931,1414483968,543118415))</Histogram>
       <HasOutlier>true</HasOutlier>
     </FieldStatsInfo>
     <FieldStatsInfo>
       <Name>ItemType</Name>
-      <Selectivity>13.2714%</Selectivity>
+      <Selectivity>13.0494%</Selectivity>
       <OutlierValue>"CLS"</OutlierValue>
-      <OutlierSelectivity>.734571</OutlierSelectivity>
+      <OutlierSelectivity>.739013</OutlierSelectivity>
       <AverageFieldSize>5</AverageFieldSize>
       <Histogram>$lb(.06666666666666666667,0,0,$lb(" CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," INC"," INC"," INC"," INC"),$lb(5,5,5,5,5,5,5,5,5,5,5,1,5,5,5),$lb(541281363,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1129075456,1229865728,0,0,0,0,0,0,541675075))</Histogram>
       <HasOutlier>true</HasOutlier>
     </FieldStatsInfo>
     <FieldStatsInfo>
       <Name>LineNumber</Name>
-      <Selectivity>0.0155%</Selectivity>
-      <OutlierValue>14</OutlierValue>
-      <OutlierSelectivity>.004506</OutlierSelectivity>
-      <AverageFieldSize>3.61</AverageFieldSize>
-      <Histogram>$lb(.06666666666666666667,1,0,$lb(1,30,57,94,141,197,266,359,483,716,1021,1378,1896,2917,5854,18087),$lb(0,0,0,0,1,0,0,0,0,0,1,1,0,0,0),"")</Histogram>
+      <Selectivity>0.0171%</Selectivity>
+      <OutlierValue>25</OutlierValue>
+      <OutlierSelectivity>.004148</OutlierSelectivity>
+      <AverageFieldSize>3.54</AverageFieldSize>
+      <Histogram>$lb(.06666666666666666667,1,0,$lb(1,26,50,81,116,156,205,270,338,439,587,792,1100,1609,2755,13246),$lb(0,0,0,0,1,0,1,0,0,0,0,0,1,0,0),"")</Histogram>
       <HasOutlier>true</HasOutlier>
     </FieldStatsInfo>
     <FieldStatsInfo>
@@ -116806,31 +116194,31 @@ A S X=1
   <Maps>
     <MapStatsInfo>
       <Name>IDKEY</Name>
-      <BlockCount>16364</BlockCount>
+      <BlockCount>47364</BlockCount>
     </MapStatsInfo>
     <MapStatsInfo>
       <Name>PK</Name>
-      <BlockCount>4964</BlockCount>
+      <BlockCount>15324</BlockCount>
     </MapStatsInfo>
     <MapStatsInfo>
       <Name>iCallerCommand</Name>
-      <BlockCount>2464</BlockCount>
+      <BlockCount>7308</BlockCount>
     </MapStatsInfo>
     <MapStatsInfo>
       <Name>iCallerT12</Name>
-      <BlockCount>1456</BlockCount>
+      <BlockCount>4288</BlockCount>
     </MapStatsInfo>
     <MapStatsInfo>
       <Name>iCallerT21</Name>
-      <BlockCount>1728</BlockCount>
+      <BlockCount>5248</BlockCount>
     </MapStatsInfo>
     <MapStatsInfo>
       <Name>iItemT12</Name>
-      <BlockCount>1800</BlockCount>
+      <BlockCount>5256</BlockCount>
     </MapStatsInfo>
     <MapStatsInfo>
       <Name>iItemT21</Name>
-      <BlockCount>1764</BlockCount>
+      <BlockCount>5084</BlockCount>
     </MapStatsInfo>
   </Maps>
   <StorageInfo>
@@ -116951,8 +116339,8 @@ A S X=1
 <Class name="PXW.Xref.LastUpdated">
 <Owner>_PUBLIC</Owner>
 <Super>%Library.Persistent</Super>
-<TimeChanged>67812,67242.424037021</TimeChanged>
-<TimeCreated>67812,67242.424037021</TimeCreated>
+<TimeChanged>67859,71085.897365196</TimeChanged>
+<TimeCreated>67859,71085.897365196</TimeCreated>
 
 <Property name="NameSpace">
 <Type>%String</Type>
@@ -117068,78 +116456,78 @@ A S X=1
 </Storage>
 </Class>
 <TableStatsInfo name="PXW.Xref.LastUpdated.ext">
-  <EndTime>2026-08-30T19:05:08.374672Z</EndTime>
-  <Duration>.19094</Duration>
+  <EndTime>2026-10-20T19:41:55.24818Z</EndTime>
+  <Duration>.152965</Duration>
   <UserName>SuperUser</UserName>
-  <SamplePercent>1</SamplePercent>
-  <ExtentSize>3923</ExtentSize>
+  <SamplePercent>.210956</SamplePercent>
+  <ExtentSize>6243</ExtentSize>
   <Fields>
     <FieldStatsInfo>
       <Name>BuildProcessTime</Name>
-      <Selectivity>0.3698%</Selectivity>
-      <OutlierValue>.02</OutlierValue>
-      <OutlierSelectivity>.060668</OutlierSelectivity>
-      <AverageFieldSize>4.01</AverageFieldSize>
-      <Histogram>$lb(.06666666666666666667,1,0,$lb(0,.02,.03,.04,.06,.08,.1,.13,.17,.21,.26,.33,.43,.61,.98,9.86),$lb(0,2,2,2,2,1,2,2,1,2,1,1,1,1,0),"")</Histogram>
+      <Selectivity>0.3368%</Selectivity>
+      <OutlierValue>.01</OutlierValue>
+      <OutlierSelectivity>.088838</OutlierSelectivity>
+      <AverageFieldSize>4</AverageFieldSize>
+      <Histogram>$lb(.06666666666666666667,1,0,$lb(0,.01,.02,.03,.04,.06,.08,.1,.13,.16,.2,.25,.32,.48,.81,7.2),$lb(0,2,2,2,2,2,1,2,2,1,2,1,1,1,0),"")</Histogram>
       <HasOutlier>true</HasOutlier>
     </FieldStatsInfo>
     <FieldStatsInfo>
       <Name>BuildStatus</Name>
-      <Selectivity>0.0275%</Selectivity>
+      <Selectivity>0.0160%</Selectivity>
       <OutlierValue>1</OutlierValue>
-      <OutlierSelectivity>.996431</OutlierSelectivity>
-      <AverageFieldSize>4.47</AverageFieldSize>
-      <Histogram>$lb(.06666666666666666667,0,0,$lb("1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","0 "_$c(0)_"®"_$c(5,1,4,4,137,19,0)_"ù"_$c(4,1)_"{"_$c(13)_"      ""put"": {"_$c(13)_"        ""summary"": ""Update settings for host or production."","_$c(13)_"        ""tags"": ["_$c(13)_"            ""Prod"),$lb(1,1,1,1,1,1,1,1,1,1,1,1,1,1,0),$lb(822083584,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,822083584,807403694,807403694))</Histogram>
+      <OutlierSelectivity>.996963</OutlierSelectivity>
+      <AverageFieldSize>3.62</AverageFieldSize>
+      <Histogram><![CDATA[$lb(.06666666666666666667,0,0,$lb("1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","0 Ù"_$c(1,4,4,137,19)_"&"_$c(1,13,9)_"Set id=$order($$$xmliDocRef(docid)"_$c(1,1,1,1,1,1,1)_"¦"_$c(1)_"$"_$c(1)_"Build+19^PXW.Xref.Builders.Class.1"_$c(6,1)_"USERz"_$c(1)_"("_$c(1)_"e^Build+19^PXW.Xref.Builder"),$lb(1,1,1,1,1,1,1,1,1,1,1,1,1,1,0),$lb(822083584,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,822083584,807459073,807459073))]]></Histogram>
       <HasOutlier>true</HasOutlier>
     </FieldStatsInfo>
     <FieldStatsInfo>
       <Name>BuiltAt</Name>
-      <Selectivity>0.0998%</Selectivity>
-      <OutlierValue>"2026-08-30 18:59:42"</OutlierValue>
-      <OutlierSelectivity>.006628</OutlierSelectivity>
-      <AverageFieldSize>20.93</AverageFieldSize>
-      <Histogram>$lb(.06666666666666666667,0,1,$lb("-10000000000000000000","2026-08-30 18:44:48","2026-08-30 18:45:17","2026-08-30 18:46:38","2026-08-30 18:48:41","2026-08-30 18:50:40","2026-08-30 18:51:54","2026-08-30 18:53:52","2026-08-30 18:56:01","2026-08-30 18:57:04","2026-08-30 18:58:21","2026-08-30 18:59:31","2026-08-30 19:00:27","2026-08-30 19:02:04","2026-08-30 19:03:28","2026-08-30 19:05:06"),$lb(0,15,15,15,14,15,15,15,15,15,15,12,15,15,15),$lb(758198320,758198320,842019382,876229688,893006135,893006135,909783864,909783864,943338545,876100148,892353076,809120816,825898292,825898292,859452722,859452722,909783089,909783089,926560308,926560308,943338033,943338033,960115505,943338809,960114736,809120311,842674228,842674228,859451960,859451960,893005878,842019382))</Histogram>
+      <Selectivity>0.0833%</Selectivity>
+      <OutlierValue>"2026-10-20 18:41:35"</OutlierValue>
+      <OutlierSelectivity>.008352</OutlierSelectivity>
+      <AverageFieldSize>20.94</AverageFieldSize>
+      <Histogram>$lb(.06666666666666666667,0,1,$lb("-10000000000000000000","2026-10-20 18:17:53","2026-10-20 18:20:21","2026-10-20 18:23:22","2026-10-20 18:24:48","2026-10-20 18:27:54","2026-10-20 18:29:15","2026-10-20 18:30:29","2026-10-20 18:32:29","2026-10-20 18:34:17","2026-10-20 18:36:06","2026-10-20 18:37:37","2026-10-20 18:39:23","2026-10-20 18:40:54","2026-10-20 18:41:45","2026-10-20 18:44:42"),$lb(0,14,15,15,15,15,14,15,15,15,15,15,14,15,15),$lb(758198320,758198320,842019382,825702965,842021426,809120305,859451954,859451954,876229688,876229688,926561588,926561588,960114997,842611249,858798642,809120313,842674745,842674745,876228919,876228919,909783094,909783094,926561079,926561079,960115251,859388466,875575861,809121076,825898037,825898037,876229682,842019382))</Histogram>
       <HasOutlier>true</HasOutlier>
     </FieldStatsInfo>
     <FieldStatsInfo>
       <Name>CheckedAt</Name>
-      <Selectivity>0.0998%</Selectivity>
-      <OutlierValue>"2026-08-30 18:59:42"</OutlierValue>
-      <OutlierSelectivity>.006628</OutlierSelectivity>
+      <Selectivity>0.0830%</Selectivity>
+      <OutlierValue>"2026-10-20 18:41:35"</OutlierValue>
+      <OutlierSelectivity>.008352</OutlierSelectivity>
       <AverageFieldSize>21</AverageFieldSize>
-      <Histogram>$lb(.06666666666666666667,0,0,$lb("2026-08-30 18:43:47","2026-08-30 18:44:49","2026-08-30 18:45:19","2026-08-30 18:46:43","2026-08-30 18:48:46","2026-08-30 18:50:51","2026-08-30 18:51:54","2026-08-30 18:53:57","2026-08-30 18:56:10","2026-08-30 18:57:06","2026-08-30 18:58:23","2026-08-30 18:59:36","2026-08-30 19:00:35","2026-08-30 19:02:04","2026-08-30 19:03:28","2026-08-30 19:05:06"),$lb(15,15,15,15,14,15,15,15,15,15,15,12,15,15,15),$lb(842019382,859452471,876229689,876229689,893006137,893006137,909784115,909784115,943338550,876100148,892353077,809121073,825898292,825898292,859452727,859452727,909783344,909783344,926560310,926560310,943338035,943338035,960115510,943338809,960114736,809120565,842674228,842674228,859451960,859451960,893005878,842019382))</Histogram>
+      <Histogram>$lb(.06666666666666666667,0,0,$lb("2026-10-20 18:16:48","2026-10-20 18:17:57","2026-10-20 18:20:28","2026-10-20 18:23:22","2026-10-20 18:25:22","2026-10-20 18:27:57","2026-10-20 18:29:18","2026-10-20 18:30:30","2026-10-20 18:32:33","2026-10-20 18:34:17","2026-10-20 18:36:06","2026-10-20 18:37:39","2026-10-20 18:39:25","2026-10-20 18:40:55","2026-10-20 18:41:45","2026-10-20 18:44:46"),$lb(15,14,15,15,15,15,14,15,15,15,15,15,14,15,15),$lb(842019382,909784120,926561591,825702965,842021426,809120312,859451954,859451954,893006386,893006386,926561591,926561591,960115000,842611249,858798643,809120560,842674995,842674995,876228919,876228919,909783094,909783094,926561081,926561081,960115253,859388466,875575861,809121077,825898037,825898037,876229686,842019382))</Histogram>
       <HasOutlier>true</HasOutlier>
     </FieldStatsInfo>
     <FieldStatsInfo>
       <Name>ID</Name>
       <Selectivity>1</Selectivity>
-      <AverageFieldSize>3.93</AverageFieldSize>
-      <Histogram>$lb(.06666666666666666667,1,0,$lb(1,262,524,786,1048,1310,1572,1834,2096,2357,2618,2879,3140,3401,3662,3923),$lb(0,0,0,0,1,1,1,0,1,1,1,0,1,1,1),"")</Histogram>
+      <AverageFieldSize>3.96</AverageFieldSize>
+      <Histogram>$lb(.06666666666666666667,1,0,$lb(2,421,881,1296,1686,2185,2563,3008,3487,3881,4250,4620,5075,5446,5836,6195),$lb(0,0,0,1,0,1,0,1,1,0,1,0,1,1,0),"")</Histogram>
       <HasOutlier>false</HasOutlier>
     </FieldStatsInfo>
     <FieldStatsInfo>
       <Name>ItemKey1</Name>
-      <Selectivity>0.0255%</Selectivity>
-      <AverageFieldSize>28.49</AverageFieldSize>
-      <Histogram>$lb(.06666666666666666667,0,0,$lb(" %API.ATELIER"," %COMPILER.UDL.TEXTSERVICES"," %CPT.JS.GENERATE.GEN.CALLEXPRESSION"," %CSP.UI.PORTAL.BACKGROUNDTASKLIST"," %CSP.UI.PORTAL.X509CREDENTIAL"," %DEEPSEE.EXTENSIONS.MODELLING.READSEQUENCE"," %DEEPSEE.PMML.DEFINITION.TARGETS"," %DEEPSEE.UI.TERMLISTMANAGER"," %INSTALLER.IFNOTDEF"," %LIBRARY.COLLATION"," %NET.ABSTRACTMQ"," %SOAP.RM.USESSEQUENCESSL"," %SYS.AUDIT"," %TRACE.PROVIDER"," %XML.XPATH.RESULTHANDLER"," PXW.XREF.QUERIES"),$lb(2,3,3,16,2,10,10,2,2,2,2,3,2,2,1),$lb(539312464,1095780654,1129270608,1330466889,1347694154,1347694154,1397763669,1111573323,1479880761,1129533486,1145390416,1163416645,1347243340,1347243340,1430859348,1145390416,1229869908,1229869908,1279869522,1279869522,1313166382,1313166382,1397702992,1329680430,1498623553,1398362926,1414676803,1414676803,1481460782,626543948,1347966766,542136407))</Histogram>
+      <Selectivity>0.0160%</Selectivity>
+      <AverageFieldSize>29.31</AverageFieldSize>
+      <Histogram>$lb(.06666666666666666667,0,0,$lb(" %API.ATELIER.V2"," %CPT.HPT.COS.COMMAND.NCOMMANDDO"," %CSP.UI.PORTAL.DATABASE"," %DEEPSEE.EXTENSIONS.STAT.ABSTRACTCONTINUOUSDISTRIBUTION"," %DEEPSEE.SQL.PARSER"," %IKNOW.FILTERS.CONTAINSRELATEDENTITIESFILTER"," %INSTALLER.ROUTINEMAPPING"," %LIBRARY.STORAGESQLMAPROWIDSPECDEFINITION"," %SOAP.SECURITY.WSSE200306.SECURITYTOKENREFERENCE"," %TSQL.SYS.COLUMNS"," %ZEN.COMPONENT.MENUSEPARATOR"," %ZEN.SVGCOMPONENT.RADIALNAVIGATOR"," ENS.UTIL.HTML.PARSER"," ENSLIB.MSGROUTER.VDOCRULEASSISTCOMPATIBLE"," ENSLIB.XML.FILESERVICE"," PXW.XREF.LASTUPDATEDDETAILS"),$lb(2,3,2,10,2,3,2,2,2,2,6,1,4,8,1),$lb(539312464,1095780654,1129337902,1347694152,1397763669,1129533486,1145390416,1163416645,1397836846,1145390416,1229672015,1263423319,1314083905,1229869908,1279869522,1279869522,1397702992,1397702992,1414746444,1414746444,1514491438,1129270608,1398163267,626672974,1162761006,777344073,1279869486,1297303378,1481460782,1162761036,1347966766,542136407))</Histogram>
       <HasOutlier>false</HasOutlier>
     </FieldStatsInfo>
     <FieldStatsInfo>
       <Name>ItemType</Name>
-      <Selectivity>0.1529%</Selectivity>
+      <Selectivity>0.0883%</Selectivity>
       <OutlierValue>"CLS"</OutlierValue>
-      <OutlierSelectivity>.998471</OutlierSelectivity>
+      <OutlierSelectivity>.998234</OutlierSelectivity>
       <AverageFieldSize>5</AverageFieldSize>
-      <Histogram>$lb(.06666666666666666667,0,0,$lb(" CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," MAC"),$lb(5,5,5,5,5,5,5,5,5,5,5,5,5,5,1),$lb(541281363,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1129075456,1296122624,541933891))</Histogram>
+      <Histogram>$lb(.06666666666666666667,0,0,$lb(" CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"," CLS"),$lb(5,5,5,5,5,5,5,5,5,5,5,5,5,5,5),$lb(541281363,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,541281363))</Histogram>
       <HasOutlier>true</HasOutlier>
     </FieldStatsInfo>
     <FieldStatsInfo>
       <Name>LastUpdate</Name>
-      <Selectivity>1.5348%</Selectivity>
+      <Selectivity>0.3199%</Selectivity>
       <OutlierValue>"2026-03-27 13:57:53"</OutlierValue>
-      <OutlierSelectivity>.263319</OutlierSelectivity>
-      <AverageFieldSize>20.95</AverageFieldSize>
-      <Histogram>$lb(.06666666666666666667,0,1,$lb("-10000000000000000000","2026-03-27 13:57:53","2026-03-27 13:57:53","2026-03-27 13:57:53","2026-03-27 13:57:53","2026-03-27 13:57:54","2026-03-27 13:57:54","2026-03-27 13:57:54","2026-03-27 13:57:55","2026-03-27 13:57:55","2026-03-27 13:57:55","2026-03-27 13:57:55","2026-03-27 13:57:56","2026-03-27 13:57:56","2026-08-26 04:57:32","2026-08-30 18:43:14"),$lb(0,20,20,20,18,20,20,18,20,20,20,18,20,6,8),$lb(758198320,758198320,842019382,0,0,0,0,0,0,855638016,872415232,0,0,0,0,872415232,889192448,0,0,0,0,0,0,889192448,905969664,0,0,858599991,942486070,842407984,858791985,842019382))</Histogram>
+      <OutlierSelectivity>.154138</OutlierSelectivity>
+      <AverageFieldSize>20.94</AverageFieldSize>
+      <Histogram>$lb(.06666666666666666667,0,1,$lb("-10000000000000000000","2023-07-24 15:22:36","2026-03-27 13:57:53","2026-03-27 13:57:53","2026-03-27 13:57:54","2026-03-27 13:57:54","2026-03-27 13:57:55","2026-03-27 13:57:55","2026-03-27 13:57:56","2026-03-27 13:57:56","2026-03-27 13:57:57","2026-03-27 14:28:04","2026-03-27 14:28:26","2026-03-27 14:28:48","2026-03-27 14:32:46","2026-10-16 19:44:45"),$lb(0,3,20,18,20,18,20,18,20,18,12,17,17,14,5),$lb(758198320,758198320,842019379,858599479,908931123,0,0,855638016,872415232,0,0,872415232,889192448,0,0,889192448,905969664,0,0,905969664,922746880,859452727,876229176,808714240,842399744,842399744,876085248,842545716,858929716,808660274,825240881,842019382))</Histogram>
       <HasOutlier>true</HasOutlier>
     </FieldStatsInfo>
     <FieldStatsInfo>
@@ -117164,19 +116552,19 @@ A S X=1
   <Maps>
     <MapStatsInfo>
       <Name>IDKEY</Name>
-      <BlockCount>272</BlockCount>
+      <BlockCount>432</BlockCount>
     </MapStatsInfo>
     <MapStatsInfo>
       <Name>PK</Name>
-      <BlockCount>48</BlockCount>
+      <BlockCount>80</BlockCount>
     </MapStatsInfo>
     <MapStatsInfo>
       <Name>iCheckedAtNS</Name>
-      <BlockCount>36</BlockCount>
+      <BlockCount>52</BlockCount>
     </MapStatsInfo>
     <MapStatsInfo>
       <Name>iLastUpdate</Name>
-      <BlockCount>24</BlockCount>
+      <BlockCount>40</BlockCount>
     </MapStatsInfo>
   </Maps>
   <StorageInfo>
@@ -117262,8 +116650,8 @@ A S X=1
 <Class name="PXW.Xref.LastUpdatedDetails">
 <ClassType>view</ClassType>
 <Owner>_PUBLIC</Owner>
-<TimeChanged>67846,68756.027571162</TimeChanged>
-<TimeCreated>67812,67242.452457376</TimeCreated>
+<TimeChanged>67859,71085.91844787</TimeChanged>
+<TimeCreated>67859,71085.91844787</TimeCreated>
 <ViewQuery> 
 	--- This might not be the most efficient query for this job, but good for testing parsing of sql
 	WITH xcount AS (
@@ -117288,6 +116676,7 @@ A S X=1
 		pxw_xref.lastupdateddetails_myformat(atel."Namespace") as formattedNs,
 		xd.XrefCount as CallsCount,
 		yd.XrefCount as UsedCount,
+		null as null_thing,
 		(
 			select count(*)+xd.XrefCount+yd.XrefCount 
 				from  pxw_xref.data as xx 
@@ -117319,8 +116708,8 @@ A S X=1
 <Class name="PXW.Xref.Queries">
 <IncludeCode>PXW.Debuggers.Macros</IncludeCode>
 <Owner>_PUBLIC</Owner>
-<TimeChanged>67812,67242.481082487</TimeChanged>
-<TimeCreated>67812,67242.481082487</TimeCreated>
+<TimeChanged>67859,71085.943868914</TimeChanged>
+<TimeCreated>67859,71085.943868914</TimeCreated>
 
 <Query name="Get">
 <Description><![CDATA[
@@ -117375,7 +116764,7 @@ Flags: string containing the following flags:
 	--IF CalledByKey2'=""
 		--IF CalledByKey2["," 
 			AND CalledByKey2 %INLIST $LISTFROMSTRING(:CalledByKey2)
-		--ELSEIF CalledByKey1["*"
+		--ELSEIF CalledByKey2["*"
 			AND CalledByKey2 LIKE replace(replace(:CalledByKey2,'%','\%'),'*','%') ESCAPE '\'
 		--ELSE
 			AND CalledByKey2=:CalledByKey2
@@ -117640,224 +117029,113 @@ gettreerecurse(NameSpace,ItemKey1,ItemKey2)
 </Class>
 
 
-<Class name="PXW.samples.element">
-<Super>PXW.DEV.Element</Super>
-<TimeChanged>67822,62018.39014954</TimeChanged>
-<TimeCreated>67822,61374.536675129</TimeCreated>
+<Class name="PXW.samples.InstallTools">
+<Super>PXW.Tools.Page</Super>
+<TimeChanged>67865,68408.149969847</TimeChanged>
+<TimeCreated>67865,66573.784121041</TimeCreated>
 
-<Method name="%DispatchGetProperty">
+<Parameter name="ToolType">
+<Default>Internal</Default>
+</Parameter>
+
+<Parameter name="ToolName">
 <Description>
-Is used to get the value of an unknown property.</Description>
-<FormalSpec>Property:%String</FormalSpec>
-<ServerOnly>1</ServerOnly>
+The name of the tool on the main home page (index).
+If the tool does not have a name then it does not appear on the index page by default.</Description>
+<Default>Install Tools</Default>
+</Parameter>
+
+<Method name="HREFFrom">
+<Description>
+This should output some variables, getting the data from %request.
+It should match HREFTo.</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>*Regenerate:%Boolean,*Export:%Boolean</FormalSpec>
 <Implementation><![CDATA[
-    Set uType=$$$UPPER(Property)
-    set found=""
-	For i=1:1:+$GET(%PXWparts(+$THIS)) {
-        Set ele=$GET(%PXWparts(+$THIS,i))
-        If ele.IsElement,$$$UPPER(ele.type)=uType {
-            Set found=ele
-            Quit ; loop
-        }
+	s Regenerate=%request.Get("R")
+    s Export=%request.Get("E")
+]]></Implementation>
+</Method>
+
+<UDLText name="T">
+<Content><![CDATA[
+// 
+
+]]></Content>
+</UDLText>
+
+<Method name="HREFTo">
+<Description><![CDATA[
+<p>
+Use This as a template for the comments of all the override methods.
+</p>
+<dl>
+    <dt>p1</dt>
+    <dd></dd>
+</dl>]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>Regenerate:%Boolean,Export:%Boolean</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	s href=##super()
+    s sep="&"
+    s:$G(Regenerate)'="" href=href_sep_"R="_Regenerate
+    s:$G(Export)'="" href=href_sep_"E="_Export
+    q href
+]]></Implementation>
+</Method>
+
+<Method name="WriteMainBody">
+<Description>
+use scratch to get anything you want to pass to the nav.</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&scratch]]></FormalSpec>
+<Implementation><![CDATA[
+    d ..HREFFrom(.regenerate,.export)
+    if regenerate {
+        w "Regenerating"
+        w "<pre>"
+        d ##class(PXW.DEV.Dictionary.Install).GenAll(1)
+        w "</pre>"
     }
-    q found
+    if export {
+        w "Exporting"
+        w "<pre>"
+        s file=##class(PXW.DEV.Dictionary.Install).ExportAll()
+        w "</pre>"
+        w "<a href="""_..EscapeURL($p(file,"/",*))_""">"_..EscapeHTML(file)_"</a>"
+    }
 ]]></Implementation>
 </Method>
 
-<Method name="test">
-<FormalSpec><![CDATA[&item]]></FormalSpec>
+<Method name="WriteNav">
+<Description>
+Output 1 Anchor tag for each option in the navigation. 
+Use the scratch variable for anything you want to get from BODY.</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&scratch]]></FormalSpec>
 <Implementation><![CDATA[
-    s item=##class(PXW.DEV.Atom).%New()
-    q $$$OK
-]]></Implementation>
-</Method>
-
-<Method name="test2">
-<Implementation><![CDATA[
-
-    s item=##class(PXW.DEV.Atom).%New()
-    d ..test(.item)
-    q $$$OK
+	w "<a href="""_..HREFTo(1)_""">Regenerate GEN code</a>"
+	w "<a href="""_..HREFTo(0,1)_""">Export All</a>"
 ]]></Implementation>
 </Method>
 </Class>
 
 
-<Class name="PXW.samples.parsetest">
+<Class name="PXW.samples.test">
 <Super>%RegisteredObject</Super>
-<TimeChanged>67824,83073.474379165</TimeChanged>
-<TimeCreated>67818,29801.293810289</TimeCreated>
+<TimeChanged>67864,62086.407973909</TimeChanged>
+<TimeCreated>67864,61739.884124842</TimeCreated>
 
-<UDLText name="T">
-<Content><![CDATA[
-/* Do ^%SYS.MONLBL ; for starting the monitor via a menu
-
-; or do it in a command
-; default metrics will do
-Set status=##class(%Monitor.System.LineByLine).Start($lb("PXW.DEV.BNF.GEN.COS*","PXW.DEV.BNF.Run.COS*"),"",$lb($J))
-d ##class(PXW.samples.parsetest).go("%Library.RegisteredObject")
-
-USER>Do ^%SYS.MONLBL
-
-Line-by-Line Monitor
-
-1.) Stop Monitor
-2.) Pause Monitor
-3.) Clear Counters
-4.) Report - Detail
-5.) Report - Summary
-6.) Report - Delimited (CSV) Output
-7.) Report - Procedure Level
-
-Enter the number of your choice: 6
-
-The following routines have been executed during the run,
-and have detail statistics available for them.
-1
-outine number (*=All)? * - All
-
-FileName: /home/irisowner/dev/debug/MON.txt
-
-*/
-]]></Content>
-</UDLText>
-
-<Method name="go">
-<Description>
-https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=GCM_monlbl
-
-d ##class(PXW.samples.parsetest).go("PXW.DEV.BNF.GEN.ClassDefinition")</Description>
-<ClassMethod>1</ClassMethod>
-<FormalSpec>ClassName:%String</FormalSpec>
-<Implementation><![CDATA[
-	New %path
-	Kill %pxw1
-	#dim ele,element as PXW.DEV.Element
-	
-    Set cs=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace("LOCAL_USER")
-    set sc=cs.GetClassStudioText(ClassName,.text,.linesOfCode,.timestamp)
-
-    if 'sc d $system.OBJ.DisplayError(sc) q
-
-    Set x=##class(PXW.DEV.BNF.Run.ClassDefinition).%New()
-    Set x.stream=##class(PXW.DEV.InputStream).NewString(text)
-
-    Set sc=##class(%Monitor.System.LineByLine).Start($lb("PXW.DEV*"),"",$lb($J)) d $system.Status.DisplayError(sc)
- 
-    s pzh=$zh,ptot=0
-    Set element=##class(PXW.DEV.Element).%New()
-    While x.cheese(element) {
-        Set element=##class(PXW.DEV.Element).%New()
-    }
-    s ptot=ptot+($zh-pzh)
-    zw ptot
-
-    d ..Print()
-    d ##class(%Monitor.System.LineByLine).Stop()
-]]></Implementation>
-</Method>
-
-<UDLText name="T">
-<Content><![CDATA[
-/*
-Set sc=##class(%Monitor.System.LineByLine).Start($lb("PXW.DEV.Ele*"),"",$lb($J)) d $system.Status.DisplayError(sc)
-d ##class(PXW.samples.parsetest).test()
-Do ^%SYS.MONLBL
-FileName: /home/irisowner/dev/debug/MON.csv
-
-*/
-]]></Content>
-</UDLText>
-
-<Method name="test">
+<Method name="t">
 <ClassMethod>1</ClassMethod>
 <Implementation><![CDATA[
-    /*#define zero()    s z=1 ; 
-    #define mac(%a,%b) ; %a, %b
 
-    w $$a()
-    w $$a(1)
-    w $$a(1,2)
-    w $a(99),$a(88,99)
+    &sql(SELECT * from pxw_xref.data where itemkey1='sss')
 
-    $$$zero()
-    $$$mac(1,2)
+    &sql(SELECT * from pxw_xref.data where itemkey1=(select 'short sub'))
 
-    w $classmethod("class","method")
-    w $classmethod("class","method",p1)
-    w $classmethod("class","method",p1,p2)
-    */
-    s json={}
-    s json={"a":1,
-            "b":2,
-            "c":{"c1":31}}
-
-    s c=$$IsA^%occLibrary(runtimetype,"%Library.DynamicAbstractObject",,.normcache)
-
-    s m=1000
-    s var=""
-    Set sc=##class(%Monitor.System.LineByLine).Start($lb("PXW.DEV*"),"",$lb($J)) d $system.Status.DisplayError(sc)
-    try {
-        f i=1:1:m {
-            s var=##class(PXW.DEV.Element).%New() ; 1
-            f j=1:1:10 {
-                s sub=##class(PXW.DEV.Element).%New()
-                d var.AddPart(sub)
-            }
-            s count=var.partsCount()
-        }
-
-        d ..Print()
-    } catch e {
-        d $system.Status.DisplayError(e.AsStatus())
-    }
-    d ##class(%Monitor.System.LineByLine).Stop()
-]]></Implementation>
-</Method>
-
-<Method name="Print">
-<Internal>1</Internal>
-<ClassMethod>1</ClassMethod>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
-    s oldio=$io
-    s metrics=##class(%Monitor.System.LineByLine).GetMetrics(),cnt=$l(metrics,",")
-
-    set dt=$TRANSLATE($ZDATETIME($HOROLOG,3),":- ","")
-    Set file="/home/irisowner/dev/debug/MON_"_dt_".csv"
-    o file:"WN"
-    u file w "LineByLine,Rtn"
-    s sep="," 
-    f i=1:1:cnt {
-        s met=$p(metrics,",",i)
-        u file
-        w sep_met
-        s sep=","
-    }
-    u file w ",Method,Code"
-
-
-    s rcount=##class(%Monitor.System.LineByLine).GetRoutineCount()
-    f ri=1:1:rcount {
-        s rtn=##class(%Monitor.System.LineByLine).GetRoutineName(ri)
-        u 0 w !,rtn
-        s rset=##class(%ResultSet).%New("%Monitor.System.LineByLine:Result")
-        d rset.Execute(rtn)
-        s method=""
-        f l=1:1 s more=rset.Next() q:'more  d
-        . s x=rset.GetData(1)
-        . u file w !,l,",",rtn,"," f i=1:1:cnt w $li(x,i),","
-        . s lbl="+"_l_"^"_rtn
-        . s code=$t(@lbl)
-        . s code=$replace(code,"""","""""")
-        . i code["methodimpl {" s method=$p(code,"(",1)
-        . u file w method_","_""""_code_""""
-        k rset
-    }
-    c file
-    u oldio
-
-    q $$$OK
+    &sql(SELECT * from pxw_xref.data where itemkey1=(select 'this is a long','query that returns','a few columns','and should wrap','and be indented','hello','world'))
 ]]></Implementation>
 </Method>
 </Class>
