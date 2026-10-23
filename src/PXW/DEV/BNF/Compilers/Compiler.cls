@@ -24,17 +24,20 @@ Method %OnNew(inputText As %String) As %Status
 
 // d ##class(PXW.DEV.BNF.Compiler).goload("PXW.DEV.BNF.DEF.COS","PXW.DEV.BNF.GEN.COSauto")
 
-ClassMethod goload(DEFClass As %String = "", DestinationClass As %String, forceVersion As %String = "") As %Status
+ClassMethod goload(DEFClass As %String = "", DestinationClass As %String, forceVersion As %String = "", forceEquals as %String="") As %Status
 {
     #dim compiler as PXW.DEV.BNF.Compilers.Compiler
     #dim parser as PXW.DEV.BNF.Compilers.BNF1safe
 
-    Set input=..load(DEFClass_"||"_"file",.arr,.version)
+    Set input=..load(DEFClass_"||"_"file",.arr,.version,.equals)
     If forceVersion'="" Set version=forceVersion
+    If forceEquals'="" set equals=forceEquals
+    w "Using version="_version_", equals="_forceEquals,!
     If version=3 {
         ;Set compiler=##class(PXW.DEV.BNF.Compilers.Compiler3).%New(input)
      } ElseIf version=2 {
         Set compiler=##class(PXW.DEV.BNF.Compilers.Compiler2).%New(input)
+        set:equals'="" compiler.parser.EqualsChars=equals
     } Else {
         Set compiler=##class(PXW.DEV.BNF.Compilers.Compiler1).%New(input)
         ; /*************************************************** TEMP CODE ***************************/
@@ -48,8 +51,12 @@ ClassMethod goload(DEFClass As %String = "", DestinationClass As %String, forceV
     Set elementtype=$PARAMETER(compiler.Loader,"SubElementType")
     Set KeywordPattern=$PARAMETER(compiler.Loader,"KeywordPattern")
     Set parser=compiler.parser
+    s zh=$zh
     If parser.File(subElement,.fileElement) {
+        w !,"Parse time: "_($zh-zh)
+        s zh=$zh
         Set sc=compiler.compile(fileElement,DestinationClass,elementtype,KeywordPattern) 
+        w !,"Class build time: "_($zh-zh)
         If $$$ISOK(sc) {
             Set sc=$SYSTEM.OBJ.Compile(DestinationClass,"ckb")
         } Else {
@@ -97,9 +104,7 @@ Method compile(Element As PXW.DEV.Element, ToClassName As %String, elementtype A
         Quit:pkey=""
 
         If def.type="Definition" {
-            ;w !!
-            ;w def.ToString(" ")
-            ;w !
+            ;w !!,def.ToString(" "),!
             Do ..compileDefinition(def)
         } Else {
             ;w !,"**** UNKNOWN ******"
@@ -117,7 +122,9 @@ Method compile(Element As PXW.DEV.Element, ToClassName As %String, elementtype A
     Set parameter.parent=class
     Set parameter.Default=words
    
+    s zh=$zh
     Set sc=class.%Save()
+    ;w !,"Save time: "_($zh-zh)
     Quit sc
 }
 
@@ -812,7 +819,7 @@ Method methodName(text As %String) As %String
     Quit s1
 }
 
-ClassMethod load(XDATAname As %String, Output array As %String, ByRef version As %String) As %String
+ClassMethod load(XDATAname As %String, Output array As %String, ByRef version As %String,byref equals as %String) As %String
 {
     #define strip(%x) $ZSTRIP($tr(%x,$c(9,160)," "),"<>W")
     Set xdata=##class(%Dictionary.XDataDefinition).%OpenId(XDATAname)
@@ -820,8 +827,10 @@ ClassMethod load(XDATAname As %String, Output array As %String, ByRef version As
     Set alltext=xdata.Data.Read()
     Set cdata=$PIECE($PIECE(alltext,"<![CDATA[",2),"]]>",1)
     Set bnf=$PIECE($PIECE(alltext,"<bnf",2),">",1)
-    Set version=$PIECE(bnf,"version=",2)
+    Set version=$PIECE($PIECE(bnf,"version=",2)," ",1)
     Set version=$TRANSLATE(version,"'""","")
+    Set equals=$PIECE($PIECE(bnf,"equals=",2)," ",1)
+    Set equals=$TRANSLATE(equals,"'""","")
     Quit cdata
 }
 

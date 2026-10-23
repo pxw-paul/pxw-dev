@@ -11,30 +11,40 @@
 Class PXW.DEV.BNF.Compilers.BNF1safe Extends PXW.DEV.BNF.super
 {
 
+Parameter KeywordPattern = "1.A";
+
+Parameter Keywords;
+
+
 /* TWEAKED METHODS */
-/// Set to CDEF, COS
-Property commentMode As %String [ InitialExpression = "BNF" ];
-
-/// Its a call to something else if we are at the START of the line
-Method Call(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+///  call ::= IDENTIFIER
+/// summary=C
+Method Call(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-    $$$DEBUGMethodBegin
+	$$$DEBUGMethodBegin
     Do:..needsWScheck ..skipWhiteSpaceAndComments()
-    
-    ; labels only defined in first column (0)
-    $$$DEBUG("Call col="_..stream.col)
-
     ; at the start so NOT a call to something else, this is probably a definition
 	If ..stream.col=0 Quit 0
 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	Set done=0 ; method start
-	If ..Identifier(subElement,.addedElement)  {
-		Set done=1 ; end compileRules
+	Set pos=..stream.pos
+	If $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		Set done=$ISOBJECT(subElement)
+	} Else {
+		If ..Identifier(subElement,.addedElement)  {
+			Set done=1 ; end compileRules
+		}
+
 	}
 	If done {
-		$$$BNFCOMMIT(subElement,ParentElement)
+		$$$BNFMEMOSET(pos,subElement)
+	} Else {
+	}
+	If done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
 		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
@@ -44,134 +54,158 @@ Method Call(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 	Quit ok
 }
 
-Method Keyword(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
+///  KEYWORD ::= 'NEEDS STRING'
+/// summary=P
+Method Keyword(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-    #dim o as PXW.DEV.Atom
-
-    $$$DEBUGMethodBegin
-    Do:..needsWScheck ..skipWhiteSpaceAndComments()
-   
-	;$$$BNFPATH
-	;;$$$DEBUG("%path="_%path)
-    Set ok=1
-    Set openquote=..peek(1)
-    If openquote'="""",openquote'="'" {
-        Set ok=0
-    }
-
-    If ok {
-        $$$BNFSTART(subElement)
-
-        Set start=..next()
-        Set n=""
-        Set instring=1
-        While '..eof() && instring {
-            Set chs=..peek(2)
-            Set ch=$EXTRACT(chs,1),ch2=$EXTRACT(chs,2)
-            ; embedded quotes or end of string?
-            ; I am not sure how these get encoded so sticking with COS "" for quotes in quotes
-            If ch=openquote {
-                If ch2=openquote {
-                    Set n=n_..next()_..next()
-                } Else {
-                    Set instring=0
-                    Set end=..next()
-                }
-            } Else {
-                Set n=n_..next()
-            }
-        }
-        Set o=..newAtom("String",n)
-        Set o.start=start,o.end=end
-        Do subElement.AddPart(o)
-        $$$BNFCOMMIT(subElement,ParentElement)
-    }
-    $$$DEBUGMethodEnd
-    Quit ok
-}
-
-Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
-{
-    Do:..needsWScheck ..skipWhiteSpaceAndComments()
-
-    Set value=""
-    Set ch=..peek(1)
-    ; must start with a letter
-    If ch?1A Set value=..next()
-    
-    If value="" {
-        $$$DEBUG("checking identifier, ok=0")
-        Quit 0
-    }
-    Set ch=..peek(1)
-    While (ch?1A) || (ch?1N) || (ch="_") || (ch="-")  {
-        Set value=value_..next()
-		;zw value,..stream.pos
-        Set ch=..peek(1)
-    }
-    
-    Set atom=..newAtom(ParentElement.type,value)
-    Do ParentElement.AddPart(atom)
-
-    Quit 1
-}
-
-/// EQUALS ::= 'NEEDS EQUALS'
-///  summary=S
-///  type=group
-///  not=0
-Method Equals(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
-{
-	If ..isStringSingle("::=",.value)=0 Quit 0 ; q1 
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	Set done=0 ; t1 
-	; type=group, check=if, skip=1, skipall=1
-	Set getVal=..nextNotEOL($LENGTH(value)),atom=..newAtom(..#keywordAtomType,getVal) ; k1 
-	Do subElement.AddPart(atom) ; t3 
-	If 1	 {
-		Set done=1 ; u1 
-
-	}
-	If done {
-		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ok=1
-	} Else {
-		$$$BNFROLLBACK(subElement)
-		Set ok=0
-	}
-	$$$DEBUGMethodEnd
-	Quit ok
-}
-
-/// definition ::= IDENTIFIER EQUALS rules
-///  summary=F&F&F
-///  type=group
-///  not=0
-Method Definition(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Library.Boolean
-{
-	; rules summary C&C&C
+	Do:..needsWScheck ..skipWhiteSpaceAndComments()
+    Set quote=..peek(1)
+    If quote'="""",quote'="'" Quit 0
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	Set done=0 ; method start
-	If ..Identifier(subElement,.addedElement)  {
-		If ..Equals(subElement,.addedElement)  {
-			If ..Rules(subElement,.addedElement)  {
-				Set done=1 ; end compileRules
-			}
-		}
+	Set pos=..stream.pos
+	If $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		Set done=$ISOBJECT(subElement)
+	} Else {
+        Set start=..next(1)
+        Set next50=..stream.PeekToEol()
+        Set pos=1
+        While $EXTRACT(next50,pos,pos)'=start { Set pos=pos+1 }
+        Set n=..next(pos-1)
+        Set end=..next(1)
+        Set atom=..newAtom("String",n)
+        Set atom.start=start,atom.end=end
+        Do subElement.AddPart(atom)
+        Set done=1
 	}
 	If done {
-		$$$BNFCOMMIT(subElement,ParentElement)
+		$$$BNFMEMOSET(pos,subElement)
+	} Else {
+	}
+	If done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
 		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
 		Set ok=0 ; normal rollback
 	}
+	$$$DEBUGMethodEnd
+	Quit ok
+}
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+///  IDENTIFIER ::= 'NEEDS IDENTIFIER'
+/// summary=P
+Method Identifier(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	Set done=0 ; method start
+	Set pos=..stream.pos
+	If $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		Set done=$ISOBJECT(subElement)
+	} Else {
+		Do:..needsWScheck ..skipWhiteSpaceAndComments()
+        Set next50=..stream.PeekToEol()
+        Set pos=1
+        ; must start with a letter
+        If $EXTRACT(next50,pos,pos)?1A Set pos=pos+1
+        If pos>1 {
+            While ($EXTRACT(next50,pos,pos)?1AN) || ($EXTRACT(next50,pos,pos)="_") || ($EXTRACT(next50,pos,pos)="-") {
+                Set pos=pos+1
+            }
+            Set atom=..newAtom(ParentElement.type,..nextNotEOL(pos-1))
+			Do subElement.AddPart(atom)
+			Set done=1
+        }
+	}
+	If done {
+		$$$BNFMEMOSET(pos,subElement)
+	} Else {
+	}
+	If done {
+		$$$BNFCOMMITCOPY(subElement,ParentElement) ; 6
+		Set ok=1
+	} Else {
+		$$$BNFROLLBACK(subElement)
+		Set ok=0 ; normal rollback
+	}
+	$$$DEBUGMethodEnd
+	Quit ok
+}
+
+
+
+///  EQUALS ::= 'NEEDS EQUALS'
+/// summary=P
+Method Equals(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	Set equals="::="
+	If ..isStringSingle(equals,.value)=0 Quit 0 ;
+
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	Set done=0 ; method start
+	Set pos=..stream.pos
+	If $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		Set done=$ISOBJECT(subElement)
+	} Else {
+		If ..addPunctuation(subElement,equals)  {
+			Set done=1 ; end compileRules
+		}
+
+	}
+	If done {
+		$$$BNFMEMOSET(pos,subElement)
+	} Else {
+	}
+	If done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
+		Set ok=1
+	} Else {
+		$$$BNFROLLBACK(subElement)
+		Set ok=0 ; normal rollback
+	}
+	$$$DEBUGMethodEnd
+	Quit ok
+}
+
+///  definition ::= IDENTIFIER EQUALS rules
+/// summary=C&C&C
+Method Definition(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	Set done=0 ; method start
+	Set pos=..stream.pos
+	If $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		Set done=$ISOBJECT(subElement)
+	} Else {
+		If ..Identifier(subElement,.addedElement)  && ..Equals(subElement,.addedElement)  && ..Rules(subElement,.addedElement)  {
+			Set done=1 ; end compileRules
+		}
+
+	}
+	If done {
+		$$$BNFMEMOSET(pos,subElement)
+	} Else {
+	}
+	If done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
+		Set ok=1
+	} Else {
+		$$$BNFROLLBACK(subElement)
+		Set ok=0 ; normal rollback
+	}
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     If ok=0 {
         Set ok=..recover(ParentElement,.recSub,"",$LISTBUILD($CHAR(13)))
     }
@@ -179,7 +213,6 @@ Method Definition(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$DEBUGMethodEnd
 	Quit ok
 }
-
 /// Skip over the next set of comments, return 1 if something was done or 0
 Method skipComments(ch10 As %String) As %Boolean
 {
@@ -190,24 +223,39 @@ Method skipComments(ch10 As %String) As %Boolean
     Quit 0
 }
 
+
+/*----------------------------------------------------------*/
 /* 
     
     DIRECTLY COPIED METHODS 
 
 */
+
+
 ///  file ::= definition*
+/// summary=(C)*
 Method File(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary (?4?)*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	Set done=0 ; method start
-	If ..File1RepZero(subElement,.addedElement)  {
-		Set done=1 ; end compileRules
+	Set pos=..stream.pos
+	If $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		Set done=$ISOBJECT(subElement)
+	} Else {
+		If ..File1RepZero(subElement,.addedElement)  {
+			Set done=1 ; end compileRules
+		}
+
 	}
 	If done {
-		$$$BNFCOMMIT(subElement,ParentElement)
+		$$$BNFMEMOSET(pos,subElement)
+	} Else {
+	}
+	If done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
 		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
@@ -216,42 +264,50 @@ Method File(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 	$$$DEBUGMethodEnd
 	Quit ok
 }
+
 
 ///  definition*
-Method File1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method File1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4?
 	Set subElement=ParentElement
-	Set done=0 ; method start
+	; method start
 	While ..Definition(subElement,.addedElement)  {
-		Set done=1
+		;
 	}
-	If done {
-		Set ok=1
-	} Else {
-		Set ok=1 /* nothing found is ok in RZ */
-	}
+	Set ok=1
 	Quit ok
 }
+
+
+
+
+
+
 
 ///  look_ahead ::= '&' look_ahead_rule
-/// summary values:&
+/// summary=P&C
 Method LookAhead(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&C
-	; first rule summary P
-	If '(..isStringSingle("&",.value)) { Quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	Set done=0 ; method start
-	If ..addPunctuation(subElement,"&")  {
-		If ..LookAheadRule(subElement,.addedElement)  {
+	Set pos=..stream.pos
+	If $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		Set done=$ISOBJECT(subElement)
+	} Else {
+		If ..addPunctuation(subElement,"&")  && ..LookAheadRule(subElement,.addedElement)  {
 			Set done=1 ; end compileRules
 		}
+
 	}
 	If done {
-		$$$BNFCOMMIT(subElement,ParentElement)
+		$$$BNFMEMOSET(pos,subElement)
+	} Else {
+	}
+	If done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
 		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
@@ -260,24 +316,36 @@ Method LookAhead(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$DEBUGMethodEnd
 	Quit ok
 }
+
 
 ///  look_ahead_rule ::= KEYWORD | subrule | call
+/// summary=C&?4punctuation:4?&?4punctuation:4?
 Method LookAheadRule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	Set done=0 ; method start
-	If ..Keyword(subElement,.addedElement)  {
-		Set done=1 ; or
-	} ElseIf ..Subrule(subElement,.addedElement)  {
-		Set done=1 ; or
-	} ElseIf ..Call(subElement,.addedElement)  {
-		Set done=1 ; end compileRules
+	Set pos=..stream.pos
+	If $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		Set done=$ISOBJECT(subElement)
+	} Else {
+		If ..Keyword(subElement,.addedElement)  {
+			Set done=1 ; or
+		} ElseIf ..Subrule(subElement,.addedElement)  {
+			Set done=1 ; or
+		} ElseIf ..Call(subElement,.addedElement)  {
+			Set done=1 ; end compileRules
+		}
+
 	}
 	If done {
-		$$$BNFCOMMIT(subElement,ParentElement)
+		$$$BNFMEMOSET(pos,subElement)
+	} Else {
+	}
+	If done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
 		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
@@ -286,25 +354,32 @@ Method LookAheadRule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$DEBUGMethodEnd
 	Quit ok
 }
+
 
 ///  not_rule ::= '!' notable_rule
-/// summary values:!
+/// summary=P&C
 Method NotRule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&C
-	; first rule summary P
-	If '(..isStringSingle("!",.value)) { Quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	Set done=0 ; method start
-	If ..addPunctuation(subElement,"!")  {
-		If ..NotableRule(subElement,.addedElement)  {
+	Set pos=..stream.pos
+	If $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		Set done=$ISOBJECT(subElement)
+	} Else {
+		If ..addPunctuation(subElement,"!")  && ..NotableRule(subElement,.addedElement)  {
 			Set done=1 ; end compileRules
 		}
+
 	}
 	If done {
-		$$$BNFCOMMIT(subElement,ParentElement)
+		$$$BNFMEMOSET(pos,subElement)
+	} Else {
+	}
+	If done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
 		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
@@ -313,24 +388,36 @@ Method NotRule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 	$$$DEBUGMethodEnd
 	Quit ok
 }
+
 
 ///  notable_rule ::= KEYWORD | subrule | call
+/// summary=C&?4punctuation:4?&?4punctuation:4?
 Method NotableRule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	Set done=0 ; method start
-	If ..Keyword(subElement,.addedElement)  {
-		Set done=1 ; or
-	} ElseIf ..Subrule(subElement,.addedElement)  {
-		Set done=1 ; or
-	} ElseIf ..Call(subElement,.addedElement)  {
-		Set done=1 ; end compileRules
+	Set pos=..stream.pos
+	If $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		Set done=$ISOBJECT(subElement)
+	} Else {
+		If ..Keyword(subElement,.addedElement)  {
+			Set done=1 ; or
+		} ElseIf ..Subrule(subElement,.addedElement)  {
+			Set done=1 ; or
+		} ElseIf ..Call(subElement,.addedElement)  {
+			Set done=1 ; end compileRules
+		}
+
 	}
 	If done {
-		$$$BNFCOMMIT(subElement,ParentElement)
+		$$$BNFMEMOSET(pos,subElement)
+	} Else {
+	}
+	If done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
 		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
@@ -339,27 +426,32 @@ Method NotableRule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$DEBUGMethodEnd
 	Quit ok
 }
+
 
 ///  optional_group ::= '[' rules ']'
-/// summary values:[
+/// summary=P&C&P
 Method OptionalGroup(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&C&P
-	; first rule summary P
-	If '(..isStringSingle("[",.value)) { Quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	Set done=0 ; method start
-	If ..addPunctuation(subElement,"[")  {
-		If ..Rules(subElement,.addedElement)  {
-			If ..addPunctuation(subElement,"]")  {
-				Set done=1 ; end compileRules
-			}
+	Set pos=..stream.pos
+	If $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		Set done=$ISOBJECT(subElement)
+	} Else {
+		If ..addPunctuation(subElement,"[")  && ..Rules(subElement,.addedElement)  && ..addPunctuation(subElement,"]")  {
+			Set done=1 ; end compileRules
 		}
+
 	}
 	If done {
-		$$$BNFCOMMIT(subElement,ParentElement)
+		$$$BNFMEMOSET(pos,subElement)
+	} Else {
+	}
+	If done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
 		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
@@ -368,22 +460,32 @@ Method OptionalGroup(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$DEBUGMethodEnd
 	Quit ok
 }
+
 
 ///  optional_single ::= optionalable_rule '?'
+/// summary=C&P
 Method OptionalSingle(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C&P
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	Set done=0 ; method start
-	If ..OptionalableRule(subElement,.addedElement)  {
-		If ..addPunctuation(subElement,"?")  {
+	Set pos=..stream.pos
+	If $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		Set done=$ISOBJECT(subElement)
+	} Else {
+		If ..OptionalableRule(subElement,.addedElement)  && ..addPunctuation(subElement,"?")  {
 			Set done=1 ; end compileRules
 		}
+
 	}
 	If done {
-		$$$BNFCOMMIT(subElement,ParentElement)
+		$$$BNFMEMOSET(pos,subElement)
+	} Else {
+	}
+	If done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
 		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
@@ -392,24 +494,36 @@ Method OptionalSingle(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$DEBUGMethodEnd
 	Quit ok
 }
+
 
 ///  optionalable_rule ::= KEYWORD | subrule | call
+/// summary=C&?4punctuation:4?&?4punctuation:4?
 Method OptionalableRule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	Set done=0 ; method start
-	If ..Keyword(subElement,.addedElement)  {
-		Set done=1 ; or
-	} ElseIf ..Subrule(subElement,.addedElement)  {
-		Set done=1 ; or
-	} ElseIf ..Call(subElement,.addedElement)  {
-		Set done=1 ; end compileRules
+	Set pos=..stream.pos
+	If $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		Set done=$ISOBJECT(subElement)
+	} Else {
+		If ..Keyword(subElement,.addedElement)  {
+			Set done=1 ; or
+		} ElseIf ..Subrule(subElement,.addedElement)  {
+			Set done=1 ; or
+		} ElseIf ..Call(subElement,.addedElement)  {
+			Set done=1 ; end compileRules
+		}
+
 	}
 	If done {
-		$$$BNFCOMMIT(subElement,ParentElement)
+		$$$BNFMEMOSET(pos,subElement)
+	} Else {
+	}
+	If done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
 		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
@@ -418,22 +532,32 @@ Method OptionalableRule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$DEBUGMethodEnd
 	Quit ok
 }
+
 
 ///  or ::= '|'
-/// summary values:|
+/// summary=P
 Method Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P
-	If '(..isStringSingle("|",.value)) { Quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	Set done=0 ; method start
-	If ..addPunctuation(subElement,"|")  {
-		Set done=1 ; end compileRules
+	Set pos=..stream.pos
+	If $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		Set done=$ISOBJECT(subElement)
+	} Else {
+		If ..addPunctuation(subElement,"|")  {
+			Set done=1 ; end compileRules
+		}
+
 	}
 	If done {
-		$$$BNFCOMMIT(subElement,ParentElement)
+		$$$BNFMEMOSET(pos,subElement)
+	} Else {
+	}
+	If done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
 		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
@@ -442,22 +566,34 @@ Method Or(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.
 	$$$DEBUGMethodEnd
 	Quit ok
 }
+
 
 ///  repeat ::= repeat_zero | repeat_one
+/// summary=C&?4punctuation:4?
 Method Repeat(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	Set done=0 ; method start
-	If ..RepeatZero(subElement,.addedElement)  {
-		Set done=1 ; or
-	} ElseIf ..RepeatOne(subElement,.addedElement)  {
-		Set done=1 ; end compileRules
+	Set pos=..stream.pos
+	If $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		Set done=$ISOBJECT(subElement)
+	} Else {
+		If ..RepeatZero(subElement,.addedElement)  {
+			Set done=1 ; or
+		} ElseIf ..RepeatOne(subElement,.addedElement)  {
+			Set done=1 ; end compileRules
+		}
+
 	}
 	If done {
-		$$$BNFCOMMIT(subElement,ParentElement)
+		$$$BNFMEMOSET(pos,subElement)
+	} Else {
+	}
+	If done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
 		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
@@ -466,22 +602,32 @@ Method Repeat(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 	$$$DEBUGMethodEnd
 	Quit ok
 }
+
 
 ///  repeat_one ::= repeatable_rule '+'
+/// summary=C&P
 Method RepeatOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C&P
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	Set done=0 ; method start
-	If ..RepeatableRule(subElement,.addedElement)  {
-		If ..addPunctuation(subElement,"+")  {
+	Set pos=..stream.pos
+	If $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		Set done=$ISOBJECT(subElement)
+	} Else {
+		If ..RepeatableRule(subElement,.addedElement)  && ..addPunctuation(subElement,"+")  {
 			Set done=1 ; end compileRules
 		}
+
 	}
 	If done {
-		$$$BNFCOMMIT(subElement,ParentElement)
+		$$$BNFMEMOSET(pos,subElement)
+	} Else {
+	}
+	If done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
 		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
@@ -490,104 +636,32 @@ Method RepeatOne(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$DEBUGMethodEnd
 	Quit ok
 }
+
 
 ///  repeat_sep ::= repeat_sep_separator '.' repeat_sep_rule '+'
+/// summary=C&P&C&P
 Method RepeatSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C&P&C&P
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	Set done=0 ; method start
-	If ..RepeatSepSeparator(subElement,.addedElement)  {
-		If ..addPunctuation(subElement,".")  {
-			If ..RepeatSepRule(subElement,.addedElement)  {
-				If ..addPunctuation(subElement,"+")  {
-					Set done=1 ; end compileRules
-				}
-			}
-		}
-	}
-	If done {
-		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ok=1
+	Set pos=..stream.pos
+	If $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		Set done=$ISOBJECT(subElement)
 	} Else {
-		$$$BNFROLLBACK(subElement)
-		Set ok=0 ; normal rollback
-	}
-	$$$DEBUGMethodEnd
-	Quit ok
-}
-
-///  repeat_sep_rule ::= KEYWORD | subrule | call
-Method RepeatSepRule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
-{
-	; rules summary C|C|C
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	Set done=0 ; method start
-	if ..OptionalSingle(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Keyword(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Subrule(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Call(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-	If done {
-		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ok=1
-	} Else {
-		$$$BNFROLLBACK(subElement)
-		Set ok=0 ; normal rollback
-	}
-	$$$DEBUGMethodEnd
-	Quit ok
-}
-
-///  repeat_sep_separator ::= KEYWORD | subrule | call
-Method RepeatSepSeparator(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
-{
-	; rules summary C|C|C
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	Set done=0 ; method start
-	If ..Keyword(subElement,.addedElement)  {
-		Set done=1 ; or
-	} ElseIf ..Subrule(subElement,.addedElement)  {
-		Set done=1 ; or
-	} ElseIf ..Call(subElement,.addedElement)  {
-		Set done=1 ; end compileRules
-	}
-	If done {
-		$$$BNFCOMMIT(subElement,ParentElement)
-		Set ok=1
-	} Else {
-		$$$BNFROLLBACK(subElement)
-		Set ok=0 ; normal rollback
-	}
-	$$$DEBUGMethodEnd
-	Quit ok
-}
-
-///  repeat_zero ::= repeatable_rule '*'
-Method RepeatZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
-{
-	; rules summary C&P
-	$$$DEBUGMethodBegin
-	$$$BNFPATH
-	$$$BNFSTART(subElement)
-	Set done=0 ; method start
-	If ..RepeatableRule(subElement,.addedElement)  {
-		If ..addPunctuation(subElement,"*")  {
+		If ..RepeatSepSeparator(subElement,.addedElement)  && ..addPunctuation(subElement,".")  && ..RepeatSepRule(subElement,.addedElement)  && ..addPunctuation(subElement,"+")  {
 			Set done=1 ; end compileRules
 		}
+
 	}
 	If done {
-		$$$BNFCOMMIT(subElement,ParentElement)
+		$$$BNFMEMOSET(pos,subElement)
+	} Else {
+	}
+	If done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
 		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
@@ -596,24 +670,148 @@ Method RepeatZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$DEBUGMethodEnd
 	Quit ok
 }
+
+
+///  repeat_sep_rule ::= optional_single | KEYWORD | subrule | call
+/// summary=C&?4punctuation:4?&?4punctuation:4?&?4punctuation:4?
+Method RepeatSepRule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	Set done=0 ; method start
+	Set pos=..stream.pos
+	If $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		Set done=$ISOBJECT(subElement)
+	} Else {
+		If ..OptionalSingle(subElement,.addedElement)  {
+			Set done=1 ; or
+		} ElseIf ..Keyword(subElement,.addedElement)  {
+			Set done=1 ; or
+		} ElseIf ..Subrule(subElement,.addedElement)  {
+			Set done=1 ; or
+		} ElseIf ..Call(subElement,.addedElement)  {
+			Set done=1 ; end compileRules
+		}
+
+	}
+	If done {
+		$$$BNFMEMOSET(pos,subElement)
+	} Else {
+	}
+	If done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
+		Set ok=1
+	} Else {
+		$$$BNFROLLBACK(subElement)
+		Set ok=0 ; normal rollback
+	}
+	$$$DEBUGMethodEnd
+	Quit ok
+}
+
+
+///  repeat_sep_separator ::= KEYWORD | subrule | call
+/// summary=C&?4punctuation:4?&?4punctuation:4?
+Method RepeatSepSeparator(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	Set done=0 ; method start
+	Set pos=..stream.pos
+	If $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		Set done=$ISOBJECT(subElement)
+	} Else {
+		If ..Keyword(subElement,.addedElement)  {
+			Set done=1 ; or
+		} ElseIf ..Subrule(subElement,.addedElement)  {
+			Set done=1 ; or
+		} ElseIf ..Call(subElement,.addedElement)  {
+			Set done=1 ; end compileRules
+		}
+
+	}
+	If done {
+		$$$BNFMEMOSET(pos,subElement)
+	} Else {
+	}
+	If done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
+		Set ok=1
+	} Else {
+		$$$BNFROLLBACK(subElement)
+		Set ok=0 ; normal rollback
+	}
+	$$$DEBUGMethodEnd
+	Quit ok
+}
+
+
+///  repeat_zero ::= repeatable_rule '*'
+/// summary=C&P
+Method RepeatZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	Set done=0 ; method start
+	Set pos=..stream.pos
+	If $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		Set done=$ISOBJECT(subElement)
+	} Else {
+		If ..RepeatableRule(subElement,.addedElement)  && ..addPunctuation(subElement,"*")  {
+			Set done=1 ; end compileRules
+		}
+
+	}
+	If done {
+		$$$BNFMEMOSET(pos,subElement)
+	} Else {
+	}
+	If done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
+		Set ok=1
+	} Else {
+		$$$BNFROLLBACK(subElement)
+		Set ok=0 ; normal rollback
+	}
+	$$$DEBUGMethodEnd
+	Quit ok
+}
+
 
 ///  repeatable_rule ::= KEYWORD | subrule | call
+/// summary=C&?4punctuation:4?&?4punctuation:4?
 Method RepeatableRule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	Set done=0 ; method start
-	If ..Keyword(subElement,.addedElement)  {
-		Set done=1 ; or
-	} ElseIf ..Subrule(subElement,.addedElement)  {
-		Set done=1 ; or
-	} ElseIf ..Call(subElement,.addedElement)  {
-		Set done=1 ; end compileRules
+	Set pos=..stream.pos
+	If $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		Set done=$ISOBJECT(subElement)
+	} Else {
+		If ..Keyword(subElement,.addedElement)  {
+			Set done=1 ; or
+		} ElseIf ..Subrule(subElement,.addedElement)  {
+			Set done=1 ; or
+		} ElseIf ..Call(subElement,.addedElement)  {
+			Set done=1 ; end compileRules
+		}
+
 	}
 	If done {
-		$$$BNFCOMMIT(subElement,ParentElement)
+		$$$BNFMEMOSET(pos,subElement)
+	} Else {
+	}
+	If done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
 		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
@@ -622,40 +820,52 @@ Method RepeatableRule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$DEBUGMethodEnd
 	Quit ok
 }
+
 
 ///  rule ::= repeat_sep | repeat_zero | repeat_one | optional_single | KEYWORD | or | subrule | optional_group | call | look_ahead | not_rule
+/// summary=C&?4punctuation:4?&?4punctuation:4?&?4punctuation:4?&?4punctuation:4?&?4punctuation:4?&?4punctuation:4?&?4punctuation:4?&?4punctuation:4?&?4punctuation:4?&?4punctuation:4?
 Method Rule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C|C|C|C|C|C|C|C|C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	Set done=0 ; method start
-	If ..RepeatSep(subElement,.addedElement)  {
-		Set done=1 ; or
-	} ElseIf ..RepeatZero(subElement,.addedElement)  {
-		Set done=1 ; or
-	} ElseIf ..RepeatOne(subElement,.addedElement)  {
-		Set done=1 ; or
-	} ElseIf ..OptionalSingle(subElement,.addedElement)  {
-		Set done=1 ; or
-	} ElseIf ..Keyword(subElement,.addedElement)  {
-		Set done=1 ; or
-	} ElseIf ..Or(subElement,.addedElement)  {
-		Set done=1 ; or
-	} ElseIf ..Subrule(subElement,.addedElement)  {
-		Set done=1 ; or
-	} ElseIf ..OptionalGroup(subElement,.addedElement)  {
-		Set done=1 ; or
-	} ElseIf ..Call(subElement,.addedElement)  {
-		Set done=1 ; or
-	} ElseIf ..LookAhead(subElement,.addedElement)  {
-		Set done=1 ; or
-	} ElseIf ..NotRule(subElement,.addedElement)  {
-		Set done=1 ; end compileRules
+	Set pos=..stream.pos
+	If $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		Set done=$ISOBJECT(subElement)
+	} Else {
+		If ..RepeatSep(subElement,.addedElement)  {
+			Set done=1 ; or
+		} ElseIf ..RepeatZero(subElement,.addedElement)  {
+			Set done=1 ; or
+		} ElseIf ..RepeatOne(subElement,.addedElement)  {
+			Set done=1 ; or
+		} ElseIf ..OptionalSingle(subElement,.addedElement)  {
+			Set done=1 ; or
+		} ElseIf ..Keyword(subElement,.addedElement)  {
+			Set done=1 ; or
+		} ElseIf ..Or(subElement,.addedElement)  {
+			Set done=1 ; or
+		} ElseIf ..Subrule(subElement,.addedElement)  {
+			Set done=1 ; or
+		} ElseIf ..OptionalGroup(subElement,.addedElement)  {
+			Set done=1 ; or
+		} ElseIf ..Call(subElement,.addedElement)  {
+			Set done=1 ; or
+		} ElseIf ..LookAhead(subElement,.addedElement)  {
+			Set done=1 ; or
+		} ElseIf ..NotRule(subElement,.addedElement)  {
+			Set done=1 ; end compileRules
+		}
+
 	}
 	If done {
-		$$$BNFCOMMIT(subElement,ParentElement)
+		$$$BNFMEMOSET(pos,subElement)
+	} Else {
+	}
+	If done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
 		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
@@ -664,20 +874,32 @@ Method Rule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BN
 	$$$DEBUGMethodEnd
 	Quit ok
 }
+
 
 ///  rules ::= rule*
+/// summary=(C)*
 Method Rules(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary (?4?)*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	Set done=0 ; method start
-	If ..Rules2RepZero(subElement,.addedElement)  {
-		Set done=1 ; end compileRules
+	Set pos=..stream.pos
+	If $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		Set done=$ISOBJECT(subElement)
+	} Else {
+		If ..Rules1RepZero(subElement,.addedElement)  {
+			Set done=1 ; end compileRules
+		}
+
 	}
 	If done {
-		$$$BNFCOMMIT(subElement,ParentElement)
+		$$$BNFMEMOSET(pos,subElement)
+	} Else {
+	}
+	If done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
 		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
@@ -686,44 +908,45 @@ Method Rules(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.B
 	$$$DEBUGMethodEnd
 	Quit ok
 }
+
 
 ///  rule*
-Method Rules2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+Method Rules1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4?
 	Set subElement=ParentElement
-	Set done=0 ; method start
+	; method start
 	While ..Rule(subElement,.addedElement)  {
-		Set done=1
+		;
 	}
-	If done {
-		Set ok=1
-	} Else {
-		Set ok=1 /* nothing found is ok in RZ */
-	}
+	Set ok=1
 	Quit ok
 }
 
+
 ///  subrule ::= '(' rules ')'
-/// summary values:(
+/// summary=P&C&P
 Method Subrule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&C&P
-	; first rule summary P
-	If '(..isStringSingle("(",.value)) { Quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	Set done=0 ; method start
-	If ..addPunctuation(subElement,"(")  {
-		If ..Rules(subElement,.addedElement)  {
-			If ..addPunctuation(subElement,")")  {
-				Set done=1 ; end compileRules
-			}
+	Set pos=..stream.pos
+	If $$$BNFMEMOExists(pos) {
+		$$$BNFMEMOGET(pos,subElement)
+		Set done=$ISOBJECT(subElement)
+	} Else {
+		If ..addPunctuation(subElement,"(")  && ..Rules(subElement,.addedElement)  && ..addPunctuation(subElement,")")  {
+			Set done=1 ; end compileRules
 		}
+
 	}
 	If done {
-		$$$BNFCOMMIT(subElement,ParentElement)
+		$$$BNFMEMOSET(pos,subElement)
+	} Else {
+	}
+	If done {
+		$$$BNFCOMMIT(subElement,ParentElement) ; 6
 		Set ok=1
 	} Else {
 		$$$BNFROLLBACK(subElement)
@@ -732,6 +955,7 @@ Method Subrule(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 	$$$DEBUGMethodEnd
 	Quit ok
 }
+
 
 Method newElement(Type As %String) As PXW.DEV.BNF.Element
 {
