@@ -32,7 +32,7 @@ ClassMethod goload(DEFClass As %String = "", DestinationClass As %String, forceV
     Set input=..load(DEFClass_"||"_"file",.arr,.version,.equals)
     If forceVersion'="" Set version=forceVersion
     If forceEquals'="" set equals=forceEquals
-    w "Using version="_version_", equals="_forceEquals,!
+    w "Using version="_version_", equals="_equals,!
     If version=3 {
         ;Set compiler=##class(PXW.DEV.BNF.Compilers.Compiler3).%New(input)
      } ElseIf version=2 {
@@ -518,10 +518,16 @@ Method compileRule(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.El
         $$$WRITE(".."_mname_"("_dot_subElementVar_",.addedElement) ")
     } ElseIf subelement.type="Subrule" {
         Set rulesE=subelement.findFirstElementByType("rules",0)
-        Set subMethod=..NewMethod(..SubMethodName(..CurrentMethod.Name,"Sub"))
-        Set subMethod.Description=rulesE.ToString(" ")
-        Do ..compileSubRule(subMethod,rulesE,indent,QuickCheckDone)
-        $$$WRITE(".."_subMethod.Name_"("_dot_subElementVar_",.addedElement) ")
+        set summary=..summariseRules(rulesE,.upperValues)
+        If summary?1"K"0."|K" {
+            f i=1:1:$ll(upperValues) Set ..keywords($li(upperValues,i))=1
+            $$$WRITE("..addKeywordInList("_dot_subElementVar_",$listbuild("_$listtostring(upperValues,",",4)_")) ")
+        } else {
+            Set subMethod=..NewMethod(..SubMethodName(..CurrentMethod.Name,"Sub"))
+            Set subMethod.Description=rulesE.ToString(" ")
+            Do ..compileSubRule(subMethod,rulesE,indent,QuickCheckDone)
+            $$$WRITE(".."_subMethod.Name_"("_dot_subElementVar_",.addedElement) ")
+        }
     } ElseIf subelement.type="OptionalGroup" {
         Set rulesE=subelement.findFirstElementByType("Rules",0)
         If rulesE.partsCount()=1 {

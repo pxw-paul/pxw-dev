@@ -1254,7 +1254,7 @@ Method DropCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"DROP")  {
-		if ..DropCommand1Sub(.subElement,.addedElement)  {
+		if ..addKeywordInList(.subElement,$listbuild("VIEW","TABLE"))  {
 			if ..DirectTable(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
@@ -1269,25 +1269,6 @@ Method DropCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-///  'VIEW' | 'TABLE'
-/// summary values:VIEW,TABLE
-/// summary=K|K
-Method DropCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K|K
-	if '(..isKeywordInList($lb("VIEW","TABLE"))) { quit 0 /* normal */ }
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"VIEW")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"TABLE")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -2256,39 +2237,10 @@ Method Join1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	; method start
-	while ..Join2Sub(.subElement,.addedElement)  {
+	while ..addKeywordInList(.subElement,$listbuild("INNER","OUTER","LEFT","RIGHT","CROSS","NATURAL","FULL"))  {
 		;
 	}
 	set ok=1
-	quit ok
-}
-
-/// 'INNER' | 'OUTER' | 'LEFT' | 'RIGHT' | 'CROSS' | 'NATURAL' |'FULL'
-/// summary values:INNER,OUTER,LEFT,RIGHT,CROSS,NATURAL,FULL
-/// summary=K|K|K|K|K|K|K
-Method Join2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K|K|K|K|K|K|K
-	if '(..isKeywordInList($lb("INNER","OUTER","LEFT","RIGHT","CROSS","NATURAL","FULL"))) { quit 0 /* normal */ }
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"INNER")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"OUTER")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"LEFT")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"RIGHT")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"CROSS")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"NATURAL")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"FULL")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -3041,7 +2993,7 @@ Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 	set done=0 ; method start
 	if ..Number1Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..Number5Sub(.subElement,.addedElement)  {
+	} elseif ..Number4Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -3114,7 +3066,7 @@ Method Number3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	if '(..isKeywordInList($lb("E","E"))) { quit 1 /* not found is OK */ /*1*/ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Number4Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("E","E"))  {
 		if ..addRegex(.subElement,"[0-9]+")  {
 			set done=1 ; end compileRules
 		}
@@ -3130,29 +3082,10 @@ Method Number3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	quit ok
 }
 
-/// 'e' | 'E'
-/// summary values:E,E
-/// summary=K|K
-Method Number4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K|K
-	if '(..isKeywordInList($lb("E","E"))) { quit 0 /* normal */ }
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"E")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"E")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 /// '.' 'regexp:[0-9]+' [ ('e' | 'E') 'regexp:[0-9]+']
 /// summary values:.
 /// summary=P&R&[(K|K)&R]
-Method Number5Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method Number4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&R&[(K|K)&R]
 	if '..isPunctuation(".",1) { quit 0 /* normal */ }
@@ -3160,7 +3093,7 @@ Method Number5Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,".")  {
 		if ..addRegex(.subElement,"[0-9]+")  {
-			if ..Number6OptGrp(.subElement,.addedElement)  {
+			if ..Number5OptGrp(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -3179,13 +3112,13 @@ Method Number5Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 /// 
 /// summary values:E,E
 /// summary=(K|K)&R
-Method Number6OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method Number5OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary (K|K)&R
 	if '(..isKeywordInList($lb("E","E"))) { quit 1 /* not found is OK */ /*1*/ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Number7Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("E","E"))  {
 		if ..addRegex(.subElement,"[0-9]+")  {
 			set done=1 ; end compileRules
 		}
@@ -3198,25 +3131,6 @@ Method Number6OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		$$$BNFROLLBACK(subElement)
 		set ok=1 /* failure rollsback but returns OK */
 	}
-	quit ok
-}
-
-/// 'e' | 'E'
-/// summary values:E,E
-/// summary=K|K
-Method Number7Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K|K
-	if '(..isKeywordInList($lb("E","E"))) { quit 0 /* normal */ }
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"E")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"E")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 

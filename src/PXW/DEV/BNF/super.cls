@@ -354,6 +354,27 @@ Method addKeyword(ParentElement As PXW.DEV.Element, KeywordUpper As %String) As 
     Quit ok
 }
 
+Method addKeywordInList(ParentElement As PXW.DEV.Element,ListOfUpperStrings As %List) As %Boolean
+{  
+    $$$DEBUGMethodBegin
+    Do:..needsWScheck ..skipWhiteSpaceAndComments()
+
+    Set keyword=..peekKeyword()
+    Set UPP=$$$UPPER(keyword)
+    Set found=$LISTFIND(ListOfUpperStrings,UPP)
+    If found {
+        Set foundString=..next($LENGTH(keyword))
+        Set atom=..newAtom(..#keywordAtomType,foundString)
+        Do ParentElement.AddPart(atom) 
+        Set ok=1
+    } else {
+        set ok=0
+    }
+    $$$DEBUGMethodEnd
+    Quit ok
+}
+
+
 Method addRegex(ParentElement As PXW.DEV.Element = "", Regex As %String) As %Boolean
 {
     $$$DEBUGMethodBegin

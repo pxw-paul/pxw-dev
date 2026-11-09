@@ -1009,7 +1009,7 @@ Method AttributeFlags(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"FLAGS")  {
 		if ..addPunctuation(.subElement,"=")  {
-			if ..AttributeFlags1Sub(.subElement,.addedElement)  {
+			if ..addKeywordInList(.subElement,$listbuild("ENUMEDIT","ENUM","LIST"))  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -1023,27 +1023,6 @@ Method AttributeFlags(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-///  'enumedit' | 'enum' | 'list'
-/// summary values:ENUMEDIT,ENUM,LIST
-/// summary=K|K|K
-Method AttributeFlags1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K|K|K
-	if '(..isKeywordInList($lb("ENUMEDIT","ENUM","LIST"))) { quit 0 /* normal */ }
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"ENUMEDIT")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"ENUM")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"LIST")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -1960,7 +1939,7 @@ Method AttributeOdbctype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"ODBCTYPE")  {
 		if ..addPunctuation(.subElement,"=")  {
-			if ..AttributeOdbctype1Sub(.subElement,.addedElement)  {
+			if ..addKeywordInList(.subElement,$listbuild("BIGINT","BIT","DATE","DOUBLE","INTEGER","LONGVARBINARY","LONGVARCHAR","NUMERIC","RESULTSET","SMALLINT","STRUCT","TIME","TIMESTAMP","TINYINT","VARBINARY","VARCHAR","GUID","POSIXTIME"))  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -1974,57 +1953,6 @@ Method AttributeOdbctype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-///  'bigint' | 'bit' | 'date' | 'double' | 'integer' | 'longvarbinary' | 'longvarchar' | 'numeric' | 'resultset' | 'smallint' | 'struct' | 'time' | 'timestamp' | 'tinyint' | 'varbinary' | 'varchar' | 'guid' | 'POSIXTIME'
-/// summary values:BIGINT,BIT,DATE,DOUBLE,INTEGER,LONGVARBINARY,LONGVARCHAR,NUMERIC,RESULTSET,SMALLINT,STRUCT,TIME,TIMESTAMP,TINYINT,VARBINARY,VARCHAR,GUID,POSIXTIME
-/// summary=K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K
-Method AttributeOdbctype1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K|K
-	if '(..isKeywordInList($lb("BIGINT","BIT","DATE","DOUBLE","INTEGER","LONGVARBINARY","LONGVARCHAR","NUMERIC","RESULTSET","SMALLINT","STRUCT","TIME","TIMESTAMP","TINYINT","VARBINARY","VARCHAR","GUID","POSIXTIME"))) { quit 0 /* normal */ }
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"BIGINT")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"BIT")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"DATE")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"DOUBLE")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"INTEGER")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"LONGVARBINARY")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"LONGVARCHAR")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"NUMERIC")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"RESULTSET")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"SMALLINT")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"STRUCT")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"TIME")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"TIMESTAMP")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"TINYINT")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"VARBINARY")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"VARCHAR")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"GUID")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"POSIXTIME")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -2902,7 +2830,7 @@ Method AttributeSoapbindingstyle(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"SOAPBINDINGSTYLE")  {
 		if ..addPunctuation(.subElement,"=")  {
-			if ..AttributeSoapbindingstyle1Sub(.subElement,.addedElement)  {
+			if ..addKeywordInList(.subElement,$listbuild("DOCUMENT","RCP"))  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -2916,25 +2844,6 @@ Method AttributeSoapbindingstyle(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-///  'document' | 'rcp'
-/// summary values:DOCUMENT,RCP
-/// summary=K|K
-Method AttributeSoapbindingstyle1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K|K
-	if '(..isKeywordInList($lb("DOCUMENT","RCP"))) { quit 0 /* normal */ }
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"DOCUMENT")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"RCP")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -2951,7 +2860,7 @@ Method AttributeSoapbodyuse(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"SOAPBODYUSE")  {
 		if ..addPunctuation(.subElement,"=")  {
-			if ..AttributeSoapbodyuse1Sub(.subElement,.addedElement)  {
+			if ..addKeywordInList(.subElement,$listbuild("LITERAL","ENCODED"))  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -2965,25 +2874,6 @@ Method AttributeSoapbodyuse(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-///  'literal' | 'encoded'
-/// summary values:LITERAL,ENCODED
-/// summary=K|K
-Method AttributeSoapbodyuse1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K|K
-	if '(..isKeywordInList($lb("LITERAL","ENCODED"))) { quit 0 /* normal */ }
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"LITERAL")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"ENCODED")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -3188,7 +3078,7 @@ Method AttributeSqlcategory(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"SQLCATEGORY")  {
 		if ..addPunctuation(.subElement,"=")  {
-			if ..AttributeSqlcategory1Sub(.subElement,.addedElement)  {
+			if ..addKeywordInList(.subElement,$listbuild("DATE","DOUBLE","FMDATE","FMTIMESTAMP","INTEGER","MVDATE","NAME","NUMERIC","STRING","TIME","TIMESTAMP","POSIXTS","VECTOR"))  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -3202,47 +3092,6 @@ Method AttributeSqlcategory(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-///  'date' | 'double' | 'fmdate' | 'fmtimestamp' | 'integer' | 'mvdate' | 'name' | 'numeric' | 'string' | 'time' | 'timestamp' | 'POSIXTS' | 'VECTOR'
-/// summary values:DATE,DOUBLE,FMDATE,FMTIMESTAMP,INTEGER,MVDATE,NAME,NUMERIC,STRING,TIME,TIMESTAMP,POSIXTS,VECTOR
-/// summary=K|K|K|K|K|K|K|K|K|K|K|K|K
-Method AttributeSqlcategory1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K|K|K|K|K|K|K|K|K|K|K|K|K
-	if '(..isKeywordInList($lb("DATE","DOUBLE","FMDATE","FMTIMESTAMP","INTEGER","MVDATE","NAME","NUMERIC","STRING","TIME","TIMESTAMP","POSIXTS","VECTOR"))) { quit 0 /* normal */ }
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"DATE")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"DOUBLE")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"FMDATE")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"FMTIMESTAMP")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"INTEGER")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"MVDATE")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"NAME")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"NUMERIC")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"STRING")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"TIME")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"TIMESTAMP")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"POSIXTS")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"VECTOR")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -3508,7 +3357,7 @@ Method AttributeSqllisttype(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"SQLLISTTYPE")  {
 		if ..addPunctuation(.subElement,"=")  {
-			if ..AttributeSqllisttype1Sub(.subElement,.addedElement)  {
+			if ..addKeywordInList(.subElement,$listbuild("LIST","DELIMITED","SUBNODE"))  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -3522,27 +3371,6 @@ Method AttributeSqllisttype(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-///  'list' | 'delimited' | 'subnode'
-/// summary values:LIST,DELIMITED,SUBNODE
-/// summary=K|K|K
-Method AttributeSqllisttype1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K|K|K
-	if '(..isKeywordInList($lb("LIST","DELIMITED","SUBNODE"))) { quit 0 /* normal */ }
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"LIST")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"DELIMITED")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"SUBNODE")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -4003,7 +3831,7 @@ Method AttributeType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"TYPE")  {
 		if ..addPunctuation(.subElement,"=")  {
-			if ..AttributeType1Sub(.subElement,.addedElement)  {
+			if ..addKeywordInList(.subElement,$listbuild("BITMAP","BITSLICE","INDEX","KEY","COLLATEDKEY"))  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -4017,31 +3845,6 @@ Method AttributeType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-///  'bitmap' | 'bitslice' | 'index' |'key' | 'collatedkey'
-/// summary values:BITMAP,BITSLICE,INDEX,KEY,COLLATEDKEY
-/// summary=K|K|K|K|K
-Method AttributeType1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K|K|K|K|K
-	if '(..isKeywordInList($lb("BITMAP","BITSLICE","INDEX","KEY","COLLATEDKEY"))) { quit 0 /* normal */ }
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"BITMAP")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"BITSLICE")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"INDEX")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"KEY")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"COLLATEDKEY")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -5776,7 +5579,7 @@ Method ClassPropertyType2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	if '(..isKeywordInList($lb("ARRAY","LIST"))) { quit 1 /* not found is OK */ /*1*/ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ClassPropertyType3Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("ARRAY","LIST"))  {
 		if ..addKeyword(.subElement,"OF")  {
 			set done=1 ; end compileRules
 		}
@@ -5789,25 +5592,6 @@ Method ClassPropertyType2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 		$$$BNFROLLBACK(subElement)
 		set ok=1 /* failure rollsback but returns OK */
 	}
-	quit ok
-}
-
-///  'array' | 'list'
-/// summary values:ARRAY,LIST
-/// summary=K|K
-Method ClassPropertyType3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K|K
-	if '(..isKeywordInList($lb("ARRAY","LIST"))) { quit 0 /* normal */ }
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"ARRAY")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"LIST")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -8339,7 +8123,7 @@ Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 	if $S(..addPunctuation(.subElement,"-") :1,1:1) {
 		if ..Number1Sub(.subElement,.addedElement)  {
 			set done=1 ; or
-		} elseif ..Number5Sub(.subElement,.addedElement)  {
+		} elseif ..Number4Sub(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -8414,7 +8198,7 @@ Method Number3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	if '(..isKeywordInList($lb("E","E"))) { quit 1 /* not found is OK */ /*1*/ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Number4Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("E","E"))  {
 		if ..addRegex(.subElement,"[0-9]+")  {
 			set done=1 ; end compileRules
 		}
@@ -8430,29 +8214,10 @@ Method Number3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	quit ok
 }
 
-/// 'e' | 'E'
-/// summary values:E,E
-/// summary=K|K
-Method Number4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K|K
-	if '(..isKeywordInList($lb("E","E"))) { quit 0 /* normal */ }
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"E")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"E")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 /// '.' 'regexp:[0-9]+' [ ('e' | 'E') 'regexp:[0-9]+']
 /// summary values:.
 /// summary=P&R&[(K|K)&R]
-Method Number5Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method Number4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&R&[(K|K)&R]
 	if '..isPunctuation(".",1) { quit 0 /* normal */ }
@@ -8460,7 +8225,7 @@ Method Number5Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,".")  {
 		if ..addRegex(.subElement,"[0-9]+")  {
-			if ..Number6OptGrp(.subElement,.addedElement)  {
+			if ..Number5OptGrp(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -8479,13 +8244,13 @@ Method Number5Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 /// 
 /// summary values:E,E
 /// summary=(K|K)&R
-Method Number6OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method Number5OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary (K|K)&R
 	if '(..isKeywordInList($lb("E","E"))) { quit 1 /* not found is OK */ /*1*/ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Number7Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("E","E"))  {
 		if ..addRegex(.subElement,"[0-9]+")  {
 			set done=1 ; end compileRules
 		}
@@ -8498,25 +8263,6 @@ Method Number6OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		$$$BNFROLLBACK(subElement)
 		set ok=1 /* failure rollsback but returns OK */
 	}
-	quit ok
-}
-
-/// 'e' | 'E'
-/// summary values:E,E
-/// summary=K|K
-Method Number7Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K|K
-	if '(..isKeywordInList($lb("E","E"))) { quit 0 /* normal */ }
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"E")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"E")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 

@@ -18,19 +18,20 @@ Property ElementWarnings As %String [ MultiDimensional ];
 Method checkElement(element As PXW.DEV.Element)
 {
 	#dim a as PXW.DEV.Atom
-
-	Do ..processSpecificElement(element,"PRE")
+	$$$DEBUGMethodBegin
+	Do ..processSpecificElement(.element,"PRE")
 
 	Set akey=""
 	For  {
-		Set part=element.partsGetNext(.akey)
+		set akey=$$$ElementPartsNext(element,akey,part)
 		Quit:akey=""
 		
 		If part.IsElement {
 			Do ..checkElement(part)
 		} 
 	}
-	Do ..processSpecificElement(element,"POST")
+	Do ..processSpecificElement(.element,"POST")
+	$$$DEBUGMethodEnd
 }
 
 Method AddElementWarning(element As PXW.DEV.Element, type as %String, text As %String)

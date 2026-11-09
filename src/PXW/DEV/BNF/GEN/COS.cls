@@ -372,9 +372,9 @@ Method BreakCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..BreakCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("BREAK","B"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
-			if ..BreakCommand2OptGrp(.subElement,.addedElement)  {
+			if ..BreakCommand1OptGrp(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -391,32 +391,16 @@ Method BreakCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	quit ok
 }
 
-/// 'break' | 'b'
-/// summary=K|K
-Method BreakCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"BREAK")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"B")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 /// 
 /// summary=C|(C|C)
-Method BreakCommand2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method BreakCommand1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C|(C|C)
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..Naked(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..BreakCommand3Sub(.subElement,.addedElement)  {
+	} elseif ..BreakCommand2Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -432,7 +416,7 @@ Method BreakCommand2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 ///  break_extend | break_flag
 /// summary=C|C
-Method BreakCommand3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method BreakCommand2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C|C
 	set subElement=ParentElement
@@ -1050,9 +1034,9 @@ Method CloseCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..CloseCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("CLOSE","C"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
-			if ..CloseCommand2RepSep(.subElement,.addedElement)  {
+			if ..CloseCommand1RepSep(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -1069,24 +1053,8 @@ Method CloseCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	quit ok
 }
 
-/// 'close' | 'c'
-/// summary=K|K
-Method CloseCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"CLOSE")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"C")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 ///  ','.close_item+
-Method CloseCommand2RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method CloseCommand1RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4String:4?
 	$$$BNFSTART(subElement)
@@ -2212,7 +2180,7 @@ Method CosDirectiveDimItemNoset3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByR
 	if '(..isKeywordInList($lb("ARRAY","LIST"))) { quit 1 /* not found is OK */ /*1*/ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..CosDirectiveDimItemNoset4Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("ARRAY","LIST"))  {
 		if ..addKeyword(.subElement,"OF")  {
 			set done=1 ; end compileRules
 		}
@@ -2225,25 +2193,6 @@ Method CosDirectiveDimItemNoset3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByR
 		$$$BNFROLLBACK(subElement)
 		set ok=1 /* failure rollsback but returns OK */
 	}
-	quit ok
-}
-
-/// 'array' | 'list'
-/// summary values:ARRAY,LIST
-/// summary=K|K
-Method CosDirectiveDimItemNoset4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K|K
-	if '(..isKeywordInList($lb("ARRAY","LIST"))) { quit 0 /* normal */ }
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"ARRAY")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"LIST")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -2342,7 +2291,7 @@ Method CosDirectiveDimItemSet3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef
 	if '(..isKeywordInList($lb("ARRAY","LIST"))) { quit 1 /* not found is OK */ /*1*/ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..CosDirectiveDimItemSet4Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("ARRAY","LIST"))  {
 		if ..addKeyword(.subElement,"OF")  {
 			set done=1 ; end compileRules
 		}
@@ -2355,25 +2304,6 @@ Method CosDirectiveDimItemSet3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef
 		$$$BNFROLLBACK(subElement)
 		set ok=1 /* failure rollsback but returns OK */
 	}
-	quit ok
-}
-
-/// 'array' | 'list'
-/// summary values:ARRAY,LIST
-/// summary=K|K
-Method CosDirectiveDimItemSet4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K|K
-	if '(..isKeywordInList($lb("ARRAY","LIST"))) { quit 0 /* normal */ }
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"ARRAY")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"LIST")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -2788,7 +2718,7 @@ Method CosDirectiveSqlcompile1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	set done=0 ; method start
 	if ..CosDirectiveSqlcompile2Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..CosDirectiveSqlcompile4Sub(.subElement,.addedElement)  {
+	} elseif ..CosDirectiveSqlcompile3Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -2813,7 +2743,7 @@ Method CosDirectiveSqlcompile2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"SELECT")  {
 		if ..addPunctuation(.subElement,"=")  {
-			if ..CosDirectiveSqlcompile3Sub(.subElement,.addedElement)  {
+			if ..addKeywordInList(.subElement,$listbuild("DISPLAY","LOGICAL","ODBC","RUNTIME","TEXT","FDBMS"))  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -2829,37 +2759,10 @@ Method CosDirectiveSqlcompile2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	quit ok
 }
 
-/// 'display' | 'logical' | 'odbc' | 'runtime' | 'text' | 'FDBMS'
-/// summary values:DISPLAY,LOGICAL,ODBC,RUNTIME,TEXT,FDBMS
-/// summary=K|K|K|K|K|K
-Method CosDirectiveSqlcompile3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K|K|K|K|K|K
-	if '(..isKeywordInList($lb("DISPLAY","LOGICAL","ODBC","RUNTIME","TEXT","FDBMS"))) { quit 0 /* normal */ }
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"DISPLAY")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"LOGICAL")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"ODBC")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"RUNTIME")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"TEXT")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"FDBMS")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 ///  'mode' '=' ('deferred')
 /// summary values:MODE
 /// summary=K&P&(K)
-Method CosDirectiveSqlcompile4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method CosDirectiveSqlcompile3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary K&P&(K)
 	if '(..isKeyword("MODE")) { quit 0 /* normal */ }
@@ -2867,7 +2770,7 @@ Method CosDirectiveSqlcompile4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"MODE")  {
 		if ..addPunctuation(.subElement,"=")  {
-			if ..CosDirectiveSqlcompile5Sub(.subElement,.addedElement)  {
+			if ..addKeywordInList(.subElement,$listbuild("DEFERRED"))  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -2880,23 +2783,6 @@ Method CosDirectiveSqlcompile4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 		$$$BNFROLLBACK(subElement)
 		set ok=0
 	}
-	quit ok
-}
-
-/// 'deferred'
-/// summary values:DEFERRED
-/// summary=K
-Method CosDirectiveSqlcompile5Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K
-	if '(..isKeyword("DEFERRED")) { quit 0 /* normal */ }
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"DEFERRED")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -3353,10 +3239,10 @@ Method DataFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..DataFunctionCall1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("DATA","D"))  {
 		if ..OpenBracket(.subElement,.addedElement)  {
 			if ..DataExpression(.subElement,.addedElement)  {
-				if ..DataFunctionCall2OptGrp(.subElement,.addedElement)  {
+				if ..DataFunctionCall1OptGrp(.subElement,.addedElement)  {
 					if ..CloseBracket(.subElement,.addedElement)  {
 						set done=1 ; end compileRules
 					}
@@ -3376,26 +3262,10 @@ Method DataFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	quit ok
 }
 
-/// 'data' | 'd'
-/// summary=K|K
-Method DataFunctionCall1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"DATA")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"D")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 /// 
 /// summary values:,
 /// summary=P&C
-Method DataFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method DataFunctionCall1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
@@ -3452,8 +3322,8 @@ Method DoCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..DoCommand1Sub(.subElement,.addedElement)  {
-		if ..DoCommand2Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("DO","D"))  {
+		if ..DoCommand1Sub(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -3469,25 +3339,9 @@ Method DoCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	quit ok
 }
 
-/// 'do' | 'd'
-/// summary=K|K
-Method DoCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"DO")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"D")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 ///  do_while | do_label
 /// summary=C|C
-Method DoCommand2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method DoCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C|C
 	set subElement=ParentElement
@@ -3867,7 +3721,7 @@ Method ElseCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ElseCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("ELSE","E"))  {
 		if ..Naked(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
@@ -3881,22 +3735,6 @@ Method ElseCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-/// 'else' | 'e'
-/// summary=K|K
-Method ElseCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"ELSE")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"E")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -4188,10 +4026,10 @@ Method ExtractFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ExtractFunctionCall1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("EXTRACT","E"))  {
 		if ..OpenBracket(.subElement,.addedElement)  {
 			if ..Expression(.subElement,.addedElement)  {
-				if ..ExtractFunctionCall2OptGrp(.subElement,.addedElement)  {
+				if ..ExtractFunctionCall1OptGrp(.subElement,.addedElement)  {
 					if ..CloseBracket(.subElement,.addedElement)  {
 						set done=1 ; end compileRules
 					}
@@ -4211,26 +4049,10 @@ Method ExtractFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	quit ok
 }
 
-/// 'extract' | 'e'
-/// summary=K|K
-Method ExtractFunctionCall1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"EXTRACT")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"E")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 /// 
 /// summary values:,
 /// summary=P&C&[P&C]
-Method ExtractFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ExtractFunctionCall1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C&[P&C]
 	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
@@ -4238,7 +4060,7 @@ Method ExtractFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,",")  {
 		if ..StarParameter(.subElement,.addedElement)  {
-			if ..ExtractFunctionCall3OptGrp(.subElement,.addedElement)  {
+			if ..ExtractFunctionCall2OptGrp(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -4257,7 +4079,7 @@ Method ExtractFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef su
 /// 
 /// summary values:,
 /// summary=P&C
-Method ExtractFunctionCall3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ExtractFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
@@ -4290,10 +4112,10 @@ Method ExtractFunctionCallSet(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ExtractFunctionCallSet1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("EXTRACT","E"))  {
 		if ..OpenBracket(.subElement,.addedElement)  {
 			if ..SetValueExpression(.subElement,.addedElement)  {
-				if ..ExtractFunctionCallSet2OptGrp(.subElement,.addedElement)  {
+				if ..ExtractFunctionCallSet1OptGrp(.subElement,.addedElement)  {
 					if ..CloseBracket(.subElement,.addedElement)  {
 						set done=1 ; end compileRules
 					}
@@ -4313,26 +4135,10 @@ Method ExtractFunctionCallSet(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	quit ok
 }
 
-/// 'extract' | 'e'
-/// summary=K|K
-Method ExtractFunctionCallSet1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"EXTRACT")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"E")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 /// 
 /// summary values:,
 /// summary=P&C&[P&C]
-Method ExtractFunctionCallSet2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ExtractFunctionCallSet1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C&[P&C]
 	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
@@ -4340,7 +4146,7 @@ Method ExtractFunctionCallSet2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,",")  {
 		if ..StarParameter(.subElement,.addedElement)  {
-			if ..ExtractFunctionCallSet3OptGrp(.subElement,.addedElement)  {
+			if ..ExtractFunctionCallSet2OptGrp(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -4359,7 +4165,7 @@ Method ExtractFunctionCallSet2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef
 /// 
 /// summary values:,
 /// summary=P&C
-Method ExtractFunctionCallSet3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ExtractFunctionCallSet2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
@@ -4587,7 +4393,7 @@ Method ForCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ForCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("FOR","F"))  {
 		if $s(..ForParameterList(.subElement,.addedElement) :1,1:1)  {
 			if ..ForLoopStatement(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
@@ -4603,22 +4409,6 @@ Method ForCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-/// 'for' | 'f'
-/// summary=K|K
-Method ForCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"FOR")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"F")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -5249,10 +5039,10 @@ Method GetFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..GetFunctionCall1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("GET","G"))  {
 		if ..OpenBracket(.subElement,.addedElement)  {
 			if ..GetExpression(.subElement,.addedElement)  {
-				if ..GetFunctionCall2OptGrp(.subElement,.addedElement)  {
+				if ..GetFunctionCall1OptGrp(.subElement,.addedElement)  {
 					if ..CloseBracket(.subElement,.addedElement)  {
 						set done=1 ; end compileRules
 					}
@@ -5272,26 +5062,10 @@ Method GetFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 	quit ok
 }
 
-/// 'get' | 'g'
-/// summary=K|K
-Method GetFunctionCall1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"GET")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"G")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 /// 
 /// summary values:,
 /// summary=P&C
-Method GetFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method GetFunctionCall1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
@@ -5923,7 +5697,7 @@ Method GotoCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..GotoCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("GOTO","G"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
 			if ..GotoDestList(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
@@ -5939,22 +5713,6 @@ Method GotoCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-/// 'goto' | 'g'
-/// summary=K|K
-Method GotoCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"GOTO")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"G")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -6071,7 +5829,7 @@ Method HaltCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..HaltCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("HALT","H"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
 			if ..Naked(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
@@ -6090,22 +5848,6 @@ Method HaltCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	quit ok
 }
 
-/// 'halt' | 'h'
-/// summary=K|K
-Method HaltCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"HALT")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"H")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 ///  hang_command ::= ('hang' | 'h') post_conditional? hang_value_list
 /// summary values:HANG,H
 /// summary=(K|K)&?4OptionalSingle4?&C
@@ -6117,7 +5859,7 @@ Method HangCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..HangCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("HANG","H"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
 			if ..HangValueList(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
@@ -6133,22 +5875,6 @@ Method HangCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-/// 'hang' | 'h'
-/// summary=K|K
-Method HangCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"HANG")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"H")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -6339,9 +6065,9 @@ Method IfCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..IfCommand1Sub(.subElement,.addedElement)  {
-		if ..IfCommand2Sub(.subElement,.addedElement)  {
-			if ..IfCommand3Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("IF","I"))  {
+		if ..IfCommand1Sub(.subElement,.addedElement)  {
+			if ..IfCommand2Sub(.subElement,.addedElement)  {
 				if $s(..ElseifBlockList(.subElement,.addedElement) :1,1:1)  {
 					if $s(..ElseBlock(.subElement,.addedElement) :1,1:1)  {
 						set done=1 ; end compileRules
@@ -6362,25 +6088,9 @@ Method IfCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 	quit ok
 }
 
-/// 'if' | 'i'
-/// summary=K|K
-Method IfCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"IF")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"I")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 ///  naked | expression_list
 /// summary=C|C
-Method IfCommand2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method IfCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C|C
 	set subElement=ParentElement
@@ -6397,7 +6107,7 @@ Method IfCommand2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 
 ///  naked | [then_block]
 /// summary=C|[C]
-Method IfCommand3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method IfCommand2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C|[C]
 	$$$BNFSTART(subElement)
@@ -6446,10 +6156,10 @@ Method IncrementFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..IncrementFunctionCall1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("INCREMENT","I"))  {
 		if ..addPunctuation(.subElement,"(")  {
-			if ..IncrementFunctionCall2Sub(.subElement,.addedElement)  {
-				if ..IncrementFunctionCall3OptGrp(.subElement,.addedElement)  {
+			if ..IncrementFunctionCall1Sub(.subElement,.addedElement)  {
+				if ..IncrementFunctionCall2OptGrp(.subElement,.addedElement)  {
 					if ..addPunctuation(.subElement,")")  {
 						set done=1 ; end compileRules
 					}
@@ -6469,25 +6179,9 @@ Method IncrementFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	quit ok
 }
 
-/// 'increment' | 'i'
-/// summary=K|K
-Method IncrementFunctionCall1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"INCREMENT")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"I")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 /// variable_set | global_ref_set
 /// summary=C|C
-Method IncrementFunctionCall2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method IncrementFunctionCall1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C|C
 	set subElement=ParentElement
@@ -6505,7 +6199,7 @@ Method IncrementFunctionCall2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 /// 
 /// summary values:,
 /// summary=P&C
-Method IncrementFunctionCall3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method IncrementFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
@@ -6814,7 +6508,7 @@ Method JobCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..JobCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("JOB","J"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
 			if ..JobArgumentList(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
@@ -6830,22 +6524,6 @@ Method JobCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-/// 'job' | 'j'
-/// summary=K|K
-Method JobCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"JOB")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"J")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -7513,9 +7191,9 @@ Method KillCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..KillCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("KILL","K"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
-			if ..KillCommand2Sub(.subElement,.addedElement)  {
+			if ..KillCommand1Sub(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -7532,25 +7210,9 @@ Method KillCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	quit ok
 }
 
-///  'kill' | 'k'
-/// summary=K|K
-Method KillCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"KILL")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"K")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 ///  naked | kill_parameter_list
 /// summary=C|C
-Method KillCommand2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method KillCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C|C
 	set subElement=ParentElement
@@ -8432,10 +8094,10 @@ Method ListbuildFunctionCallSet(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ListbuildFunctionCallSet1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("LISTBUILD","LISTGET","LB","LG"))  {
 		if ..OpenBracket(.subElement,.addedElement)  {
 			if $S(..SetValueExpression(.subElement,.addedElement) :1,1:1) {
-				if ..ListbuildFunctionCallSet2RepZero(.subElement,.addedElement)  {
+				if ..ListbuildFunctionCallSet1RepZero(.subElement,.addedElement)  {
 					if ..CloseBracket(.subElement,.addedElement)  {
 						set done=1 ; end compileRules
 					}
@@ -8455,33 +8117,13 @@ Method ListbuildFunctionCallSet(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	quit ok
 }
 
-/// 'listbuild' | 'listget' | 'lb' | 'lg'
-/// summary=K|K|K|K
-Method ListbuildFunctionCallSet1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"LISTBUILD")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"LISTGET")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"LB")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"LG")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 ///  (',' [set_value_expression])*
-Method ListbuildFunctionCallSet2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ListbuildFunctionCallSet1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	; method start
-	while ..ListbuildFunctionCallSet3Sub(.subElement,.addedElement)  {
+	while ..ListbuildFunctionCallSet2Sub(.subElement,.addedElement)  {
 		;
 	}
 	set ok=1
@@ -8491,7 +8133,7 @@ Method ListbuildFunctionCallSet2RepZero(ParentElement As PXW.DEV.BNF.Element, By
 /// ',' [set_value_expression]
 /// summary values:,
 /// summary=P&[C]
-Method ListbuildFunctionCallSet3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ListbuildFunctionCallSet2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&[C]
 	if '..isPunctuation(",",1) { quit 0 /* normal */ }
@@ -8524,10 +8166,10 @@ Method ListitemFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ListitemFunctionCall1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("LISTGET","LIST","LI","LG"))  {
 		if ..OpenBracket(.subElement,.addedElement)  {
 			if ..Expression(.subElement,.addedElement)  {
-				if ..ListitemFunctionCall2OptGrp(.subElement,.addedElement)  {
+				if ..ListitemFunctionCall1OptGrp(.subElement,.addedElement)  {
 					if ..CloseBracket(.subElement,.addedElement)  {
 						set done=1 ; end compileRules
 					}
@@ -8547,30 +8189,10 @@ Method ListitemFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	quit ok
 }
 
-/// 'listget' | 'list' | 'li' |'lg'
-/// summary=K|K|K|K
-Method ListitemFunctionCall1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"LISTGET")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"LIST")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"LI")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"LG")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 /// 
 /// summary values:,
 /// summary=P&C&[P&C]
-Method ListitemFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ListitemFunctionCall1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C&[P&C]
 	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
@@ -8578,7 +8200,7 @@ Method ListitemFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef s
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,",")  {
 		if ..StarParameter(.subElement,.addedElement)  {
-			if ..ListitemFunctionCall3OptGrp(.subElement,.addedElement)  {
+			if ..ListitemFunctionCall2OptGrp(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -8597,7 +8219,7 @@ Method ListitemFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef s
 /// 
 /// summary values:,
 /// summary=P&C
-Method ListitemFunctionCall3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ListitemFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
@@ -8630,10 +8252,10 @@ Method ListitemFunctionCallSet(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ListitemFunctionCallSet1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("LIST","LI"))  {
 		if ..OpenBracket(.subElement,.addedElement)  {
 			if ..SetValueExpression(.subElement,.addedElement)  {
-				if ..ListitemFunctionCallSet2OptGrp(.subElement,.addedElement)  {
+				if ..ListitemFunctionCallSet1OptGrp(.subElement,.addedElement)  {
 					if ..CloseBracket(.subElement,.addedElement)  {
 						set done=1 ; end compileRules
 					}
@@ -8653,26 +8275,10 @@ Method ListitemFunctionCallSet(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 	quit ok
 }
 
-/// 'list' | 'li'
-/// summary=K|K
-Method ListitemFunctionCallSet1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"LIST")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"LI")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 /// 
 /// summary values:,
 /// summary=P&C&[P&C]
-Method ListitemFunctionCallSet2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ListitemFunctionCallSet1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C&[P&C]
 	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
@@ -8680,7 +8286,7 @@ Method ListitemFunctionCallSet2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRe
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,",")  {
 		if ..StarParameter(.subElement,.addedElement)  {
-			if ..ListitemFunctionCallSet3OptGrp(.subElement,.addedElement)  {
+			if ..ListitemFunctionCallSet2OptGrp(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -8699,7 +8305,7 @@ Method ListitemFunctionCallSet2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRe
 /// 
 /// summary values:,
 /// summary=P&C
-Method ListitemFunctionCallSet3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ListitemFunctionCallSet2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
@@ -8818,12 +8424,12 @@ Method ListupdateFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ListupdateFunctionCall1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("LISTUPDATE","LU"))  {
 		if ..OpenBracket(.subElement,.addedElement)  {
 			if ..Expression(.subElement,.addedElement)  {
 				if ..addPunctuation(.subElement,",")  {
 					if ..Expression(.subElement,.addedElement)  {
-						if ..ListupdateFunctionCall2RepZero(.subElement,.addedElement)  {
+						if ..ListupdateFunctionCall1RepZero(.subElement,.addedElement)  {
 							if ..CloseBracket(.subElement,.addedElement)  {
 								set done=1 ; end compileRules
 							}
@@ -8845,29 +8451,13 @@ Method ListupdateFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	quit ok
 }
 
-/// 'listupdate' | 'lu'
-/// summary=K|K
-Method ListupdateFunctionCall1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"LISTUPDATE")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"LU")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 ///  (',' [ expression ':' expression] )*
-Method ListupdateFunctionCall2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ListupdateFunctionCall1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4punctuation:4?
 	set subElement=ParentElement
 	; method start
-	while ..ListupdateFunctionCall3Sub(.subElement,.addedElement)  {
+	while ..ListupdateFunctionCall2Sub(.subElement,.addedElement)  {
 		;
 	}
 	set ok=1
@@ -8877,14 +8467,14 @@ Method ListupdateFunctionCall2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRe
 /// ',' [ expression ':' expression]
 /// summary values:,
 /// summary=P&[C&P&C]
-Method ListupdateFunctionCall3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ListupdateFunctionCall2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&[C&P&C]
 	if '..isPunctuation(",",1) { quit 0 /* normal */ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,",")  {
-		if ..ListupdateFunctionCall4OptGrp(.subElement,.addedElement)  {
+		if ..ListupdateFunctionCall3OptGrp(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -8901,7 +8491,7 @@ Method ListupdateFunctionCall3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 
 /// 
 /// summary=C&P&C
-Method ListupdateFunctionCall4OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ListupdateFunctionCall3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C&P&C
 	$$$BNFSTART(subElement)
@@ -9052,9 +8642,9 @@ Method LockCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..LockCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("LOCK","L"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
-			if ..LockCommand2Sub(.subElement,.addedElement)  {
+			if ..LockCommand1Sub(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -9071,32 +8661,16 @@ Method LockCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	quit ok
 }
 
-/// 'lock' | 'l'
-/// summary=K|K
-Method LockCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"LOCK")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"L")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 ///  naked | ( [ ','.lock_parameter+ ] else_block? )
 /// summary=C|([.C.]&?4OptionalSingle4?)
-Method LockCommand2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method LockCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C|([.C.]&?4OptionalSingle4?)
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..Naked(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..LockCommand3Sub(.subElement,.addedElement)  {
+	} elseif ..LockCommand2Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -9112,12 +8686,12 @@ Method LockCommand2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 ///  [ ','.lock_parameter+ ] else_block?
 /// summary=[.C.]&?4OptionalSingle4?
-Method LockCommand3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method LockCommand2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary [.C.]&?4OptionalSingle4?
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if $S(..LockCommand4RepSep(.subElement,.addedElement) :1,1:1) {
+	if $S(..LockCommand3RepSep(.subElement,.addedElement) :1,1:1) {
 		if $s(..ElseBlock(.subElement,.addedElement) :1,1:1)  {
 			set done=1 ; end compileRules
 		}
@@ -9134,7 +8708,7 @@ Method LockCommand3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 }
 
 ///  ','.lock_parameter+
-Method LockCommand4RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method LockCommand3RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4String:4?
 	$$$BNFSTART(subElement)
@@ -9682,7 +9256,7 @@ Method MergeCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..MergeCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("MERGE","M"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
 			if ..MergeItemList(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
@@ -9698,22 +9272,6 @@ Method MergeCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-/// 'merge' | 'm'
-/// summary=K|K
-Method MergeCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"MERGE")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"M")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -9906,7 +9464,7 @@ Method MpvCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..MpvCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("MVPRINT","MVP"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
 			if $s(..WriteArgumentList(.subElement,.addedElement) :1,1:1)  {
 				set done=1 ; end compileRules
@@ -9922,22 +9480,6 @@ Method MpvCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-/// 'mvprint' | 'mvp'
-/// summary=K|K
-Method MpvCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"MVPRINT")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"MVP")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -10095,9 +9637,9 @@ Method NewCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..NewCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("NEW","N"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
-			if ..NewCommand2Sub(.subElement,.addedElement)  {
+			if ..NewCommand1Sub(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -10114,25 +9656,9 @@ Method NewCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	quit ok
 }
 
-/// 'new' | 'n'
-/// summary=K|K
-Method NewCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"NEW")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"N")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 ///  naked | new_item_list
 /// summary=C|C
-Method NewCommand2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method NewCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C|C
 	set subElement=ParentElement
@@ -10344,7 +9870,7 @@ Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 	set done=0 ; method start
 	if ..Number1Sub(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..Number5Sub(.subElement,.addedElement)  {
+	} elseif ..Number4Sub(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -10417,7 +9943,7 @@ Method Number3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	if '(..isKeywordInList($lb("E","E"))) { quit 1 /* not found is OK */ /*1*/ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Number4Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("E","E"))  {
 		if ..addRegex(.subElement,"[0-9]+")  {
 			set done=1 ; end compileRules
 		}
@@ -10433,29 +9959,10 @@ Method Number3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	quit ok
 }
 
-/// 'e' | 'E'
-/// summary values:E,E
-/// summary=K|K
-Method Number4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K|K
-	if '(..isKeywordInList($lb("E","E"))) { quit 0 /* normal */ }
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"E")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"E")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 /// '.' 'regexp:[0-9]+' [ ('e' | 'E') 'regexp:[0-9]+']
 /// summary values:.
 /// summary=P&R&[(K|K)&R]
-Method Number5Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method Number4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&R&[(K|K)&R]
 	if '..isPunctuation(".",1) { quit 0 /* normal */ }
@@ -10463,7 +9970,7 @@ Method Number5Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,".")  {
 		if ..addRegex(.subElement,"[0-9]+")  {
-			if ..Number6OptGrp(.subElement,.addedElement)  {
+			if ..Number5OptGrp(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -10482,13 +9989,13 @@ Method Number5Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 /// 
 /// summary values:E,E
 /// summary=(K|K)&R
-Method Number6OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method Number5OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary (K|K)&R
 	if '(..isKeywordInList($lb("E","E"))) { quit 1 /* not found is OK */ /*1*/ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Number7Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("E","E"))  {
 		if ..addRegex(.subElement,"[0-9]+")  {
 			set done=1 ; end compileRules
 		}
@@ -10501,25 +10008,6 @@ Method Number6OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		$$$BNFROLLBACK(subElement)
 		set ok=1 /* failure rollsback but returns OK */
 	}
-	quit ok
-}
-
-/// 'e' | 'E'
-/// summary values:E,E
-/// summary=K|K
-Method Number7Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary K|K
-	if '(..isKeywordInList($lb("E","E"))) { quit 0 /* normal */ }
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"E")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"E")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -10944,7 +10432,7 @@ Method OpenCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..OpenCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("OPEN","O"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
 			if ..OpenArgumentList(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
@@ -10960,22 +10448,6 @@ Method OpenCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-/// 'open' | 'o'
-/// summary=K|K
-Method OpenCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"OPEN")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"O")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -11238,10 +10710,10 @@ Method OrderFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..OrderFunctionCall1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("ORDER","O"))  {
 		if ..OpenBracket(.subElement,.addedElement)  {
 			if ..Expression(.subElement,.addedElement)  {
-				if ..OrderFunctionCall2OptGrp(.subElement,.addedElement)  {
+				if ..OrderFunctionCall1OptGrp(.subElement,.addedElement)  {
 					if ..CloseBracket(.subElement,.addedElement)  {
 						set done=1 ; end compileRules
 					}
@@ -11261,26 +10733,10 @@ Method OrderFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	quit ok
 }
 
-/// 'order' | 'o'
-/// summary=K|K
-Method OrderFunctionCall1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"ORDER")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"O")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 /// 
 /// summary values:,
 /// summary=P&C&[P&C]
-Method OrderFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method OrderFunctionCall1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C&[P&C]
 	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
@@ -11288,7 +10744,7 @@ Method OrderFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,",")  {
 		if ..Expression(.subElement,.addedElement)  {
-			if ..OrderFunctionCall3OptGrp(.subElement,.addedElement)  {
+			if ..OrderFunctionCall2OptGrp(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -11307,7 +10763,7 @@ Method OrderFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 /// 
 /// summary values:,
 /// summary=P&C
-Method OrderFunctionCall3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method OrderFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
@@ -11643,12 +11099,12 @@ Method PieceFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..PieceFunctionCall1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("PIECE","P"))  {
 		if ..OpenBracket(.subElement,.addedElement)  {
 			if ..Expression(.subElement,.addedElement)  {
 				if ..addPunctuation(.subElement,",")  {
 					if ..Expression(.subElement,.addedElement)  {
-						if ..PieceFunctionCall2OptGrp(.subElement,.addedElement)  {
+						if ..PieceFunctionCall1OptGrp(.subElement,.addedElement)  {
 							if ..CloseBracket(.subElement,.addedElement)  {
 								set done=1 ; end compileRules
 							}
@@ -11670,26 +11126,10 @@ Method PieceFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	quit ok
 }
 
-/// 'piece' | 'p'
-/// summary=K|K
-Method PieceFunctionCall1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"PIECE")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"P")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 /// 
 /// summary values:,
 /// summary=P&C&[P&C]
-Method PieceFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method PieceFunctionCall1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C&[P&C]
 	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
@@ -11697,7 +11137,7 @@ Method PieceFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,",")  {
 		if ..StarParameter(.subElement,.addedElement)  {
-			if ..PieceFunctionCall3OptGrp(.subElement,.addedElement)  {
+			if ..PieceFunctionCall2OptGrp(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -11716,7 +11156,7 @@ Method PieceFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 /// 
 /// summary values:,
 /// summary=P&C
-Method PieceFunctionCall3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method PieceFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
@@ -11749,12 +11189,12 @@ Method PieceFunctionCallSet(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..PieceFunctionCallSet1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("PIECE","P"))  {
 		if ..OpenBracket(.subElement,.addedElement)  {
 			if ..SetValueExpression(.subElement,.addedElement)  {
 				if ..addPunctuation(.subElement,",")  {
 					if ..Expression(.subElement,.addedElement)  {
-						if ..PieceFunctionCallSet2OptGrp(.subElement,.addedElement)  {
+						if ..PieceFunctionCallSet1OptGrp(.subElement,.addedElement)  {
 							if ..CloseBracket(.subElement,.addedElement)  {
 								set done=1 ; end compileRules
 							}
@@ -11776,26 +11216,10 @@ Method PieceFunctionCallSet(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	quit ok
 }
 
-/// 'piece' | 'p'
-/// summary=K|K
-Method PieceFunctionCallSet1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"PIECE")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"P")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 /// 
 /// summary values:,
 /// summary=P&C&[P&C]
-Method PieceFunctionCallSet2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method PieceFunctionCallSet1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C&[P&C]
 	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
@@ -11803,7 +11227,7 @@ Method PieceFunctionCallSet2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef s
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,",")  {
 		if ..StarParameter(.subElement,.addedElement)  {
-			if ..PieceFunctionCallSet3OptGrp(.subElement,.addedElement)  {
+			if ..PieceFunctionCallSet2OptGrp(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -11822,7 +11246,7 @@ Method PieceFunctionCallSet2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef s
 /// 
 /// summary values:,
 /// summary=P&C
-Method PieceFunctionCallSet3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method PieceFunctionCallSet2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
@@ -12097,10 +11521,10 @@ Method QueryFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..QueryFunctionCall1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("QUERY","Q"))  {
 		if ..OpenBracket(.subElement,.addedElement)  {
 			if ..Expression(.subElement,.addedElement)  {
-				if ..QueryFunctionCall2OptGrp(.subElement,.addedElement)  {
+				if ..QueryFunctionCall1OptGrp(.subElement,.addedElement)  {
 					if ..CloseBracket(.subElement,.addedElement)  {
 						set done=1 ; end compileRules
 					}
@@ -12120,26 +11544,10 @@ Method QueryFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	quit ok
 }
 
-/// 'query' | 'q'
-/// summary=K|K
-Method QueryFunctionCall1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"QUERY")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"Q")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 /// 
 /// summary values:,
 /// summary=P&C&[P&C]
-Method QueryFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method QueryFunctionCall1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C&[P&C]
 	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
@@ -12147,7 +11555,7 @@ Method QueryFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,",")  {
 		if ..Expression(.subElement,.addedElement)  {
-			if ..QueryFunctionCall3OptGrp(.subElement,.addedElement)  {
+			if ..QueryFunctionCall2OptGrp(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -12166,7 +11574,7 @@ Method QueryFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 /// 
 /// summary values:,
 /// summary=P&C
-Method QueryFunctionCall3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method QueryFunctionCall2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	if '..isPunctuation(",",1) { quit 1 /* not found is OK */ }
@@ -12199,9 +11607,9 @@ Method QuitCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..QuitCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("QUIT","Q"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
-			if ..QuitCommand2OptGrp(.subElement,.addedElement)  {
+			if ..QuitCommand1OptGrp(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -12218,25 +11626,9 @@ Method QuitCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	quit ok
 }
 
-/// 'quit' | 'q'
-/// summary=K|K
-Method QuitCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"QUIT")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"Q")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 /// 
 /// summary=C|C
-Method QuitCommand2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method QuitCommand1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C|C
 	set subElement=ParentElement
@@ -12316,9 +11708,9 @@ Method ReadCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ReadCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("READ","R"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
-			if ..ReadCommand2RepSep(.subElement,.addedElement)  {
+			if ..ReadCommand1RepSep(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -12335,24 +11727,8 @@ Method ReadCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	quit ok
 }
 
-/// 'read' | 'r'
-/// summary=K|K
-Method ReadCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"READ")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"R")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 ///  ','.read_argument+
-Method ReadCommand2RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ReadCommand1RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ?4String:4?
 	$$$BNFSTART(subElement)
@@ -12758,9 +12134,9 @@ Method ReturnCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ReturnCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("RETURN","RET"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
-			if ..ReturnCommand2OptGrp(.subElement,.addedElement)  {
+			if ..ReturnCommand1OptGrp(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -12777,25 +12153,9 @@ Method ReturnCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	quit ok
 }
 
-/// 'return' | 'ret'
-/// summary=K|K
-Method ReturnCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"RETURN")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"RET")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 /// 
 /// summary=C|C
-Method ReturnCommand2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ReturnCommand1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C|C
 	set subElement=ParentElement
@@ -13049,7 +12409,7 @@ Method SelectFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SelectFunctionCall1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("SELECT","S"))  {
 		if ..addPunctuation(.subElement,"(")  {
 			if ..SelectClauseList(.subElement,.addedElement)  {
 				if ..addPunctuation(.subElement,")")  {
@@ -13072,22 +12432,6 @@ Method SelectFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	quit ok
 }
 
-/// 'select' | 's'
-/// summary=K|K
-Method SelectFunctionCall1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"SELECT")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"S")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 ///  set_command ::= ('set' | 's') post_conditional? set_item_list
 /// summary values:SET,S
 /// summary=(K|K)&?4OptionalSingle4?&C
@@ -13099,7 +12443,7 @@ Method SetCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..SetCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("SET","S"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
 			if ..SetItemList(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
@@ -13115,22 +12459,6 @@ Method SetCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-/// 'set' | 's'
-/// summary=K|K
-Method SetCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"SET")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"S")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -14288,7 +13616,7 @@ Method TcommitCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..TcommitCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("TCOMMIT","TC"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
 			set done=1 ; end compileRules
 		}
@@ -14302,22 +13630,6 @@ Method TcommitCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-/// 'tcommit' | 'tc'
-/// summary=K|K
-Method TcommitCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"TCOMMIT")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"TC")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -14373,7 +13685,7 @@ Method TextFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..TextFunctionCall1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("TEXT","T"))  {
 		if ..OpenBracket(.subElement,.addedElement)  {
 			if ..TextLabelReference(.subElement,.addedElement)  {
 				if ..CloseBracket(.subElement,.addedElement)  {
@@ -14391,22 +13703,6 @@ Method TextFunctionCall(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-/// 'text' | 't'
-/// summary=K|K
-Method TextFunctionCall1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"TEXT")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"T")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -15065,7 +14361,7 @@ Method TstartCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..TstartCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("TSTART","TS"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
 			set done=1 ; end compileRules
 		}
@@ -15079,22 +14375,6 @@ Method TstartCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-/// 'tstart' | 'ts'
-/// summary=K|K
-Method TstartCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"TSTART")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"TS")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -15257,7 +14537,7 @@ Method UseCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..UseCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("USE","U"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
 			if ..UseArgumentList(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
@@ -15273,22 +14553,6 @@ Method UseCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-/// 'use' | 'u'
-/// summary=K|K
-Method UseCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"USE")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"U")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -15771,9 +15035,9 @@ Method ViewCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ViewCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("VIEW","V"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
-			if ..ViewCommand2Sub(.subElement,.addedElement)  {
+			if ..ViewCommand1Sub(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -15790,25 +15054,9 @@ Method ViewCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 	quit ok
 }
 
-/// 'view' | 'v'
-/// summary=K|K
-Method ViewCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"VIEW")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"V")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 ///  view_offset_form | view_block_form
 /// summary=C|C
-Method ViewCommand2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ViewCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C|C
 	set subElement=ParentElement
@@ -16101,9 +15349,9 @@ Method WriteCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..WriteCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("WRITE","W"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
-			if ..WriteCommand2Sub(.subElement,.addedElement)  {
+			if ..WriteCommand1Sub(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -16120,25 +15368,9 @@ Method WriteCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	quit ok
 }
 
-/// 'write' | 'w'
-/// summary=K|K
-Method WriteCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"WRITE")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"W")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 ///  naked | write_argument_list
 /// summary=C|C
-Method WriteCommand2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method WriteCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C|C
 	set subElement=ParentElement
@@ -16634,7 +15866,7 @@ Method XecuteCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..XecuteCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("XECUTE","X"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
 			if ..XecuteArgList(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
@@ -16650,22 +15882,6 @@ Method XecuteCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-///  'xecute' | 'x'
-/// summary=K|K
-Method XecuteCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"XECUTE")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"X")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -16805,9 +16021,9 @@ Method ZbreakCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ZbreakCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("ZBREAK","ZB"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
-			if ..ZbreakCommand2OptGrp(.subElement,.addedElement)  {
+			if ..ZbreakCommand1OptGrp(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -16824,31 +16040,15 @@ Method ZbreakCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	quit ok
 }
 
-/// 'zbreak' | 'zb'
-/// summary=K|K
-Method ZbreakCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"ZBREAK")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"ZB")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 /// 
 /// summary=((P&C)|P)&[P&(C|C)&[P&C&[P&C]]]
-Method ZbreakCommand2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ZbreakCommand1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary ((P&C)|P)&[P&(C|C)&[P&C&[P&C]]]
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ZbreakCommand3Sub(.subElement,.addedElement)  {
-		if ..ZbreakCommand5OptGrp(.subElement,.addedElement)  {
+	if ..ZbreakCommand2Sub(.subElement,.addedElement)  {
+		if ..ZbreakCommand4OptGrp(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -16865,12 +16065,12 @@ Method ZbreakCommand2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 /// ('/' identifier) | '$'
 /// summary=(P&C)|P
-Method ZbreakCommand3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ZbreakCommand2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary (P&C)|P
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ZbreakCommand4Sub(.subElement,.addedElement)  {
+	if ..ZbreakCommand3Sub(.subElement,.addedElement)  {
 		set done=1 ; or
 	} elseif ..addPunctuation(.subElement,"$")  {
 		set done=1 ; end compileRules
@@ -16889,7 +16089,7 @@ Method ZbreakCommand3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 /// '/' identifier
 /// summary values:/
 /// summary=P&C
-Method ZbreakCommand4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ZbreakCommand3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	if '..isPunctuation("/",1) { quit 0 /* normal */ }
@@ -16914,15 +16114,15 @@ Method ZbreakCommand4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 /// 
 /// summary values::
 /// summary=P&(C|C)&[P&C&[P&C]]
-Method ZbreakCommand5OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ZbreakCommand4OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&(C|C)&[P&C&[P&C]]
 	if '..isPunctuation(":",1) { quit 1 /* not found is OK */ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,":")  {
-		if ..ZbreakCommand6Sub(.subElement,.addedElement)  {
-			if ..ZbreakCommand7OptGrp(.subElement,.addedElement)  {
+		if ..ZbreakCommand5Sub(.subElement,.addedElement)  {
+			if ..ZbreakCommand6OptGrp(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -16940,7 +16140,7 @@ Method ZbreakCommand5OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 ///  identifier | string
 /// summary=C|C
-Method ZbreakCommand6Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ZbreakCommand5Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C|C
 	set subElement=ParentElement
@@ -16958,7 +16158,7 @@ Method ZbreakCommand6Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 /// 
 /// summary values::
 /// summary=P&C&[P&C]
-Method ZbreakCommand7OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ZbreakCommand6OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C&[P&C]
 	if '..isPunctuation(":",1) { quit 1 /* not found is OK */ }
@@ -16966,7 +16166,7 @@ Method ZbreakCommand7OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,":")  {
 		if ..Expression(.subElement,.addedElement)  {
-			if ..ZbreakCommand8OptGrp(.subElement,.addedElement)  {
+			if ..ZbreakCommand7OptGrp(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -16985,7 +16185,7 @@ Method ZbreakCommand7OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 /// 
 /// summary values::
 /// summary=P&C
-Method ZbreakCommand8OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ZbreakCommand7OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary P&C
 	if '..isPunctuation(":",1) { quit 1 /* not found is OK */ }
@@ -17044,7 +16244,7 @@ Method ZkillCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ZkillCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("ZKILL","ZK"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
 			if $s(..KillParameterList(.subElement,.addedElement) :1,1:1)  {
 				set done=1 ; end compileRules
@@ -17060,22 +16260,6 @@ Method ZkillCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-/// 'zkill' | 'zk'
-/// summary=K|K
-Method ZkillCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"ZKILL")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"ZK")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -17116,7 +16300,7 @@ Method ZnspaceCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ZnspaceCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("ZNSPACE","ZN"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
 			if ..Expression(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
@@ -17132,22 +16316,6 @@ Method ZnspaceCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-/// 'znspace'|'zn'
-/// summary=K|K
-Method ZnspaceCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"ZNSPACE")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"ZN")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -17476,9 +16644,9 @@ Method ZtrapCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ZtrapCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("ZTRAP","ZT"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
-			if ..ZtrapCommand2OptGrp(.subElement,.addedElement)  {
+			if ..ZtrapCommand1OptGrp(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -17495,25 +16663,9 @@ Method ZtrapCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	quit ok
 }
 
-/// 'ztrap' | 'zt'
-/// summary=K|K
-Method ZtrapCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"ZTRAP")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"ZT")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 /// 
 /// summary=C|C
-Method ZtrapCommand2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ZtrapCommand1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C|C
 	set subElement=ParentElement
@@ -17616,9 +16768,9 @@ Method ZwriteCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ZwriteCommand1Sub(.subElement,.addedElement)  {
+	if ..addKeywordInList(.subElement,$listbuild("ZWRITE","ZW"))  {
 		if $s(..PostConditional(.subElement,.addedElement) :1,1:1)  {
-			if ..ZwriteCommand2Sub(.subElement,.addedElement)  {
+			if ..ZwriteCommand1Sub(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -17635,25 +16787,9 @@ Method ZwriteCommand(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 	quit ok
 }
 
-///  'zwrite' | 'zw'
-/// summary=K|K
-Method ZwriteCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..addKeyword(.subElement,"ZWRITE")  {
-		set done=1 ; or
-	} elseif ..addKeyword(.subElement,"ZW")  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 ///  naked | zwrite_argument_list
 /// summary=C|C
-Method ZwriteCommand2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
+Method ZwriteCommand1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
 	; rules summary C|C
 	set subElement=ParentElement

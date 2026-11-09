@@ -15,7 +15,7 @@ Property VariablesTypes As %String [ MultiDimensional ];
 /// ..VariableTypesElement(..element)=type
 
 property VariablesTypesElement as %String [ MultiDimensional ];
-
+ 
 /// keyed by variable name, in certain situations we know a 
 /// variable is a ListOf something and it could also define what it is a list of
 property ListVarElementType as %String [ MultiDimensional ];
@@ -140,31 +140,6 @@ Method IsParameterVariable(var As %String) As %Boolean
 	If var="" Quit 0
 	If $DATA(i%ParameterVariables(var)) Quit 1
 	Quit 0
-}
-
-/// best to analyse the entire codeblock all at once.
-Method checkElement(element As PXW.DEV.Element)
-{
-	#dim a as PXW.DEV.Atom
-
-	Do ..processSpecificElement(element)
-
-	Set akey=""
-	For  {
-		Set part=element.partsGetNext(.akey)
-		Quit:akey=""
-		
-		If part.IsElement {
-			Do ..checkElement(part)
-		} 
-	}
-
-	; AFTER full analysis we can flag a couple of things
-	;If element.type="OneClassmember" {
-	;	Do ..checkOneClassMemeberFINAL(element)
-	;}
-	Do ..processSpecificElement(element,"POST")
-
 }
 
 /// Check to see if Classname is a subclass of the given superclass
@@ -618,7 +593,7 @@ Method checkCosDirectiveDimItemSet(element As PXW.DEV.BNF.Elements.COS) As PXW.D
 			Do ..AddElementWarning(element,"VTYPE","dimmed as "_fullret_" does not match derived "_fullder)
 		}
 	}
-	$$$DEBUGMethodEnd
+	$$$DEBUGMethodEnd 
 	Quit ""
 }
 
