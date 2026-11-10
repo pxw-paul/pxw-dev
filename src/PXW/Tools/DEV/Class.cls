@@ -268,17 +268,18 @@ ClassMethod WriteNav(ByRef scratch)
 	Do ..HREFFrom(.class,.path,.instanceclass,.linenumber,,.propertyparam,.formatoptions)
     Write "<a href=# onclick='MakeStringsInteresting(); '>Strings</a>"
     If formatoptions'["NOSQLFORMATTING" {
-		Write "<a href="""_..HREFTo(class,path,linenumber,%NS,instanceclass,propertyparam,formatoptions_"NOSQLFORMATTING")_""">No Embedded SQL Formatting</a>"
+		Write "<a href="""_..HREFTo(class,path,linenumber,%NS,instanceclass,propertyparam,formatoptions_"NOSQLFORMATTING")_""">No Embedded SQL Formatting</a>",!
 	} Else {
 		Set off=$REPLACE(formatoptions,"NOSQLFORMATTING","")
-		Write "<a href="""_..HREFTo(class,path,linenumber,%NS,instanceclass,propertyparam,off)_""">Embedded SQL Formatting</a>"
+		Write "<a href="""_..HREFTo(class,path,linenumber,%NS,instanceclass,propertyparam,off)_""">Embedded SQL Formatting</a>",!
 	}
     If formatoptions'["DOCBOOKMODE" {
-		Write "<a href="""_..HREFTo(class,path,linenumber,%NS,instanceclass,propertyparam,formatoptions_"DOCBOOKMODE")_""">DocBook Mode</a>"
+		Write "<a href="""_..HREFTo(class,path,linenumber,%NS,instanceclass,propertyparam,formatoptions_"DOCBOOKMODE")_""">DocBook Mode</a>",!
 	} Else {
 		Set off=$REPLACE(formatoptions,"DOCBOOKMODE","")
-		Write "<a href="""_..HREFTo(class,path,linenumber,%NS,instanceclass,propertyparam,off)_""">Raw Comment Mode</a>"
+		Write "<a href="""_..HREFTo(class,path,linenumber,%NS,instanceclass,propertyparam,off)_""">Raw Comment Mode</a>",!
 	}
+	Write "<a href=# onclick=""HiliteClearAll();"">Clear variable hilites</a>",!
 
 	If $ISOBJECT($GET(scratch)) {
 		Set output=scratch
@@ -411,13 +412,35 @@ ClassMethod WriteScripts()
 	Write "    var clsf='hiliteGET'+hiliterun;",!
 	Write "    var clsd='hiliteDEF'+hiliterun;",!
 	Write "    for (var i=0; i<objs.length; i++) {",!
-	Write "      if (objs[i].getAttribute('varid')==id) objs[i].className=cls; //",! ;objs[i].className+' '+cls;",!
-	Write "      if (objs[i].getAttribute('fetchid')==id) objs[i].className=clsf; //",! ;objs[i].className+' '+cls;",!
-	Write "      if (objs[i].getAttribute('defid')==id) objs[i].className=clsd; //",! ;objs[i].className+' '+cls;",!
+	Write "      if (objs[i].getAttribute('varid')==id) HiliteSetElement(objs[i],cls);",!
+	Write "      if (objs[i].getAttribute('fetchid')==id) HiliteSetElement(objs[i],clsf);",! 
+	Write "      if (objs[i].getAttribute('defid')==id) HiliteSetElement(objs[i],clsd);",! 
 	Write "    }",!
 	Write "    hiliterun=hiliterun+1; if (hiliterun>9) hiliterun=1;",!
 	Write "}",!
 
+	Write "function HiliteSetElement(ele,newcls) {",!
+	Write "    for (var i=0; i<9; i++) {"
+	Write "        var cls='hiliteSET'+i;",!
+	Write "        var clsf='hiliteGET'+i;",!
+	Write "        var clsd='hiliteDEF'+i;",!
+	Write "        ele.classList.remove(cls);"
+	Write "        ele.classList.remove(clsf);"
+	Write "        ele.classList.remove(clsd);"
+	Write "    }",!
+	Write "    if (newcls!="""") {",!
+	Write "        ele.classList.add(newcls);",!
+	Write "    }"
+	Write "}",!
+
+	Write "function HiliteClearAll() {",!
+	Write "    var objs=document.getElementsByTagName('span');",!
+	Write "    for (var i=0; i<objs.length; i++) {",!
+	Write "      if (objs[i].getAttribute('varid')!="""") HiliteSetElement(objs[i],"""");",!
+	Write "      if (objs[i].getAttribute('fetchid')!="""") HiliteSetElement(objs[i],"""");",! 
+	Write "      if (objs[i].getAttribute('defid')!="""") HiliteSetElement(objs[i],"""");",! 
+	Write "    }",!
+	Write "}",!
 
 	Write "function HiliteElement(id) {",!
 	Write "    var obj=document.getElementById(id);",!

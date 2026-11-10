@@ -120,10 +120,10 @@ Method AttributeAliases(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 }
 
 ///  attribute_AliasList ::= attribute_OneAlias ( ',' attribute_OneAlias )*
-/// summary=C&(?4punctuation:4?)*
+/// summary=C&((P&C))*
 Method AttributeAliaslist(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C&(?4punctuation:4?)*
+	; rules summary C&((P&C))*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -148,7 +148,7 @@ Method AttributeAliaslist(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 ///  ( ',' attribute_OneAlias )*
 Method AttributeAliaslist1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..AttributeAliaslist2Sub(.subElement,.addedElement)  {
@@ -492,7 +492,7 @@ Method AttributeCompileafter(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"COMPILEAFTER")  {
 		if ..addPunctuation(.subElement,"=")  {
-			if ..AttributeCompileafter1OptGrp(.subElement,.addedElement)  {
+			if ..ClassReferenceList(.subElement,.addedElement)  || ..ClassReference(.subElement,.addedElement)  || 1  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -506,23 +506,6 @@ Method AttributeCompileafter(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-/// 
-/// summary=C|C
-Method AttributeCompileafter1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C|C
-	set subElement=ParentElement
-	; method start
-	if ..ClassReferenceList(.subElement,.addedElement)  {
-		; or
-	} elseif ..ClassReference(.subElement,.addedElement)  {
-		; end compileRules
-	}
-
-	set ok=1
 	quit ok
 }
 
@@ -573,7 +556,7 @@ Method AttributeConstraint(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"CONSTRAINT")  {
 		if ..addPunctuation(.subElement,"=")  {
-			if ..AttributeConstraint1Sub(.subElement,.addedElement)  {
+			if ..Number(.subElement,.addedElement)  || ..String(.subElement,.addedElement)  || ..Identifier(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -590,31 +573,12 @@ Method AttributeConstraint(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	quit ok
 }
 
-/// number | string | identifier
-/// summary=C|C|C
-Method AttributeConstraint1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C|C|C
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..Number(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..String(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Identifier(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 ///  attribute_Data ::= 'data' '=' ( one_data_attribute_value | ( '(' one_data_attribute_value ( ',' one_data_attribute_value )* ')' ) )
 /// summary values:DATA
-/// summary=K&P&(C|(P&C&(?4punctuation:4?)*&P))
+/// summary=K&P&(C|(P&C&((P&C))*&P))
 Method AttributeData(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&(C|(P&C&(?4punctuation:4?)*&P))
+	; rules summary K&P&(C|(P&C&((P&C))*&P))
 	if '(..isKeyword("DATA")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -640,10 +604,10 @@ Method AttributeData(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As P
 }
 
 ///  one_data_attribute_value | ( '(' one_data_attribute_value ( ',' one_data_attribute_value )* ')' )
-/// summary=C|(P&C&(?4punctuation:4?)*&P)
+/// summary=C|(P&C&((P&C))*&P)
 Method AttributeData1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary C|(P&C&(?4punctuation:4?)*&P)
+	; rules summary C|(P&C&((P&C))*&P)
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..OneDataAttributeValue(.subElement,.addedElement)  {
@@ -664,10 +628,10 @@ Method AttributeData1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 
 ///  '(' one_data_attribute_value ( ',' one_data_attribute_value )* ')'
 /// summary values:(
-/// summary=P&C&(?4punctuation:4?)*&P
+/// summary=P&C&((P&C))*&P
 Method AttributeData2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary P&C&(?4punctuation:4?)*&P
+	; rules summary P&C&((P&C))*&P
 	if '..isPunctuation("(",1) { quit 0 /* normal */ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -694,7 +658,7 @@ Method AttributeData2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 ///  ( ',' one_data_attribute_value )*
 Method AttributeData3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..AttributeData4Sub(.subElement,.addedElement)  {
@@ -768,7 +732,7 @@ Method AttributeDependson(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"DEPENDSON")  {
 		if ..addPunctuation(.subElement,"=")  {
-			if ..AttributeDependson1Sub(.subElement,.addedElement)  {
+			if ..ClassReferenceList(.subElement,.addedElement)  || ..ClassReference(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -782,23 +746,6 @@ Method AttributeDependson(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-///  class_reference_list | class_reference
-/// summary=C|C
-Method AttributeDependson1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C|C
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..ClassReferenceList(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..ClassReference(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -1084,10 +1031,10 @@ Method AttributeForeach(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 ///  attribute_GenerateAfter ::= 'generateafter' '=' ( method_reference | ( '(' method_reference ( ',' method_reference )* ')' ) )
 /// summary values:GENERATEAFTER
-/// summary=K&P&(C|(P&C&(?4punctuation:4?)*&P))
+/// summary=K&P&(C|(P&C&((P&C))*&P))
 Method AttributeGenerateafter(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&(C|(P&C&(?4punctuation:4?)*&P))
+	; rules summary K&P&(C|(P&C&((P&C))*&P))
 	if '(..isKeyword("GENERATEAFTER")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -1113,10 +1060,10 @@ Method AttributeGenerateafter(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 }
 
 ///  method_reference | ( '(' method_reference ( ',' method_reference )* ')' )
-/// summary=C|(P&C&(?4punctuation:4?)*&P)
+/// summary=C|(P&C&((P&C))*&P)
 Method AttributeGenerateafter1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary C|(P&C&(?4punctuation:4?)*&P)
+	; rules summary C|(P&C&((P&C))*&P)
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..MethodReference(.subElement,.addedElement)  {
@@ -1137,10 +1084,10 @@ Method AttributeGenerateafter1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 
 ///  '(' method_reference ( ',' method_reference )* ')'
 /// summary values:(
-/// summary=P&C&(?4punctuation:4?)*&P
+/// summary=P&C&((P&C))*&P
 Method AttributeGenerateafter2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary P&C&(?4punctuation:4?)*&P
+	; rules summary P&C&((P&C))*&P
 	if '..isPunctuation("(",1) { quit 0 /* normal */ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -1167,7 +1114,7 @@ Method AttributeGenerateafter2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 ///  ( ',' method_reference )*
 Method AttributeGenerateafter3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..AttributeGenerateafter4Sub(.subElement,.addedElement)  {
@@ -1215,7 +1162,7 @@ Method AttributeGeneratedby(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"GENERATEDBY")  {
 		if ..addPunctuation(.subElement,"=")  {
-			if ..AttributeGeneratedby1Sub(.subElement,.addedElement)  {
+			if ..ClassReference(.subElement,.addedElement)  || ..String(.subElement,.addedElement)  || ..Filename(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -1229,25 +1176,6 @@ Method AttributeGeneratedby(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-/// class_reference | string | filename
-/// summary=C|C|C
-Method AttributeGeneratedby1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C|C|C
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..ClassReference(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..String(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Filename(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -1473,10 +1401,10 @@ Method AttributeLegacyinstancecontext(ParentElement As PXW.DEV.BNF.Element, ByRe
 
 ///  attribute_MemberSuper ::= 'MemberSuper' '=' ( ( '(' class_reference ( ',' class_reference )*')' ) | class_reference )
 /// summary values:MEMBERSUPER
-/// summary=K&P&((P&C&(?4punctuation:4?)*&P)|C)
+/// summary=K&P&((P&C&((P&C))*&P)|C)
 Method AttributeMembersuper(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&((P&C&(?4punctuation:4?)*&P)|C)
+	; rules summary K&P&((P&C&((P&C))*&P)|C)
 	if '(..isKeyword("MEMBERSUPER")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -1502,10 +1430,10 @@ Method AttributeMembersuper(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 }
 
 ///  ( '(' class_reference ( ',' class_reference )*')' ) | class_reference
-/// summary=(P&C&(?4punctuation:4?)*&P)|C
+/// summary=(P&C&((P&C))*&P)|C
 Method AttributeMembersuper1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary (P&C&(?4punctuation:4?)*&P)|C
+	; rules summary (P&C&((P&C))*&P)|C
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..AttributeMembersuper2Sub(.subElement,.addedElement)  {
@@ -1526,10 +1454,10 @@ Method AttributeMembersuper1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 
 ///  '(' class_reference ( ',' class_reference )*')'
 /// summary values:(
-/// summary=P&C&(?4punctuation:4?)*&P
+/// summary=P&C&((P&C))*&P
 Method AttributeMembersuper2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary P&C&(?4punctuation:4?)*&P
+	; rules summary P&C&((P&C))*&P
 	if '..isPunctuation("(",1) { quit 0 /* normal */ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -1556,7 +1484,7 @@ Method AttributeMembersuper2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 ///  ( ',' class_reference )*
 Method AttributeMembersuper3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..AttributeMembersuper4Sub(.subElement,.addedElement)  {
@@ -1623,10 +1551,10 @@ Method AttributeMethodLanguage(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 ///  attribute_MimeType ::= 'mimetype' '=' identifier ('/' identifier)*
 /// summary values:MIMETYPE
-/// summary=K&P&C&(?4punctuation:4?)*
+/// summary=K&P&C&((P&C))*
 Method AttributeMimetype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&C&(?4punctuation:4?)*
+	; rules summary K&P&C&((P&C))*
 	if '(..isKeyword("MIMETYPE")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -1656,7 +1584,7 @@ Method AttributeMimetype(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 ///  ('/' identifier)*
 Method AttributeMimetype1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..AttributeMimetype2Sub(.subElement,.addedElement)  {
@@ -1837,7 +1765,7 @@ Method AttributeNot(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"NOT")  {
-		if ..AttributeNot1Sub(.subElement,.addedElement)  {
+		if ..AttributeAbstract(.subElement,.addedElement)  || ..AttributeDdlallowed(.subElement,.addedElement)  || ..AttributeDeprecated(.subElement,.addedElement)  || ..AttributeFinal(.subElement,.addedElement)  || ..AttributeHidden(.subElement,.addedElement)  || ..AttributeInternal(.subElement,.addedElement)  || ..AttributeLegacyinstancecontext(.subElement,.addedElement)  || ..AttributeNoextent(.subElement,.addedElement)  || ..AttributePrivate(.subElement,.addedElement)  || ..AttributeProcedureblock(.subElement,.addedElement)  || ..AttributeReadonly(.subElement,.addedElement)  || ..AttributeRequired(.subElement,.addedElement)  || ..AttributeServeronly(.subElement,.addedElement)  || ..AttributeSqlcomputed(.subElement,.addedElement)  || ..AttributeTransient(.subElement,.addedElement)  || ..AttributeUnique(.subElement,.addedElement)  || ..AttributeSqlrowidprivate(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -1850,53 +1778,6 @@ Method AttributeNot(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-///  attribute_Abstract | attribute_DDLAllowed | attribute_Deprecated | attribute_Final | attribute_Hidden | attribute_Internal | attribute_LegacyInstanceContext | attribute_NoExtent | attribute_Private | attribute_ProcedureBlock | attribute_ReadOnly | attribute_Required | attribute_ServerOnly | attribute_SQLComputed | attribute_Transient | attribute_Unique | attribute_SQLRowidPrivate
-/// summary=C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
-Method AttributeNot1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C|C
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..AttributeAbstract(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..AttributeDdlallowed(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..AttributeDeprecated(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..AttributeFinal(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..AttributeHidden(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..AttributeInternal(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..AttributeLegacyinstancecontext(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..AttributeNoextent(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..AttributePrivate(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..AttributeProcedureblock(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..AttributeReadonly(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..AttributeRequired(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..AttributeServeronly(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..AttributeSqlcomputed(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..AttributeTransient(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..AttributeUnique(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..AttributeSqlrowidprivate(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -2193,10 +2074,10 @@ Method AttributeOwner1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 
 ///  attribute_PlaceAfter ::= 'placeafter' '=' method_reference ('(' ',' method_reference ')')*
 /// summary values:PLACEAFTER
-/// summary=K&P&C&(?4punctuation:4?)*
+/// summary=K&P&C&((P&P&C&P))*
 Method AttributePlaceafter(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&C&(?4punctuation:4?)*
+	; rules summary K&P&C&((P&P&C&P))*
 	if '(..isKeyword("PLACEAFTER")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -2226,7 +2107,7 @@ Method AttributePlaceafter(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 ///  ('(' ',' method_reference ')')*
 Method AttributePlaceafter1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&P&C&P)
 	set subElement=ParentElement
 	; method start
 	while ..AttributePlaceafter2Sub(.subElement,.addedElement)  {
@@ -2391,10 +2272,10 @@ Method AttributeProcedureblock2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef s
 
 ///  attribute_PropertyClass ::= 'propertyclass' '=' class_reference ('(' ',' class_reference ')')*
 /// summary values:PROPERTYCLASS
-/// summary=K&P&C&(?4punctuation:4?)*
+/// summary=K&P&C&((P&P&C&P))*
 Method AttributePropertyclass(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&C&(?4punctuation:4?)*
+	; rules summary K&P&C&((P&P&C&P))*
 	if '(..isKeyword("PROPERTYCLASS")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -2424,7 +2305,7 @@ Method AttributePropertyclass(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 ///  ('(' ',' class_reference ')')*
 Method AttributePropertyclass1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&P&C&P)
 	set subElement=ParentElement
 	; method start
 	while ..AttributePropertyclass2Sub(.subElement,.addedElement)  {
@@ -2465,10 +2346,10 @@ Method AttributePropertyclass2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef su
 
 ///  attribute_PublicList ::= 'publiclist' '=' ( ('(' variable_public (',' variable_public )* ')' ) | variable_public)
 /// summary values:PUBLICLIST
-/// summary=K&P&((P&C&(?4punctuation:4?)*&P)|C)
+/// summary=K&P&((P&C&((P&C))*&P)|C)
 Method AttributePubliclist(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&((P&C&(?4punctuation:4?)*&P)|C)
+	; rules summary K&P&((P&C&((P&C))*&P)|C)
 	if '(..isKeyword("PUBLICLIST")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -2494,10 +2375,10 @@ Method AttributePubliclist(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 }
 
 ///  ('(' variable_public (',' variable_public )* ')' ) | variable_public
-/// summary=(P&C&(?4punctuation:4?)*&P)|C
+/// summary=(P&C&((P&C))*&P)|C
 Method AttributePubliclist1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary (P&C&(?4punctuation:4?)*&P)|C
+	; rules summary (P&C&((P&C))*&P)|C
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..AttributePubliclist2Sub(.subElement,.addedElement)  {
@@ -2518,10 +2399,10 @@ Method AttributePubliclist1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 /// '(' variable_public (',' variable_public )* ')'
 /// summary values:(
-/// summary=P&C&(?4punctuation:4?)*&P
+/// summary=P&C&((P&C))*&P
 Method AttributePubliclist2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary P&C&(?4punctuation:4?)*&P
+	; rules summary P&C&((P&C))*&P
 	if '..isPunctuation("(",1) { quit 0 /* normal */ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -2548,7 +2429,7 @@ Method AttributePubliclist2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 ///  (',' variable_public )*
 Method AttributePubliclist3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..AttributePubliclist4Sub(.subElement,.addedElement)  {
@@ -2783,7 +2664,7 @@ Method AttributeSoapaction(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"SOAPACTION")  {
 		if ..addPunctuation(.subElement,"=")  {
-			if ..AttributeSoapaction1Sub(.subElement,.addedElement)  {
+			if ..Identifier(.subElement,.addedElement)  || ..String(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -2797,23 +2678,6 @@ Method AttributeSoapaction(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-/// identifier | string
-/// summary=C|C
-Method AttributeSoapaction1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C|C
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..Identifier(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..String(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -2890,7 +2754,7 @@ Method AttributeSoapmessagename(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"SOAPMESSAGENAME")  {
 		if ..addPunctuation(.subElement,"=")  {
-			if ..AttributeSoapmessagename1Sub(.subElement,.addedElement)  {
+			if ..String(.subElement,.addedElement)  || ..SoapIdentifier(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -2904,23 +2768,6 @@ Method AttributeSoapmessagename(ParentElement As PXW.DEV.BNF.Element, ByRef subE
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-///  string | soap_identifier
-/// summary=C|C
-Method AttributeSoapmessagename1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C|C
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..String(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..SoapIdentifier(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -2937,7 +2784,7 @@ Method AttributeSoapnamespace(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"SOAPNAMESPACE")  {
 		if ..addPunctuation(.subElement,"=")  {
-			if ..AttributeSoapnamespace1Sub(.subElement,.addedElement)  {
+			if ..String(.subElement,.addedElement)  || ..SoapIdentifier(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -2951,23 +2798,6 @@ Method AttributeSoapnamespace(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-///  string | soap_identifier
-/// summary=C|C
-Method AttributeSoapnamespace1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C|C
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..String(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..SoapIdentifier(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -2984,7 +2814,7 @@ Method AttributeSoaprequestmessage(ParentElement As PXW.DEV.BNF.Element, ByRef s
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"SOAPREQUESTMESSAGE")  {
 		if ..addPunctuation(.subElement,"=")  {
-			if ..AttributeSoaprequestmessage1Sub(.subElement,.addedElement)  {
+			if ..String(.subElement,.addedElement)  || ..SoapIdentifier(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -2998,23 +2828,6 @@ Method AttributeSoaprequestmessage(ParentElement As PXW.DEV.BNF.Element, ByRef s
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-///  string | soap_identifier
-/// summary=C|C
-Method AttributeSoaprequestmessage1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C|C
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..String(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..SoapIdentifier(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -3031,7 +2844,7 @@ Method AttributeSoaptypenamespace(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"SOAPTYPENAMESPACE")  {
 		if ..addPunctuation(.subElement,"=")  {
-			if ..AttributeSoaptypenamespace1Sub(.subElement,.addedElement)  {
+			if ..String(.subElement,.addedElement)  || ..SoapIdentifier(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -3045,23 +2858,6 @@ Method AttributeSoaptypenamespace(ParentElement As PXW.DEV.BNF.Element, ByRef su
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-///  string | soap_identifier
-/// summary=C|C
-Method AttributeSoaptypenamespace1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C|C
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..String(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..SoapIdentifier(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -3187,10 +2983,10 @@ Method AttributeSqlcomputed(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 
 ///  attribute_SQLComputeOnChange ::= 'sqlcomputeonchange' '=' property_reference | ('(' property_reference (',' property_reference )* ')')
 /// summary values:SQLCOMPUTEONCHANGE
-/// summary=K&P&C|(P&C&(?4punctuation:4?)*&P)
+/// summary=K&P&C|(P&C&((P&C))*&P)
 Method AttributeSqlcomputeonchange(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&C|(P&C&(?4punctuation:4?)*&P)
+	; rules summary K&P&C|(P&C&((P&C))*&P)
 	if '(..isKeyword("SQLCOMPUTEONCHANGE")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -3219,10 +3015,10 @@ Method AttributeSqlcomputeonchange(ParentElement As PXW.DEV.BNF.Element, ByRef s
 
 /// '(' property_reference (',' property_reference )* ')'
 /// summary values:(
-/// summary=P&C&(?4punctuation:4?)*&P
+/// summary=P&C&((P&C))*&P
 Method AttributeSqlcomputeonchange1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary P&C&(?4punctuation:4?)*&P
+	; rules summary P&C&((P&C))*&P
 	if '..isPunctuation("(",1) { quit 0 /* normal */ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -3249,7 +3045,7 @@ Method AttributeSqlcomputeonchange1Sub(ParentElement As PXW.DEV.BNF.Element, ByR
 ///  (',' property_reference )*
 Method AttributeSqlcomputeonchange2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..AttributeSqlcomputeonchange3Sub(.subElement,.addedElement)  {
@@ -3387,7 +3183,7 @@ Method AttributeSqlname(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"SQLNAME")  {
 		if ..addPunctuation(.subElement,"=")  {
-			if ..AttributeSqlname1Sub(.subElement,.addedElement)  {
+			if ..SqlTableName(.subElement,.addedElement)  || ..String(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -3401,23 +3197,6 @@ Method AttributeSqlname(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-/// sql_table_name | string
-/// summary=C|C
-Method AttributeSqlname1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C|C
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..SqlTableName(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..String(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -3620,7 +3399,7 @@ Method AttributeSqlviewname(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"SQLVIEWNAME")  {
 		if ..addPunctuation(.subElement,"=")  {
-			if ..AttributeSqlviewname1Sub(.subElement,.addedElement)  {
+			if ..String(.subElement,.addedElement)  || ..SqlTableName(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -3634,23 +3413,6 @@ Method AttributeSqlviewname(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-///  string | sql_table_name
-/// summary=C|C
-Method AttributeSqlviewname1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C|C
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..String(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..SqlTableName(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -3876,10 +3638,10 @@ Method AttributeUnique(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 ///  attribute_UpdateColumnList ::= 'updatecolumnlist' '=' ( one_column_name | ( '(' one_column_name ( ',' one_column_name )* ')' ) )
 /// summary values:UPDATECOLUMNLIST
-/// summary=K&P&(C|(P&C&(?4punctuation:4?)*&P))
+/// summary=K&P&(C|(P&C&((P&C))*&P))
 Method AttributeUpdatecolumnlist(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary K&P&(C|(P&C&(?4punctuation:4?)*&P))
+	; rules summary K&P&(C|(P&C&((P&C))*&P))
 	if '(..isKeyword("UPDATECOLUMNLIST")) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -3905,10 +3667,10 @@ Method AttributeUpdatecolumnlist(ParentElement As PXW.DEV.BNF.Element, ByRef sub
 }
 
 ///  one_column_name | ( '(' one_column_name ( ',' one_column_name )* ')' )
-/// summary=C|(P&C&(?4punctuation:4?)*&P)
+/// summary=C|(P&C&((P&C))*&P)
 Method AttributeUpdatecolumnlist1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary C|(P&C&(?4punctuation:4?)*&P)
+	; rules summary C|(P&C&((P&C))*&P)
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..OneColumnName(.subElement,.addedElement)  {
@@ -3929,10 +3691,10 @@ Method AttributeUpdatecolumnlist1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef
 
 ///  '(' one_column_name ( ',' one_column_name )* ')'
 /// summary values:(
-/// summary=P&C&(?4punctuation:4?)*&P
+/// summary=P&C&((P&C))*&P
 Method AttributeUpdatecolumnlist2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary P&C&(?4punctuation:4?)*&P
+	; rules summary P&C&((P&C))*&P
 	if '..isPunctuation("(",1) { quit 0 /* normal */ }
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
@@ -3959,7 +3721,7 @@ Method AttributeUpdatecolumnlist2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef
 ///  ( ',' one_column_name )*
 Method AttributeUpdatecolumnlist3RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..AttributeUpdatecolumnlist4Sub(.subElement,.addedElement)  {
@@ -4067,7 +3829,7 @@ Method AttributeXmlnamespace(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"XMLNAMESPACE")  {
 		if ..addPunctuation(.subElement,"=")  {
-			if ..AttributeXmlnamespace1Sub(.subElement,.addedElement)  {
+			if ..String(.subElement,.addedElement)  || ..Identifier(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -4081,23 +3843,6 @@ Method AttributeXmlnamespace(ParentElement As PXW.DEV.BNF.Element, ByRef subElem
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-/// string | identifier
-/// summary=C|C
-Method AttributeXmlnamespace1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C|C
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..String(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Identifier(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -4216,10 +3961,10 @@ Method ClassAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 }
 
 ///  class_attribute_list ::= class_attribute ( ',' class_attribute )*
-/// summary=C&(?4punctuation:4?)*
+/// summary=C&((P&C))*
 Method ClassAttributeList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C&(?4punctuation:4?)*
+	; rules summary C&((P&C))*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -4244,7 +3989,7 @@ Method ClassAttributeList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 ///  ( ',' class_attribute )*
 Method ClassAttributeList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..ClassAttributeList2Sub(.subElement,.addedElement)  {
@@ -4483,7 +4228,7 @@ Method ClassDefinition1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"EXTENDS")  {
-		if ..ClassDefinition2Sub(.subElement,.addedElement)  {
+		if ..ClassReferenceList(.subElement,.addedElement)  || ..ClassReference(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -4495,23 +4240,6 @@ Method ClassDefinition1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 		$$$BNFROLLBACK(subElement)
 		set ok=1 /* failure rollsback but returns OK */
 	}
-	quit ok
-}
-
-///  class_reference_list | class_reference
-/// summary=C|C
-Method ClassDefinition2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C|C
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..ClassReferenceList(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..ClassReference(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -4781,10 +4509,10 @@ Method ClassLanguageName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 }
 
 ///  class_member_list ::= one_classMember ( one_classMember )*
-/// summary=C&(?4punctuation:4?)*
+/// summary=C&((C))*
 Method ClassMemberList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C&(?4punctuation:4?)*
+	; rules summary C&((C))*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -4809,37 +4537,22 @@ Method ClassMemberList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 ///  ( one_classMember )*
 Method ClassMemberList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (C)
 	set subElement=ParentElement
 	; method start
-	while ..ClassMemberList2Sub(.subElement,.addedElement)  {
+	while ..OneClassmember(.subElement,.addedElement)  {
 		;
 	}
 	set ok=1
 	quit ok
 }
 
-///  one_classMember
-/// summary=C
-Method ClassMemberList2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..OneClassmember(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 ///  class_member_section ::= '{' class_member_list? '}'
 /// summary values:{
-/// summary=P&?4OptionalSingle4?&P
+/// summary=P&?C&P
 Method ClassMemberSection(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&?4OptionalSingle4?&P
+	; rules summary P&?C&P
 	if '..isPunctuation("{",1) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -5077,10 +4790,10 @@ Method ClassParameterAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 ///  class_parameter_attribute_list ::= '[' class_parameter_attribute ( ',' class_parameter_attribute )* ']'
 /// summary values:[
-/// summary=P&C&(?4punctuation:4?)*&P
+/// summary=P&C&((P&C))*&P
 Method ClassParameterAttributeList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&C&(?4punctuation:4?)*&P
+	; rules summary P&C&((P&C))*&P
 	if '..isPunctuation("[",1) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -5110,7 +4823,7 @@ Method ClassParameterAttributeList(ParentElement As PXW.DEV.BNF.Element, ByRef s
 ///  ( ',' class_parameter_attribute )*
 Method ClassParameterAttributeList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..ClassParameterAttributeList2Sub(.subElement,.addedElement)  {
@@ -5427,10 +5140,10 @@ Method ClassPropertyAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 }
 
 ///  class_property_attribute_list ::= class_property_attribute ( ',' class_property_attribute )*
-/// summary=C&(?4punctuation:4?)*
+/// summary=C&((P&C))*
 Method ClassPropertyAttributeList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C&(?4punctuation:4?)*
+	; rules summary C&((P&C))*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -5455,7 +5168,7 @@ Method ClassPropertyAttributeList(ParentElement As PXW.DEV.BNF.Element, ByRef su
 ///  ( ',' class_property_attribute )*
 Method ClassPropertyAttributeList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..ClassPropertyAttributeList2Sub(.subElement,.addedElement)  {
@@ -5710,10 +5423,10 @@ Method ClassQueryAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 
 ///  class_query_attributes ::= '[' class_query_attribute ( ',' class_query_attribute )* ']'
 /// summary values:[
-/// summary=P&C&(?4punctuation:4?)*&P
+/// summary=P&C&((P&C))*&P
 Method ClassQueryAttributes(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&C&(?4punctuation:4?)*&P
+	; rules summary P&C&((P&C))*&P
 	if '..isPunctuation("[",1) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -5743,7 +5456,7 @@ Method ClassQueryAttributes(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 ///  ( ',' class_query_attribute )*
 Method ClassQueryAttributes1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..ClassQueryAttributes2Sub(.subElement,.addedElement)  {
@@ -5858,10 +5571,10 @@ Method ClassReference(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 ///  class_reference_list ::= '(' [class_reference] ( ',' [ class_reference ] )* ')'
 /// summary values:(
-/// summary=P&[C]&(?4punctuation:4?)*&P
+/// summary=P&[C]&((P&[C]))*&P
 Method ClassReferenceList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&[C]&(?4punctuation:4?)*&P
+	; rules summary P&[C]&((P&[C]))*&P
 	if '..isPunctuation("(",1) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -5891,7 +5604,7 @@ Method ClassReferenceList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 ///  ( ',' [ class_reference ] )*
 Method ClassReferenceList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&[C])
 	set subElement=ParentElement
 	; method start
 	while ..ClassReferenceList2Sub(.subElement,.addedElement)  {
@@ -6083,7 +5796,7 @@ Method ClassXdata(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		if ..XdataName(.subElement,.addedElement)  {
 			if $S(..XdataAttributes(.subElement,.addedElement) :1,1:1) {
 				if ..addPunctuation(.subElement,"{")  {
-					if ..ClassXdata1Sub(.subElement,.addedElement)  {
+					if ..XdataText(.subElement,.addedElement)  || ..XdataXml(.subElement,.addedElement)  || ..XdataJson(.subElement,.addedElement)  {
 						if ..addPunctuation(.subElement,"}")  {
 							set done=1 ; end compileRules
 						}
@@ -6101,25 +5814,6 @@ Method ClassXdata(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-/// xdata_text | xdata_xml | xdata_json
-/// summary=C|C|C
-Method ClassXdata1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C|C|C
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..XdataText(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..XdataXml(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..XdataJson(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -6686,10 +6380,10 @@ Method ForeachType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 
 ///  foreignKey_attribute_list ::= '[' one_foreignkey_atttribute ( ',' one_foreignkey_atttribute )* ']'
 /// summary values:[
-/// summary=P&C&(?4punctuation:4?)*&P
+/// summary=P&C&((P&C))*&P
 Method ForeignkeyAttributeList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&C&(?4punctuation:4?)*&P
+	; rules summary P&C&((P&C))*&P
 	if '..isPunctuation("[",1) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -6719,7 +6413,7 @@ Method ForeignkeyAttributeList(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 ///  ( ',' one_foreignkey_atttribute )*
 Method ForeignkeyAttributeList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..ForeignkeyAttributeList2Sub(.subElement,.addedElement)  {
@@ -6811,10 +6505,10 @@ Method FormalSpecItem(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 }
 
 ///  formal_spec_list ::= formal_spec_item( ',' formal_spec_item )*
-/// summary=C&(?4punctuation:4?)*
+/// summary=C&((P&C))*
 Method FormalSpecList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C&(?4punctuation:4?)*
+	; rules summary C&((P&C))*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -6839,7 +6533,7 @@ Method FormalSpecList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 /// ( ',' formal_spec_item )*
 Method FormalSpecList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..FormalSpecList2Sub(.subElement,.addedElement)  {
@@ -7035,7 +6729,7 @@ Method IncludeDefinition(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"INCLUDE")  {
-		if ..IncludeDefinition1Sub(.subElement,.addedElement)  {
+		if ..IncludeList(.subElement,.addedElement)  || ..IncludeName(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -7048,23 +6742,6 @@ Method IncludeDefinition(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-///  include_list | include_name
-/// summary=C|C
-Method IncludeDefinition1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C|C
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..IncludeList(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..IncludeName(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -7080,7 +6757,7 @@ Method IncludeGeneratorDefinition(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addKeyword(.subElement,"INCLUDEGENERATOR")  {
-		if ..IncludeGeneratorDefinition1Sub(.subElement,.addedElement)  {
+		if ..IncludeList(.subElement,.addedElement)  || ..IncludeName(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -7096,29 +6773,12 @@ Method IncludeGeneratorDefinition(ParentElement As PXW.DEV.BNF.Element, ByRef su
 	quit ok
 }
 
-///  include_list | include_name
-/// summary=C|C
-Method IncludeGeneratorDefinition1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C|C
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..IncludeList(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..IncludeName(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 ///  include_list ::= '(' include_name ( ',' include_name )* ')'
 /// summary values:(
-/// summary=P&C&(?4punctuation:4?)*&P
+/// summary=P&C&((P&C))*&P
 Method IncludeList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&C&(?4punctuation:4?)*&P
+	; rules summary P&C&((P&C))*&P
 	if '..isPunctuation("(",1) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -7148,7 +6808,7 @@ Method IncludeList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 ///  ( ',' include_name )*
 Method IncludeList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..IncludeList2Sub(.subElement,.addedElement)  {
@@ -7249,10 +6909,10 @@ Method IndexAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 ///  index_attributes ::= '[' index_attribute ( ',' index_attribute )* ']'
 /// summary values:[
-/// summary=P&C&(?4punctuation:4?)*&P
+/// summary=P&C&((P&C))*&P
 Method IndexAttributes(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&C&(?4punctuation:4?)*&P
+	; rules summary P&C&((P&C))*&P
 	if '..isPunctuation("[",1) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -7282,7 +6942,7 @@ Method IndexAttributes(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 ///  ( ',' index_attribute )*
 Method IndexAttributes1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..IndexAttributes2Sub(.subElement,.addedElement)  {
@@ -7441,10 +7101,10 @@ Method IndexPropertyExpressionList(ParentElement As PXW.DEV.BNF.Element, ByRef s
 
 ///  index_property_list ::= '(' index_property ( ',' index_property )* ')'
 /// summary values:(
-/// summary=P&C&(?4punctuation:4?)*&P
+/// summary=P&C&((P&C))*&P
 Method IndexPropertyList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&C&(?4punctuation:4?)*&P
+	; rules summary P&C&((P&C))*&P
 	if '..isPunctuation("(",1) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -7474,7 +7134,7 @@ Method IndexPropertyList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 ///  ( ',' index_property )*
 Method IndexPropertyList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..IndexPropertyList2Sub(.subElement,.addedElement)  {
@@ -7809,10 +7469,10 @@ Method MethodAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 
 ///  method_attribute_list ::= '[' method_attribute ( ',' method_attribute )* ']'
 /// summary values:[
-/// summary=P&C&(?4punctuation:4?)*&P
+/// summary=P&C&((P&C))*&P
 Method MethodAttributeList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&C&(?4punctuation:4?)*&P
+	; rules summary P&C&((P&C))*&P
 	if '..isPunctuation("[",1) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -7842,7 +7502,7 @@ Method MethodAttributeList(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 ///  ( ',' method_attribute )*
 Method MethodAttributeList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..MethodAttributeList2Sub(.subElement,.addedElement)  {
@@ -8048,10 +7708,10 @@ Method MimeType(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 }
 
 ///  name_value_pair_list ::= one_name_value_pair ( ',' one_name_value_pair )*
-/// summary=C&(?4punctuation:4?)*
+/// summary=C&((P&C))*
 Method NameValuePairList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C&(?4punctuation:4?)*
+	; rules summary C&((P&C))*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -8076,7 +7736,7 @@ Method NameValuePairList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 ///  ( ',' one_name_value_pair )*
 Method NameValuePairList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..NameValuePairList2Sub(.subElement,.addedElement)  {
@@ -8469,10 +8129,10 @@ Method OneNameValuePair1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 }
 
 ///  package_list ::= package_name ( ',' package_name )*
-/// summary=C&(?4punctuation:4?)*
+/// summary=C&((P&C))*
 Method PackageList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C&(?4punctuation:4?)*
+	; rules summary C&((P&C))*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -8497,7 +8157,7 @@ Method PackageList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 ///  ( ',' package_name )*
 Method PackageList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..PackageList2Sub(.subElement,.addedElement)  {
@@ -8938,10 +8598,10 @@ Method StorageName(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 }
 
 ///  storage_xml ::= (xml_data)*
-/// summary=(?4punctuation:4?)*
+/// summary=((C))*
 Method StorageXml(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary (?4punctuation:4?)*
+	; rules summary ((C))*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -8964,28 +8624,13 @@ Method StorageXml(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 ///  (xml_data)*
 Method StorageXml1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (C)
 	set subElement=ParentElement
 	; method start
-	while ..StorageXml2Sub(.subElement,.addedElement)  {
+	while ..XmlData(.subElement,.addedElement)  {
 		;
 	}
 	set ok=1
-	quit ok
-}
-
-/// xml_data
-/// summary=C
-Method StorageXml2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..XmlData(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -9215,10 +8860,10 @@ Method TriggerAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 
 ///  trigger_attribute_list ::= '[' trigger_attribute ( ',' trigger_attribute )* ']'
 /// summary values:[
-/// summary=P&C&(?4punctuation:4?)*&P
+/// summary=P&C&((P&C))*&P
 Method TriggerAttributeList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&C&(?4punctuation:4?)*&P
+	; rules summary P&C&((P&C))*&P
 	if '..isPunctuation("[",1) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -9248,7 +8893,7 @@ Method TriggerAttributeList(ParentElement As PXW.DEV.BNF.Element, ByRef subEleme
 ///  ( ',' trigger_attribute )*
 Method TriggerAttributeList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..TriggerAttributeList2Sub(.subElement,.addedElement)  {
@@ -9398,7 +9043,7 @@ Method TypeParameterItem(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	set done=0 ; method start
 	if ..ClassItemIdentifier(.subElement,.addedElement)  {
 		if ..addPunctuation(.subElement,"=")  {
-			if ..TypeParameterItem1Sub(.subElement,.addedElement)  {
+			if ..String(.subElement,.addedElement)  || ..Number(.subElement,.addedElement)  {
 				set done=1 ; end compileRules
 			}
 		}
@@ -9412,23 +9057,6 @@ Method TypeParameterItem(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-///  string | number
-/// summary=C|C
-Method TypeParameterItem1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C|C
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..String(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Number(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -9463,10 +9091,10 @@ Method TypeParameters(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 }
 
 ///  type_parameters_list ::= type_parameter_item (',' type_parameter_item)*
-/// summary=C&(?4punctuation:4?)*
+/// summary=C&((P&C))*
 Method TypeParametersList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C&(?4punctuation:4?)*
+	; rules summary C&((P&C))*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9491,7 +9119,7 @@ Method TypeParametersList(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 ///  (',' type_parameter_item)*
 Method TypeParametersList1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..TypeParametersList2Sub(.subElement,.addedElement)  {
@@ -9551,10 +9179,10 @@ Method UdlProgram(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 }
 
 ///  udl_statement ::= ( import_definition | include_generator_definition | include_definition )* class_definition
-/// summary=(?4punctuation:4?)*&C
+/// summary=((C|C|C))*&C
 Method UdlStatement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary (?4punctuation:4?)*&C
+	; rules summary ((C|C|C))*&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9579,32 +9207,13 @@ Method UdlStatement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PX
 ///  ( import_definition | include_generator_definition | include_definition )*
 Method UdlStatement1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (C|C|C)
 	set subElement=ParentElement
 	; method start
-	while ..UdlStatement2Sub(.subElement,.addedElement)  {
+	while ..ImportDefinition(.subElement,.addedElement)  || ..IncludeGeneratorDefinition(.subElement,.addedElement)  || ..IncludeDefinition(.subElement,.addedElement)  {
 		;
 	}
 	set ok=1
-	quit ok
-}
-
-///  import_definition | include_generator_definition | include_definition
-/// summary=C|C|C
-Method UdlStatement2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C|C|C
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..ImportDefinition(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..IncludeGeneratorDefinition(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..IncludeDefinition(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -9705,10 +9314,10 @@ Method XdataAttribute(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 
 ///  xdata_attributes ::= '[' xdata_attribute (',' xdata_attribute)* ']'
 /// summary values:[
-/// summary=P&C&(?4punctuation:4?)*&P
+/// summary=P&C&((P&C))*&P
 Method XdataAttributes(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&C&(?4punctuation:4?)*&P
+	; rules summary P&C&((P&C))*&P
 	if '..isPunctuation("[",1) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -9738,7 +9347,7 @@ Method XdataAttributes(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 ///  (',' xdata_attribute)*
 Method XdataAttributes1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..XdataAttributes2Sub(.subElement,.addedElement)  {
@@ -9832,10 +9441,10 @@ Method XdataJsonArray(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 }
 
 ///  xdata_json_array_items ::= xdata_json (',' xdata_json)*
-/// summary=C&(?4punctuation:4?)*
+/// summary=C&((P&C))*
 Method XdataJsonArrayItems(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C&(?4punctuation:4?)*
+	; rules summary C&((P&C))*
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -9860,7 +9469,7 @@ Method XdataJsonArrayItems(ParentElement As PXW.DEV.BNF.Element, ByRef subElemen
 ///  (',' xdata_json)*
 Method XdataJsonArrayItems1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..XdataJsonArrayItems2Sub(.subElement,.addedElement)  {
@@ -9897,10 +9506,10 @@ Method XdataJsonArrayItems2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subEl
 
 ///  xdata_json_object ::= '{' [ xdata_json_pair ( ',' xdata_json_pair )*] '}'
 /// summary values:{
-/// summary=P&[C&(?4punctuation:4?)*]&P
+/// summary=P&[C&((P&C))*]&P
 Method XdataJsonObject(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P&[C&(?4punctuation:4?)*]&P
+	; rules summary P&[C&((P&C))*]&P
 	if '..isPunctuation("{",1) { quit 0 /* normal */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
@@ -9926,10 +9535,10 @@ Method XdataJsonObject(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As
 }
 
 /// 
-/// summary=C&(?4punctuation:4?)*
+/// summary=C&((P&C))*
 Method XdataJsonObject1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary C&(?4punctuation:4?)*
+	; rules summary C&((P&C))*
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..XdataJsonPair(.subElement,.addedElement)  {
@@ -9951,7 +9560,7 @@ Method XdataJsonObject1OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subEle
 ///  ( ',' xdata_json_pair )*
 Method XdataJsonObject2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (P&C)
 	set subElement=ParentElement
 	; method start
 	while ..XdataJsonObject3Sub(.subElement,.addedElement)  {
@@ -10310,10 +9919,10 @@ Method XmlContent(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.
 }
 
 ///  xml_data ::= xml_cdata | ( xml_start_tag ( xml_data | xml_content)* xml_end_tag) | xml_empty_tag
-/// summary=C|(C&(?4punctuation:4?)*&C)|C
+/// summary=C|(C&((C|C))*&C)|C
 Method XmlData(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C|(C&(?4punctuation:4?)*&C)|C
+	; rules summary C|(C&((C|C))*&C)|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -10338,10 +9947,10 @@ Method XmlData(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV
 }
 
 ///  xml_start_tag ( xml_data | xml_content)* xml_end_tag
-/// summary=C&(?4punctuation:4?)*&C
+/// summary=C&((C|C))*&C
 Method XmlData1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary C&(?4punctuation:4?)*&C
+	; rules summary C&((C|C))*&C
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..XmlStartTag(.subElement,.addedElement)  {
@@ -10365,38 +9974,21 @@ Method XmlData1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 ///  ( xml_data | xml_content)*
 Method XmlData2RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (C|C)
 	set subElement=ParentElement
 	; method start
-	while ..XmlData3Sub(.subElement,.addedElement)  {
+	while ..XmlData(.subElement,.addedElement)  || ..XmlContent(.subElement,.addedElement)  {
 		;
 	}
 	set ok=1
 	quit ok
 }
 
-///  xml_data | xml_content
-/// summary=C|C
-Method XmlData3Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C|C
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..XmlData(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..XmlContent(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
-	quit ok
-}
-
 ///  xml_empty_tag ::= xml_tag_s_a xml_tag_ns_name (xml_attribute)* xml_tag_s_c
-/// summary=C&C&(?4punctuation:4?)*&C
+/// summary=C&C&((C))*&C
 Method XmlEmptyTag(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C&C&(?4punctuation:4?)*&C
+	; rules summary C&C&((C))*&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -10425,28 +10017,13 @@ Method XmlEmptyTag(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 ///  (xml_attribute)*
 Method XmlEmptyTag1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (C)
 	set subElement=ParentElement
 	; method start
-	while ..XmlEmptyTag2Sub(.subElement,.addedElement)  {
+	while ..XmlAttribute(.subElement,.addedElement)  {
 		;
 	}
 	set ok=1
-	quit ok
-}
-
-/// xml_attribute
-/// summary=C
-Method XmlEmptyTag2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..XmlAttribute(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -10520,10 +10097,10 @@ Method XmlSchema(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.D
 }
 
 ///  xml_start_tag ::= xml_tag_s_a xml_tag_ns_name (xml_attribute)* xml_tag_s_b
-/// summary=C&C&(?4punctuation:4?)*&C
+/// summary=C&C&((C))*&C
 Method XmlStartTag(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C&C&(?4punctuation:4?)*&C
+	; rules summary C&C&((C))*&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -10552,28 +10129,13 @@ Method XmlStartTag(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW
 ///  (xml_attribute)*
 Method XmlStartTag1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (C)
 	set subElement=ParentElement
 	; method start
-	while ..XmlStartTag2Sub(.subElement,.addedElement)  {
+	while ..XmlAttribute(.subElement,.addedElement)  {
 		;
 	}
 	set ok=1
-	quit ok
-}
-
-/// xml_attribute
-/// summary=C
-Method XmlStartTag2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..XmlAttribute(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 
@@ -10781,10 +10343,10 @@ Method XmlTagSC(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DE
 }
 
 ///  xml_xml ::= xml_tag_s_a '?xml' (xml_attribute)* '?' xml_tag_s_b
-/// summary=C&P&(?4punctuation:4?)*&P&C
+/// summary=C&P&((C))*&P&C
 Method XmlXml(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary C&P&(?4punctuation:4?)*&P&C
+	; rules summary C&P&((C))*&P&C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
@@ -10815,28 +10377,13 @@ Method XmlXml(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 ///  (xml_attribute)*
 Method XmlXml1RepZero(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
 {
-	; rules summary ?4punctuation:4?
+	; rules summary (C)
 	set subElement=ParentElement
 	; method start
-	while ..XmlXml2Sub(.subElement,.addedElement)  {
+	while ..XmlAttribute(.subElement,.addedElement)  {
 		;
 	}
 	set ok=1
-	quit ok
-}
-
-/// xml_attribute
-/// summary=C
-Method XmlXml2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary C
-	set subElement=ParentElement
-	set done=0 ; method start
-	if ..XmlAttribute(.subElement,.addedElement)  {
-		set done=1 ; end compileRules
-	}
-
-	set ok=$s(done:1,1:0)
 	quit ok
 }
 

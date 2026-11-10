@@ -440,7 +440,7 @@ lvalue_expression                   ::= this_object_set
 
 -- COS commands
  
-break_command                       ::= ('break' | 'b') post_conditional? [ naked | ( break_extend | break_flag )]
+break_command                       ::= ('break' | 'b') post_conditional? [ naked | break_extend | break_flag ]
 break_extend                        ::= expression
 break_flag                          ::= expression
 
@@ -493,7 +493,7 @@ hang_value                          ::= expression
 -- #endif
 -- so should we treat elseif and else as commands in their own right so we don't have mid command directives?
 
-if_command                          ::= ('if' | 'i')  ( naked | expression_list) ( naked | [then_block] ) elseif_block_list? else_block? -- not sure what "if   set x=1 " means but no expression is possible 
+if_command                          ::= ('if' | 'i')  ( naked | expression_list) [ naked | then_block] elseif_block_list? else_block? -- not sure what "if   set x=1 " means but no expression is possible 
 then_block                          ::= cos_code_block_curly | command_list_eol
 elseif_block_list                   ::= elseif_block+
 elseif_block                        ::= cos_directive? 'elseif' expression_list ( cos_code_block_curly | command_list_eol )
@@ -788,9 +788,9 @@ listitem_function_call_set          ::= ('list' | 'li')                    open_
 
 bit_function_call_set               ::= 'bit' open_bracket variable_set ',' expression close_bracket
 
-bitlogic_function_call              ::= 'bitlogic' open_bracket bitlogic_expression [ ',' expression ] close_bracket
-bitlogic_expression                  ::= (expression ('|' | '&' | '^' |'~')* )*
-
+bitlogic_function_call              ::= 'bitlogic' open_bracket bitlogic_expression* [ ',' expression ] close_bracket
+bitlogic_expression                  ::= expression ('|' | '&' | '^' |'~')*
+ 
 vector_function_call               ::= 'vector' open_bracket          expression [ ',' star_parameter [ ',' star_parameter ] ] close_bracket
 vector_function_call_set           ::= 'vector' open_bracket set_value_expression  ',' expression ',' expression close_bracket
 

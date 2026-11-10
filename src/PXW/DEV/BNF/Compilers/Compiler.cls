@@ -31,13 +31,13 @@ ClassMethod goload(DEFClass As %String = "", DestinationClass As %String, forceV
 
     Set input=..load(DEFClass_"||"_"file",.arr,.version,.equals)
     If forceVersion'="" Set version=forceVersion
-    If forceEquals'="" set equals=forceEquals
-    w "Using version="_version_", equals="_equals,!
+    If forceEquals'="" Set equals=forceEquals
+    Write "Using version="_version_", equals="_equals,!
     If version=3 {
         ;Set compiler=##class(PXW.DEV.BNF.Compilers.Compiler3).%New(input)
      } ElseIf version=2 {
         Set compiler=##class(PXW.DEV.BNF.Compilers.Compiler2).%New(input)
-        set:equals'="" compiler.parser.EqualsChars=equals
+        Set:equals'="" compiler.parser.EqualsChars=equals
     } Else {
         Set compiler=##class(PXW.DEV.BNF.Compilers.Compiler1).%New(input)
         ; /*************************************************** TEMP CODE ***************************/
@@ -51,12 +51,12 @@ ClassMethod goload(DEFClass As %String = "", DestinationClass As %String, forceV
     Set elementtype=$PARAMETER(compiler.Loader,"SubElementType")
     Set KeywordPattern=$PARAMETER(compiler.Loader,"KeywordPattern")
     Set parser=compiler.parser
-    s zh=$zh
+    Set zh=$ZHOROLOG
     If parser.File(subElement,.fileElement) {
-        w !,"Parse time: "_($zh-zh)
-        s zh=$zh
+        Write !,"Parse time: "_($ZHOROLOG-zh)
+        Set zh=$ZHOROLOG
         Set sc=compiler.compile(fileElement,DestinationClass,elementtype,KeywordPattern) 
-        w !,"Class build time: "_($zh-zh)
+        Write !,"Class build time: "_($ZHOROLOG-zh)
         If $$$ISOK(sc) {
             Set sc=$SYSTEM.OBJ.Compile(DestinationClass,"ckb")
         } Else {
@@ -122,7 +122,7 @@ Method compile(Element As PXW.DEV.Element, ToClassName As %String, elementtype A
     Set parameter.parent=class
     Set parameter.Default=words
    
-    s zh=$zh
+    Set zh=$ZHOROLOG
     Set sc=class.%Save()
     ;w !,"Save time: "_($zh-zh)
     Quit sc
@@ -209,7 +209,7 @@ Method compileDefinition(Element As PXW.DEV.Element)
         Do ..compileInteruptableLoop(method,rulesE,indent,quickCheckDone)
         Do ..compileMethodEnd(method,indent,,transaction,debug,copymode)
 
-    } elseif summary="R" {
+    } ElseIf summary="R" {
         ; regex is a special kind of rule, more like a subrule
         Set transaction=0,debug=1,copymode=1,quickCheckDone=1
         Do ..compileQuickCheck(method,rulesE,indent)
@@ -517,12 +517,28 @@ Method compileRule(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.El
         Set mname=..methodName(mnameA.ToString(0))
         $$$WRITE(".."_mname_"("_dot_subElementVar_",.addedElement) ")
     } ElseIf subelement.type="Subrule" {
+        ; it may be possible to not create a subroutine if the rule is simple enough
+        ; IE some optimisations that happens within the subrule can be done here
         Set rulesE=subelement.findFirstElementByType("rules",0)
-        set summary=..summariseRules(rulesE,.upperValues)
+        Set summary=..summariseRules(rulesE,.upperValues)
         If summary?1"K"0."|K" {
-            f i=1:1:$ll(upperValues) Set ..keywords($li(upperValues,i))=1
-            $$$WRITE("..addKeywordInList("_dot_subElementVar_",$listbuild("_$listtostring(upperValues,",",4)_")) ")
-        } else {
+            ; is only keywords so can deal with that here
+            For i=1:1:$LISTLENGTH(upperValues) Set ..keywords($LIST(upperValues,i))=1
+            $$$WRITE("..addKeywordInList("_dot_subElementVar_",$listbuild("_$LISTTOSTRING(upperValues,",",4)_")) ")
+        } ElseIf summary?1"C"0."|C" {
+            ; is only call or call to other methods, so embed them right into this method
+            Set sep=""
+            For i=1:1:rulesE.partsCount() {
+                Set ruleE=rulesE.partsGetAt(i)
+                Set mnameA=ruleE.FirstAtom()
+                If mnameA.ToString(0)'="|" {
+                    ; only do this if not on the OR (|)
+                    Set mname=..methodName(mnameA.ToString(0))
+                    $$$WRITE(sep_".."_mname_"("_dot_subElementVar_",.addedElement) ")
+                    Set sep=" || "
+                }
+            }
+        } Else {
             Set subMethod=..NewMethod(..SubMethodName(..CurrentMethod.Name,"Sub"))
             Set subMethod.Description=rulesE.ToString(" ")
             Do ..compileSubRule(subMethod,rulesE,indent,QuickCheckDone)
@@ -530,11 +546,27 @@ Method compileRule(Method As %Dictionary.MethodDefinition, Element As PXW.DEV.El
         }
     } ElseIf subelement.type="OptionalGroup" {
         Set rulesE=subelement.findFirstElementByType("Rules",0)
+        Set summary=..summariseRules(rulesE,.upperValues)
         If rulesE.partsCount()=1 {
             $$$WRITE("$S(")
             Set ruleE=rulesE.partsGetAt(1)
             Do ..compileRule(Method,ruleE,indent)
             $$$WRITE(":1,1:1)")
+        } ElseIf summary?1"C"0."|C" {
+            ; is only call or call to other methods, so embed them right into this method
+            Set sep=""
+            For i=1:1:rulesE.partsCount() {
+                Set ruleE=rulesE.partsGetAt(i)
+                Set mnameA=ruleE.FirstAtom()
+                If mnameA.ToString(0)'="|" {
+                    ; only do this if not on the OR (|)
+                    Set mname=..methodName(mnameA.ToString(0))
+                    $$$WRITE(sep_".."_mname_"("_dot_subElementVar_",.addedElement) ")
+                    Set sep=" || "
+                }
+            } 
+            ; add on the default if all fail (optional group)
+            $$$WRITE(sep_"1 ")
         } Else {
             Set subMethod=..NewMethod(..SubMethodName(..CurrentMethod.Name,"OptGrp"))
             Do ..compileOptionalGroup(subMethod,rulesE,indent)
@@ -581,9 +613,9 @@ Method compileRepeatSep(Method As %Dictionary.MethodDefinition, Element As PXW.D
     Set Method.Description=Element.ToString(" ")
     Set sepE=Element.findFirstElementByType("RepeatSepSeparator",0)
     Set ruleE=Element.findFirstElementByType("RepeatSepRule",0)
-    Do ..compileQuickCheck(Method,sepE,indent)
+    ;Do ..compileQuickCheck(Method,sepE,indent)
     Do ..compileMethodStart(Method,indent,path,transaction,debug)
-    $$$WRITECR($$$Tab(indent)_"set done=0 ; must be at least 1")
+    ;$$$WRITECR($$$Tab(indent)_"set done=0 ; must be at least 1")
 
     $$$WRITE($$$Tab(indent)_"if ")
     Do ..compileRule(Method,ruleE,indent)
@@ -775,11 +807,11 @@ Method compileInteruptableLoop(Method as %Dictionary.MethodDefinition, Element a
     ; $lb("{","}")
     Do ..summariseRules(Element,.listOfValues)
    
-    set start=$lg(listOfValues,1)
-    set end=$lg(listOfValues,2)
-    set call=Element.findFirstElementByType("Call",1).ToString(0)
-    set callMethod=..methodName(call)
-    set indent=indentOfParent
+    Set start=$LISTGET(listOfValues,1)
+    Set end=$LISTGET(listOfValues,2)
+    Set call=Element.findFirstElementByType("Call",1).ToString(0)
+    Set callMethod=..methodName(call)
+    Set indent=indentOfParent
     /*
         if addpunct(start) {
             while 'ispunct(end), call {}
@@ -872,7 +904,7 @@ Method summariseRule(Element As PXW.DEV.Element, listOfValues As %List = "") As 
     If Element.IsElement {
         Set summary="?1"_Element.type_"1?"
         Set subelement=Element.partsGetNext("") ; get the first thing
-
+        ;Set subelement=Element
         If subelement.type="Keyword" {
             Set atom=subelement.FirstAtom()
             Set word=atom.value
@@ -888,28 +920,38 @@ Method summariseRule(Element As PXW.DEV.Element, listOfValues As %List = "") As 
                 Set summary="P" ; punctuation
                 Set listOfValues=listOfValues_$LISTBUILD($$$UPPER(word)) ; needs to be upper because of things like i%
             }
-        } ElseIf $p(subelement.type,":",1)="Call" {
+        } ElseIf $PIECE(subelement.type,":",1)="Call" {
             ;Set mnameA=Element.FirstAtom()
             ;Set mname=..methodName(mnameA.ToString(0))
             Set summary="C"
-        } ElseIf $p(subelement.type,":",1)="Subrule" {
+        } ElseIf $PIECE(subelement.type,":",1)="Subrule" {
             Set rulesE=subelement.findFirstElementByType("rules",0)
             Set subsumm=..summariseRules(rulesE,.listOfValues)
             Set summary="("_subsumm_")"
-        } ElseIf $p(subelement.type,":",1)="Optionalgroup" {
+        } ElseIf $PIECE(subelement.type,":",1)="Optionalgroup" {
             Set rulesE=subelement.findFirstElementByType("rules",0)
             Set summary="["_..summariseRules(rulesE,.listOfValues)_"]"
-        } ElseIf $p(subelement.type,":",1)="OptionalGroup" {
+        } ElseIf $PIECE(subelement.type,":",1)="OptionalGroup" {
             Set rulesE=subelement.findFirstElementByType("rules",0)
             Set summary="["_..summariseRules(rulesE,.listOfValues)_"]"
-        } ElseIf $p(subelement.type,":",1)="RepeatOne" {
+        } ElseIf $PIECE(subelement.type,":",1)="RepeatOne" {
             Set ruleE=subelement.findFirstElementByType("RepeatableRule") 
             Set summary="("_..summariseRules(ruleE,.listOfValues)_")+"
-        } ElseIf $p(subelement.type,":",1)="RepeatZero" {
+        } ElseIf $PIECE(subelement.type,":",1)="RepeatZero" {
             Set ruleE=subelement.findFirstElementByType("RepeatableRule") 
             Set summary="("_..summariseRules(ruleE,.listOfValues)_")*"
-        } ElseIf $p(subelement.type,":",1)="RepeatSep" {
-            Set ruleE=subelement.findFirstElementByType("RepeatSepRule") 
+        } ElseIf $PIECE(subelement.type,":",1)="RepeatSep" {
+            Set ruleE=subelement.findFirstElementByType("RepeatSepRule")
+            Set summary="."_..summariseRules(ruleE,.listOfValues)_"."
+        } ElseIf $PIECE(subelement.type,":",1)="OptionalSingle" {
+            Set ruleE=subelement.findFirstElementByType("OptionalableRule") 
+            Set summary="?"_..summariseRules(ruleE,.listOfValues)
+        } ElseIf $PIECE(Element.type,":",1)="Subrule" {
+            Set rulesE=Element.findFirstElementByType("rules",0)
+            Set subsumm=..summariseRules(rulesE,.listOfValues)
+            Set summary="("_subsumm_")"
+        } ElseIf $PIECE(Element.type,":",1)="RepeatSep" {
+            Set ruleE=Element.findFirstElementByType("RepeatSepRule")
             Set summary="."_..summariseRules(ruleE,.listOfValues)_"."
         } Else {
             Set summary="?4"_subelement.type_"4?"

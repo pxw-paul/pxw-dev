@@ -25,6 +25,8 @@ Method skipComments(ch10 As %String) As %Boolean
     If ch2="#;" Set ..comment=..readLineComment("#;") Quit 1
     Set ch3=$EXTRACT(ch10,1,3)
     If ch3="##;" Set ..comment=..readLineComment("##;") Quit 1
+    if $e(ch10,1,9)="##lit(;;)" Set ..comment=..readLineComment("##lit(;;)") Quit 1
+    if $e(ch10,1,8)="##lit(;)" Set ..comment=..readLineComment("##lit(;)") Quit 1
     Quit 0
 }
 
