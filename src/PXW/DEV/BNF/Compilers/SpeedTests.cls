@@ -39,12 +39,14 @@ classmethod All() {
     d ..IfTestNullNeg()
     d ..IfTestBooPos()
     d ..IfTestBooNeg()
+    d ..IfTestAndPosHeavy()
     d ..IfTestAndPos()
     d ..IfTestAndNeg()
     d ..IfTestOrPos()
     d ..IfTestOrNeg()
     d ..ReuseVar()
     d ..TestKeyword()
+    d ..Extract()
 }
 
 
@@ -86,6 +88,56 @@ classmethod TestKeyword() {
         s i=1 
         While $e(line,$i(i),i)?1AN { }
         s x=$e(line,1,i-1)
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,x)
+
+    d ..startTimer(.res,"s i=1 Do { s i=i+1 } While $e(line,i)?1AN")
+    f j=1:1:m {
+        s i=1
+        Do { s i=i+1 } While $e(line,i)?1AN
+        s x=$e(line,1,i-1)
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,x)
+
+    d ..showRes(.res,m)
+
+}
+
+classmethod Extract() {
+
+    d ..showHead("Extract")
+    s m=10000000
+
+    s keyword=" Keyword"
+    d ..startTimer(.res,"s x=$e(keyword,2,*)")
+    f j=1:1:m {
+        s x=$e(keyword,2,*)
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,x)
+
+   s keyword=" Keyword"
+    d ..startTimer(.res,"s x=$e(keyword,2,$l(keyword)")
+    f j=1:1:m {
+        s x=$e(keyword,2,$l(keyword))
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,x)
+
+    s keyword="Keyword "
+    d ..startTimer(.res,"s x=$e(keyword,1,*-1)")
+    f j=1:1:m {
+        s x=$e(keyword,1,*-1)
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,x)
+
+    s keyword="Keyword "
+    d ..startTimer(.res,"s x=$e(keyword,1,$l(keyword)-1)")
+    f j=1:1:m {
+        s x=$e(keyword,1,$l(keyword)-1)
     }
     d ..stopTimer(.res)
     d ..checkValue(.res,x)
@@ -483,6 +535,18 @@ classmethod IfTestAndPos() {
     d ..checkValue(.res,done)
 
     s a=1,b=1,c=1,d=1,e=1
+    d ..startTimer(.res,"i a & b & c & d & e ; true")
+    f i=1:1:m {
+        s done=0
+        i a & b & c & d & e {
+            s done=1
+        }
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,done)
+
+
+    s a=1,b=1,c=1,d=1,e=1
     d ..startTimer(.res,"i a i b i c i d i e ; true")
     f i=1:1:m {
         s done=0
@@ -503,6 +567,81 @@ classmethod IfTestAndPos() {
 
     d ..showRes(.res,m)
 }
+
+classmethod IfTestAndPosHeavy() {
+    d ..showHead("IfTestAndPosHeavy")
+    s m=10000000
+    s var=""
+    
+    d ..startTimer(.res,"i ..ret(1),..ret(1),..ret(1) ; true")
+    f i=1:1:m {
+        s done=0
+        i ..ret(1),..ret(1),..ret(1) {
+            s done=1
+        }
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,done)
+
+    d ..startTimer(.res,"i ..ret(1) && ..ret(1) && ..ret(1) ; true")
+    f i=1:1:m {
+        s done=0
+        i ..ret(1) && ..ret(1) && ..ret(1) {
+            s done=1
+        }
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,done)
+
+    d ..startTimer(.res,"i ..ret(1) & ..ret(1) & ..ret(1) ; true")
+    f i=1:1:m {
+        s done=0
+        i ..ret(1) & ..ret(1) & ..ret(1) {
+            s done=1
+        }
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,done)
+
+
+    d ..startTimer(.res,"i ..ret(1) i ..ret(1) i ..ret(1) ; true")
+    f i=1:1:m {
+        s done=0
+        i ..ret(1) {
+            i ..ret(1) {
+                i ..ret(1) {
+                    s done=1
+                }
+            }
+        }
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,done)
+
+   d ..startTimer(.res,"i ..ret(1) else i ..ret(1) i else ..ret(1) else ; true")
+    f i=1:1:m {
+        i ..ret(1) {
+            i ..ret(1) {
+                i ..ret(1) {
+                    s done=1
+                } else {
+                    s done=0
+                }
+            } else {
+                s done=0
+            }
+        } else {
+            s done=0
+        }
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,done)
+
+
+    d ..showRes(.res,m)
+}
+
+
 classmethod IfTestAndNeg() {
     d ..showHead("IfTestAndNeg")
     s m=10000000
@@ -520,10 +659,33 @@ classmethod IfTestAndNeg() {
     d ..checkValue(.res,done)
 
     s a=0,b=1,c=1,d=1,e=1
+    d ..startTimer(.res,"i a,b,c,d,e else ; false(a)")
+    f i=1:1:m {
+        i a,b,c,d,e {
+            s done=1
+        } else {
+            s done=0
+        }
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,done)
+
+    s a=0,b=1,c=1,d=1,e=1
     d ..startTimer(.res,"i a && b && c && d && e ; false(a)")
     f i=1:1:m {
         s done=0
         i a && b && c && d && e {
+            s done=1
+        }
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,done)
+
+    s a=0,b=1,c=1,d=1,e=1
+    d ..startTimer(.res,"i a & b & c & d & e ; false(a)")
+    f i=1:1:m {
+        s done=0
+        i a & b & c & d & e {
             s done=1
         }
     }
@@ -561,10 +723,33 @@ classmethod IfTestAndNeg() {
     d ..checkValue(.res,done)
 
     s a=1,b=1,c=1,d=1,e=0
+    d ..startTimer(.res,"i a,b,c,d,e else ; false(e)")
+    f i=1:1:m {
+        i a,b,c,d,e {
+            s done=1
+        } else {
+            s done=0
+        }
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,done)
+
+    s a=1,b=1,c=1,d=1,e=0
     d ..startTimer(.res,"i a && b && c && d && e ; false(e)")
     f i=1:1:m {
         s done=0
         i a && b && c && d && e {
+            s done=1
+        }
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,done)
+
+    s a=1,b=1,c=1,d=1,e=0
+    d ..startTimer(.res,"i a & b & c & d & e ; false(e)")
+    f i=1:1:m {
+        s done=0
+        i a & b & c & d & e {
             s done=1
         }
     }
@@ -613,6 +798,29 @@ classmethod IfTestOrPos() {
     d ..startTimer(.res,"i a || b || c || d || e else ; true (a)")
     f i=1:1:m {
         i a || b || c || d || e {
+            s done=1
+        } else {
+            s done=0
+        }
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,done)
+
+    s a=1,b=0,c=0,d=0,e=0
+    d ..startTimer(.res,"i a ! b ! c ! d ! e ; true (a)")
+    f i=1:1:m {
+        s done=0
+        i a ! b ! c ! d ! e {
+            s done=1
+        }
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,done)
+
+    s a=1,b=0,c=0,d=0,e=0
+    d ..startTimer(.res,"i a ! b ! c ! d ! e else ; true (a)")
+    f i=1:1:m {
+        i a ! b ! c ! d ! e {
             s done=1
         } else {
             s done=0
@@ -672,6 +880,17 @@ classmethod IfTestOrPos() {
     d ..checkValue(.res,done)
 
     s a=0,b=0,c=0,d=0,e=1
+    d ..startTimer(.res,"i a ! b ! c ! d ! e ; true (e)")
+    f i=1:1:m {
+        s done=0
+        i a ! b ! c ! d ! e {
+            s done=1
+        }
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,done)
+
+    s a=0,b=0,c=0,d=0,e=1
     d ..startTimer(.res,"i a elseif b elseif c elseif d elseif e ; true (e)")
     f i=1:1:m {
         s done=0
@@ -710,9 +929,32 @@ classmethod IfTestOrNeg() {
     d ..checkValue(.res,done)
 
     s a=0,b=0,c=0,d=0,e=0
+    d ..startTimer(.res,"i a ! b ! c ! d ! e ; false")
+    f i=1:1:m {
+        s done=0
+        i a ! b ! c ! d ! e {
+            s done=1
+        }
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,done)
+    
+    s a=0,b=0,c=0,d=0,e=0
     d ..startTimer(.res,"i a || b || c || d || e else ; false")
     f i=1:1:m {
         i a || b || c || d || e {
+            s done=1
+        } else {
+            s done=0
+        }
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,done)
+
+    s a=0,b=0,c=0,d=0,e=0
+    d ..startTimer(.res,"i a ! b ! c ! d ! e else ; false")
+    f i=1:1:m {
+        i a ! b ! c ! d ! e {
             s done=1
         } else {
             s done=0
@@ -892,29 +1134,32 @@ classmethod NestFunctions() {
         s len=$l(char),read=$e(line,1,len),upper=$$$UPPER(read)
     }
     d ..stopTimer(.res)
+    d ..checkValue(.res,upper)
 
     d ..startTimer(.res,"s read=$e(line,1,$l(char)),upper=$zu(28,read,5)")
     f i=1:1:m {
         s read=$e(line,1,$l(char)),upper=$zu(28,read,5) 
     }
     d ..stopTimer(.res)
+    d ..checkValue(.res,upper)
 
     d ..startTimer(.res,"s upper=$zu(28,$e(line,1,$l(char)),5)")
     f i=1:1:m {
         s upper=$zu(28,$e(line,1,$l(char)),5)
     }
     d ..stopTimer(.res)
+    d ..checkValue(.res,upper)
 
     d ..startTimer(.res,"s upper=$zconvert($e(line,1,$l(char)),""U"")")
     f i=1:1:m {
         s upper=$zconvert($e(line,1,$l(char)),"U")
     }
     d ..stopTimer(.res)
+    d ..checkValue(.res,upper)
 
-    d ..showRes(.res,m)
-
-   
+    d ..showRes(.res,m)   
 }
+
 classmethod ConcatFromArray() {
     d ..showHead("ConcatFromArray")
     s m=100000
@@ -1249,7 +1494,7 @@ classmethod ObjectCheckNeg() {
     d ..stopTimer(.res)
     d ..checkValue(.res,x)
     */
-    
+
     d ..startTimer(.res,"$d(o),$isobject(o) ; if it exists it MAY be an object")
     f i=1:1:m { i $d(o),$isobject(0) { s x=1 } else { s x=0 } }
     d ..stopTimer(.res)
@@ -1561,4 +1806,8 @@ classmethod oneParameter(parameter1 as PXW.DEV.Element) as %Boolean {
     q 1
 }
 
+classmethod ret(value as %Boolean) as %Boolean
+{
+    return value
+}
 }

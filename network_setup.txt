@@ -24,3 +24,23 @@ C:\Users\water\OneDrive\Documents\GitHub\pxw-dev>docker network connect my-netwo
 
 
 docker system prune -a --volumes
+
+
+If irisowner cannot write to the shared volume:
+FROM AI:
+Find the details of the irisowner account:
+On the container:
+$ id irisowner
+uid=51773(irisowner) gid=51773(irisowner) groups=51773(irisowner)
+
+On the host set the permissons of the shared directory
+sudo setfacl -R -m u:51773:rwX /home/paul/github/pxw-dev
+
+Then set default ACLs so that newly created files and directories inherit the permissions:
+sudo setfacl -R -d -m u:51773:rwX /home/paul/github/pxw-dev
+This gives irisowner read/write access without changing the existing ownership.
+
+You can inspect the permissions with:
+getfacl /home/paul/github/pxw-dev/debug
+
+One thing to remember: if you create a completely new directory outside the existing ACL-protected directory tree, you may need to apply the default ACL there too.

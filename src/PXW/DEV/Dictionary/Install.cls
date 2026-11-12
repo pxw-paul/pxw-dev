@@ -148,7 +148,8 @@ ClassMethod GenAll(ExportGEN as %Boolean=1)
 ClassMethod ExportAll() as %String
 {
     Set dt=$TRANSLATE($ZDATETIME($HOROLOG,3),":- ","")
-    Set filedir="/usr/irissys/csp/user/"
+    ;Set filedir="/usr/irissys/csp/user/"
+    s filedir="/home/irisowner/dev/debug/"
     Set file=filedir_"PXWALLINC_"_dt_".xml"
     Set sc=$SYSTEM.OBJ.Export("PXW.*.CLS,PXW.*.INC",file)
     Do:$$$ISERR(sc) $SYSTEM.Status.DisplayError(sc)
