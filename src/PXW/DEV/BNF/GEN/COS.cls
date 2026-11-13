@@ -4344,18 +4344,20 @@ Method ForLoopSpecifierList1RepSep(ParentElement As PXW.DEV.BNF.Element, ByRef s
 	quit ok
 }
 
-///  for_loop_statement ::= ( '{' cos_command_or_macro? cos_code_block '}' ) | (naked | command_list_eol )
-/// summary=(P&?C&C&P)|(C|C)
+///  for_loop_statement ::= cos_code_block_curly | naked | command_list_eol
+/// summary=C|C|C
 Method ForLoopStatement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary (P&?C&C&P)|(C|C)
+	; rules summary C|C|C
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..ForLoopStatement1Sub(.subElement,.addedElement)  {
+	if ..CosCodeBlockCurly(.subElement,.addedElement)  {
 		set done=1 ; or
-	} elseif ..Naked(.subElement,.addedElement)  || ..CommandListEol(.subElement,.addedElement)  {
+	} elseif ..Naked(.subElement,.addedElement)  {
+		set done=1 ; or
+	} elseif ..CommandListEol(.subElement,.addedElement)  {
 		set done=1 ; end compileRules
 	}
 
@@ -4367,32 +4369,6 @@ Method ForLoopStatement(ParentElement As PXW.DEV.BNF.Element, ByRef subElement A
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-///  '{' cos_command_or_macro? cos_code_block '}'
-/// summary=P&?C&C&P
-Method ForLoopStatement1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"{")  {
-		if $s(..CosCommandOrMacro(.subElement,.addedElement) :1,1:1)  {
-			if ..CosCodeBlock(.subElement,.addedElement)  {
-				if ..addPunctuation(.subElement,"}")  {
-					set done=1 ; end compileRules
-				}
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
 	quit ok
 }
 
@@ -9249,18 +9225,18 @@ Method NewItemVarlist(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	quit ok
 }
 
-///  number ::= ('regexp:[0-9]*' [ '.' 'regexp:[0-9]+'] [ ('e' | 'E' ) 'regexp:[0-9]+']) | ('.' 'regexp:[0-9]+' [ ('e' | 'E') 'regexp:[0-9]+'])
-/// summary=(R&[P&R]&[(K|K)&R])|(P&R&[(K|K)&R])
+///  number ::= 'NEEDS NUMBER'
+/// summary values:NEEDS NUMBER
+/// summary=P
 Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary (R&[P&R]&[(K|K)&R])|(P&R&[(K|K)&R])
+	; rules summary P
+	if '(..isStringSingle("NEEDS NUMBER",.value)) { quit 0 /* normal */ /*3 */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..Number1Sub(.subElement,.addedElement)  {
-		set done=1 ; or
-	} elseif ..Number4Sub(.subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,"NEEDS NUMBER")  {
 		set done=1 ; end compileRules
 	}
 
@@ -9272,132 +9248,6 @@ Method Number(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-/// 'regexp:[0-9]*' [ '.' 'regexp:[0-9]+'] [ ('e' | 'E' ) 'regexp:[0-9]+']
-/// summary=R&[P&R]&[(K|K)&R]
-Method Number1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addRegex(.subElement,"[0-9]*")  {
-		if ..Number2OptGrp(.subElement,.addedElement)  {
-			if ..Number3OptGrp(.subElement,.addedElement)  {
-				set done=1 ; end compileRules
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	quit ok
-}
-
-/// 
-/// summary values:.
-/// summary=P&R
-Method Number2OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P&R
-	if '..isPunctuation(".",1) { quit 1 /* not found is OK */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,".")  {
-		if ..addRegex(.subElement,"[0-9]+")  {
-			set done=1 ; end compileRules
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
-	}
-	quit ok
-}
-
-/// 
-/// summary values:E,E
-/// summary=(K|K)&R
-Method Number3OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary (K|K)&R
-	if '(..isKeywordInList($lb("E","E"))) { quit 1 /* not found is OK */ /*1*/ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeywordInList(.subElement,$listbuild("E","E"))  {
-		if ..addRegex(.subElement,"[0-9]+")  {
-			set done=1 ; end compileRules
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
-	}
-	quit ok
-}
-
-/// '.' 'regexp:[0-9]+' [ ('e' | 'E') 'regexp:[0-9]+']
-/// summary values:.
-/// summary=P&R&[(K|K)&R]
-Method Number4Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P&R&[(K|K)&R]
-	if '..isPunctuation(".",1) { quit 0 /* normal */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,".")  {
-		if ..addRegex(.subElement,"[0-9]+")  {
-			if ..Number5OptGrp(.subElement,.addedElement)  {
-				set done=1 ; end compileRules
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
-	quit ok
-}
-
-/// 
-/// summary values:E,E
-/// summary=(K|K)&R
-Method Number5OptGrp(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary (K|K)&R
-	if '(..isKeywordInList($lb("E","E"))) { quit 1 /* not found is OK */ /*1*/ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addKeywordInList(.subElement,$listbuild("E","E"))  {
-		if ..addRegex(.subElement,"[0-9]+")  {
-			set done=1 ; end compileRules
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=1 /* failure rollsback but returns OK */
-	}
 	quit ok
 }
 
@@ -12698,18 +12548,18 @@ Method StarParameter1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement 
 	quit ok
 }
 
-///  string ::= '""' | ('"' 'regexp:[^\"\r\n]*' '"')
-/// summary=P|(P&R&P)
+///  string ::= 'NEEDS STRING'
+/// summary values:NEEDS STRING
+/// summary=P
 Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
-	; rules summary P|(P&R&P)
+	; rules summary P
+	if '(..isStringSingle("NEEDS STRING",.value)) { quit 0 /* normal */ /*3 */ }
 	$$$DEBUGMethodBegin
 	$$$BNFPATH
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
-	if ..addPunctuation(.subElement,"""""")  {
-		set done=1 ; or
-	} elseif ..String1Sub(.subElement,.addedElement)  {
+	if ..addPunctuation(.subElement,"NEEDS STRING")  {
 		set done=1 ; end compileRules
 	}
 
@@ -12721,33 +12571,6 @@ Method String(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.
 		set ok=0
 	}
 	$$$DEBUGMethodEnd
-	quit ok
-}
-
-/// '"' 'regexp:[^\"\r\n]*' '"'
-/// summary values:""
-/// summary=P&R&P
-Method String1Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean [ Final, Private ]
-{
-	; rules summary P&R&P
-	if '..isPunctuation("""",2) { quit 0 /* normal */ }
-	$$$BNFSTART(subElement)
-	set done=0 ; method start
-	if ..addPunctuation(.subElement,"""")  {
-		if ..addRegex(.subElement,"[^\""\r\n]*")  {
-			if ..addPunctuation(.subElement,"""")  {
-				set done=1 ; end compileRules
-			}
-		}
-	}
-
-	if done {
-		$$$BNFCOMMITCOPY(subElement,ParentElement)
-		set ok=1
-	} else {
-		$$$BNFROLLBACK(subElement)
-		set ok=0
-	}
 	quit ok
 }
 

@@ -417,11 +417,6 @@ object_chain_no_dot                 ::= object_member_identifier function_parame
 object_chain_item                   ::= object_member_identifier function_parameter_list? 
 object_member_identifier            ::= 'regexp:(\%|\#|[a-zA-Z])[a-zA-Z0-9\.]*'
 
-
-number                              ::= ('regexp:[0-9]*' [ '.' 'regexp:[0-9]+'] [ ('e' | 'E' ) 'regexp:[0-9]+']) | ('.' 'regexp:[0-9]+' [ ('e' | 'E') 'regexp:[0-9]+'])  
-
-string                              ::= '""' | ('"' 'regexp:[^\"\r\n]*' '"')
-
 identifier                          ::= 'regexp:(((\%[a-zA-Z0-9])|(\$[a-zA-Z])|[a-zA-Z])[a-zA-Z0-9\.]*)'
 global_identifier                   ::= 'regexp:(\%|\$|[a-zA-Z])[a-zA-Z0-9\.]*' -- % or $ or A followed by AN.
 
@@ -466,7 +461,7 @@ do_item                             ::=  object_variable
                                           | ( '(' expression ')' object_chain? )
 
 for_command                         ::= ('for' | 'f') for_parameter_list? for_loop_statement
-for_loop_statement                  ::= ( '{' cos_command_or_macro? cos_code_block '}' ) | (naked | command_list_eol )
+for_loop_statement                  ::= cos_code_block_curly | naked | command_list_eol 
 for_parameter_list                  ::= ','.for_parameter+
 for_parameter                       ::= lvalue_expression '=' for_loop_specifier_list
 for_loop_specifier_list             ::= ','.for_loop_specifier+
@@ -852,6 +847,13 @@ cos_json_prim                       ::= number | json_string | 'true' | 'false' 
 cos_json_array                      ::= '[' [ ','.cos_json+ ] ']' 
 
 json_string                         ::= 'NEEDS JSON STRING'
+
+
+number                              ::= ('regexp:[0-9]*' [ '.' 'regexp:[0-9]+'] [ ('e' | 'E' ) 'regexp:[0-9]+']) | ('.' 'regexp:[0-9]+' [ ('e' | 'E') 'regexp:[0-9]+'])  
+
+string                              ::= '""' | ('"' 'regexp:[^\"\r\n]*' '"')
+
+
     ]]>
 
     </data>

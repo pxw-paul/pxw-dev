@@ -32,7 +32,7 @@ ClassMethod goload(DEFClass As %String = "", DestinationClass As %String, forceV
     Set input=..load(DEFClass_"||"_"file",.arr,.version,.equals)
     If forceVersion'="" Set version=forceVersion
     If forceEquals'="" Set equals=forceEquals
-    Write "Using version="_version_", equals="_equals,!
+    Write "Using version="_version_", equals="_equals
     If version=3 {
         ;Set compiler=##class(PXW.DEV.BNF.Compilers.Compiler3).%New(input)
      } ElseIf version=2 {

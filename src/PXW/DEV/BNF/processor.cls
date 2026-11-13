@@ -78,7 +78,7 @@ Method processSpecificElement(element As PXW.DEV.Element,When as %String="PRE") 
 			}
 		}
 	}
-    Do %code.WriteLine($CHAR(9)_"Set class=$ZCONVERT($classname(element),""U"") q:class=""""")
+    Do %code.WriteLine($CHAR(9)_"Set class=$classname(element) q:class=""""")
     Do %code.WriteLine($CHAR(9)_"Set etype=$ZCONVERT(element.type,""U"") q:etype=""""")
     Do %code.WriteLine($CHAR(9)_"$$$DEBUGMethodBegin")
 	;do %code.WriteLine($CHAR(9)_"s xxx=$i(%RBCOUNT(When,class,etype,""count call""))")
@@ -99,7 +99,7 @@ Method processSpecificElement(element As PXW.DEV.Element,When as %String="PRE") 
 			set class=$o(allclass(class))
 			Quit:class=""
 
-			Do %code.WriteLine($CHAR(9,9,9)_cif_" class="""_$$$UPPER(class)_""" "_opencurly)
+			Do %code.WriteLine($CHAR(9,9,9)_cif_" class="""_class_""" "_opencurly)
 			if '$d(methods(when,class)) {
 				; if there is no methods for this class set up a dummy if
 				; so that the final ELSE gets executed, marking this method 

@@ -1,4 +1,4 @@
-include PXW.Debuggers.Macros
+Include PXW.Debuggers.Macros
 
 /// This class is used for various experiments to find which ways of coding things
 /// are the fastest.
@@ -7,16 +7,17 @@ include PXW.Debuggers.Macros
 /// 
 /// But over the whole thing running millions of times when parsing every little helps.
 /// Also its finding some interesting things, and it fun to keep finding new things.
-///
+/// 
 /// Keeping these all in the project to show why some of the code is like it is.
 /// 
 /// Some of these test do show some inconsistencies when run many times.
 Class PXW.DEV.BNF.Compilers.SpeedTests Extends %RegisteredObject
 {
-    
-parameter TestString="This is a test string";
 
-classmethod All() {
+Parameter TestString = "This is a test string";
+
+ClassMethod All()
+{
     d ..UnusedReturns()
     d ..ObjectCheckPos()
     d ..ObjectCheckNeg()
@@ -47,10 +48,11 @@ classmethod All() {
     d ..ReuseVar()
     d ..TestKeyword()
     d ..Extract()
+    d ..Classname()
 }
 
-
-classmethod TestKeyword() {
+ClassMethod TestKeyword()
+{
 
     d ..showHead("TestKeyword")
     s m=1000000
@@ -102,10 +104,10 @@ classmethod TestKeyword() {
     d ..checkValue(.res,x)
 
     d ..showRes(.res,m)
-
 }
 
-classmethod Extract() {
+ClassMethod Extract()
+{
 
     d ..showHead("Extract")
     s m=10000000
@@ -144,10 +146,10 @@ classmethod Extract() {
 
 
     d ..showRes(.res,m)
-
 }
 
-classmethod ReuseVar() {
+ClassMethod ReuseVar()
+{
     d ..showHead("ReuseVar")
     s m=10000
     s var=""
@@ -215,12 +217,14 @@ classmethod ReuseVar() {
     d ..showRes(.res,m)
 }
 
-classmethod newElement(byref ele) {
+ClassMethod newElement(ByRef ele)
+{
     s ele=##class(PXW.DEV.Element).%New()
     q
 }
 
-classmethod IfTestNullPos() {
+ClassMethod IfTestNullPos()
+{
     d ..showHead("IfTestNullPos")
     s m=10000000
     s var=""
@@ -258,10 +262,10 @@ classmethod IfTestNullPos() {
     d ..checkValue(.res,y)
 
     d ..showRes(.res,m)
-
 }
 
-classmethod IfTestNullNeg() {
+ClassMethod IfTestNullNeg()
+{
     d ..showHead("IfTestNullNeg")
     s m=10000000
     s var=""
@@ -300,10 +304,10 @@ classmethod IfTestNullNeg() {
     d ..checkValue(.res,y)
 
     d ..showRes(.res,m)
-
 }
 
-classmethod IfTestBooPos() {
+ClassMethod IfTestBooPos()
+{
     d ..showHead("IfTestBooPos")
     s m=10000000
     s var=""
@@ -341,10 +345,10 @@ classmethod IfTestBooPos() {
     d ..checkValue(.res,y)
 
     d ..showRes(.res,m)
-
 }
 
-classmethod IfTestBooNeg() {
+ClassMethod IfTestBooNeg()
+{
     d ..showHead("IfTestBooNeg")
     s m=10000000
     s var=""
@@ -382,10 +386,10 @@ classmethod IfTestBooNeg() {
     d ..checkValue(.res,y)
 
     d ..showRes(.res,m)
-
 }
 
-classmethod IfTest() {
+ClassMethod IfTest()
+{
     d ..showHead("IfTest")
     s m=10000000
     s var=""
@@ -507,7 +511,8 @@ classmethod IfTest() {
     d ..showRes(.res,m)
 }
 
-classmethod IfTestAndPos() {
+ClassMethod IfTestAndPos()
+{
     d ..showHead("IfTestAndPos")
     s m=10000000
     s var=""
@@ -568,7 +573,8 @@ classmethod IfTestAndPos() {
     d ..showRes(.res,m)
 }
 
-classmethod IfTestAndPosHeavy() {
+ClassMethod IfTestAndPosHeavy()
+{
     d ..showHead("IfTestAndPosHeavy")
     s m=10000000
     s var=""
@@ -641,8 +647,8 @@ classmethod IfTestAndPosHeavy() {
     d ..showRes(.res,m)
 }
 
-
-classmethod IfTestAndNeg() {
+ClassMethod IfTestAndNeg()
+{
     d ..showHead("IfTestAndNeg")
     s m=10000000
     s var=""
@@ -778,7 +784,8 @@ classmethod IfTestAndNeg() {
     d ..showRes(.res,m)
 }
 
-classmethod IfTestOrPos() {
+ClassMethod IfTestOrPos()
+{
     d ..showHead("IfTestOrPos")
     s m=10000000
     s var=""
@@ -912,7 +919,8 @@ classmethod IfTestOrPos() {
     d ..showRes(.res,m)
 }
 
-classmethod IfTestOrNeg() {
+ClassMethod IfTestOrNeg()
+{
     d ..showHead("IfTestOrNeg")
     s m=10000000
     s var=""
@@ -1006,9 +1014,8 @@ classmethod IfTestOrNeg() {
     d ..showRes(.res,m)
 }
 
-
-
-classmethod DataTestPos() {
+ClassMethod DataTestPos()
+{
     d ..showHead("DataTestPos")
     s m=10000000
     s var=""
@@ -1061,11 +1068,10 @@ classmethod DataTestPos() {
     d ..checkValue(.res,x)
 
     d ..showRes(.res,m)
-
-
 }
 
-classmethod DataTestNeg() {
+ClassMethod DataTestNeg()
+{
     d ..showHead("DataTestNeg")
     s m=10000000
 
@@ -1117,11 +1123,10 @@ classmethod DataTestNeg() {
     d ..checkValue(.res,x)
 
     d ..showRes(.res,m)
-
-
 }
 
-classmethod NestFunctions() {
+ClassMethod NestFunctions()
+{
     d ..showHead("NestFunctions")
     s m=10000000
     s line="abcdefghijklmnopqrstuvwxyz"
@@ -1157,10 +1162,11 @@ classmethod NestFunctions() {
     d ..stopTimer(.res)
     d ..checkValue(.res,upper)
 
-    d ..showRes(.res,m)   
+    d ..showRes(.res,m)
 }
 
-classmethod ConcatFromArray() {
+ClassMethod ConcatFromArray()
+{
     d ..showHead("ConcatFromArray")
     s m=100000
     s times=10
@@ -1191,12 +1197,10 @@ classmethod ConcatFromArray() {
     d ..checkValue(.res,x)
 
     d ..showRes(.res,m)
-
-
 }
 
-
-classmethod ConcatString() {
+ClassMethod ConcatString()
+{
     d ..showHead("ConcatString")
     s m=10000000
     s str="abcdefghijklmnopqrstuvwxyz"
@@ -1230,10 +1234,10 @@ classmethod ConcatString() {
 
 
     d ..showRes(.res,m)
-
 }
 
-classmethod ConcatStringNull() {
+ClassMethod ConcatStringNull()
+{
     d ..showHead("ConcatStringNull")
     s m=10000000
     s str="abcdefghijklmnopqrstuvwxyz"
@@ -1266,10 +1270,10 @@ classmethod ConcatStringNull() {
     d ..checkValue(.res,x)
 
     d ..showRes(.res,m)
-
 }
 
-classmethod ConcatNullNull() {
+ClassMethod ConcatNullNull()
+{
     d ..showHead("ConcatNullNull")
     s m=10000000
     s str=""
@@ -1299,10 +1303,10 @@ classmethod ConcatNullNull() {
     d ..stopTimer(.res)
 
     d ..showRes(.res,m)
-
 }
 
-classmethod IncrementArray() {
+ClassMethod IncrementArray()
+{
     d ..showHead("IncrementArray")
     s m=100000,times=10
 
@@ -1328,11 +1332,10 @@ classmethod IncrementArray() {
     d ..stopTimer(.res)
 
     d ..showRes(.res,m)
-
 }
 
-
-classmethod IncrementVsString() {
+ClassMethod IncrementVsString()
+{
     d ..showHead("IncrementVsString")
     s c=3,m=10001,times=10
 
@@ -1370,11 +1373,10 @@ classmethod IncrementVsString() {
 
 
     d ..showRes(.res,m)
-
 }
 
-
-classmethod UnusedReturns() {
+ClassMethod UnusedReturns()
+{
 
     d ..showHead("UnusedReturns")
     s m=10000000
@@ -1396,10 +1398,10 @@ classmethod UnusedReturns() {
     d ..stopTimer(.res)
 
     d ..showRes(.res,m)
-
 }
 
-classmethod ObjectCheckPos() {
+ClassMethod ObjectCheckPos()
+{
     d ..showHead("ObjectCheckPos")
     s o=##class(PXW.DEV.Atom).%New()
     s m=10000000
@@ -1450,10 +1452,10 @@ classmethod ObjectCheckPos() {
     d ..checkValue(.res,x)
 
     d ..showRes(.res,m)
-
 }
 
-classmethod ObjectCheckNeg() {
+ClassMethod ObjectCheckNeg()
+{
     d ..showHead("ObjectCheckNeg")
     s o=""
     s m=10000000
@@ -1541,7 +1543,8 @@ classmethod ObjectCheckNeg() {
     d ..showRes(.res,m)
 }
 
-classmethod ObjectCheckNegPost() {
+ClassMethod ObjectCheckNegPost()
+{
     ; here we are setting x to anything 
     ; because there can be no else on post conditional
     d ..showHead("ObjectCheckNegPost")
@@ -1591,9 +1594,10 @@ classmethod ObjectCheckNegPost() {
     d ..checkValue(.res,x)
 
     d ..showRes(.res,m)
-
 }
-classmethod ParameterPassingNumber() {
+
+ClassMethod ParameterPassingNumber()
+{
     d ..showHead("ParameterPassingNumber")
     s p=1
     s m=10000000
@@ -1620,10 +1624,10 @@ classmethod ParameterPassingNumber() {
     d ..stopTimer(.res)
 
     d ..showRes(.res,m)
-
 }
 
-classmethod ParameterPassingString() {
+ClassMethod ParameterPassingString()
+{
     d ..showHead("ParameterPassingString")
     s p="this is a string"
     s m=10000000
@@ -1658,10 +1662,10 @@ classmethod ParameterPassingString() {
 
 
     d ..showRes(.res,m)
-
 }
 
-classmethod ParameterPassingObject() {
+ClassMethod ParameterPassingObject()
+{
     d ..showHead("ParameterPassingObject")
     s p=##class(PXW.DEV.Element).%New()
     s m=10000000
@@ -1683,10 +1687,10 @@ classmethod ParameterPassingObject() {
     d ..stopTimer(.res)
 
     d ..showRes(.res,m)
-
 }
 
-classmethod ParameterPassingObject2() {
+ClassMethod ParameterPassingObject2()
+{
     d ..showHead("ParameterPassingObject2")
     s p=##class(PXW.DEV.Element).%New()
     s m=100000
@@ -1717,24 +1721,48 @@ classmethod ParameterPassingObject2() {
     f i=1:1:m { k p2 s x=..oneParameter(.p) }
     d ..stopTimer(.res)
 
-
     d ..showRes(.res,m)
-
 }
 
-classmethod startTimer(byref results ,Name as %String) {
+classmethod Classname() 
+{
+    d ..showHead("Classname")
+    s p=##class(PXW.DEV.Element).%New()
+    s p.type=$CLASSNAME(p)
+    s m=100000
+
+    d ..startTimer(.res,"$classname(p)")
+    f i=1:1:m { s x=$classname(p) }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,x) 
+
+    d ..startTimer(.res,"p.%classname(1)")
+    f i=1:1:m { s x=p.%ClassName(1) }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,x)
+
+
+
+    d ..showRes(.res,m)
+}
+
+ClassMethod startTimer(ByRef results, Name As %String)
+{
     i $d(results(Name)) w !,"TEST "_Name_" Already exists" $$$ThrowStatus($$$ERROR(5001,Name_"Already exists"))
     s results("current")=Name
     s results("run order",$i(results("run order")))=Name
     s results("zh")=$zh
 }
-classmethod stopTimer(byref results) {
+
+ClassMethod stopTimer(ByRef results)
+{
     s time=$zh-results("zh")
     s name=results("current")
     s results("name",name)=time
 }
 
-classmethod checkValue(byref results, value as %String) {
+ClassMethod checkValue(ByRef results, value As %String)
+{
     ; The first time this is called it will record the value.
     ; This value is considered the correct result.
     ; The next time its called the value is compared to the "right" result.
@@ -1750,14 +1778,15 @@ classmethod checkValue(byref results, value as %String) {
         ; recording the results before taking timings is unfair
         s results("name",name,"value")="early result"
     }
-    
 }
-classmethod showHead(Title as %String)
+
+ClassMethod showHead(Title As %String)
 {
     w !,Title
 }
 
-classmethod showRes(byref results as %String,Iterations as %Integer) {
+ClassMethod showRes(ByRef results As %String, Iterations As %Integer)
+{
     w !,"Iterations="_$fn(Iterations,",")
 
     s expected=$g(results("expectedvalue"),$c(1))
@@ -1784,30 +1813,36 @@ classmethod showRes(byref results as %String,Iterations as %Integer) {
     w !
 }
 
-classmethod basicQuit() as %Boolean {
+ClassMethod basicQuit() As %Boolean
+{
     q 1
 }
 
-classmethod singleParameter(parameter as %String) as %Boolean {
+ClassMethod singleParameter(parameter As %String) As %Boolean
+{
     q 1
 }
 
-classmethod singleParameterByref(byref parameter as %String) as %Boolean {
+ClassMethod singleParameterByref(ByRef parameter As %String) As %Boolean
+{
     q 1
 }
 
-classmethod twoParameters(parameter1 as PXW.DEV.Element, byref parameter2 as PXW.DEV.Element) as %Boolean {
+ClassMethod twoParameters(parameter1 As PXW.DEV.Element, ByRef parameter2 As PXW.DEV.Element) As %Boolean
+{
     s parameter2=##class(PXW.DEV.Element).%New()
     q 1
 }
 
-classmethod oneParameter(parameter1 as PXW.DEV.Element) as %Boolean {
+ClassMethod oneParameter(parameter1 As PXW.DEV.Element) As %Boolean
+{
     s internal=##class(PXW.DEV.Element).%New()
     q 1
 }
 
-classmethod ret(value as %Boolean) as %Boolean
+ClassMethod ret(value As %Boolean) As %Boolean
 {
     return value
 }
+
 }

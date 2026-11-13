@@ -113,6 +113,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 	#dim ele,element as PXW.DEV.Element
 	Set zh=$ZHOROLOG
 	Set showPaths=0,forceXref=0
+	set monitor=0
     ;Write "<pre>"
 	; Debug is only for the DISPLAY of the page, if you want to debug the parsing use the ParserTest page.
 	If +Debug=1 $$$DEBUGNew(##class(PXW.Tools.Debugger).%ClassName(1))
@@ -120,6 +121,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 	If Debug["$PATHS" Set showPaths=1,%path="" ; no need to set any output its just for tooltips
 	If Debug["$TIME" $$$DEBUGNew(##class(PXW.Tools.DebugTiming).%ClassName(1))
 	If Debug["$XREF" Set forceXref=1
+	If Debug["$MON" Set monitor=1
 	
     Set output=##class(PXW.Tools.DEV.HTML.bnf).%New()
 	Set output.ThisType=..#CodeType
@@ -157,6 +159,12 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 		Set zh(4,"render start")=$ZHOROLOG-zh,zh=$ZHOROLOG
 
 		If Debug'="$TIME" $$$DEBUGPause
+		if monitor {
+		    s metrics=$LISTFROMSTRING("RtnLine,Time,TotalTime")
+			s routines=$LISTFROMSTRING("PXW.DEV.BNF.*,PXW.Tools.DEV.HTML.*")
+			s sc=##class(%Monitor.System.LineByLine).Start(routines,metrics,$lb($j))
+			i 'sc d ..WriteStatus(sc)
+		}
 		Set pzh=$ZHOROLOG,ptot=0
 		Set ozh=$ZHOROLOG,otot=0
 		Set element=##class(PXW.DEV.Element).%New()
@@ -173,7 +181,6 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 				;ZWrite output.Analyser
 				Do element.write()
 			}
-
 
 			Set element=##class(PXW.DEV.Element).%New()
 			;zw output.Analyser
@@ -253,6 +260,45 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 	}
 	If Debug="$FILE" {
 		ZWrite %pxwdebug
+	}
+
+	if Debug["$MON" {
+		s file=##class(PXW.Debuggers.BasicToFile).GetDirectory()_"MON_"_ClassName_"_"_$TRANSLATE($ZDATETIME($HOROLOG,3),":- ","")_".csv"
+		s io=$io
+		o file:"wn"
+		s rcount=##class(%Monitor.System.LineByLine).GetRoutineCount()
+        f i=1:1:rcount {
+            s rtn=##class(%Monitor.System.LineByLine).GetRoutineName(i)
+            s rtns(rtn)=i
+        }
+        s metrics=##class(%Monitor.System.LineByLine).GetMetrics()
+        u file w "Rtn,Line,Lable,"_metrics_",code",!
+
+        s rtn="",lbl=""
+        f  {
+            s rtn=$o(rtns(rtn))
+            q:rtn=""
+        
+            s rset=##class(%ResultSet).%New("%Monitor.System.LineByLine:Result") 
+            d rset.Execute(rtn) 
+            s l=0
+            while rset.Next() {
+                s l=l+1
+                s x=rset.GetData(1) 
+                s code=$text(@("+"_l_"^"_rtn))
+				i $e(code,1)'="",$e(code,1)'=" ",$e(code,1)'=$c(9) {
+					s lbl=$p($p($p(code," ",1),$c(9),1),"(",1)
+				}
+                s line=$lb(rtn,l,lbl)_x_$lb(code)
+                u file w $listtostring(line,",",2),!
+            }
+            k rset 
+		}
+		c file
+		u io
+		d ##class(%Monitor.System.LineByLine).Stop()
+		w "Created file:"_file,!
+
 	}
 
 	;ZWrite %peek
