@@ -272,7 +272,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
             s rtns(rtn)=i
         }
         s metrics=##class(%Monitor.System.LineByLine).GetMetrics()
-        u file w "Rtn,Line,Lable,"_metrics_",code",!
+        u file w "Rtn,Line,Label,"_metrics_",code",!
 
         s rtn="",lbl=""
         f  {

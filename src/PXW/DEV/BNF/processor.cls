@@ -84,37 +84,39 @@ Method processSpecificElement(element As PXW.DEV.Element,When as %String="PRE") 
 	;do %code.WriteLine($CHAR(9)_"s xxx=$i(%RBCOUNT(When,class,etype,""count call""))")
 	Do %code.WriteLine($CHAR(9)_"i '$d(..processNotRequired(When,class,etype)) {")
 	;do %code.WriteLine($CHAR(9)_"  s xxx=$i(%RBCOUNT(When,class,etype,""count proc""))")
-	Set when="",wif="If"
+	Set when="",wif=$c(9,9)_"If"
 	for  {
 		;Set when=$o(methods(when))
 		set when=$o(allwhen(when))
 		quit:when=""
 
-		Do %code.WriteLine($CHAR(9,9)_wif_" When="""_$$$UPPER(when)_""" "_opencurly)
+		Do %code.WriteLine(wif_" When="""_$$$UPPER(when)_""" "_opencurly)
 
 
-		Set (class,etype,name)="",cif="If"
+		Set (class,etype,name)="",cif=$CHAR(9,9,9)_"If"
 		For  {
 			;Set class=$ORDER(methods(when,class))
 			set class=$o(allclass(class))
 			Quit:class=""
 
-			Do %code.WriteLine($CHAR(9,9,9)_cif_" class="""_class_""" "_opencurly)
+			Do %code.WriteLine(cif_" class="""_class_""" "_opencurly)
 			if '$d(methods(when,class)) {
 				; if there is no methods for this class set up a dummy if
 				; so that the final ELSE gets executed, marking this method 
 				; as not processed
-				Set ifcommand="If",etype=""
-				Do %code.WriteLine($CHAR(9,9,9,9)_ifcommand_" etype="""_$$$UPPER(etype)_""" "_opencurly)
-				Do %code.WriteLine($CHAR(9,9,9,9)_closecurly)
+				Set ifcommand=$CHAR(9,9,9,9)_"If",etype=""
+				;Do %code.WriteLine($CHAR(9,9,9,9)_ifcommand_" etype="""_$$$UPPER(etype)_""" "_opencurly)
+				Do %code.WriteLine(ifcommand_" etype="""_$$$UPPER(etype)_""" "_opencurly)
+				Do %code.Write($CHAR(9,9,9,9)_closecurly)
 			} else {
-				Set ifcommand="If"
+				Set ifcommand=$CHAR(9,9,9,9)_"If"
 				For  {
 					Set etype=$ORDER(methods(when,class,etype))
 					Quit:etype=""
 
 					; etype will contain the quotes
-					Do %code.WriteLine($CHAR(9,9,9,9)_ifcommand_" etype="""_$$$UPPER(etype)_""" "_opencurly)
+					;Do %code.WriteLine($CHAR(9,9,9,9)_ifcommand_" etype="""_$$$UPPER(etype)_""" "_opencurly)
+					Do %code.WriteLine(ifcommand_" etype="""_$$$UPPER(etype)_""" "_opencurly)
 					
 					For  {
 						Set name=$ORDER(methods(when,class,etype,name),1,meth)
@@ -122,20 +124,24 @@ Method processSpecificElement(element As PXW.DEV.Element,When as %String="PRE") 
 						
 						Do %code.WriteLine($CHAR(9,9,9,9,9)_"do .."_meth.Name_"(.element)")
 					} ; method loop
-					Do %code.WriteLine($CHAR(9,9,9,9)_closecurly)
-					Set ifcommand="Elseif"
+					Do %code.Write($CHAR(9,9,9,9)_closecurly)
+					Set ifcommand=" Elseif"
 				} ; element type loop
 			}
 			; set flag to say that this type of thing does NOT have a redirect
-			Do %code.WriteLine($CHAR(9,9,9,9)_" else { s ..processNotRequired(When,class,etype)=$g(..processNotRequired(When,class,etype))+1  }")
-			Do %code.WriteLine($CHAR(9,9,9)_closecurly)
-			Set cif="Elseif"
+			;Do %code.WriteLine($CHAR(9,9,9,9)_" else { s ..processNotRequired(When,class,etype)=$g(..processNotRequired(When,class,etype))+1  }")
+			Do %code.WriteLine(" else { ")
+			Do %code.WriteLine($CHAR(9,9,9,9,9)_"s ..processNotRequired(When,class,etype)=$g(..processNotRequired(When,class,etype))+1")
+			Do %code.WriteLine($CHAR(9,9,9,9)_"}")
+			Do %code.Write($CHAR(9,9,9)_closecurly) 
+			Set cif=" Elseif"
 		} ; class loop
-		Do %code.WriteLine($CHAR(9,9)_closecurly)
-		Set wif="ElseIf"	
+		do %code.WriteLine("")
+		Do %code.Write($CHAR(9,9)_closecurly)
+		Set wif=" ElseIf"	
 
 	} ; when loop
-
+	do %code.WriteLine("")
 	Do %code.WriteLine($CHAR(9)_closecurly)
     Do %code.WriteLine($CHAR(9)_"$$$DEBUGMethodEnd")
 	

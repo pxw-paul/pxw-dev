@@ -1741,7 +1741,49 @@ classmethod Classname()
     d ..stopTimer(.res)
     d ..checkValue(.res,x)
 
+    d ..showRes(.res,m)
+}
 
+classmethod ListOfObjects() 
+{
+    #dim a as PXW.DEV.Atom
+    #define newele(%val) s a=##clasS(PXW.DEV.Atom).%New(),a.type="typ",a.value=%val d list.Insert(a)
+    d ..showHead("ListOFObjects")
+    s list=##class(%Library.ListOfObjects).%New()
+    $$$newele("v1")
+    $$$newele("v2")
+    $$$newele("v3")
+    $$$newele("v4")
+    $$$newele("v5")
+    $$$newele("v6")
+    $$$newele("v7")
+    $$$newele("v8")
+    $$$newele("v9")
+    $$$newele("v10")
+    s m=100000
+
+    d ..startTimer(.res,"list.Count(),GetAt()")
+    f i=1:1:m { 
+        s x=""
+        f j=1:1:list.Count() {
+            s a=list.GetAt(j)
+            s x=x_a.value
+        }
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,x) 
+
+    d ..startTimer(.res,"list.GetNext()")
+    f i=1:1:m {
+        s x="",j=""
+        f {
+            s a=list.GetNext(.j)
+            q:j=""
+            s x=x_a.value
+        }
+     }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,x)
 
     d ..showRes(.res,m)
 }

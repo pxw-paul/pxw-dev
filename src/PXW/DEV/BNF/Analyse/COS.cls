@@ -90,6 +90,43 @@ Property stringVarsElementLast [ MultiDimensional ];
 
 property publicListList as %List;
 
+/// The current depth of the code measured by IF {}.
+/// Every IF will increment the depth.
+property ifDepth as %Integer[InitialExpression=1];
+
+/// A count of where we are in terms of the if sections. 
+/// Starts at 1 on the if updated on each elseif and else
+property ifSection as %Integer[InitialExpression=1];
+
+property ifSectionStack as %Integer [ MultiDimensional];
+
+/// At Each depth store the number of sections of the If.
+/// IF on its own = 2.
+/// IF ELSEIF = 3.
+/// This is then used when a variable is set.
+/// When a variable is set outside of an IF then it is available everywhere.
+/// If a variable is set IN an IF then it does not count as being in depth 1 
+///   until it has been set at every section:
+/// EG.
+///    set x=1
+/// 	if a=1 {
+/// 		set y=1,z=1
+/// 	} else {
+/// 		set y=2
+/// 	}
+/// x is set at depth 1, which is ok
+/// y is set at depth 2 on both the if and the else so is ok
+/// z is only set at depth 2 on the IF so it is potenitially undefined later.
+/// 
+property ifSections as %Integer [ MultiDimensional ];
+
+/// When a variable is set it stores
+/// variableSetDepth(varname)=$lb($lb(setflags,...))
+/// where setflags is a list with a number of items corresponding to each section
+/// as each section is reached and a variable is set the setflag is updated
+/// So in the example above, x=$(lb(1)) y=$lb(,$lb(1,1)), z=$lb(,$lb(1,0))
+property variableSetDepth as %List [ MultiDimensional ];
+
 Method %OnNew(ClassServer As PXW.DEV.Dictionary.ClassDefinitionObject = "") As %Status
 {
 	$$$DEBUGMethodBegin
@@ -488,22 +525,50 @@ Method checkCosVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Comp
 			Set ..BadVarsUsed(uvar)=element
 		}
 	}
-	; ByRef variables are BEING set so dont check for undef, {var} are actually property names so skip those too
-	If element.type'="ByrefVariable",$EXTRACT(varname,1)'="%",$EXTRACT(varname,1)'="{",'$DATA(..VariablesSet(varname)),'$DATA(..ParameterVariables(varname)) {
-		Do ..AddElementWarning(element,"VUNDEF",varname_" Possible UNDEF")
+	;; ByRef variables are BEING set so dont check for undef, {var} are actually property names so skip those too
+	;If element.type'="ByrefVariable",$EXTRACT(varname,1)'="%",$EXTRACT(varname,1)'="{",'$DATA(..VariablesSet(varname)),'$DATA(..ParameterVariables(varname)) {
+	;	Do ..AddElementWarning(element,"VUNDEF",varname_" Possible UNDEF")
+	;}
+	If element.type="ByrefVariable" || $EXTRACT(varname,1)="%" || $EXTRACT(varname,1)="{" || $DATA(..ParameterVariables(varname)) {
+		; variable is defined in some way other than a straight set
+	} else {
+		s defined=..isDefinedAtDepth(varname,..ifDepth,..ifSection)
+		i 'defined {
+			if varname="variablelist" d element.write() zw element
+			Do ..AddElementWarning(element,"VUNDEF",varname_" Possible UNDEF")
+		}
 	}
 	$$$DEBUGMethodEnd
 	Quit ""
+}
+
+method isDefinedAtDepth(VarName as %String,Depth as %Integer,Section as %Integer) as %Boolean{
+	s depthrec=$lg($g(..variableSetDepth(VarName)),Depth)
+	if depthrec="" {
+		s depthrec=$lb(0)
+	}
+	;m vsd=..variableSetDepth zw VarName,Depth,Section,vsd,depthrec
+	s defined=$listget(depthrec,Section)
+	i defined q 1
+	i Depth>1 q ..isDefinedAtDepth(VarName,Depth-1,$g(..ifSectionStack(Depth-1),1))
+	q 0
 }
 
 Method checkCosVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="VariableSet")
 {
 	$$$DEBUGMethodBegin
 	;  variable name part is the only bit we are interested in
-	Set varname=""
 	Set varname=element.FirstAtom().ToString(0)
 	If varname'="" {
 		Set ..VariablesSet(varname)=element
+		; no record of this so set up empty
+		s depthrec=$lg($g(..variableSetDepth(varname)),..ifDepth)
+		if depthrec="" {
+			s depthrec=$g(..ifSections(..ifDepth),$lb(0))
+		}
+		s $list(depthrec,..ifSection)=1
+		s $LIST(..variableSetDepth(varname),..ifDepth)=depthrec
+		
 		If '$DATA(..VariablesTypesElement(+element)) {
 			Set ..VariablesTypesElement(+element)=$GET(..VariablesTypes(varname))
 			; this does all sorts of things along the way (side effect, a bit nasty)
@@ -641,6 +706,76 @@ Method checkCosForCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Co
 	$$$DEBUGMethodEnd
 	Quit ""
 }
+
+Method checkCosIfCommand1(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="IfCommand",When="PRE")
+{
+	#dim eiblE as PXW.DEV.Element
+	$$$DEBUGMethodBegin
+	set eiblE=element.findFirstElementByType("ElseifBlockList",0)
+	if $isobject(eiblE) {
+		do eiblE.findElementsByType("ElseifBlock",.list)
+		set sectioncount=list.Count()+1
+	} else {
+		s sectioncount=2
+	}
+
+	s sections=""
+	f i=1:1:sectioncount s sections=sections_$lb(0)
+
+	set ..ifDepth=..ifDepth+1
+	set ..ifSections(..ifDepth)=sections
+	set ..ifSection=1
+	set ..ifSectionStack(..ifDepth)=..ifSection
+	$$$DEBUGMethodEnd
+	Quit ""
+}
+
+method checkCosElseIfBlock(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ElseifBlock",When="PRE")
+{
+	$$$DEBUGMethodBegin
+	set ..ifSection=..ifSection+1
+	set ..ifSectionStack(..ifDepth)=..ifSection
+	$$$DEBUGMethodEnd
+}
+
+method checkCosElseBlock(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ElseBlock",When="PRE")
+{
+	$$$DEBUGMethodBegin
+	set ..ifSection=..ifSection+1
+	set ..ifSectionStack(..ifDepth)=..ifSection
+	$$$DEBUGMethodEnd
+}
+
+Method checkCosIfCommand2(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="IfCommand",When="POST")
+{
+	$$$DEBUGMethodBegin
+	; can we "promote" any variables to being set on the level above?
+	s varname=""
+	;m vsd2=..variableSetDepth zw vsd2
+	f  {
+		s varname=$o(..variableSetDepth(varname),1,depthrec)
+		q:varname=""
+		set beenset=$listget(depthrec,..ifDepth)
+		set parentset=$listget(depthrec,..ifDepth-1)
+		if parentset="" s parentset=$g(..ifSections(..ifDepth-1),$lb(0))
+		; any section has NOT set it so this is possibly undefined
+		; ie we are looking for where we do not find 0 
+		if beenset'="",$listfind(beenset,0)=0 {
+			set parentsection=$g(..ifSectionStack(..ifDepth-1),1)
+			set $list(parentset,parentsection)=1
+			set $list(depthrec,..ifDepth-1)=parentset
+			set $list(depthrec,..ifDepth)=""
+			set ..variableSetDepth(varname)=depthrec
+		}
+	}
+	kill ..ifSections(..ifDepth)
+	set ..ifDepth=..ifDepth-1
+	set ..ifSection=$g(..ifSectionStack(..ifDepth),1)
+	$$$DEBUGMethodEnd
+	;zw $this
+	Quit ""
+}
+
 Method checkCosIncrementFunctionCall(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="IncrementFunctionCall")
 {
 	$$$DEBUGMethodBegin
@@ -1412,4 +1547,25 @@ Method SimplifyStringExpressionAsElement(ValueElement As PXW.DEV.BNF.Elements.CO
 	Quit string
 }
 
+ClassMethod findElementsByTypeNoIf(Object As PXW.DEV.Element, Type As %String, ByRef OutputList As %ListOfObjects(ELEMENTTYPE="PXW.DEV.Element"))
+{
+    #dim ele as PXW.DEV.Element
+    If Object.type=Type {
+        If '$ISOBJECT($GET(OutputList)) { 
+            Set OutputList=##class(%Library.ListOfObjects).%New()
+        }
+        Do OutputList.Insert(Object)				
+    }
+	For i=1:1:Object.partsCount() {
+		Set ele=Object.partsGetAt(i)
+		If ele.IsElement {
+            Set ifE=ele.findFirstElementByType("IfCommand",0)
+			If $ISOBJECT(ifE)  {
+				; do nothing for if command
+			} Else {
+				Do ..findElementsByTypeNoIf(ele,Type,.OutputList)
+			}
+		}
+	}
+}
 }
