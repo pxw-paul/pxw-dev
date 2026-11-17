@@ -127,6 +127,9 @@ property ifSections as %Integer [ MultiDimensional ];
 /// So in the example above, x=$(lb(1)) y=$lb(,$lb(1,1)), z=$lb(,$lb(1,0))
 property variableSetDepth as %List [ MultiDimensional ];
 
+property postConditionalActive as %Boolean [ InitialExpression = 0];
+
+
 Method %OnNew(ClassServer As PXW.DEV.Dictionary.ClassDefinitionObject = "") As %Status
 {
 	$$$DEBUGMethodBegin
@@ -143,7 +146,7 @@ Method %OnNew(ClassServer As PXW.DEV.Dictionary.ClassDefinitionObject = "") As %
 Method Reset()
 {
 	$$$DEBUGMethodBegin
-	Kill ..VariablesTypes,..VariablesTypesElement
+	Kill ..VariablesTypes,..VariablesTypesElement,..variableSetDepth
 	Kill ..DimmedTypes
 	Kill ..ElementWarnings
 	Kill ..ParameterVariables
@@ -151,12 +154,16 @@ Method Reset()
 	Kill ..BadVarsUsed
 	Kill ..stringVars
 	Kill ..stringVarsElement
+	Kill ..ifSections,..ifSectionStack
+
 	Set ..ShortCommand="",..LongCommand=""
 	Set ..QuitFound=0
 	Set ..MethodIsAbstract=0
 	;Set ..ClassIsAbstract=0 ; don't reset this at the start of every method!
 	Set ..CodeMode=""
 	Set ..publicListList=""
+	set ..ifDepth=1,..ifSection=1
+	set ..postConditionalActive=0
 	
 	If $ISOBJECT(..ClassServer) {
 		Set var=""
@@ -196,8 +203,8 @@ method IsCompatible(Classname1 as %String, Classname2 as %String, output commonC
 	If Classname2="-null-" Quit 1 ; 
 	If Classname1="%Library.Any" Quit 1 ; %Library.Any is compatible with everything
 	If Classname2="%Library.Any" Quit 1 ; 
-	if Classname1="%Library.ObjectHandle" Quit 1
-	if Classname2="%Library.ObjectHandle" Quit 1
+	If Classname1="%Library.ObjectHandle" Quit 1
+	If Classname2="%Library.ObjectHandle" Quit 1
 
 	Set cn1=..FullClassName(Classname1)
 	Set cn2=..FullClassName(Classname2)
@@ -247,6 +254,7 @@ Method checkCDEFVariablePublic(element As PXW.DEV.BNF.Elements.ClassDefinition) 
 	Set var=atom.ToString(0)
 	Set ..VariablesSet(var)=element
 	Set ..VariablesUsed(var)=element
+	do ..setDefinedAtDepth(var,..ifDepth,..ifSection)
     $$$DEBUGMethodEnd
     Quit ""
 }
@@ -263,29 +271,39 @@ Method checkCDEFReturnTypeClassReference(element As PXW.DEV.BNF.Elements.ClassDe
 	Quit ""
 }
 
-/// Look for short commands.
-Method checkCosCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosCommand")
+Method checkCosCommandPost(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="CosCommand",When="POST")
 {
-
 	$$$DEBUGMethodBegin
-	If '..ShortCommand {
-		Set directiveE=element.findFirstElementByType("CosDirective",0)
-		; directives count as a command (is this right?) but start with a # atom so would end up being counted as short
-		; therefore only check if its NOT a directive
-		If '$ISOBJECT(directiveE) {
-			Set a=element.FirstAtom()
-			If $LENGTH(a.value)=1 {
-				Set ..ShortCommand=element
+	i ..postConditionalActive {
+		; can we "promote" any variables to being set on the level above?
+		Set varname=""
+		;m vsd2=..variableSetDepth zw vsd2
+		For  {
+			Set varname=$ORDER(..variableSetDepth(varname),1,depthrec)
+			Quit:varname=""
+			Set beenset=$LISTGET(depthrec,..ifDepth)
+			Set parentset=$LISTGET(depthrec,..ifDepth-1)
+			If parentset="" Set parentset=$GET(..ifSections(..ifDepth-1),$LISTBUILD(0))
+			; any section has NOT set it so this is possibly undefined
+			; ie we are looking for where we do not find 0 
+			; and we do not find 2 (2 means postconditional)
+			; 
+			If beenset'="",$LISTFIND(beenset,0)=0,$LISTFIND(beenset,2)=0 {
+				Set parentsection=$GET(..ifSectionStack(..ifDepth-1),1)
+				Set $LIST(parentset,parentsection)=1
+				Set $LIST(depthrec,..ifDepth-1)=parentset
+				
 			}
+			Set $LIST(depthrec,..ifDepth)=""
+			Set ..variableSetDepth(varname)=depthrec
 		}
-	}
-	If '..LongCommand {
-		Set a=element.FirstAtom()
-		If $LENGTH(a.value)>1 {
-			Set ..LongCommand=element
-		}
+		Kill ..ifSections(..ifDepth)
+		Set ..ifDepth=..ifDepth-1
+		Set ..ifSection=$GET(..ifSectionStack(..ifDepth),1)
+		set ..postConditionalActive=0
 	}
 	$$$DEBUGMethodEnd
+	;zw $this
 	Quit ""
 }
 
@@ -385,6 +403,7 @@ Method checkCosSetItem(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compi
 			; if its JUST a variable then we are interested in keeping track of it
 			If varE.partsCount()=1 {
 				Set ..VariablesSet(var)=varE
+				do ..setDefinedAtDepth(var,..ifDepth,..ifSection)
 				Set currentStringVars(var)=varE
 				Set currentlySetting(var)=varE
 				Do ..DeriveTypeReturned(varE)
@@ -529,12 +548,11 @@ Method checkCosVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Comp
 	;If element.type'="ByrefVariable",$EXTRACT(varname,1)'="%",$EXTRACT(varname,1)'="{",'$DATA(..VariablesSet(varname)),'$DATA(..ParameterVariables(varname)) {
 	;	Do ..AddElementWarning(element,"VUNDEF",varname_" Possible UNDEF")
 	;}
-	If element.type="ByrefVariable" || $EXTRACT(varname,1)="%" || $EXTRACT(varname,1)="{" || $DATA(..ParameterVariables(varname)) {
+	If (element.type="ByrefVariable") || ($EXTRACT(varname,1)="%") || ($EXTRACT(varname,1)="{") || ($DATA(..ParameterVariables(varname))) {
 		; variable is defined in some way other than a straight set
-	} else {
-		s defined=..isDefinedAtDepth(varname,..ifDepth,..ifSection)
-		i 'defined {
-			if varname="variablelist" d element.write() zw element
+	} Else {
+		Set defined=..isDefinedAtDepth(varname,..ifDepth,..ifSection)
+		If 'defined {
 			Do ..AddElementWarning(element,"VUNDEF",varname_" Possible UNDEF")
 		}
 	}
@@ -542,18 +560,38 @@ Method checkCosVariable(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Comp
 	Quit ""
 }
 
-method isDefinedAtDepth(VarName as %String,Depth as %Integer,Section as %Integer) as %Boolean{
-	s depthrec=$lg($g(..variableSetDepth(VarName)),Depth)
-	if depthrec="" {
-		s depthrec=$lb(0)
+method isDefinedAtDepth(VarName as %String,Depth as %Integer,Section as %Integer) as %Boolean
+{
+	Set depthrec=$LISTGET($GET(..variableSetDepth(VarName)),Depth)
+	If depthrec="" {
+		Set depthrec=$LISTBUILD(0)
 	}
 	;m vsd=..variableSetDepth zw VarName,Depth,Section,vsd,depthrec
-	s defined=$listget(depthrec,Section)
-	i defined q 1
-	i Depth>1 q ..isDefinedAtDepth(VarName,Depth-1,$g(..ifSectionStack(Depth-1),1))
-	q 0
+	Set defined=$LISTGET(depthrec,Section)
+	If defined Quit 1
+	If Depth>1 Quit ..isDefinedAtDepth(VarName,Depth-1,$GET(..ifSectionStack(Depth-1),1))
+	Quit 0
 }
 
+
+method setDefinedAtDepth(VarName as %String,Depth as %Integer,Section as %Integer,Flag as %Integer=1,ToTheEnd as %Boolean=0)
+{
+	Set depthrec=$LISTGET($GET(..variableSetDepth(VarName)),..ifDepth)
+	If depthrec="" {
+		Set depthrec=$GET(..ifSections(Depth),$LISTBUILD(0))
+	}
+	if '$d(ToTheEnd) {
+		; no end provided so just set this one
+		Set $LIST(depthrec,Section)=Flag
+		Set $LIST(..variableSetDepth(VarName),Depth)=depthrec
+	} else {
+		; end provided so set the others
+		f i=Section:1:$ll(depthrec) Set $LIST(depthrec,i)=Flag
+		Set $LIST(..variableSetDepth(VarName),Depth)=depthrec
+	}
+}
+
+		
 Method checkCosVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="VariableSet")
 {
 	$$$DEBUGMethodBegin
@@ -562,13 +600,14 @@ Method checkCosVariableSet(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.C
 	If varname'="" {
 		Set ..VariablesSet(varname)=element
 		; no record of this so set up empty
-		s depthrec=$lg($g(..variableSetDepth(varname)),..ifDepth)
-		if depthrec="" {
-			s depthrec=$g(..ifSections(..ifDepth),$lb(0))
-		}
-		s $list(depthrec,..ifSection)=1
-		s $LIST(..variableSetDepth(varname),..ifDepth)=depthrec
-		
+		;Set depthrec=$LISTGET($GET(..variableSetDepth(varname)),..ifDepth)
+		;If depthrec="" {
+		;	Set depthrec=$GET(..ifSections(..ifDepth),$LISTBUILD(0))
+		;}
+		;Set $LIST(depthrec,..ifSection)=1
+		;Set $LIST(..variableSetDepth(varname),..ifDepth)=depthrec
+		do ..setDefinedAtDepth(varname,..ifDepth,..ifSection)
+
 		If '$DATA(..VariablesTypesElement(+element)) {
 			Set ..VariablesTypesElement(+element)=$GET(..VariablesTypes(varname))
 			; this does all sorts of things along the way (side effect, a bit nasty)
@@ -606,6 +645,7 @@ Method checkCosMacroCall(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Com
 			Set varE=variablelist.GetAt(i)
 			Set varname=varE.FirstAtom().ToString(0)
 			Set ..VariablesSet(varname)=varE
+			do ..setDefinedAtDepth(varname,..ifDepth,..ifSection)
 		}
 	}
 	$$$DEBUGMethodEnd
@@ -709,23 +749,48 @@ Method checkCosForCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Co
 
 Method checkCosIfCommand1(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="IfCommand",When="PRE")
 {
-	#dim eiblE as PXW.DEV.Element
+	#dim eiblE,expression as PXW.DEV.Element
 	$$$DEBUGMethodBegin
-	set eiblE=element.findFirstElementByType("ElseifBlockList",0)
-	if $isobject(eiblE) {
-		do eiblE.findElementsByType("ElseifBlock",.list)
-		set sectioncount=list.Count()+1
-	} else {
-		s sectioncount=2
+	Set eiblE=element.findFirstElementByType("ElseifBlockList",0)
+	If $ISOBJECT(eiblE) {
+		Do eiblE.findElementsByType("ElseifBlock",.list)
+		Set sectioncount=list.Count()+1
+	} Else {
+		Set sectioncount=2
 	}
 
-	s sections=""
-	f i=1:1:sectioncount s sections=sections_$lb(0)
+	Set sections=""
+	For i=1:1:sectioncount Set sections=sections_$LISTBUILD(0)
 
-	set ..ifDepth=..ifDepth+1
-	set ..ifSections(..ifDepth)=sections
-	set ..ifSection=1
-	set ..ifSectionStack(..ifDepth)=..ifSection
+	Set ..ifDepth=..ifDepth+1
+	Set ..ifSections(..ifDepth)=sections
+	Set ..ifSection=1
+	Set ..ifSectionStack(..ifDepth)=..ifSection
+
+	; if any of the expressions tested are $Data(var) then deal with them here
+	set expressions=element.findFirstElementByType("ExpressionList",0)
+	do:$isobject(expressions) ..setDataConditions(expressions)
+	$$$DEBUGMethodEnd
+	Quit ""
+}
+
+Method checkCosPostConditional(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="PostConditional",When="PRE")
+{
+	#dim eiblE,expression as PXW.DEV.Element
+	$$$DEBUGMethodBegin
+	; only 1 section 
+	s sections=$LISTBUILD(0)
+
+	Set ..ifDepth=..ifDepth+1
+	Set ..ifSections(..ifDepth)=sections
+	Set ..ifSection=1
+	Set ..ifSectionStack(..ifDepth)=..ifSection
+	set ..postConditionalActive=1
+
+	; if any of the expressions tested are $Data(var) then deal with them here
+	; the post condition element is close enough to ExpressionList to be used
+	; in the same way.
+	d ..setDataConditions(element,2)
 	$$$DEBUGMethodEnd
 	Quit ""
 }
@@ -733,44 +798,52 @@ Method checkCosIfCommand1(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Co
 method checkCosElseIfBlock(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ElseifBlock",When="PRE")
 {
 	$$$DEBUGMethodBegin
-	set ..ifSection=..ifSection+1
-	set ..ifSectionStack(..ifDepth)=..ifSection
+	Set ..ifSection=..ifSection+1
+	Set ..ifSectionStack(..ifDepth)=..ifSection
+
+	; if any of the expressions tested are $Data(var) then deal with them here
+	set expressions=element.findFirstElementByType("ExpressionList",0)
+	do:$isobject(expressions) ..setDataConditions(expressions)
+
 	$$$DEBUGMethodEnd
+	Quit ""
 }
 
 method checkCosElseBlock(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="ElseBlock",When="PRE")
 {
 	$$$DEBUGMethodBegin
-	set ..ifSection=..ifSection+1
-	set ..ifSectionStack(..ifDepth)=..ifSection
+	Set ..ifSection=..ifSection+1
+	Set ..ifSectionStack(..ifDepth)=..ifSection
 	$$$DEBUGMethodEnd
+	Quit ""
 }
 
 Method checkCosIfCommand2(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="IfCommand",When="POST")
 {
 	$$$DEBUGMethodBegin
 	; can we "promote" any variables to being set on the level above?
-	s varname=""
+	Set varname=""
 	;m vsd2=..variableSetDepth zw vsd2
-	f  {
-		s varname=$o(..variableSetDepth(varname),1,depthrec)
-		q:varname=""
-		set beenset=$listget(depthrec,..ifDepth)
-		set parentset=$listget(depthrec,..ifDepth-1)
-		if parentset="" s parentset=$g(..ifSections(..ifDepth-1),$lb(0))
+	For  {
+		Set varname=$ORDER(..variableSetDepth(varname),1,depthrec)
+		Quit:varname=""
+		Set beenset=$LISTGET(depthrec,..ifDepth)
+		Set parentset=$LISTGET(depthrec,..ifDepth-1)
+		If parentset="" Set parentset=$GET(..ifSections(..ifDepth-1),$LISTBUILD(0))
 		; any section has NOT set it so this is possibly undefined
 		; ie we are looking for where we do not find 0 
-		if beenset'="",$listfind(beenset,0)=0 {
-			set parentsection=$g(..ifSectionStack(..ifDepth-1),1)
-			set $list(parentset,parentsection)=1
-			set $list(depthrec,..ifDepth-1)=parentset
-			set $list(depthrec,..ifDepth)=""
-			set ..variableSetDepth(varname)=depthrec
+		If beenset'="",$LISTFIND(beenset,0)=0 {
+			Set parentsection=$GET(..ifSectionStack(..ifDepth-1),1)
+			Set $LIST(parentset,parentsection)=1
+			Set $LIST(depthrec,..ifDepth-1)=parentset
+			
 		}
+		Set $LIST(depthrec,..ifDepth)=""
+		Set ..variableSetDepth(varname)=depthrec
 	}
-	kill ..ifSections(..ifDepth)
-	set ..ifDepth=..ifDepth-1
-	set ..ifSection=$g(..ifSectionStack(..ifDepth),1)
+	Kill ..ifSections(..ifDepth)
+	Set ..ifDepth=..ifDepth-1
+	Set ..ifSection=$GET(..ifSectionStack(..ifDepth),1)
 	$$$DEBUGMethodEnd
 	;zw $this
 	Quit ""
@@ -861,6 +934,7 @@ Method checkCosTryCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Co
 		Set varname=varE.FirstAtom().ToString(0)
 		Set ..VariablesSet(varname)=element
 		Set ..VariablesTypes(varname)="%Exception.SystemException"
+		do ..setDefinedAtDepth(varname,..ifDepth,..ifSection)
 	}
 	$$$DEBUGMethodEnd
 	Quit ""
@@ -965,6 +1039,7 @@ Method checkCosSqlCommand(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Co
 	$$$DEBUGMethodBegin
 	; &sql will always set SQLCODE - should it set the element to the SQL command itself? Lets see what happens.
 	Set ..VariablesSet("SQLCODE")=element
+	do ..setDefinedAtDepth("SQLCODE",..ifDepth,..ifSection)
 	$$$DEBUGMethodEnd
 	Quit ""
 }
@@ -979,6 +1054,7 @@ Method checkSqlSelectIntoVariable(element As PXW.DEV.BNF.Elements.SQL) As PXW.DE
 	If $ISOBJECT(varE) Set varname=varE.FirstAtom().ToString(0)
 	If varname'="" {
 		Set ..VariablesSet(varname)=element
+		do ..setDefinedAtDepth(varname,..ifDepth,..ifSection)
 	}
 	$$$DEBUGMethodEnd
 	Quit ""
@@ -1567,5 +1643,95 @@ ClassMethod findElementsByTypeNoIf(Object As PXW.DEV.Element, Type As %String, B
 			}
 		}
 	}
+}
+/// DefaultFlag 1=normal if
+///             2=postconditional
+method setDataConditions(ExpressionList as PXW.DEV.Element,DefaultFlag as %Integer=1) 
+{
+	d ExpressionList.findElementsByType("Expression",.expressions)
+	if $isobject($g(expressions)) {
+		set expressioncount=expressions.Count()
+		for i=1:1:expressioncount {
+			s expression=expressions.GetAt(i)
+			d ..flattenlist(expression,.atoms)
+			if $isobject(atoms) {
+				s not="",var=""
+				; $data(var)
+				if atoms.Count()=7
+					,$p(atoms.GetAt(3).type,":",1)="DataFunctionCall"
+					,$p(atoms.GetAt(6).type,":",1)="VariableNodef" {
+						s not=0,var=atoms.GetAt(6).value
+				}
+				; '$data(var)
+				if atoms.Count()=9
+					,$p(atoms.GetAt(2).type,":",1)="punctuation"
+					,atoms.GetAt(2).value="'"
+					,$p(atoms.GetAt(5).type,":",1)="DataFunctionCall"
+					,$p(atoms.GetAt(8).type,":",1)="VariableNodef" {
+						s not=1,var=atoms.GetAt(8).value
+				}
+				if var'="" {
+					if not=0 {
+						d ..setDefinedAtDepth(var,..ifDepth,..ifSection,DefaultFlag,0)
+					} 
+					if not=1,expressioncount=1 {
+						; if there is ONLY a '$d(var) then on the "else" we know it DOES exist
+						d ..setDefinedAtDepth(var,..ifDepth,..ifSection+1,DefaultFlag,1)
+					}
+				}
+			}
+		}
+	}
+
+}
+ClassMethod flattenlist(Element As PXW.DEV.Element, AtomList As %Library.ListOfObjects) As %List
+{
+	#dim a as PXW.DEV.Atom
+	#dim e as PXW.DEV.Element
+	
+    $$$DEBUGMethodBegin
+    If '$ISOBJECT($GET(AtomList)) Set AtomList=##class(%Library.ListOfObjects).%New()
+    
+ 	Set akey=""
+	Set list=""
+    If Element.partsCount()=1 {
+        Set single=1
+    } Else {
+        Set single=0
+    }
+	If 'single {
+        Set list=list_$LISTBUILD($LISTBUILD(Element.type,""))
+        Set newatom=##class(PXW.DEV.Atom).%New(),newatom.type=Element.type,newatom.value="" Do AtomList.Insert(newatom)
+    }
+	For  {
+		Set a=Element.partsGetNext(.akey)
+		Quit:akey=""
+
+        If a.IsElement {
+            Set list=list_..flattenlist(a,.AtomList)
+        } ElseIf $PIECE(a.type,":",1)="punctuation" {
+            ; forget punctuation for the timebeing
+            ;Set list=list_$lb($lb("punctuation",a.value))
+            ;do AtomList.Insert(a)
+            
+            ; Unless the thing truely IS punctuation. Due to complexity deep in the parser $this counts as punctuation, which is wrong.
+            If a.value'?1.P {
+                Set list=list_$LISTBUILD($LISTBUILD("keyword",a.value))
+                Do AtomList.Insert(a)
+            } Else {
+                Set list=list_$LISTBUILD($LISTBUILD("punctuation",a.value))
+                Do AtomList.Insert(a)
+            }
+
+        } Else {
+            Set list=list_$LISTBUILD($LISTBUILD($PIECE(a.type,":",1),a.value))
+            Do AtomList.Insert(a)
+        }		
+	}
+	If 'single {
+        ;Set str=str_"}"
+    }
+    $$$DEBUGMethodEnd
+	Quit list
 }
 }
