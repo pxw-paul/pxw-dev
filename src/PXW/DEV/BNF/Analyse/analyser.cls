@@ -40,8 +40,10 @@ Method AddElementWarning(element As PXW.DEV.Element, type as %String, text As %S
 	Set a=element.FirstAtom()
 	If $ISOBJECT(a) {
 		Set prev=$GET(..ElementWarnings(+a))
-		Set sep=$SELECT(prev="":"",1:$CHAR(13))
-		Set ..ElementWarnings(+a)=prev_sep_type_":"_text_" "
+		if prev'[text {
+			Set sep=$SELECT(prev="":"",1:$CHAR(13))
+			Set ..ElementWarnings(+a)=prev_sep_type_":"_text_" "
+		}
 	}
 }
 

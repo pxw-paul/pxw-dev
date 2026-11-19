@@ -488,10 +488,11 @@ hang_value                          ::= expression
 -- #endif
 -- so should we treat elseif and else as commands in their own right so we don't have mid command directives?
 
-if_command                          ::= ('if' | 'i')  ( naked | expression_list) [ naked | then_block] elseif_block_list? else_block? -- not sure what "if   set x=1 " means but no expression is possible 
+if_command                          ::= ('if' | 'i')  ( naked | if_condition ) [ naked | then_block] elseif_block_list? else_block? -- not sure what "if   set x=1 " means but no expression is possible 
+if_condition                        ::= expression_list
 then_block                          ::= cos_code_block_curly | command_list_eol
 elseif_block_list                   ::= elseif_block+
-elseif_block                        ::= cos_directive? 'elseif' expression_list ( cos_code_block_curly | command_list_eol )
+elseif_block                        ::= cos_directive? 'elseif' if_condition ( cos_code_block_curly | command_list_eol )
 else_block                          ::= cos_directive? 'else' ( cos_code_block_curly | command_list_eol )
 
 else_command                        ::= ('else' | 'e') naked -- this happen in some situations like if x d .dotstructure else  d .otherdots 

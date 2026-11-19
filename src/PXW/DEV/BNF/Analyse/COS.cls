@@ -757,6 +757,14 @@ Method checkCosIfCommand1(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Co
 {
 	#dim eiblE,expression as PXW.DEV.Element
 	$$$DEBUGMethodBegin
+
+	set expressions=element.findFirstElementByType("ExpressionList",0)
+	if $isobject(expressions) {
+		; this may cause double counting of warnings
+		d ..checkElement(expressions) 
+	}
+
+
 	Set eiblE=element.findFirstElementByType("ElseifBlockList",0)
 	If $ISOBJECT(eiblE) {
 		Do eiblE.findElementsByType("ElseifBlock",.list)
@@ -774,8 +782,9 @@ Method checkCosIfCommand1(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Co
 	Set ..ifSectionStack(..ifDepth)=..ifSection
 
 	; if any of the expressions tested are $Data(var) then deal with them here
-	set expressions=element.findFirstElementByType("ExpressionList",0)
-	do:$isobject(expressions) ..setDataConditions(expressions)
+	if $isobject(expressions) {
+		d ..setDataConditions(expressions)
+	}
 	$$$DEBUGMethodEnd
 	Quit ""
 }
