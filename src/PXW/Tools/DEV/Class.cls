@@ -298,6 +298,7 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
 		u io
 		d ##class(%Monitor.System.LineByLine).Stop()
 		w "Created file:"_file,!
+		d ##class(%Library.File).CopyFile(file,##class(PXW.Debuggers.BasicToFile).GetDirectory()_"MON_Latest.csv")
 
 	}
 

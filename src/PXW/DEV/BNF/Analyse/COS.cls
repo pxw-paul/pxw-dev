@@ -758,12 +758,6 @@ Method checkCosIfCommand1(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Co
 	#dim eiblE,expression as PXW.DEV.Element
 	$$$DEBUGMethodBegin
 
-	set expressions=element.findFirstElementByType("ExpressionList",0)
-	if $isobject(expressions) {
-		; this may cause double counting of warnings
-		d ..checkElement(expressions) 
-	}
-
 
 	Set eiblE=element.findFirstElementByType("ElseifBlockList",0)
 	If $ISOBJECT(eiblE) {
@@ -781,12 +775,37 @@ Method checkCosIfCommand1(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Co
 	Set ..ifSection=1
 	Set ..ifSectionStack(..ifDepth)=..ifSection
 
-	; if any of the expressions tested are $Data(var) then deal with them here
-	if $isobject(expressions) {
-		d ..setDataConditions(expressions)
-	}
 	$$$DEBUGMethodEnd
 	Quit ""
+}
+
+Method checkCosIfCondition1(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="IfCondition",When="PRE")
+{
+	; temporarily roll back the stack so we can deal with conditions that
+	; set up variables properly ( if ..method(.byrefvar) { } )
+	$$$DEBUGMethodBegin
+
+	set expressions=element.findFirstElementByType("ExpressionList")
+	; this needs to be done at this level
+	do ..setDataConditions(expressions)
+	;do ..setDataConditions2(expressions)
+
+	Set ..ifDepth=..ifDepth-1
+	Set ..ifSection=$GET(..ifSectionStack(..ifDepth),1)
+
+	$$$DEBUGMethodEnd
+	quit ""
+}
+
+Method checkCosIfCondition2(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="IfCondition",When="POST")
+{
+	$$$DEBUGMethodBegin
+
+	Set ..ifDepth=..ifDepth+1
+	Set ..ifSection=$GET(..ifSectionStack(..ifDepth),1)
+
+	$$$DEBUGMethodEnd
+	quit ""
 }
 
 Method checkCosPostConditional(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compilers.elementHandler(Type="PostConditional",When="PRE")
@@ -817,8 +836,8 @@ method checkCosElseIfBlock(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.C
 	Set ..ifSectionStack(..ifDepth)=..ifSection
 
 	; if any of the expressions tested are $Data(var) then deal with them here
-	set expressions=element.findFirstElementByType("ExpressionList",0)
-	do:$isobject(expressions) ..setDataConditions(expressions)
+	;set expressions=element.findFirstElementByType("ExpressionList",0)
+	;do:$isobject(expressions) ..setDataConditions(expressions)
 
 	$$$DEBUGMethodEnd
 	Quit ""
@@ -1670,12 +1689,15 @@ ClassMethod findElementsByTypeNoIf(Object As PXW.DEV.Element, Type As %String, B
 /// expression parsing, which is a massive job.
 method setDataConditions(ExpressionList as PXW.DEV.Element,DefaultFlag as %Integer=1) 
 {
+	#dim expression as PXW.DEV.Element
 	d ExpressionList.findElementsByType("Expression",.expressions)
 	if $isobject($g(expressions)) {
 		set expressioncount=expressions.Count()
 		for i=1:1:expressioncount {
 			s expression=expressions.GetAt(i)
-			d ..flattenlist(expression,.atoms)
+			s dataE=expression.findFirstElementByType("DataFunctionCall",1)
+			s atoms=""
+			s:dataE flat=..flattenlist(expression,.atoms)
 			if $isobject(atoms) {
 				s not="",var="",setvar="",atomcount=atoms.Count()
 				; $data(var)
@@ -1685,21 +1707,21 @@ method setDataConditions(ExpressionList as PXW.DEV.Element,DefaultFlag as %Integ
 						s not=0,var=atoms.GetAt(6).value
 				}
 				; $data(var,X) special case where X is set at the caller depth
-				if atomcount=8
+				elseif atomcount=8
 					,$p(atoms.GetAt(3).type,":",1)="DataFunctionCall"
 					,$p(atoms.GetAt(6).type,":",1)="VariableNodef" 
 					,$p(atoms.GetAt(8).type,":",1)="VariableSet" {
 						s not=0,var=atoms.GetAt(6).value,setvar=atoms.GetAt(atomcount-1).value
 				}
 				; $data(arr(1,2),X)
-				if atomcount>8
+				elseif atomcount>8
 					,$p(atoms.GetAt(3).type,":",1)="DataFunctionCall"
 					,$p(atoms.GetAt(6).type,":",1)="VariableNodef" 
 					,$p(atoms.GetAt(atomcount-1).type,":",1)="VariableSet" {
 						s not=0,setvar=atoms.GetAt(atomcount-1).value
 				}
 				; '$data(var)
-				if atomcount=9
+				elseif atomcount=9
 					,$p(atoms.GetAt(2).type,":",1)="punctuation"
 					,atoms.GetAt(2).value="'"
 					,$p(atoms.GetAt(5).type,":",1)="DataFunctionCall"
@@ -1707,7 +1729,7 @@ method setDataConditions(ExpressionList as PXW.DEV.Element,DefaultFlag as %Integ
 						s not=1,var=atoms.GetAt(8).value
 				}
 				; '$data(var,X)
-				if atomcount=11
+				elseif atomcount=11
 					,$p(atoms.GetAt(2).type,":",1)="punctuation"
 					,atoms.GetAt(2).value="'"
 					,$p(atoms.GetAt(5).type,":",1)="DataFunctionCall"
@@ -1716,7 +1738,7 @@ method setDataConditions(ExpressionList as PXW.DEV.Element,DefaultFlag as %Integ
 						s not=1,var=atoms.GetAt(8).value,setvar=atoms.GetAt(10).value
 				}
 				; '$data(arr(2),X)
-				if atomcount>8
+				elseif atomcount>8
 					,$p(atoms.GetAt(2).type,":",1)="punctuation"
 					,atoms.GetAt(2).value="'"
 					,$p(atoms.GetAt(5).type,":",1)="DataFunctionCall"
@@ -1725,6 +1747,87 @@ method setDataConditions(ExpressionList as PXW.DEV.Element,DefaultFlag as %Integ
 						; the top level of arr is not being checked, 
 						; so don't set var (we don't know it exists)
 						s not=1,setvar=atoms.GetAt(atomcount-1).value
+				}
+				if var'="" {
+					if not=0 {
+						d ..setDefinedAtDepth(var,..ifDepth,..ifSection,DefaultFlag,0)
+					} 
+					if not=1,expressioncount=1 {
+						; if there is ONLY a '$d(var) then on the "else" we know it DOES exist
+						d ..setDefinedAtDepth(var,..ifDepth,..ifSection+1,DefaultFlag,1)
+					}
+				}
+				if setvar'="" {
+					; this should go on the level above 
+					; this relies on the fact that this method is called AFTER depth is updated
+					Set parentsection=$GET(..ifSectionStack(..ifDepth-1),1)
+					do ..setDefinedAtDepth(setvar,..ifDepth-1,parentsection,1,0)
+				}
+			}
+		}
+	}
+}
+
+method setDataConditions2(ExpressionList as PXW.DEV.Element,DefaultFlag as %Integer=1) 
+{
+	#dim expression as PXW.DEV.Element
+	d ExpressionList.findElementsByType("Expression",.expressions)
+	if $isobject($g(expressions)) {
+		set expressioncount=expressions.Count()
+		for i=1:1:expressioncount {
+			s expression=expressions.GetAt(i)
+			s dataE=expression.findFirstElementByType("DataFunctionCall",1)
+			k atoms 
+			d:dataE ..flattenlist2(expression,.atoms)
+			if $d(atoms) {
+				s not="",var="",setvar="",atomcount=atoms
+				; $data(var)
+				if atomcount=7
+					,$p(atoms(3).type,":",1)="DataFunctionCall"
+					,$p(atoms(6).type,":",1)="VariableNodef" {
+						s not=0,var=atoms(6).value
+				}
+				; $data(var,X) special case where X is set at the caller depth
+				elseif atomcount=8
+					,$p(atoms(3).type,":",1)="DataFunctionCall"
+					,$p(atoms(6).type,":",1)="VariableNodef" 
+					,$p(atoms(8).type,":",1)="VariableSet" {
+						s not=0,var=atoms(6).value,setvar=atoms(atomcount-1).value
+				}
+				; $data(arr(1,2),X)
+				elseif atomcount>8
+					,$p(atoms(3).type,":",1)="DataFunctionCall"
+					,$p(atoms(6).type,":",1)="VariableNodef" 
+					,$p(atoms(atomcount-1).type,":",1)="VariableSet" {
+						s not=0,setvar=atoms(atomcount-1).value
+				}
+				; '$data(var)
+				elseif atomcount=9
+					,$p(atoms(2).type,":",1)="punctuation"
+					,atoms(2).value="'"
+					,$p(atoms(5).type,":",1)="DataFunctionCall"
+					,$p(atoms(8).type,":",1)="VariableNodef" {
+						s not=1,var=atoms(8).value
+				}
+				; '$data(var,X)
+				elseif atomcount=11
+					,$p(atoms(2).type,":",1)="punctuation"
+					,atoms(2).value="'"
+					,$p(atoms(5).type,":",1)="DataFunctionCall"
+					,$p(atoms(8).type,":",1)="VariableNodef"
+					,$p(atoms(10).type,":",1)="VariableSet" {
+						s not=1,var=atoms(8).value,setvar=atoms(10).value
+				}
+				; '$data(arr(2),X)
+				elseif atomcount>8
+					,$p(atoms(2).type,":",1)="punctuation"
+					,atoms(2).value="'"
+					,$p(atoms(5).type,":",1)="DataFunctionCall"
+					,$p(atoms(8).type,":",1)="VariableNodef"
+					,$p(atoms(atomcount-1).type,":",1)="VariableSet" {
+						; the top level of arr is not being checked, 
+						; so don't set var (we don't know it exists)
+						s not=1,setvar=atoms(atomcount-1).value
 				}
 				if var'="" {
 					if not=0 {
@@ -1759,8 +1862,12 @@ ClassMethod flattenlist(Element As PXW.DEV.Element, AtomList As %Library.ListOfO
 	; if this element contains more than one thing
 	; we need to make a virtual atom that has the element type
     If $$$ElementPartsCount(Element)>1 {
-        ;Set list=list_$LISTBUILD($LISTBUILD(Element.type,""))
-        Set newatom=##class(PXW.DEV.Atom).%New(),newatom.type=Element.type,newatom.value="" Do AtomList.Insert(newatom)
+        Set list=list_$LISTBUILD($LISTBUILD(Element.type,""))
+        ;Set newatom=##class(PXW.DEV.Atom).%New(),newatom.type=Element.type,newatom.value="" Do AtomList.Insert(newatom)
+		; Inserting an element into an atom list is not ideal
+		; but we need to do something quick.
+		; It should be ok as long as the results are carefully checked.
+		Do AtomList.Insert(Element)
     }
 	For  {
 		;Set a=Element.partsGetNext(.akey)
@@ -1776,16 +1883,69 @@ ClassMethod flattenlist(Element As PXW.DEV.Element, AtomList As %Library.ListOfO
             
             ; Unless the thing truely IS punctuation. Due to complexity deep in the parser $this counts as punctuation, which is wrong.
             If a.value'?1.P {
-                ;Set list=list_$LISTBUILD($LISTBUILD("keyword",a.value))
+                Set list=list_$LISTBUILD($LISTBUILD("keyword",a.value))
                 Do AtomList.Insert(a)
             } Else {
-                ;Set list=list_$LISTBUILD($LISTBUILD("punctuation",a.value))
+                Set list=list_$LISTBUILD($LISTBUILD("punctuation",a.value))
                 Do AtomList.Insert(a)
             }
 
         } Else {
-            ;Set list=list_$LISTBUILD($LISTBUILD($PIECE(a.type,":",1),a.value))
+            Set list=list_$LISTBUILD($LISTBUILD($PIECE(a.type,":",1),a.value))
             Do AtomList.Insert(a)
+        }		
+	}
+    $$$DEBUGMethodEnd
+	Quit list
+}
+
+ClassMethod flattenlist2(Element As PXW.DEV.Element,byref  AtomList) As %String
+{
+	#dim a as PXW.DEV.Atom
+	#dim e as PXW.DEV.Element
+	;w !,Element.ToString(0)
+    $$$DEBUGMethodBegin
+    
+ 	Set akey=""
+	Set list=""
+	; if this element contains more than one thing
+	; we need to make a virtual atom that has the element type
+    If $$$ElementPartsCount(Element)>1 {
+        ;Set list=list_$LISTBUILD($LISTBUILD(Element.type,""))
+        ;Set newatom=##class(PXW.DEV.Atom).%New(),newatom.type=Element.type,newatom.value="" Do AtomList.Insert(newatom)
+		; Inserting an element into an atom list is not ideal
+		; but we need to do something quick.
+		; It should be ok as long as the results are carefully checked.
+		s AtomList($i(AtomList))=Element
+		;set list=list_Element.type_","
+    }
+	For  {
+		;Set a=Element.partsGetNext(.akey)
+		set akey=$$$ElementPartsNext(Element,akey,a)
+		Quit:akey=""
+
+        If a.IsElement {
+            Set list=list_..flattenlist2(a,.AtomList)
+        } ElseIf $PIECE(a.type,":",1)="punctuation" {
+            ; forget punctuation for the timebeing
+            ;Set list=list_$lb($lb("punctuation",a.value))
+            ;do AtomList.Insert(a)
+            
+            ; Unless the thing truely IS punctuation. Due to complexity deep in the parser $this counts as punctuation, which is wrong.
+            If a.value'?1.P {
+                ;Set list=list_$LISTBUILD($LISTBUILD("keyword",a.value))
+                set AtomList($i(AtomList))=a
+				;set list=list_a.value_","
+            } Else {
+                ;Set list=list_$LISTBUILD($LISTBUILD("punctuation",a.value))
+                set AtomList($i(AtomList))=a
+				;set list=list_a.value_","
+            }
+
+        } Else {
+            ;Set list=list_$LISTBUILD($LISTBUILD($PIECE(a.type,":",1),a.value))
+            set AtomList($i(AtomList))=a
+			;set list=list_$p(a.type,":",1)_","
         }		
 	}
     $$$DEBUGMethodEnd
