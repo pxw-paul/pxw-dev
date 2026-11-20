@@ -15,17 +15,17 @@ ClassMethod writetest(element As PXW.DEV.Element)
 }
 
 /// This only expects SQL things into it, passing in other language elements may produce some strange results
-Method formatElement(element As PXW.DEV.Element)
+Method formatElement(element As PXW.DEV.Element,flags as %String="")
 {
     #dim a as PXW.DEV.Atom
 
     Do ..resetAll(element)
-    Do ..setAll(element)
+    Do ..setAll(element,,flags)
 }
 
 Method resetAll(element As PXW.DEV.Element)
 {
-    set akey=""
+    Set akey=""
  	For  {
 		Set a=element.partsGetNext(.akey)
 		Quit:akey=""
@@ -59,13 +59,13 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %Stri
     #dim a as PXW.DEV.Atom
     #define BriefLimit 100
     #define IsBrief(%e) $l(%e.ToString())<$$$BriefLimit
-    set brief=(flags["BRIEF")
-    if 'brief {
-        if element.type="SubquerySpecification" {
-            if $$$IsBrief(element) {
-                s flags="BRIEF"
-            } else {
-                s flags="STARTSUB"
+    Set brief=(flags["BRIEF")
+    If 'brief {
+        If element.type="SubquerySpecification" {
+            If $$$IsBrief(element) {
+                Set flags="BRIEF"
+            } Else {
+                Set flags="STARTSUB"
             }
         }
         If element.type="SelectCommand" {
@@ -74,16 +74,17 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %Stri
             ; not:(
             ;      select 
             ;            ...)
-            if flags'["STARTSUB" {
+            ; same for start of &sql()
+            If flags'["STARTSUB",flags'="STARTSQL" {
                 Do ..setWhitespaceNewLineElement(element,indent)
-            } else {
-                s flags=""
-                s indent=indent+1
+            } Else {
+                Set flags=""
+                Set indent=indent+1
             }
         }
 
-        if element.type="SelectList" {
-            set indent=indent+1
+        If element.type="SelectList" {
+            Set indent=indent+1
         }
 
         If element.type="SelectInto" {
@@ -91,8 +92,8 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %Stri
         }
 
         If element.type="SqlCaseExpression" {
-            if $$$IsBrief(element) {
-                set flags="BRIEF"
+            If $$$IsBrief(element) {
+                Set flags="BRIEF"
             }
             Set indent=indent+1
         }
@@ -101,10 +102,10 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %Stri
             Do ..setWhitespaceNewLineElement(element,indent)
         }
         If element.type="SqlCaseThen" {
-            if $$$IsBrief(element) {
-                set flags="BRIEF"
-            } else {
-                set indent=indent+1
+            If $$$IsBrief(element) {
+                Set flags="BRIEF"
+            } Else {
+                Set indent=indent+1
                 Do ..setWhitespaceNewLineElement(element,indent)
             }
         }
@@ -151,8 +152,8 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %Stri
 
         If element.type="WithClause" {
             Do ..setWhitespaceNewLineElement(element,indent)
-            s last=element.LastAtom()
-            if last.value=")" do ..setWhitespaceNewLine(last,indent)
+            Set last=element.LastAtom()
+            If last.value=")" Do ..setWhitespaceNewLine(last,indent)
             Set indent=indent+1
         }
 
@@ -171,21 +172,21 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %Stri
             Do ..setWhitespaceNewLineElement(element,indent)
         }
 
-        if element.type="SqlFunction" {
-            if $$$IsBrief(element) {
-                s flags="BRIEF"
-            } else {
-                s indent=indent+1
-                for i=1:1:element.partsCount() {
-                    set atom=element.partsGetAt(i)
-                    if atom.IsAtom,atom.value="," {
-                        do ..setWhitespaceNewLine(atom,indent)
+        If element.type="SqlFunction" {
+            If $$$IsBrief(element) {
+                Set flags="BRIEF"
+            } Else {
+                Set indent=indent+1
+                For i=1:1:element.partsCount() {
+                    Set atom=element.partsGetAt(i)
+                    If atom.IsAtom,atom.value="," {
+                        Do ..setWhitespaceNewLine(atom,indent)
                     }
                 }
             }
         }
     }
-    set akey=""
+    Set akey=""
    	For  {
 		Set a=element.partsGetNext(.akey)
 		Quit:akey=""
@@ -193,8 +194,8 @@ Method setAll(element As PXW.DEV.Element, indent As %Integer = 0, flags As %Stri
 	    If a.IsElement {
 			Do ..setAll(a,indent,flags)
 		} Else {
-           if $$$UPPER($p(a.type,":",1))="KEYWORD" {
-                s a.value=$$$UPPER(a.value)
+           If $$$UPPER($PIECE(a.type,":",1))="KEYWORD" {
+                Set a.value=$$$UPPER(a.value)
            }
         }
 	}

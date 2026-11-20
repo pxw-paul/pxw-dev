@@ -790,7 +790,7 @@ bitlogic_expression                  ::= expression ('|' | '&' | '^' |'~')*
 vector_function_call               ::= 'vector' open_bracket          expression [ ',' star_parameter [ ',' star_parameter ] ] close_bracket
 vector_function_call_set           ::= 'vector' open_bracket set_value_expression  ',' expression ',' expression close_bracket
 
-order_function_call                ::= ('order' | 'o') open_bracket expression [',' expression [ ',' variable_set ] ] close_bracket
+order_function_call                ::= ('order' | 'o') open_bracket data_expression [',' expression [ ',' variable_set ] ] close_bracket
 
 
 get_function_call                 ::= ('get' | 'g') open_bracket get_expression [ ',' expression ] close_bracket

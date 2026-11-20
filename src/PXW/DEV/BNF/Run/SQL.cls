@@ -269,6 +269,37 @@ Method SqlCosVariable(ParentElement As PXW.DEV.BNF.Element) As %Library.Boolean
     Quit ok
 }
 
+Method SqlCosVariableSet(ParentElement As PXW.DEV.BNF.Element) As %Library.Boolean
+{
+	#dim atom as PXW.DEV.Atom
+    $$$DEBUGMethodBegin
+	$$$BNFPATH
+ 	$$$BNFSTART(subElement)
+    Set ok=0
+ 
+    Set parser=##class(PXW.DEV.BNF.Run.COS).%New()
+    Set parser.stream=..stream
+    Set parser.codemode="COSSQL" ; not really true, should only be set for TRIGGERS but at this point we don't know where we are! and we should treat these as field names
+    Set parser.whitespace=..whitespace
+    Set parser.comment=..comment
+    ;d parser.skipWhiteSpaceAndComments()
+    if parser.ThisObjectDirectProperty(subElement) {
+        set ok=1
+    } elseIf parser.VariableSet(subElement) {
+        Set ok=1
+    } 
+    If ok=1 {
+        Set ..whitespace=parser.whitespace
+        Set ..comment=parser.comment
+        $$$BNFCOMMIT(subElement,ParentElement)
+    } Else {
+        $$$BNFROLLBACK(subElement)
+    }
+    $$$DEBUGMethodEnd
+    Quit ok
+}
+
+
 Method skipComments(ch10 As %String) As %Boolean
 {
     If $EXTRACT(ch10,1,2)="--" Set ..comment=..readLineComment("--") Quit 1

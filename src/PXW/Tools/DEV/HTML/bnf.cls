@@ -1169,7 +1169,7 @@ Method writeCOSSqlBody(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Compi
     $$$DEBUGMethodBegin
     If ..FormatEmbeddedSQl {
         Set formatter=##class(PXW.DEV.BNF.Format.SQL).%New()
-        Do formatter.formatElement(element)
+        Do formatter.formatElement(element,"STARTSQL")
     }
     Set ..SqlProgramAnalyser=""
     Do ..wrapElementHTML(element,"<span class='EmbeddedSQL'>","</span>")
@@ -1695,6 +1695,8 @@ Method FollowObjectChainForType(ParentElement As PXW.DEV.Element, StartClassName
             Set this=ParentElement.findFirstElementByType("ThisObjectThis",0) ; $this.property
             If $ISOBJECT(this) {
                 Set objectchain=this.findFirstElementByType("ObjectChain",0)
+            } else {
+                set objectchain=""
             }
         }
     } ElseIf (ParentElement.type="ThisObjectDirectProperty") || (ParentElement.type="ThisObjectDirectPropertySet") {

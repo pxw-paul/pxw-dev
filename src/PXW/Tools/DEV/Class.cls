@@ -284,12 +284,12 @@ ClassMethod WriteClass(ClassName As %String, Debug As %String, bookMark As %Stri
             s l=0
             while rset.Next() {
                 s l=l+1
-                s x=rset.GetData(1) 
+                s mondata=rset.GetData(1) 
                 s code=$text(@("+"_l_"^"_rtn))
 				i $e(code,1)'="",$e(code,1)'=" ",$e(code,1)'=$c(9) {
 					s lbl=$p($p($p(code," ",1),$c(9),1),"(",1)
 				}
-                s line=$lb(rtn,l,lbl)_x_$lb(code)
+                s line=$lb(rtn,l,lbl)_mondata_$lb(code)
                 u file w $listtostring(line,",",2),!
             }
             k rset 

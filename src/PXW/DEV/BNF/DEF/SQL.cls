@@ -88,7 +88,7 @@ drop_command				::= 'DROP' ( 'VIEW' | 'TABLE' ) direct_table
 table_as_clause                   ::= [ 'AS' ] alias_name
 
 select_into				  	::= 'INTO' select_into_variable ( ',' select_into_variable)*
-select_into_variable		::= [':'] sql_cos_variable /* it appears that on the INTO the : is not required */
+select_into_variable		::= [':'] sql_cos_variable_set /* it appears that on the INTO the : is not required */
 
 derived_table               ::= table_subquery [ table_as_clause ]
 derived_table_noalias       ::= table_subquery
@@ -228,6 +228,7 @@ sql_string								::= 'NEED STRING'
 
 colon_sql_cos_variable					::= ':' sql_cos_variable
 sql_cos_variable						::= 'NEED COS VAR'
+sql_cos_variable_set						::= 'NEED COS VAR SET'
 
 macrocall                           ::= '$$$' macro_identifier [ macro_parameter_list | macro_parameter_text ] 
 macro_parameter_list                ::= '(' [ [macro_parameter] ( ',' [macro_parameter] )* ] ')'
