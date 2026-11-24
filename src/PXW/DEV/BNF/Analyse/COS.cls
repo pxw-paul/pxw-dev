@@ -98,6 +98,14 @@ property ifDepth as %Integer[InitialExpression=1];
 /// Starts at 1 on the if updated on each elseif and else
 property ifSection as %Integer[InitialExpression=1];
 
+/// A flag showing that there IS a happy path.
+/// The flag is set when the if condition is something like
+/// if sc (sc is hard coded as the most used status code variable)
+/// if $$$ISOK
+property ifHappy as %Boolean[InitialExpression=0];
+
+/// Store data as ifSectionStack(depth)=ifSection
+///               ifSectionStack(depth,"happy")=ifHappy
 property ifSectionStack as %Integer [ MultiDimensional];
 
 /// At Each depth store the number of sections of the If.
@@ -162,7 +170,7 @@ Method Reset()
 	;Set ..ClassIsAbstract=0 ; don't reset this at the start of every method!
 	Set ..CodeMode=""
 	Set ..publicListList=""
-	Set ..ifDepth=1,..ifSection=1
+	Set ..ifDepth=1,..ifSection=1,..ifHappy=0
 	Set ..postConditionalActive=0
 	
 	If $ISOBJECT(..ClassServer) {
@@ -761,7 +769,7 @@ Method checkCosIfCommand1(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Co
 
 	Set eiblE=element.findFirstElementByType("ElseifBlockList",0)
 	If $ISOBJECT(eiblE) {
-		Do eiblE.findElementsByType("ElseifBlock",.list)
+		Do eiblE.findElementsByType("ElseifBlock",.list,0)
 		Set sectioncount=list.Count()+2 ; if + all elseifs + else
 	} Else {
 		Set sectioncount=2
@@ -773,7 +781,9 @@ Method checkCosIfCommand1(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Co
 	Set ..ifDepth=..ifDepth+1
 	Set ..ifSections(..ifDepth)=sections
 	Set ..ifSection=1
+	Set ..ifHappy=0
 	Set ..ifSectionStack(..ifDepth)=..ifSection
+	Set ..ifSectionStack(..ifDepth,"happy")=..ifHappy
 
 	$$$DEBUGMethodEnd
 	Quit ""
@@ -792,6 +802,7 @@ Method checkCosIfCondition1(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.
 
 	Set ..ifDepth=..ifDepth-1
 	Set ..ifSection=$GET(..ifSectionStack(..ifDepth),1)
+	Set ..ifSectionStack(..ifDepth,"happy")=..ifHappy
 
 	$$$DEBUGMethodEnd
 	Quit ""
@@ -803,7 +814,6 @@ Method checkCosIfCondition2(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.
 
 	Set ..ifDepth=..ifDepth+1
 	Set ..ifSection=$GET(..ifSectionStack(..ifDepth),1)
-
 	$$$DEBUGMethodEnd
 	Quit ""
 }
@@ -819,6 +829,7 @@ Method checkCosPostConditional(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.B
 	Set ..ifSections(..ifDepth)=sections
 	Set ..ifSection=1
 	Set ..ifSectionStack(..ifDepth)=..ifSection
+	Set ..ifSectionStack(..ifDepth,"happy")=..ifHappy
 	Set ..postConditionalActive=1
 
 	; if any of the expressions tested are $Data(var) then deal with them here
@@ -834,6 +845,7 @@ method checkCosElseIfBlock(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.C
 	$$$DEBUGMethodBegin
 	Set ..ifSection=..ifSection+1
 	Set ..ifSectionStack(..ifDepth)=..ifSection
+	
 
 	; if any of the expressions tested are $Data(var) then deal with them here
 	;set expressions=element.findFirstElementByType("ExpressionList",0)
@@ -866,11 +878,11 @@ Method checkCosIfCommand2(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Co
 		If parentset="" Set parentset=$GET(..ifSections(..ifDepth-1),$LISTBUILD(0))
 		; any section has NOT set it so this is possibly undefined
 		; ie we are looking for where we do not find 0 
-		If beenset'="",$LISTFIND(beenset,0)=0 {
+		; if this is a "happy" test then assume every thing gets set up
+		If ..ifHappy || ((beenset'="") && ($LISTFIND(beenset,0)=0))  {
 			Set parentsection=$GET(..ifSectionStack(..ifDepth-1),1)
 			Set $LIST(parentset,parentsection)=1
 			Set $LIST(depthrec,..ifDepth-1)=parentset
-			
 		}
 		Set $LIST(depthrec,..ifDepth)=""
 		Set ..variableSetDepth(varname)=depthrec
@@ -878,6 +890,7 @@ Method checkCosIfCommand2(element As PXW.DEV.BNF.Elements.COS) As PXW.DEV.BNF.Co
 	Kill ..ifSections(..ifDepth)
 	Set ..ifDepth=..ifDepth-1
 	Set ..ifSection=$GET(..ifSectionStack(..ifDepth),1)
+	Set ..ifHappy=$Get(..ifSectionStack(..ifDepth,"happy"))
 	$$$DEBUGMethodEnd
 	;zw $this
 	Quit ""
@@ -1688,9 +1701,11 @@ method setDataConditions(ExpressionList as PXW.DEV.Element,DefaultFlag as %Integ
 		Set expressioncount=expressions.Count()
 		For i=1:1:expressioncount {
 			Set expression=expressions.GetAt(i)
-			Set dataE=expression.findFirstElementByType("DataFunctionCall",1)
 			Kill atoms 
-			Do:dataE ..flattenlist(expression,.atoms)
+			;Set dataE=expression.findFirstElementByType("DataFunctionCall",1)
+			;Do:dataE ..flattenlist(expression,.atoms)
+			Do ..flattenlist(expression,.atoms)
+			;d expression.write() w !,"atoms=",! f i=1:1:$g(atoms) w atoms(i).type_"="_$s(atoms(i).IsAtom:atoms(i).value,1:""),!
 			If $DATA(atoms) {
 				Set not="",var="",setvar="",atomcount=atoms
 				; $data(var)
@@ -1740,6 +1755,18 @@ method setDataConditions(ExpressionList as PXW.DEV.Element,DefaultFlag as %Integ
 						; the top level of arr is not being checked, 
 						; so don't set var (we don't know it exists)
 						Set not=1,setvar=atoms(atomcount-1).value
+				}
+				; sc
+				elseif atomcount=1 
+					,$PIECE(atoms(1).type,":",1)="Variable"
+					,atoms(1).value="sc" {
+						s ..ifHappy=1
+				}
+				; $$$OK(sc)
+				elseif atomcount=7 
+					,$PIECE(atoms(3).type,":",1)="MacroIdentifier"
+					,atoms(3).value="ISOK" {
+						s ..ifHappy=1
 				}
 				If var'="" {
 					If not=0 {

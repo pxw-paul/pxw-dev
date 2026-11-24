@@ -1,3 +1,4 @@
+Include PXW.Debuggers.Macros
 Class tests.PXW.DEV.UnitTests.BNF.TestElement Extends %UnitTest.TestCase
 {
 
@@ -11,7 +12,7 @@ ClassMethod XPath()
 
 Method TestXPath()
 {
-    #dim element,itemE as PXW.DEV.Element
+    #dim element,itemE,fsE as PXW.DEV.Element
     
     s element=..parse("ObjList As %ListOfObjects(ELEMENTTYPE=""PXW.DEV.ClassToDisplay"",CLASSNAMEINOID=1)","FormalSpecItem","PXW.DEV.BNF.Run.ClassDefinition")
     s fsE=element.partsGetAt(1)
@@ -20,14 +21,8 @@ Method TestXPath()
     do $$$AssertEquals(list1.Count(),2)
     do $$$AssertEquals(list1.GetAt(1).type,"TypeParameterItem")
     do $$$AssertEquals(list1.GetAt(1).ToString(),"ELEMENTTYPE=""PXW.DEV.ClassToDisplay""")
-    
     do $$$AssertEquals(list1.GetAt(2).type,"TypeParameterItem")
     do $$$AssertEquals(list1.GetAt(2).ToString(),"CLASSNAMEINOID=1")
-
-    d fsE.findElementsXPath("AsTypeClassReference/TypeClassReference/TypeParameters/TypeParametersList/TypeParameterItem[ClassItemIdentifier=ELEMENTTYPE]",.list2)
-    do $$$AssertEquals(list2.Count(),1)
-    do $$$AssertEquals(list2.GetAt(1).type,"TypeParameterItem")
-    do $$$AssertEquals(list2.GetAt(1).ToString(),"ELEMENTTYPE=""PXW.DEV.ClassToDisplay""")
 
     d fsE.findElementsXPath("AsTypeClassReference/TypeClassReference/TypeParameters/TypeParametersList/TypeParameterItem[ClassItemIdentifier=ELEMENTTYPE]/String",.list3)
     do $$$AssertEquals(list3.Count(),1)

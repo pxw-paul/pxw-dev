@@ -182,7 +182,6 @@ Method writePlanFrozen(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.
     Quit ""
 }
 
-
 Method writePlanModuleName(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="ModuleName")
 {
     Do ..wrapElementHTML(element,"","<button onclick=""flipModule('module_"_element.ToString(0)_"',this);"">-</button>")
@@ -196,7 +195,6 @@ Method writePlanSubqueryName(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Comp
     Do ..wrapElementHTML(element,"<a class='"_$$$classLabelDef_"' href=""#subquery_"_element.ToString(0)_""">","</a>")
     Quit ""
 }
-
 
 Method writePlanModule(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="ModuleSection")
 {
@@ -288,6 +286,7 @@ Method ClearAllButContent(element As PXW.DEV.BNF.Element)
             }
         }        
     }
+    do element.partsResequence()
 }
 
 Method writePlanTableScanWarning(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="ReadMasterScan")

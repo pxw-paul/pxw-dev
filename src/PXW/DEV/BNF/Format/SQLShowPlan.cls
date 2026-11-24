@@ -49,7 +49,7 @@ Method format1CallModules(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compile
     Quit ""
 }
 
-Method format1CallSubqueries(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="CallSubquery,CallSubqueies",When="PASS1")
+Method format1CallSubqueries(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.elementHandler(Type="CallSubquery,CallSubqueries",When="PASS1")
 {
     Do element.findElementsByType("SubqueryName",.list,0)
     If $ISOBJECT(list) {
@@ -114,6 +114,7 @@ Method format2Content(element As PXW.DEV.BNF.Element) As PXW.DEV.BNF.Compilers.e
             }
         }
     }
+    do element.partsResequence()
     Quit ""
 }
 

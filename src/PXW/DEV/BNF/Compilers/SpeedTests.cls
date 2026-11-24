@@ -49,8 +49,66 @@ ClassMethod All()
     d ..TestKeyword()
     d ..Extract()
     d ..Classname()
+    d ..SetCommand()
+    d ..ListDeconstruct()
+    d ..ListOfObjects()
 }
 
+classmethod ListDeconstruct() {
+
+    d ..showHead("ListDeconstruct")
+    s m=1000000
+    s list=$lb("abcdefg","hijklmn","opqrst","uv","w","xyz")
+
+    d ..startTimer(.res,"S x=$lg(list,1),y=$lg(list,2)")
+    f i=1:1:m {
+        s a=$lg(list,1),b=$lg(list,2),c=$lg(list,3),d=$lg(list,4),e=$lg(list,5),f=$lg(list,6)
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,a_b_c_d_e_f)
+
+    d ..startTimer(.res,"S x=$li(list,1),y=$li(list,2)")
+    f i=1:1:m {
+        s a=$li(list,1),b=$li(list,2),c=$li(list,3),d=$li(list,4),e=$li(list,5),f=$li(list,6)
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,a_b_c_d_e_f)
+
+    d ..startTimer(.res,"S $lb(x,y)=list")
+    f i=1:1:m {
+        s $lb(a,b,c,d,e,f)=list
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,a_b_c_d_e_f)
+
+    d ..showRes(.res,m)
+}
+classmethod SetCommand() {
+    d ..showHead("SetCommand")
+    s m=10000000
+
+    d ..startTimer(.res,"S x=1 S y=2")
+    f i=1:1:m {
+        s a=1
+        s b=2
+        s c=3
+        s d=4
+        s e=5
+        s f=6
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,a_b_c_d_e_f)
+
+    d ..startTimer(.res,"S x=1,y=2")
+    f i=1:1:m {
+        s a=1,b=2,c=3,d=4,e=5,f=6
+    }
+    d ..stopTimer(.res)
+    d ..checkValue(.res,a_b_c_d_e_f)
+
+    d ..showRes(.res,m)
+
+}
 ClassMethod TestKeyword()
 {
 
@@ -1829,10 +1887,11 @@ ClassMethod showHead(Title As %String)
 
 ClassMethod showRes(ByRef results As %String, Iterations As %Integer)
 {
-    w !,"Iterations="_$fn(Iterations,",")
+    s indent=$c(9)
+    w !,indent,"Iterations="_$fn(Iterations,",")
 
     s expected=$g(results("expectedvalue"),$c(1))
-    w:expected'=$c(1) !,"Expected value="_expected
+    w:expected'=$c(1) !,indent,"Expected value="_expected
 
     k ranked
     s t=""
@@ -1849,7 +1908,7 @@ ClassMethod showRes(ByRef results As %String, Iterations As %Integer)
             s relative=$j(time/fastest,0,4)
             s value=$g(results("name",name,"value"))
             s passfail=$s(expected=$c(1):"n/a",value=expected:"pass",1:"fail ("_value_")")
-            w !,passfail,?8,relative,?16,time,?26,name
+            w !,indent,passfail,?8,relative,?16,time,?26,name
         }
     }
     w !

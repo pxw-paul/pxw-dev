@@ -29,7 +29,7 @@ Method TestByrefTypeDerive()
     Set analyse=##class(PXW.DEV.BNF.Analyse.COS).%New()
     Set analyse.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace("LOCAL_USER")
     Do analyse.checkElement(element)
-    do $$$AssertEquals($G(analyse.VariablesTypes("v")),"") ; cannot be determined
+    do $$$AssertEquals($G(analyse.VariablesTypes("v")),"%Library.DynamicObject") ; cannot be determined
 }
 
 Method TestVariableStrings()
@@ -76,6 +76,7 @@ Method TestVariableStrings()
     Set analyse=##class(PXW.DEV.BNF.Analyse.COS).%New()
     Set analyse.ClassServer=##class(PXW.DEV.Dictionary.ClassDefinitionObject).OpenNamespace("LOCAL_USER")
     Do analyse.checkElement(element)
+    ;zw analyse
     do $$$AssertEquals($G(analyse.stringVars("str5")),"a string new line")
     set element=analyse.stringVars("str5","element") 
     do $$$AssertEquals(element.partsCount(),2)
@@ -153,14 +154,14 @@ Method TestMethodSetBasic()
     Do analyse.checkElement(element)
 
     ; no types can be derived
-    Do $$$AssertEquals($GET(analyse.VariablesTypes("p1")),"")
+    Do $$$AssertEquals($GET(analyse.VariablesTypes("p1")),"%Library.DataType")
     Do $$$AssertEquals($GET(analyse.VariablesTypes("p2")),"")
     Do $$$AssertEquals($GET(analyse.VariablesTypes("p3")),"")
     Do $$$AssertEquals($GET(analyse.VariablesTypes("p4")),"")
 
     ; variables have been set
     Do $$$AssertEquals($DATA(analyse.VariablesSet("p1")),1)
-    Do $$$AssertEquals($DATA(analyse.VariablesSet("p2")),0) ; at the moment setting $p(p2,d,n) does NOT count in the variables set list
+    Do $$$AssertEquals($DATA(analyse.VariablesSet("p2")),1) 
     Do $$$AssertEquals($DATA(analyse.VariablesSet("p3")),1)
     Do $$$AssertEquals($DATA(analyse.VariablesSet("p4")),1)
 

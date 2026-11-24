@@ -3535,7 +3535,7 @@ Method SelectInto2Sub(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	quit ok
 }
 
-///  select_into_variable ::= [':'] sql_cos_variable
+///  select_into_variable ::= [':'] sql_cos_variable_set
 /// summary=[P]&C
 Method SelectIntoVariable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
 {
@@ -3545,7 +3545,7 @@ Method SelectIntoVariable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if $S(..addPunctuation(.subElement,":") :1,1:1) {
-		if ..SqlCosVariable(.subElement,.addedElement)  {
+		if ..SqlCosVariableSet(.subElement,.addedElement)  {
 			set done=1 ; end compileRules
 		}
 	}
@@ -4148,6 +4148,32 @@ Method SqlCosVariable(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As 
 	$$$BNFSTART(subElement)
 	set done=0 ; method start
 	if ..addPunctuation(.subElement,"NEED COS VAR")  {
+		set done=1 ; end compileRules
+	}
+
+	if done {
+		$$$BNFCOMMIT(subElement,ParentElement)
+		set ok=1
+	} else {
+		$$$BNFROLLBACK(subElement)
+		set ok=0
+	}
+	$$$DEBUGMethodEnd
+	quit ok
+}
+
+///  sql_cos_variable_set ::= 'NEED COS VAR SET'
+/// summary values:NEED COS VAR SET
+/// summary=P
+Method SqlCosVariableSet(ParentElement As PXW.DEV.BNF.Element, ByRef subElement As PXW.DEV.BNF.Element) As %Boolean
+{
+	; rules summary P
+	if '(..isStringSingle("NEED COS VAR SET",.value)) { quit 0 /* normal */ /*3 */ }
+	$$$DEBUGMethodBegin
+	$$$BNFPATH
+	$$$BNFSTART(subElement)
+	set done=0 ; method start
+	if ..addPunctuation(.subElement,"NEED COS VAR SET")  {
 		set done=1 ; end compileRules
 	}
 

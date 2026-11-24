@@ -1,7 +1,9 @@
 include PXW.DEV.BNF.ElementMacros
 
-/// The base class for groups of atoms that make up an element.
-/// Elements can be subclassed to store extra data. 
+/// <P>The base class for groups of atoms that make up an element.</P>
+/// <P>Elements can be subclassed to store extra data.</P>
+/// <P>Elements should be subclassed for recognition of what type of 
+///    code they relate to.</P>
 Class PXW.DEV.Element Extends PXW.DEV.Particle
 {
 
@@ -20,6 +22,10 @@ Method AddPart(Part As PXW.DEV.Particle)
 	$$$ELEMENTPARTADDInternal($THIS,Part)
 }
 
+/* The parts methods are all written for maximum speed. There is very 
+   little error checking.
+*/
+
 Method partsGetAt(key As %Integer) As PXW.DEV.Particle
 {
 	Quit $$$ElementPartsGetAtInternal($THIS,key)
@@ -32,6 +38,15 @@ Method partsGetNext(ByRef key As %Integer) As PXW.DEV.Particle
 	Quit $SELECT(key'="":part,1:"")
 }
 
+Method partsGetPrevious(ByRef key As %Integer) As PXW.DEV.Particle
+{
+	#dim part as PXW.DEV.Particle
+	Set key=$ORDER(%PXWparts(+$THIS,key),-1,part)
+	Quit $SELECT(key'="":part,1:"")
+}
+
+/// <P>Returns the count of parts, or rather the last key number used.</P>
+/// <P>Keys can be added or removed at any time so be careful of this changing.</P>
 Method partsCount() As %Integer
 {
 	Quit $$$ElementPartsCountInternal($THIS)
@@ -46,16 +61,22 @@ Method partsCopy(Source As PXW.DEV.Element)
 	;Set %PXWparts(this)=c2
 }
 
+/// <P>Remove all parts</P>
 Method partsClear()
 {
 	Kill:$DATA(%PXWparts(+$THIS)) %PXWparts(+$THIS)
 }
 
+/// <P>Remove a part.</P>
+/// <P>The key sequence is not changed because if Nexting though and the keys move 
+/// then the loop will be messed up.</P>
+/// <P>This very rarely used.</P>
 Method partsRemove(key As %Integer)
 {
 	Kill:key'="" %PXWparts(+$THIS,key)
 }
 
+/// <P>Replace a part with another.</P>
 Method partsReplace(oldElement As PXW.DEV.Element, newElement As PXW.DEV.Element) As %Boolean
 {
 	Set this=+$THIS,replaced=0
@@ -66,6 +87,20 @@ Method partsReplace(oldElement As PXW.DEV.Element, newElement As PXW.DEV.Element
 		}
 	}
 	Quit replaced
+}
+
+/// <P>Resequence the part keys.</P>
+/// <P>Useful if parts have been removed.</P>
+method partsResequence() {
+	Merge original=%PXWparts(+$THIS)
+	Kill %PXWparts(+$THIS) 
+	Set key="",newkey=0
+	For {
+		Set key=$ORDER(original(key),1,part)
+		Quit:key=""
+		Set %PXWparts(+$THIS,$INCREMENT(newkey))=part
+	}
+	Set:newkey>0 %PXWparts(+$THIS)=newkey
 }
 
 Method %OnClose() As %Status
@@ -314,6 +349,7 @@ Method findElementsXPath(Path As %String, ByRef OutputList As %Library.ListOfObj
 				If list1 {
 					Set stepField=$PIECE(step2,"[",1),stepCondition=$PIECE($PIECE(step2,"[",2,*),"]",1)
 					For i=1:1:list1.Count() {
+						$$$DEBUG($$$debugFormat("Step={i}, stepField={stepField}, stepCondition={stepCondition}"))
 						Set item1=list1.GetAt(i)
 						Do item1.findElementsXPathCondition(stepField,stepCondition,.list2)		
 					}
@@ -328,16 +364,17 @@ Method findElementsXPath(Path As %String, ByRef OutputList As %Library.ListOfObj
 		For i=1:1:list1.Count() { 
 			Do OutputList.Insert(list1.GetAt(i))
 		}
-	} Elseif $g(list1) {
+	} ElseIf $GET(list1) {
 		Set OutputList=list1
 	}
-	$$$DEBUG("OuputList.Count()="_$SELECT($g(OutputList):OutputList.Count(),1:"UNDEFINDED"))
+	$$$DEBUG("OuputList.Count()="_$SELECT($GET(OutputList):OutputList.Count(),1:"UNDEFINDED"))
 	$$$DEBUGMethodEnd
 }
 /// Condition only supports = at the moment
 Method findElementsXPathCondition(Type As %String, Condition As %String, ByRef OutputList As %Library.ListOfObjects)
 {
 	$$$DEBUGMethodBegin
+	$$$DEBUG($$$debugFormat("Type={Type}, Condition={Condition}, OutputList={OutputList}"))
 	Set condfield=$PIECE(Condition,"=",1)
 	Set condvalue=$PIECE(Condition,"=",2,*)
 	Set uType=$$$UPPER(Type)
